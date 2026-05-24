@@ -16,10 +16,10 @@
       if (!Array.isArray(articles) || articles.length === 0) {
         listEl.innerHTML = `
           <div class="empty">
-            <span class="emoji">No posts</span>
-            No articles yet — drop a markdown file into <code>/articles/</code>
-            and add it to <code>articles.json</code>.
+            <span class="emoji" data-i18n="empty.noPosts">No posts</span>
+            <span data-i18n-html="empty.noPostsBody">No articles yet. Drop a markdown file into <code>/articles/</code> and add it to <code>articles.json</code>.</span>
           </div>`;
+        if (window.aligorApplyLanguage) window.aligorApplyLanguage();
         return;
       }
 
@@ -40,18 +40,20 @@
             <p class="summary">${escapeHtml(a.summary || '')}</p>
             <div class="meta">
               <span>${escapeHtml(date)}</span>
-              <span class="read-more">Read →</span>
+              <span class="read-more"><span data-i18n="card.read">Read</span> →</span>
             </div>
           </a>`;
       }).join('');
+      if (window.aligorApplyLanguage) window.aligorApplyLanguage();
     })
     .catch((err) => {
       console.error(err);
       listEl.innerHTML = `
         <div class="empty">
-          <span class="emoji">Error</span>
-          Couldn't load articles. Check that <code>articles.json</code> is valid.
+          <span class="emoji" data-i18n="empty.error">Error</span>
+          <span data-i18n-html="empty.errorBody">Could not load articles. Check that <code>articles.json</code> is valid.</span>
         </div>`;
+      if (window.aligorApplyLanguage) window.aligorApplyLanguage();
     });
 
   function escapeHtml(str) {
