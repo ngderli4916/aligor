@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>aligor — article</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,800;9..144,900&family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="/" class="logo">aligor</a>
+    <div class="nav-links">
+      <a href="/#articles">Articles</a>
+      <a href="/#about">About</a>
+    </div>
+  </nav>
+
+  <main class="article-wrap">
+    <header class="article-header" id="article-header">
+      <span class="tag" id="article-tag">article</span>
+      <h1 id="article-title">Loading…</h1>
+      <div class="meta" id="article-meta"></div>
+    </header>
+
+    <article class="article-body" id="article-body">
+      <p>📖 Loading article…</p>
+    </article>
+
+    <a href="/" class="back-link">← Back to all articles</a>
+  </main>
+
+  <footer>
+    Made with <span class="heart">♥</span> &middot; aligor &copy; <span id="year"></span>
+  </footer>
+
+  <script>
+    (function () {
+      document.getElementById('year').textContent = new Date().getFullYear();
+
+      const params = new URLSearchParams(location.search);
+      const slug = params.get('slug');
+
+      const titleEl = document.getElementById('article-title');
+      const tagEl   = document.getElementById('article-tag');
+      const metaEl  = document.getElementById('article-meta');
+      const bodyEl  = document.getElementById('article-body');
+
+      if (!slug) {
+        titleEl.textContent = 'No article selected';
+        bodyEl.innerHTML = '<p>Head <a href="/">back home</a> and pick an article.</p>';
+        return;
+      }
+
+      // Load manifest to get metadata
+      fetch('articles.json', { cache: 'no-store' })
+        .then((r) => r.json())
+        .then((articles) => {
+          const meta = articles.find((a) => a.slug === slug);
+          if (meta) {
+            document.title = meta.title + ' — aligor';
+            titleEl.textContent = meta.title;
+            tagEl.textContent = meta.tag || 'article';
+            const date = meta.date
+              ? new Date(meta.date).toLocaleDateString(undefined, {
+                  year: 'numeric', month: 'long', day: 'numeric'
+                })
+              : '';
+            metaEl.textContent = date;
+          }
+          return fetch('articles/' + slug + '.md', { cache: 'no-store' });
+        })
+        .then((r) => {
+          if (!r || !r.ok) throw new Error('Article not found');
+          return r.text();
+        })
+        .then((md) => {
+          // marked v5+ uses marked.parse
+          const html = (window.marked && (marked.parse ? marked.parse(md) : marked(md))) || md;
+          bodyEl.innerHTML = html;
+        })
+        .catch((err) => {
+          console.error(err);
+          titleEl.textContent = 'Article not found';
+          bodyEl.innerHTML = '<p>Sorry — we couldn\'t find that article. Try heading <a href="/">back home</a>.</p>';
+        });
+    })();
+  </script>
+</body>
+</html>
