@@ -198,6 +198,68 @@ p { margin: 0; }
   font-size: 15px;
 }
 
+.follow-hero {
+  max-width: var(--content);
+  margin: 0 auto 76px;
+  padding: clamp(24px, 4vw, 36px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.9fr);
+  gap: 28px;
+  align-items: center;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+}
+
+.follow-copy .eyebrow {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  color: var(--accent-dark);
+  background: var(--accent-soft);
+  border: 1px solid rgba(47, 111, 115, 0.16);
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.follow-copy h2 {
+  margin: 16px 0 12px;
+  font-size: clamp(30px, 4vw, 48px);
+}
+
+.follow-copy p {
+  max-width: 620px;
+  color: var(--ink-soft);
+  font-size: 18px;
+}
+
+.home-social-links {
+  grid-template-columns: 1fr;
+}
+
+.social-item {
+  align-items: center;
+  min-height: 76px;
+  padding: 18px 20px;
+  font-size: 18px;
+}
+
+.social-item strong::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
 .profile-actions {
   display: flex;
   flex-wrap: wrap;
@@ -814,6 +876,7 @@ footer .heart { color: var(--clay); }
   }
 
   .profile-hero,
+  .follow-hero,
   .about-panel,
   .typeless-downloads,
   .follow-panel,
