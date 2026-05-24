@@ -145,6 +145,11 @@ h1, h2, h3 {
   position: absolute; inset: 0;
   pointer-events: none;
   overflow: hidden;
+  z-index: 0;
+}
+.hero > :not(.hero-shapes) {
+  position: relative;
+  z-index: 1;
 }
 .shape {
   position: absolute;
@@ -354,6 +359,150 @@ h1, h2, h3 {
 }
 .back-link:hover { color: var(--pink); }
 
+/* ---------- Share pages ---------- */
+.share-hero {
+  margin-bottom: 56px;
+}
+
+.share-hero .zh-copy {
+  margin-top: 12px;
+}
+
+.share-page {
+  max-width: 1100px;
+  margin: 0 auto 80px;
+  padding: 0 24px;
+}
+
+.download-panel {
+  background: var(--paper);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+  border: 2px solid rgba(123, 92, 255, 0.12);
+  overflow: hidden;
+  padding: clamp(24px, 4vw, 40px);
+  display: grid;
+  grid-template-columns: minmax(240px, 0.8fr) minmax(280px, 1.2fr);
+  gap: 28px;
+  position: relative;
+}
+
+.download-panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: var(--gradient-hero);
+}
+
+.download-panel .tag,
+.info-card .tag {
+  display: inline-block;
+  background: var(--yellow);
+  color: var(--ink);
+  font-weight: 800;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.download-panel h2,
+.info-card h2 {
+  font-size: clamp(28px, 3vw, 42px);
+  margin: 0 0 12px;
+}
+
+.download-panel p,
+.info-card p {
+  color: var(--ink-soft);
+  margin: 0 0 12px;
+}
+
+.zh-copy {
+  color: var(--ink-soft);
+}
+
+.download-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.download-button {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 96px;
+  padding: 18px;
+  color: var(--ink);
+  background: linear-gradient(135deg, #ffffff 0%, #fff8f0 100%);
+  border: 2px solid rgba(123, 92, 255, 0.12);
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(31, 17, 71, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.download-button:hover {
+  color: var(--ink);
+  border-color: rgba(255, 94, 156, 0.34);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-pop);
+}
+
+.platform-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  color: white;
+  background: var(--gradient-accent);
+  font-weight: 900;
+  font-size: 18px;
+}
+
+.download-button strong,
+.download-button small {
+  display: block;
+}
+
+.download-button strong {
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.download-button small {
+  color: var(--ink-soft);
+  font-size: 13px;
+  line-height: 1.35;
+  margin-top: 4px;
+}
+
+.language-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.info-card {
+  background: var(--paper);
+  border-radius: var(--radius);
+  padding: clamp(24px, 4vw, 34px);
+  box-shadow: var(--shadow-soft);
+  border: 2px solid transparent;
+}
+
+.info-card:nth-child(1) .tag { background: var(--mint); }
+.info-card:nth-child(2) .tag { background: var(--sky); }
+
 /* ---------- Footer ---------- */
 footer {
   text-align: center;
@@ -382,5 +531,14 @@ footer .heart { color: var(--pink); }
   .nav { padding: 20px 16px 0; }
   .nav-links { gap: 14px; font-size: 14px; }
   .hero { margin: 40px auto 20px; }
+  .shape { opacity: 0.75; }
   .article-body { padding: 28px 20px; font-size: 17px; }
+  .download-panel,
+  .language-grid,
+  .download-grid {
+    grid-template-columns: 1fr;
+  }
+  .download-button {
+    min-height: 84px;
+  }
 }
