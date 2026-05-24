@@ -16,7 +16,7 @@
       if (!Array.isArray(articles) || articles.length === 0) {
         listEl.innerHTML = `
           <div class="empty">
-            <span class="emoji">📝</span>
+            <span class="emoji">No posts</span>
             No articles yet — drop a markdown file into <code>/articles/</code>
             and add it to <code>articles.json</code>.
           </div>`;
@@ -49,7 +49,7 @@
       console.error(err);
       listEl.innerHTML = `
         <div class="empty">
-          <span class="emoji">😅</span>
+          <span class="emoji">Error</span>
           Couldn't load articles. Check that <code>articles.json</code> is valid.
         </div>`;
     });

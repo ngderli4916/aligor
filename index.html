@@ -7,7 +7,7 @@
   <meta name="description" content="aligor — a colorful blog about my AI journey: experiments, lessons, and articles I love." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,800;9..144,900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E" />
 </head>
@@ -22,41 +22,55 @@
     </div>
   </nav>
 
-  <header class="hero">
-    <div class="hero-shapes" aria-hidden="true">
-      <div class="shape shape-1"></div>
-      <div class="shape shape-2"></div>
-      <div class="shape shape-3"></div>
-      <div class="shape shape-4"></div>
+  <header class="hero profile-hero">
+    <div>
+      <span class="eyebrow">Personal sharing blog</span>
+      <h1>Notes from my <span class="gradient">AI journey</span></h1>
+      <p>I share the tools I try, the ideas I am learning, and the small experiments that help me build better with AI.</p>
+      <div class="profile-actions">
+        <a class="button" href="#articles">Read latest notes</a>
+        <a class="button secondary" href="/typelessforyou/">Typeless for you</a>
+      </div>
     </div>
-    <span class="eyebrow">✨ My AI journey, out loud</span>
-    <h1>Sharing what I learn <span class="gradient">building with AI</span></h1>
-    <p>Notes, experiments, and articles I love — gathered in one colorful little corner of the internet.</p>
+    <aside class="profile-note">
+      <h2>Hi, I am Derli.</h2>
+      <p>This is my personal corner for AI learning, useful apps, and honest notes from building things online.</p>
+    </aside>
   </header>
 
   <div class="section-title" id="articles">
     <h2>Latest articles</h2>
-    <span class="squiggle" aria-hidden="true"></span>
+    <span class="squiggle">Journal notes</span>
   </div>
 
   <main id="article-list" class="articles">
     <div class="loading">
-      <span class="emoji">🎨</span>
-      Loading articles…
+      <span class="emoji">Loading</span>
+      Loading articles...
     </div>
   </main>
 
   <section class="section-title" id="about">
     <h2>About aligor</h2>
-    <span class="squiggle" aria-hidden="true"></span>
+    <span class="squiggle">Profile and links</span>
   </section>
-  <section class="articles" style="grid-template-columns: 1fr;">
-    <div class="card" style="min-height: auto;">
-      <p class="summary" style="font-size: 17px;">
-        <strong>aligor</strong> is where I share what I'm learning on my AI journey —
-        the experiments that worked, the ones that didn't, and the articles that taught me something new.
-        Think of it as an open notebook. Pull up a chair. ☕
+  <section class="about-panel">
+    <div class="about-card">
+      <h3>Open notebook</h3>
+      <p>
+        <strong>aligor</strong> is where I collect what I am learning about AI, tools, and online building.
+        I keep it practical, personal, and easy to revisit.
       </p>
+    </div>
+    <div class="tool-list" aria-label="Featured links">
+      <a class="tool-item" href="/typelessforyou/">
+        <strong>Typeless for You</strong>
+        <span>Download guide</span>
+      </a>
+      <a class="tool-item" href="#articles">
+        <strong>Latest articles</strong>
+        <span>Read notes</span>
+      </a>
     </div>
   </section>
 
