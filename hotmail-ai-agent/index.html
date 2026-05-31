@@ -1,228 +1,240 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hotmail IMAP OAuth2 Connection | aligor</title>
-  <meta name="description" content="A beginner-friendly three-language guide based on a working Hotmail IMAP + OAuth2 + Python setup." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../styles.css" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hotmail 邮箱连接 AI Agent 小白流程</title>
+<style>
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC","Microsoft YaHei",Arial,sans-serif;line-height:1.72;color:#172033;background:#f6f8fb}
+a{color:#155eef}
+.wrap{max-width:980px;margin:0 auto;padding:24px}
+.hero{padding:34px 0 18px}
+.eyebrow{font-size:14px;font-weight:800;color:#155eef;margin:0 0 8px}
+h1{font-size:clamp(30px,5vw,48px);line-height:1.15;margin:0 0 14px;color:#0b1220;letter-spacing:0}
+.lead{max-width:790px;font-size:18px;color:#455168;margin:0}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:22px 0}
+.card,section{background:#fff;border:1px solid #e3e8f2;border-radius:10px;box-shadow:0 10px 30px rgba(16,24,40,.05)}
+.card{padding:18px}
+section{padding:24px;margin:18px 0}
+h2{font-size:24px;line-height:1.25;margin:0 0 12px;color:#0b1220}
+h3{font-size:18px;margin:18px 0 8px;color:#243044}
+p{margin:0 0 12px}
+ul,ol{margin:0 0 12px 22px;padding:0}
+li{margin:7px 0}
+.tag{display:inline-block;padding:3px 9px;border-radius:999px;background:#eef4ff;color:#155eef;font-size:13px;font-weight:800}
+.plain{border-left:5px solid #155eef}
+.agent{border-left:5px solid #16a34a}
+.human{border-left:5px solid #f97316}
+.risk{border-left:5px solid #dc2626}
+.muted{color:#667085}
+.bigline{font-size:19px;font-weight:800;color:#0b1220}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#eef2f7;border-radius:5px;padding:2px 5px;font-size:.92em;overflow-wrap:anywhere}
+pre{margin:14px 0 0;padding:16px;background:#101828;color:#e4e7ec;border-radius:10px;overflow:auto;font-size:13px;line-height:1.55;white-space:pre-wrap}
+pre code{display:block;max-width:100%;background:transparent;color:inherit;padding:0;white-space:pre-wrap}
+.steps{counter-reset:step;list-style:none;margin-left:0}
+.steps li{counter-increment:step;padding:13px 0 13px 46px;position:relative;border-top:1px solid #eef2f7}
+.steps li:first-child{border-top:0}
+.steps li::before{content:counter(step);position:absolute;left:0;top:13px;width:30px;height:30px;border-radius:50%;background:#155eef;color:white;display:grid;place-items:center;font-weight:800}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.table{width:100%;border-collapse:collapse;margin:10px 0 0}
+.table th,.table td{border:1px solid #e3e8f2;padding:10px;text-align:left;vertical-align:top}
+.table th{background:#f3f6fb;color:#243044}
+.footer{padding:22px 0 40px;color:#667085;font-size:14px;text-align:center}
+@media(max-width:760px){
+  .wrap{padding:18px}
+  .grid,.two-col{grid-template-columns:1fr}
+  section{padding:18px}
+}
+</style>
 </head>
 <body>
-
-  <nav class="nav">
-    <a href="../" class="logo">aligor</a>
-    <div class="nav-links">
-      <a href="../" data-i18n="nav.home">Home</a>
-      <a href="../typelessforyou/" data-i18n="nav.typeless">Typeless</a>
-      <a href="#steps" data-i18n="hotmail.steps.title">Working Steps</a>
-      <a href="#references" data-i18n="hotmail.references.title">Official References</a>
-      <div class="language-switch" aria-label="Language">
-        <button type="button" data-lang-option="en">EN</button>
-        <button type="button" data-lang-option="zh">中文</button>
-        <button type="button" data-lang-option="ms">BM</button>
-      </div>
-    </div>
-  </nav>
-
-  <header class="hero guide-hero">
-    <div>
-      <span class="eyebrow" data-i18n="hotmail.eyebrow">Working setup from my package</span>
-      <h1 data-i18n-html="hotmail.title">Hotmail / Outlook email automation with <span class="gradient">IMAP + OAuth2 + Python</span></h1>
-      <p data-i18n="hotmail.intro">This version follows the successful method from my package: register an Azure app, get a refresh token through Microsoft login, save it safely, then let Python refresh access tokens and connect to IMAP with XOAUTH2.</p>
-    </div>
-    <div class="guide-badges" aria-label="Guide highlights">
-      <span data-i18n="hotmail.badge.safe">Refresh token method</span>
-      <span data-i18n="hotmail.badge.personal">Hotmail / Outlook.com</span>
-      <span data-i18n="hotmail.badge.imap">IMAP XOAUTH2</span>
-    </div>
+<main class="wrap">
+  <header class="hero">
+    <p class="eyebrow">Hotmail / Outlook 邮箱接给 AI Agent</p>
+    <h1>照着做就可以的小白流程</h1>
+    <p class="lead">这页不是给工程师炫技术的。它是给普通人看的操作流程：你要先告诉 AI Agent 什么，复制哪一段话给它，然后跟着它去 Microsoft 开权限，最后设置成安全的只读邮箱自动化。</p>
   </header>
 
-  <main class="guide-page">
-    <section class="guide-overview">
-      <div>
-        <span class="tag" data-i18n="hotmail.overview.title">The Working Flow</span>
-        <h2 data-i18n="hotmail.overview.title">The Working Flow</h2>
-      </div>
-      <p data-i18n="hotmail.overview.body">The successful flow is: Refresh Token -> Microsoft token endpoint -> Access Token -> IMAP XOAUTH2 login -> read or organize mailbox. The script should save only the refresh token securely, refresh the access token automatically, and read headers with BODY.PEEK so emails are not marked as read.</p>
-    </section>
+  <div class="grid">
+    <div class="card">
+      <span class="tag">一句话</span>
+      <h2>这个流程在做什么</h2>
+      <p>你把 Hotmail / Outlook 邮箱接给 AI Agent。AI Agent 以后可以帮你看邮件标题、分类、提醒和整理。</p>
+      <p class="muted">重点：先只读。不要一开始就让它发送、删除或批量移动邮件。</p>
+    </div>
+    <div class="card">
+      <span class="tag">谁做什么</span>
+      <h2>人和 AI 的分工</h2>
+      <p><strong>人负责：</strong>登录 Microsoft、点击授权、确认账号、批准危险动作。</p>
+      <p><strong>AI Agent 负责：</strong>教你点哪里、生成链接、测试连接、写自动化规则。</p>
+    </div>
+  </div>
 
-    <section class="guide-section" id="steps">
-      <div class="section-title compact-title">
-        <h2 data-i18n="hotmail.steps.title">Setup Steps</h2>
-        <span class="squiggle">Azure + Token + Python</span>
-      </div>
+  <section class="plain" id="step-1">
+    <h2>第 1 步：先准备这些资料</h2>
+    <p class="bigline">你先告诉 AI Agent 这些就够了。</p>
+    <ul>
+      <li>你要连接的邮箱，例如 <code>yourname@hotmail.com</code>。</li>
+      <li>你要 AI Agent 做什么，例如“每天整理未读邮件”。</li>
+      <li>你要不要只读模式。新手请选择只读。</li>
+      <li>你有没有 Microsoft Azure Portal 账号。</li>
+      <li>你要把 token 存在哪里，例如 1Password、macOS Keychain、环境变量或服务器 secret。</li>
+    </ul>
+    <p>不要把邮箱密码给 AI Agent。这个流程不需要邮箱密码。</p>
+  </section>
 
-      <div class="steps-grid">
-        <article class="step-card">
-          <span class="step-number">01</span>
-          <h3 data-i18n="hotmail.step1.title">Register the app in Azure Portal</h3>
-          <p data-i18n="hotmail.step1.body">Open Azure Portal -> App registrations -> New registration. Name it something like Hotmail IMAP Client. For account type, choose personal Microsoft accounts only, or any Microsoft ID if you want broader support.</p>
-        </article>
-        <article class="step-card">
-          <span class="step-number">02</span>
-          <h3 data-i18n="hotmail.step2.title">Use the native client redirect URI</h3>
-          <p data-i18n="hotmail.step2.body">Set Redirect URI type to Public client/native and use https://login.microsoftonline.com/common/oauth2/nativeclient. This matches the package method for manually collecting the authorization code.</p>
-        </article>
-        <article class="step-card">
-          <span class="step-number">03</span>
-          <h3 data-i18n="hotmail.step3.title">Copy the client ID and do not create a secret</h3>
-          <p data-i18n="hotmail.step3.body">After registration, copy Application client ID. Because this is a public/native client flow, you do not need a client secret. Do not put secrets or real tokens inside the website or GitHub repo.</p>
-        </article>
-        <article class="step-card">
-          <span class="step-number">04</span>
-          <h3 data-i18n="hotmail.step4.title">Add IMAP delegated permission</h3>
-          <p data-i18n="hotmail.step4.body">In API permissions, add delegated permission IMAP.AccessAsUser.All and make sure offline_access is included. These are needed so the script can read mail through IMAP and refresh access later.</p>
-        </article>
-        <article class="step-card">
-          <span class="step-number">05</span>
-          <h3 data-i18n="hotmail.step5.title">Get the authorization code in the browser</h3>
-          <p data-i18n="hotmail.step5.body">Open the authorize URL with your client ID, nativeclient redirect URI, response_type=code, and the IMAP/offline_access scopes. After Microsoft login, copy the code value from the redirected URL.</p>
-        </article>
-        <article class="step-card">
-          <span class="step-number">06</span>
-          <h3 data-i18n="hotmail.step6.title">Use cURL to exchange code for refresh token</h3>
-          <p data-i18n="hotmail.step6.body">POST the code to Microsoft token endpoint with grant_type=authorization_code. Save the refresh_token from the JSON response into macOS Keychain, then Python can refresh access tokens whenever it connects.</p>
-        </article>
-      </div>
-    </section>
+  <section class="agent" id="copy-prompt">
+    <h2>第 2 步：复制这段给你的 AI Agent</h2>
+    <p>把下面整段复制给 AI Agent。它就会一步一步带你做。</p>
+    <pre><code>请一步一步指导我把 Hotmail / Outlook 邮箱连接给 AI Agent 使用。
 
-    <section class="guide-section guide-columns">
-      <article class="guide-panel">
-        <h2 data-i18n="hotmail.config.title">Values From the Working Package</h2>
-        <dl class="config-list">
-          <div>
-            <dt data-i18n="hotmail.config.auth">Authorization endpoint</dt>
-            <dd><code>https://login.microsoftonline.com/common/oauth2/v2.0/authorize</code></dd>
-          </div>
-          <div>
-            <dt data-i18n="hotmail.config.token">Token endpoint</dt>
-            <dd><code>https://login.microsoftonline.com/common/oauth2/v2.0/token</code></dd>
-          </div>
-          <div>
-            <dt data-i18n="hotmail.config.redirect">Redirect URI</dt>
-            <dd><code>https://login.microsoftonline.com/common/oauth2/nativeclient</code></dd>
-          </div>
-          <div>
-            <dt data-i18n="hotmail.config.imapHost">IMAP host</dt>
-            <dd><code>outlook.office365.com</code></dd>
-          </div>
-          <div>
-            <dt data-i18n="hotmail.config.imapPort">IMAP port</dt>
-            <dd><code>993 SSL/TLS</code></dd>
-          </div>
-          <div>
-            <dt data-i18n="hotmail.config.scope">Main scopes to request</dt>
-            <dd><code>https://outlook.office.com/IMAP.AccessAsUser.All offline_access</code></dd>
-          </div>
-          <div>
-            <dt data-i18n="hotmail.config.xoauth">XOAUTH2 format</dt>
-            <dd><code>user=&lt;email&gt;\x01auth=Bearer &lt;access_token&gt;\x01\x01</code></dd>
-          </div>
-        </dl>
-      </article>
+我的目标：
+1. 先只读邮件，不发送，不删除，不批量移动。
+2. AI Agent 可以读取邮件标题、发件人、时间和必要的邮件内容。
+3. 读取邮件时要尽量使用 BODY.PEEK，避免把未读邮件变成已读。
+4. 高风险动作必须先问我批准。
 
-      <article class="guide-panel safety-panel">
-        <h2 data-i18n="hotmail.safety.title">Very Important Rules</h2>
-        <ul class="plain-list">
-          <li data-i18n="hotmail.safety.one">Mask real emails, client IDs, access tokens, and refresh tokens before sharing screenshots or code.</li>
-          <li data-i18n="hotmail.safety.two">Store refresh tokens in macOS Keychain or a real secret manager, not inside scripts or GitHub.</li>
-          <li data-i18n="hotmail.safety.three">Use BODY.PEEK for reading headers so emails are not accidentally marked as read.</li>
-          <li data-i18n="hotmail.safety.four">Do not run permanent delete or automatic mailto unsubscribe without human approval.</li>
-        </ul>
-      </article>
-    </section>
+请你先问我需要准备的资料。
+然后指导我去 Microsoft Azure Portal 创建 App Registration。
+App Permission 请用 Search 搜索权限，不要让我在一堆菜单里面乱找。
+需要的权限包括：
+1. Office 365 Exchange Online 里面的 IMAP.AccessAsUser.All
+2. offline_access
 
-    <section class="guide-section guide-columns">
-      <article class="guide-panel">
-        <h2 data-i18n="hotmail.token.title">Get Refresh Token</h2>
-        <p data-i18n="hotmail.token.body">First open the authorize URL in a browser. After login, copy the code from the address bar. Then exchange it with cURL.</p>
-        <pre class="guide-code"><code>https://login.microsoftonline.com/common/oauth2/v2.0/authorize?
-client_id=YOUR_CLIENT_ID&amp;
-response_type=code&amp;
-redirect_uri=https://login.microsoftonline.com/common/oauth2/nativeclient&amp;
-scope=https://outlook.office.com/IMAP.AccessAsUser.All offline_access</code></pre>
-        <pre class="guide-code"><code>curl -X POST https://login.microsoftonline.com/common/oauth2/v2.0/token \
-  -d "client_id=YOUR_CLIENT_ID" \
-  -d "grant_type=authorization_code" \
-  -d "code=CODE_FROM_BROWSER" \
-  -d "redirect_uri=https://login.microsoftonline.com/common/oauth2/nativeclient" \
-  -d "scope=https://outlook.office.com/IMAP.AccessAsUser.All offline_access"</code></pre>
-      </article>
+连接成功后，请教我如何设置：
+1. CLIENT_ID
+2. EMAIL
+3. REFRESH_TOKEN
+4. IMAP_HOST = outlook.office365.com
+5. IMAP_PORT = 993
+6. 只读测试
+7. 每天自动整理邮件的安全规则
 
-      <article class="guide-panel">
-        <h2 data-i18n="hotmail.keychain.title">Save Token in macOS Keychain</h2>
-        <p data-i18n="hotmail.keychain.body">The package stores the refresh token in Keychain, then Python reads it when refreshing the access token.</p>
-        <pre class="guide-code"><code>security add-generic-password -U \
-  -s "himalaya-cli" \
-  -a "hotmail-imap-refresh-token" \
-  -w "YOUR_REFRESH_TOKEN"</code></pre>
-        <pre class="guide-code"><code>security find-generic-password \
-  -s "himalaya-cli" \
-  -a "hotmail-imap-refresh-token" \
-  -w</code></pre>
-      </article>
-    </section>
+请用完全小白也能懂的语言教我。每一步都告诉我现在要点哪里。</code></pre>
+  </section>
 
-    <section class="guide-section guide-columns">
-      <article class="guide-panel">
-        <h2 data-i18n="hotmail.python.title">Python Connection Logic</h2>
-        <p data-i18n="hotmail.python.body">Python reads the refresh token, calls Microsoft token endpoint, receives a fresh access token, then builds the XOAUTH2 string for IMAP login.</p>
-        <pre class="guide-code"><code>ACCOUNT = "your_email@hotmail.com"
-CLIENT_ID = "741e...fbba"
-TOKEN_URL = "https://login.microsoftonline.com/common/oauth2/v2.0/token"
-IMAP_HOST = "outlook.office365.com"
-IMAP_PORT = 993
+  <section class="plain" id="agent-will-ask">
+    <h2>第 3 步：AI Agent 通常会问你什么</h2>
+    <p>如果 AI Agent 问这些，是正常的。</p>
+    <table class="table">
+      <tr>
+        <th>AI Agent 会问</th>
+        <th>你怎么回答</th>
+      </tr>
+      <tr>
+        <td>你要连接哪个邮箱？</td>
+        <td>给它邮箱地址，例如 <code>yourname@hotmail.com</code>。</td>
+      </tr>
+      <tr>
+        <td>你要做只读还是允许操作？</td>
+        <td>新手回答：先只读。</td>
+      </tr>
+      <tr>
+        <td>你有 Azure Portal 吗？</td>
+        <td>有就继续。没有就先注册或叫技术人员处理。</td>
+      </tr>
+      <tr>
+        <td>token 要存哪里？</td>
+        <td>回答：1Password、Keychain、环境变量或服务器 secret。</td>
+      </tr>
+      <tr>
+        <td>可以读取完整邮件内容吗？</td>
+        <td>先回答：只在需要时读取，而且先读 header。</td>
+      </tr>
+    </table>
+  </section>
 
-auth = f"user={ACCOUNT}\x01auth=Bearer {access_token}\x01\x01"
-imap = imaplib.IMAP4_SSL(IMAP_HOST, IMAP_PORT)
-imap.authenticate("XOAUTH2", lambda _: auth.encode())</code></pre>
-      </article>
+  <section class="human" id="microsoft-clicks">
+    <h2>第 4 步：人要去 Microsoft 点这些</h2>
+    <ol class="steps">
+      <li><strong>打开 Azure Portal。</strong><br>去 Microsoft Azure Portal，找到 <code>App registrations</code>。</li>
+      <li><strong>创建 App。</strong><br>点 <code>New registration</code>，名字可以写 <code>Email AI Agent</code>。</li>
+      <li><strong>复制 Client ID。</strong><br>创建后复制 <code>Application client ID</code>，给 AI Agent 设置成 <code>CLIENT_ID</code>。</li>
+      <li><strong>去 API permissions。</strong><br>点 <code>API permissions</code>，再点 <code>Add a permission</code>。</li>
+      <li><strong>用 Search 找权限。</strong><br>不要自己慢慢翻。用搜索框找 <code>Office 365 Exchange Online</code>。</li>
+      <li><strong>加 IMAP 权限。</strong><br>选择 <code>Delegated permissions</code>，搜索 <code>IMAP</code>，勾选 <code>IMAP.AccessAsUser.All</code>。</li>
+      <li><strong>加离线权限。</strong><br>搜索并加入 <code>offline_access</code>。这个权限让 AI Agent 以后不用每次叫你重新登录。</li>
+      <li><strong>授权登录。</strong><br>AI Agent 会给你一个 Microsoft 登录链接。你自己打开，登录正确邮箱，然后点同意。</li>
+      <li><strong>把授权结果交回 AI Agent。</strong><br>AI Agent 会用授权结果换 <code>refresh_token</code>，然后安全保存。</li>
+    </ol>
+  </section>
 
-      <article class="guide-panel">
-        <h2 data-i18n="hotmail.headers.title">Read Headers Only</h2>
-        <p data-i18n="hotmail.headers.body">The working package reads only selected headers and uses BODY.PEEK. This keeps the mailbox private, faster, and avoids marking messages as read.</p>
-        <pre class="guide-code"><code>imap.uid(
-  "FETCH",
-  chunk,
-  "(BODY.PEEK[HEADER.FIELDS (FROM SUBJECT DATE MESSAGE-ID)])",
-)</code></pre>
-      </article>
-    </section>
+  <section class="agent" id="after-connect">
+    <h2>第 5 步：连接成功后怎么 Setting</h2>
+    <p>连接成功后，让 AI Agent 帮你设置这些。</p>
+    <ul>
+      <li><code>CLIENT_ID</code>：Microsoft App 的 client ID。</li>
+      <li><code>EMAIL</code>：你的 Hotmail / Outlook 邮箱。</li>
+      <li><code>REFRESH_TOKEN</code>：授权后拿到的长期 token，要安全保存。</li>
+      <li><code>IMAP_HOST</code>：固定写 <code>outlook.office365.com</code>。</li>
+      <li><code>IMAP_PORT</code>：固定写 <code>993</code>。</li>
+      <li><code>SCOPE</code>：<code>https://outlook.office.com/IMAP.AccessAsUser.All offline_access</code>。</li>
+      <li><code>READONLY</code>：先设成 <code>true</code>。</li>
+    </ul>
+    <p>最安全的第一版设置：只读收件箱，每天检查一次，只汇报重要邮件，不自动删除，不自动发送。</p>
+  </section>
 
-    <section class="guide-section guide-columns">
-      <article class="guide-panel">
-        <h2 data-i18n="hotmail.trouble.title">If It Fails, Check These First</h2>
-        <ul class="plain-list">
-          <li data-i18n="hotmail.trouble.auth">XOAUTH2 authentication failed: access token expired, wrong scope, or refresh token was not updated.</li>
-          <li data-i18n="hotmail.trouble.grant">AADSTS50158: password/ROPC flow is blocked by MFA or Microsoft security. Use the browser authorization code method.</li>
-          <li data-i18n="hotmail.trouble.consumer">AADSTS700016: app registration or client ID is wrong. Check the Azure Application client ID.</li>
-          <li data-i18n="hotmail.trouble.peek">Emails became read: the code used BODY[] instead of BODY.PEEK[]. Replace it globally.</li>
-        </ul>
-      </article>
+  <section class="plain" id="test">
+    <h2>第 6 步：先做一个安全测试</h2>
+    <p>叫 AI Agent 先测试这些，不要直接做完整自动化。</p>
+    <ol class="steps">
+      <li><strong>测试 token。</strong><br>确认 <code>refresh_token</code> 可以换到新的 <code>access_token</code>。</li>
+      <li><strong>测试 IMAP 登录。</strong><br>连接 <code>outlook.office365.com:993</code>。</li>
+      <li><strong>只读打开 INBOX。</strong><br>使用 readonly 模式，不改变邮箱状态。</li>
+      <li><strong>只读 5 封邮件 header。</strong><br>读取发件人、标题、日期和 Message-ID。</li>
+      <li><strong>确认未读状态没有变。</strong><br>如果未读邮件变成已读，马上停下来修正读取方式。</li>
+    </ol>
+  </section>
 
-      <article class="guide-panel" id="references">
-        <h2 data-i18n="hotmail.references.title">Official References</h2>
-        <p data-i18n="hotmail.references.body">This page is based on Microsoft Learn documentation for OAuth, IMAP/SMTP authentication, and Microsoft identity app registration.</p>
-        <div class="reference-links">
-          <a href="https://learn.microsoft.com/en-us/exchange/client-developer/legacy-protocols/how-to-authenticate-an-imap-pop-smtp-application-by-using-oauth" target="_blank" rel="noopener noreferrer">Microsoft IMAP OAuth</a>
-          <a href="https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow" target="_blank" rel="noopener noreferrer">OAuth2 code flow</a>
-          <a href="https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app" target="_blank" rel="noopener noreferrer">Register an app</a>
-        </div>
-      </article>
-    </section>
-  </main>
+  <section class="risk" id="rules">
+    <h2>一定要告诉 AI Agent 的安全规则</h2>
+    <ul>
+      <li>默认只读。</li>
+      <li>优先读取邮件 header。</li>
+      <li>需要正文时使用 <code>BODY.PEEK</code>。</li>
+      <li>不要自动发送邮件。</li>
+      <li>不要自动删除邮件。</li>
+      <li>不要自动退订邮件。</li>
+      <li>不要读取银行、验证码、Microsoft 安全通知后转发给外部服务。</li>
+      <li>任何高风险动作，都要先问人。</li>
+    </ul>
+  </section>
 
-  <footer>
-    <span data-i18n="footer.made">Made with</span> <span class="heart">♥</span> &middot; aligor &copy; <span id="year"></span>
-  </footer>
+  <section id="simple-code">
+    <h2>AI Agent 最后会用到的技术设置</h2>
+    <p>这一段不是给小白手打的，是给 AI Agent 或技术人员检查用。</p>
+    <pre><code>EMAIL=yourname@hotmail.com
+CLIENT_ID=从 Azure App Registration 复制
+REFRESH_TOKEN=从安全存储读取
+TOKEN_URL=https://login.microsoftonline.com/common/oauth2/v2.0/token
+SCOPE=https://outlook.office.com/IMAP.AccessAsUser.All offline_access
+IMAP_HOST=outlook.office365.com
+IMAP_PORT=993
+READONLY=true
 
-  <script src="../language.js"></script>
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
+读取邮件时优先使用：
+BODY.PEEK[HEADER.FIELDS (FROM SUBJECT DATE MESSAGE-ID)]
+
+需要正文时使用：
+BODY.PEEK[TEXT]</code></pre>
+  </section>
+
+  <section id="final-check">
+    <h2>完成后你应该得到什么</h2>
+    <ul>
+      <li>AI Agent 可以登录 IMAP。</li>
+      <li>AI Agent 可以读取邮件标题和发件人。</li>
+      <li>未读邮件不会被自动变成已读。</li>
+      <li>refresh token 已经安全保存。</li>
+      <li>自动化规则已经写清楚。</li>
+      <li>发送、删除、退订这些动作还是需要人批准。</li>
+    </ul>
+    <p class="bigline">记住一句话：AI Agent 负责帮你做重复工作，人负责授权和危险决定。</p>
+  </section>
+
+  <p class="footer">Single-file HTML. No external dependency.</p>
+</main>
 </body>
 </html>
