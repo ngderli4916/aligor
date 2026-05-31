@@ -914,6 +914,7 @@ p { margin: 0; }
 
 .step-card,
 .guide-panel {
+  min-width: 0;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--paper);
@@ -943,6 +944,7 @@ p { margin: 0; }
 .plain-list {
   color: var(--ink-soft);
   font-size: 15px;
+  overflow-wrap: anywhere;
 }
 
 .guide-columns {
@@ -995,6 +997,30 @@ p { margin: 0; }
   gap: 10px;
   margin: 0;
   padding-left: 1.1em;
+}
+
+.guide-code {
+  max-width: 100%;
+  margin: 14px 0 0;
+  padding: 14px;
+  overflow-x: auto;
+  border-radius: 8px;
+  background: #1f2933;
+  color: #f8f5ef;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.guide-code code {
+  display: block;
+  max-width: 100%;
+  color: inherit;
+  background: transparent;
+  padding: 0;
+  font: inherit;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
 }
 
 .reference-links {

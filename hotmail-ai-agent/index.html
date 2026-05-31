@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>How to Link AI Agent with Personal Hotmail Account | aligor</title>
-  <meta name="description" content="A three-language guide for linking an AI agent with a personal Hotmail account using Microsoft OAuth2 and IMAP XOAUTH2." />
+  <title>Hotmail IMAP OAuth2 Connection | aligor</title>
+  <meta name="description" content="A beginner-friendly three-language guide based on a working Hotmail IMAP + OAuth2 + Python setup." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
@@ -18,7 +18,7 @@
     <div class="nav-links">
       <a href="../" data-i18n="nav.home">Home</a>
       <a href="../typelessforyou/" data-i18n="nav.typeless">Typeless</a>
-      <a href="#steps" data-i18n="hotmail.steps.title">Setup Steps</a>
+      <a href="#steps" data-i18n="hotmail.steps.title">Working Steps</a>
       <a href="#references" data-i18n="hotmail.references.title">Official References</a>
       <div class="language-switch" aria-label="Language">
         <button type="button" data-lang-option="en">EN</button>
@@ -30,77 +30,81 @@
 
   <header class="hero guide-hero">
     <div>
-      <span class="eyebrow" data-i18n="hotmail.eyebrow">AI agent email setup</span>
-      <h1 data-i18n-html="hotmail.title">How to link an AI agent with a <span class="gradient">personal Hotmail account</span></h1>
-      <p data-i18n="hotmail.intro">Use Microsoft OAuth2 so the account owner signs in safely, gives consent, and your AI agent can connect to Hotmail through IMAP without collecting the email password.</p>
+      <span class="eyebrow" data-i18n="hotmail.eyebrow">Working setup from my package</span>
+      <h1 data-i18n-html="hotmail.title">Hotmail / Outlook email automation with <span class="gradient">IMAP + OAuth2 + Python</span></h1>
+      <p data-i18n="hotmail.intro">This version follows the successful method from my package: register an Azure app, get a refresh token through Microsoft login, save it safely, then let Python refresh access tokens and connect to IMAP with XOAUTH2.</p>
     </div>
     <div class="guide-badges" aria-label="Guide highlights">
-      <span data-i18n="hotmail.badge.safe">OAuth2 only</span>
-      <span data-i18n="hotmail.badge.personal">Personal Hotmail / Outlook.com</span>
-      <span data-i18n="hotmail.badge.imap">IMAP access</span>
+      <span data-i18n="hotmail.badge.safe">Refresh token method</span>
+      <span data-i18n="hotmail.badge.personal">Hotmail / Outlook.com</span>
+      <span data-i18n="hotmail.badge.imap">IMAP XOAUTH2</span>
     </div>
   </header>
 
   <main class="guide-page">
     <section class="guide-overview">
       <div>
-        <span class="tag" data-i18n="hotmail.overview.title">Standard Structure</span>
-        <h2 data-i18n="hotmail.overview.title">Standard Structure</h2>
+        <span class="tag" data-i18n="hotmail.overview.title">The Working Flow</span>
+        <h2 data-i18n="hotmail.overview.title">The Working Flow</h2>
       </div>
-      <p data-i18n="hotmail.overview.body">This guide is for a personal Microsoft account such as Hotmail, Outlook.com, or Live.com. The clean setup is: register an app, request delegated mail scopes, sign the user in with Microsoft, exchange the authorization code for tokens, then connect to IMAP with XOAUTH2.</p>
+      <p data-i18n="hotmail.overview.body">The successful flow is: Refresh Token -> Microsoft token endpoint -> Access Token -> IMAP XOAUTH2 login -> read or organize mailbox. The script should save only the refresh token securely, refresh the access token automatically, and read headers with BODY.PEEK so emails are not marked as read.</p>
     </section>
 
     <section class="guide-section" id="steps">
       <div class="section-title compact-title">
         <h2 data-i18n="hotmail.steps.title">Setup Steps</h2>
-        <span class="squiggle">OAuth2 + IMAP</span>
+        <span class="squiggle">Azure + Token + Python</span>
       </div>
 
       <div class="steps-grid">
         <article class="step-card">
           <span class="step-number">01</span>
-          <h3 data-i18n="hotmail.step1.title">Register your Microsoft app</h3>
-          <p data-i18n="hotmail.step1.body">Create an app in Microsoft Entra. Choose personal Microsoft accounts, or both work and personal accounts if your agent supports both. Add your real redirect URL, such as your agent callback page.</p>
+          <h3 data-i18n="hotmail.step1.title">Register the app in Azure Portal</h3>
+          <p data-i18n="hotmail.step1.body">Open Azure Portal -> App registrations -> New registration. Name it something like Hotmail IMAP Client. For account type, choose personal Microsoft accounts only, or any Microsoft ID if you want broader support.</p>
         </article>
         <article class="step-card">
           <span class="step-number">02</span>
-          <h3 data-i18n="hotmail.step2.title">Add delegated permissions</h3>
-          <p data-i18n="hotmail.step2.body">Request only what you need. For IMAP reading, use offline_access and IMAP.AccessAsUser.All. Add SMTP.Send only if your agent must send email.</p>
+          <h3 data-i18n="hotmail.step2.title">Use the native client redirect URI</h3>
+          <p data-i18n="hotmail.step2.body">Set Redirect URI type to Public client/native and use https://login.microsoftonline.com/common/oauth2/nativeclient. This matches the package method for manually collecting the authorization code.</p>
         </article>
         <article class="step-card">
           <span class="step-number">03</span>
-          <h3 data-i18n="hotmail.step3.title">Send the user to Microsoft login</h3>
-          <p data-i18n="hotmail.step3.body">Open the Microsoft authorization URL with your client_id, redirect_uri, response_type=code, scopes, and state. For public clients, use PKCE.</p>
+          <h3 data-i18n="hotmail.step3.title">Copy the client ID and do not create a secret</h3>
+          <p data-i18n="hotmail.step3.body">After registration, copy Application client ID. Because this is a public/native client flow, you do not need a client secret. Do not put secrets or real tokens inside the website or GitHub repo.</p>
         </article>
         <article class="step-card">
           <span class="step-number">04</span>
-          <h3 data-i18n="hotmail.step4.title">Exchange the code for tokens</h3>
-          <p data-i18n="hotmail.step4.body">Your backend exchanges the authorization code at the token endpoint. Store refresh tokens securely and use them to get fresh access tokens when needed.</p>
+          <h3 data-i18n="hotmail.step4.title">Add IMAP delegated permission</h3>
+          <p data-i18n="hotmail.step4.body">In API permissions, add delegated permission IMAP.AccessAsUser.All and make sure offline_access is included. These are needed so the script can read mail through IMAP and refresh access later.</p>
         </article>
         <article class="step-card">
           <span class="step-number">05</span>
-          <h3 data-i18n="hotmail.step5.title">Connect to Outlook IMAP</h3>
-          <p data-i18n="hotmail.step5.body">Connect to outlook.office365.com on port 993 with SSL/TLS. Authenticate with XOAUTH2 using the user email and the access token.</p>
+          <h3 data-i18n="hotmail.step5.title">Get the authorization code in the browser</h3>
+          <p data-i18n="hotmail.step5.body">Open the authorize URL with your client ID, nativeclient redirect URI, response_type=code, and the IMAP/offline_access scopes. After Microsoft login, copy the code value from the redirected URL.</p>
         </article>
         <article class="step-card">
           <span class="step-number">06</span>
-          <h3 data-i18n="hotmail.step6.title">Refresh and protect access</h3>
-          <p data-i18n="hotmail.step6.body">Access tokens expire. Refresh them quietly, encrypt stored tokens, and give the user a way to disconnect the agent.</p>
+          <h3 data-i18n="hotmail.step6.title">Use cURL to exchange code for refresh token</h3>
+          <p data-i18n="hotmail.step6.body">POST the code to Microsoft token endpoint with grant_type=authorization_code. Save the refresh_token from the JSON response into macOS Keychain, then Python can refresh access tokens whenever it connects.</p>
         </article>
       </div>
     </section>
 
     <section class="guide-section guide-columns">
       <article class="guide-panel">
-        <h2 data-i18n="hotmail.config.title">Important Values</h2>
+        <h2 data-i18n="hotmail.config.title">Values From the Working Package</h2>
         <dl class="config-list">
           <div>
             <dt data-i18n="hotmail.config.auth">Authorization endpoint</dt>
-            <dd><code>https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize</code></dd>
+            <dd><code>https://login.microsoftonline.com/common/oauth2/v2.0/authorize</code></dd>
           </div>
           <div>
             <dt data-i18n="hotmail.config.token">Token endpoint</dt>
-            <dd><code>https://login.microsoftonline.com/consumers/oauth2/v2.0/token</code></dd>
+            <dd><code>https://login.microsoftonline.com/common/oauth2/v2.0/token</code></dd>
+          </div>
+          <div>
+            <dt data-i18n="hotmail.config.redirect">Redirect URI</dt>
+            <dd><code>https://login.microsoftonline.com/common/oauth2/nativeclient</code></dd>
           </div>
           <div>
             <dt data-i18n="hotmail.config.imapHost">IMAP host</dt>
@@ -111,8 +115,8 @@
             <dd><code>993 SSL/TLS</code></dd>
           </div>
           <div>
-            <dt data-i18n="hotmail.config.scope">Main scopes</dt>
-            <dd><code>offline_access https://outlook.office.com/IMAP.AccessAsUser.All</code></dd>
+            <dt data-i18n="hotmail.config.scope">Main scopes to request</dt>
+            <dd><code>https://outlook.office.com/IMAP.AccessAsUser.All offline_access</code></dd>
           </div>
           <div>
             <dt data-i18n="hotmail.config.xoauth">XOAUTH2 format</dt>
@@ -122,23 +126,81 @@
       </article>
 
       <article class="guide-panel safety-panel">
-        <h2 data-i18n="hotmail.safety.title">Safety Rules</h2>
+        <h2 data-i18n="hotmail.safety.title">Very Important Rules</h2>
         <ul class="plain-list">
-          <li data-i18n="hotmail.safety.one">Never ask users to type their Hotmail password into your AI agent.</li>
-          <li data-i18n="hotmail.safety.two">Use the least permissions needed for the agent task.</li>
-          <li data-i18n="hotmail.safety.three">Encrypt refresh tokens and do not expose them to the browser.</li>
-          <li data-i18n="hotmail.safety.four">Let users revoke or disconnect access anytime.</li>
+          <li data-i18n="hotmail.safety.one">Mask real emails, client IDs, access tokens, and refresh tokens before sharing screenshots or code.</li>
+          <li data-i18n="hotmail.safety.two">Store refresh tokens in macOS Keychain or a real secret manager, not inside scripts or GitHub.</li>
+          <li data-i18n="hotmail.safety.three">Use BODY.PEEK for reading headers so emails are not accidentally marked as read.</li>
+          <li data-i18n="hotmail.safety.four">Do not run permanent delete or automatic mailto unsubscribe without human approval.</li>
         </ul>
       </article>
     </section>
 
     <section class="guide-section guide-columns">
       <article class="guide-panel">
-        <h2 data-i18n="hotmail.trouble.title">Quick Troubleshooting</h2>
+        <h2 data-i18n="hotmail.token.title">Get Refresh Token</h2>
+        <p data-i18n="hotmail.token.body">First open the authorize URL in a browser. After login, copy the code from the address bar. Then exchange it with cURL.</p>
+        <pre class="guide-code"><code>https://login.microsoftonline.com/common/oauth2/v2.0/authorize?
+client_id=YOUR_CLIENT_ID&amp;
+response_type=code&amp;
+redirect_uri=https://login.microsoftonline.com/common/oauth2/nativeclient&amp;
+scope=https://outlook.office.com/IMAP.AccessAsUser.All offline_access</code></pre>
+        <pre class="guide-code"><code>curl -X POST https://login.microsoftonline.com/common/oauth2/v2.0/token \
+  -d "client_id=YOUR_CLIENT_ID" \
+  -d "grant_type=authorization_code" \
+  -d "code=CODE_FROM_BROWSER" \
+  -d "redirect_uri=https://login.microsoftonline.com/common/oauth2/nativeclient" \
+  -d "scope=https://outlook.office.com/IMAP.AccessAsUser.All offline_access"</code></pre>
+      </article>
+
+      <article class="guide-panel">
+        <h2 data-i18n="hotmail.keychain.title">Save Token in macOS Keychain</h2>
+        <p data-i18n="hotmail.keychain.body">The package stores the refresh token in Keychain, then Python reads it when refreshing the access token.</p>
+        <pre class="guide-code"><code>security add-generic-password -U \
+  -s "himalaya-cli" \
+  -a "hotmail-imap-refresh-token" \
+  -w "YOUR_REFRESH_TOKEN"</code></pre>
+        <pre class="guide-code"><code>security find-generic-password \
+  -s "himalaya-cli" \
+  -a "hotmail-imap-refresh-token" \
+  -w</code></pre>
+      </article>
+    </section>
+
+    <section class="guide-section guide-columns">
+      <article class="guide-panel">
+        <h2 data-i18n="hotmail.python.title">Python Connection Logic</h2>
+        <p data-i18n="hotmail.python.body">Python reads the refresh token, calls Microsoft token endpoint, receives a fresh access token, then builds the XOAUTH2 string for IMAP login.</p>
+        <pre class="guide-code"><code>ACCOUNT = "your_email@hotmail.com"
+CLIENT_ID = "741e...fbba"
+TOKEN_URL = "https://login.microsoftonline.com/common/oauth2/v2.0/token"
+IMAP_HOST = "outlook.office365.com"
+IMAP_PORT = 993
+
+auth = f"user={ACCOUNT}\x01auth=Bearer {access_token}\x01\x01"
+imap = imaplib.IMAP4_SSL(IMAP_HOST, IMAP_PORT)
+imap.authenticate("XOAUTH2", lambda _: auth.encode())</code></pre>
+      </article>
+
+      <article class="guide-panel">
+        <h2 data-i18n="hotmail.headers.title">Read Headers Only</h2>
+        <p data-i18n="hotmail.headers.body">The working package reads only selected headers and uses BODY.PEEK. This keeps the mailbox private, faster, and avoids marking messages as read.</p>
+        <pre class="guide-code"><code>imap.uid(
+  "FETCH",
+  chunk,
+  "(BODY.PEEK[HEADER.FIELDS (FROM SUBJECT DATE MESSAGE-ID)])",
+)</code></pre>
+      </article>
+    </section>
+
+    <section class="guide-section guide-columns">
+      <article class="guide-panel">
+        <h2 data-i18n="hotmail.trouble.title">If It Fails, Check These First</h2>
         <ul class="plain-list">
-          <li data-i18n="hotmail.trouble.auth">AUTHENTICATE failed usually means the token is expired, the scope is wrong, or the client is not using XOAUTH2.</li>
-          <li data-i18n="hotmail.trouble.grant">invalid_grant usually means the code expired, PKCE failed, or the redirect URI does not match.</li>
-          <li data-i18n="hotmail.trouble.consumer">For personal Hotmail accounts, use the consumers Microsoft login tenant.</li>
+          <li data-i18n="hotmail.trouble.auth">XOAUTH2 authentication failed: access token expired, wrong scope, or refresh token was not updated.</li>
+          <li data-i18n="hotmail.trouble.grant">AADSTS50158: password/ROPC flow is blocked by MFA or Microsoft security. Use the browser authorization code method.</li>
+          <li data-i18n="hotmail.trouble.consumer">AADSTS700016: app registration or client ID is wrong. Check the Azure Application client ID.</li>
+          <li data-i18n="hotmail.trouble.peek">Emails became read: the code used BODY[] instead of BODY.PEEK[]. Replace it globally.</li>
         </ul>
       </article>
 
