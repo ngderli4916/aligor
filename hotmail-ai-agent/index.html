@@ -4,67 +4,76 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hotmail 邮箱连接 AI Agent 小白流程</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
 <style>
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC","Microsoft YaHei",Arial,sans-serif;line-height:1.72;color:#172033;background:#f6f8fb}
-a{color:#155eef}
-.wrap{max-width:980px;margin:0 auto;padding:24px}
-.hero{padding:34px 0 18px}
-.eyebrow{font-size:14px;font-weight:800;color:#155eef;margin:0 0 8px}
-h1{font-size:clamp(30px,5vw,48px);line-height:1.15;margin:0 0 14px;color:#0b1220;letter-spacing:0}
-.lead{max-width:790px;font-size:18px;color:#455168;margin:0}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:22px 0}
-.card,section{background:#fff;border:1px solid #e3e8f2;border-radius:10px;box-shadow:0 10px 30px rgba(16,24,40,.05)}
-.card{padding:18px}
-section{padding:24px;margin:18px 0}
-h2{font-size:24px;line-height:1.25;margin:0 0 12px;color:#0b1220}
-h3{font-size:18px;margin:18px 0 8px;color:#243044}
-p{margin:0 0 12px}
-ul,ol{margin:0 0 12px 22px;padding:0}
-li{margin:7px 0}
-.tag{display:inline-block;padding:3px 9px;border-radius:999px;background:#eef4ff;color:#155eef;font-size:13px;font-weight:800}
-.plain{border-left:5px solid #155eef}
-.agent{border-left:5px solid #16a34a}
-.human{border-left:5px solid #f97316}
-.risk{border-left:5px solid #dc2626}
-.muted{color:#667085}
-.bigline{font-size:19px;font-weight:800;color:#0b1220}
-code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#eef2f7;border-radius:5px;padding:2px 5px;font-size:.92em;overflow-wrap:anywhere}
-pre{margin:14px 0 0;padding:16px;background:#101828;color:#e4e7ec;border-radius:10px;overflow:auto;font-size:13px;line-height:1.55;white-space:pre-wrap}
-pre code{display:block;max-width:100%;background:transparent;color:inherit;padding:0;white-space:pre-wrap}
-.steps{counter-reset:step;list-style:none;margin-left:0}
-.steps li{counter-increment:step;padding:13px 0 13px 46px;position:relative;border-top:1px solid #eef2f7}
-.steps li:first-child{border-top:0}
-.steps li::before{content:counter(step);position:absolute;left:0;top:13px;width:30px;height:30px;border-radius:50%;background:#155eef;color:white;display:grid;place-items:center;font-weight:800}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.table{width:100%;border-collapse:collapse;margin:10px 0 0}
-.table th,.table td{border:1px solid #e3e8f2;padding:10px;text-align:left;vertical-align:top}
-.table th{background:#f3f6fb;color:#243044}
-.footer{padding:22px 0 40px;color:#667085;font-size:14px;text-align:center}
+.mail-guide{max-width:980px;margin:0 auto 72px;padding:24px}
+.mail-hero{padding:34px 0 18px}
+.mail-guide .eyebrow{font-size:14px;font-weight:800;color:var(--accent);margin:0 0 8px}
+.mail-guide h1{font-size:clamp(30px,5vw,48px);line-height:1.15;margin:0 0 14px;color:var(--ink);letter-spacing:0}
+.mail-guide .lead{max-width:790px;font-size:18px;color:var(--ink-soft);margin:0}
+.mail-guide .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:22px 0}
+.mail-guide .guide-card,.mail-guide section{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.mail-guide .guide-card{padding:18px}
+.mail-guide section{padding:24px;margin:18px 0}
+.mail-guide h2{font-size:24px;line-height:1.25;margin:0 0 12px;color:var(--ink)}
+.mail-guide h3{font-size:18px;margin:18px 0 8px;color:var(--ink)}
+.mail-guide p{margin:0 0 12px}
+.mail-guide ul,.mail-guide ol{margin:0 0 12px 22px;padding:0}
+.mail-guide li{margin:7px 0}
+.mail-guide .tag{display:inline-block;padding:3px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent-dark);font-size:13px;font-weight:800}
+.mail-guide .plain{border-left:5px solid var(--accent)}
+.mail-guide .agent{border-left:5px solid #16a34a}
+.mail-guide .human{border-left:5px solid #f97316}
+.mail-guide .risk{border-left:5px solid #dc2626}
+.mail-guide .muted{color:var(--ink-soft)}
+.mail-guide .bigline{font-size:19px;font-weight:800;color:var(--ink)}
+.mail-guide code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--paper-soft);border-radius:5px;padding:2px 5px;font-size:.92em;overflow-wrap:anywhere}
+.mail-guide pre{margin:14px 0 0;padding:16px;background:#1f2933;color:#f8f5ef;border-radius:10px;overflow:auto;font-size:13px;line-height:1.55;white-space:pre-wrap}
+.mail-guide pre code{display:block;max-width:100%;background:transparent;color:inherit;padding:0;white-space:pre-wrap}
+.mail-guide .steps{counter-reset:step;list-style:none;margin-left:0}
+.mail-guide .steps li{counter-increment:step;padding:13px 0 13px 46px;position:relative;border-top:1px solid var(--line)}
+.mail-guide .steps li:first-child{border-top:0}
+.mail-guide .steps li::before{content:counter(step);position:absolute;left:0;top:13px;width:30px;height:30px;border-radius:50%;background:var(--accent);color:white;display:grid;place-items:center;font-weight:800}
+.mail-guide .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.mail-guide .table{width:100%;border-collapse:collapse;margin:10px 0 0}
+.mail-guide .table th,.mail-guide .table td{border:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}
+.mail-guide .table th{background:var(--paper-soft);color:var(--ink)}
 @media(max-width:760px){
-  .wrap{padding:18px}
-  .grid,.two-col{grid-template-columns:1fr}
-  section{padding:18px}
+  .mail-guide{padding:18px}
+  .mail-guide .grid,.mail-guide .two-col{grid-template-columns:1fr}
+  .mail-guide section{padding:18px}
 }
 </style>
 </head>
 <body>
-<main class="wrap">
-  <header class="hero">
+<nav class="nav">
+  <a href="../" class="logo">aligor</a>
+  <div class="nav-links">
+    <a href="../">Home</a>
+    <a href="../typelessforyou/">Typeless</a>
+    <a href="#copy-prompt">复制给 AI</a>
+    <a href="#rules">安全规则</a>
+  </div>
+</nav>
+
+<main class="mail-guide">
+  <header class="mail-hero">
     <p class="eyebrow">Hotmail / Outlook 邮箱接给 AI Agent</p>
     <h1>照着做就可以的小白流程</h1>
     <p class="lead">这页不是给工程师炫技术的。它是给普通人看的操作流程：你要先告诉 AI Agent 什么，复制哪一段话给它，然后跟着它去 Microsoft 开权限，最后设置成安全的只读邮箱自动化。</p>
   </header>
 
   <div class="grid">
-    <div class="card">
+    <div class="guide-card">
       <span class="tag">一句话</span>
       <h2>这个流程在做什么</h2>
       <p>你把 Hotmail / Outlook 邮箱接给 AI Agent。AI Agent 以后可以帮你看邮件标题、分类、提醒和整理。</p>
       <p class="muted">重点：先只读。不要一开始就让它发送、删除或批量移动邮件。</p>
     </div>
-    <div class="card">
+    <div class="guide-card">
       <span class="tag">谁做什么</span>
       <h2>人和 AI 的分工</h2>
       <p><strong>人负责：</strong>登录 Microsoft、点击授权、确认账号、批准危险动作。</p>
@@ -234,7 +243,14 @@ BODY.PEEK[TEXT]</code></pre>
     <p class="bigline">记住一句话：AI Agent 负责帮你做重复工作，人负责授权和危险决定。</p>
   </section>
 
-  <p class="footer">Single-file HTML. No external dependency.</p>
 </main>
+
+<footer>
+  <span>Made with</span> <span class="heart">♥</span> &middot; aligor &copy; <span id="year"></span>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
 </body>
 </html>
