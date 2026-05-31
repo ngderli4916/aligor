@@ -826,6 +826,201 @@ p { margin: 0; }
   gap: 12px;
 }
 
+/* ---------- Guide pages ---------- */
+.guide-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 0.36fr);
+  gap: 32px;
+  align-items: end;
+}
+
+.guide-badges {
+  display: grid;
+  gap: 10px;
+}
+
+.guide-badges span {
+  display: block;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--accent-dark);
+  font-size: 14px;
+  font-weight: 800;
+  box-shadow: 0 10px 22px rgba(45, 38, 28, 0.04);
+}
+
+.guide-page {
+  max-width: var(--content);
+  margin: 0 auto 84px;
+  padding: 0 24px;
+}
+
+.guide-overview {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.42fr) minmax(0, 1fr);
+  gap: 26px;
+  align-items: start;
+  padding: clamp(24px, 4vw, 36px);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.guide-overview .tag,
+.guide-panel .tag {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  color: var(--accent-dark);
+  background: var(--accent-soft);
+  border: 1px solid rgba(47, 111, 115, 0.16);
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.guide-overview h2 {
+  margin: 14px 0 0;
+  font-size: clamp(28px, 3vw, 40px);
+}
+
+.guide-overview p {
+  color: var(--ink-soft);
+  font-size: clamp(17px, 1.8vw, 20px);
+}
+
+.guide-section {
+  margin-top: 34px;
+}
+
+.compact-title {
+  margin: 0 0 18px;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.step-card,
+.guide-panel {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  padding: clamp(20px, 3vw, 26px);
+}
+
+.step-number {
+  display: inline-flex;
+  color: var(--clay);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  margin-bottom: 16px;
+}
+
+.step-card h3,
+.guide-panel h2 {
+  margin: 0 0 12px;
+}
+
+.step-card h3 {
+  font-size: 23px;
+}
+
+.step-card p,
+.guide-panel p,
+.plain-list {
+  color: var(--ink-soft);
+  font-size: 15px;
+}
+
+.guide-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.safety-panel {
+  border-color: #e2b84b;
+  background: #fffaf0;
+}
+
+.config-list {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+}
+
+.config-list div {
+  display: grid;
+  gap: 5px;
+}
+
+.config-list dt {
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.config-list dd {
+  min-width: 0;
+  margin: 0;
+}
+
+.config-list code {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 9px 10px;
+  border-radius: 8px;
+  background: #f4efe7;
+  color: #71462f;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.plain-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-left: 1.1em;
+}
+
+.reference-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.reference-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fbfaf7;
+  color: var(--accent-dark);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.reference-links a:hover {
+  background: var(--accent-soft);
+}
+
 /* ---------- Footer ---------- */
 footer {
   border-top: 1px solid var(--line);
@@ -876,11 +1071,14 @@ footer .heart { color: var(--clay); }
   }
 
   .profile-hero,
+  .guide-hero,
   .follow-hero,
   .about-panel,
   .typeless-downloads,
   .follow-panel,
   .download-panel,
+  .guide-overview,
+  .guide-columns,
   .language-grid,
   .download-grid {
     grid-template-columns: 1fr;
@@ -904,6 +1102,7 @@ footer .heart { color: var(--clay); }
   .articles,
   .about-panel,
   .share-page,
+  .guide-page,
   .article-wrap {
     padding-left: 18px;
     padding-right: 18px;
@@ -921,6 +1120,10 @@ footer .heart { color: var(--clay); }
 
   .download-button {
     min-height: 82px;
+  }
+
+  .steps-grid {
+    grid-template-columns: 1fr;
   }
 }
 

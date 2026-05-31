@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How to Link AI Agent with Personal Hotmail Account | aligor</title>
+  <meta name="description" content="A three-language guide for linking an AI agent with a personal Hotmail account using Microsoft OAuth2 and IMAP XOAUTH2." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="../" class="logo">aligor</a>
+    <div class="nav-links">
+      <a href="../" data-i18n="nav.home">Home</a>
+      <a href="../typelessforyou/" data-i18n="nav.typeless">Typeless</a>
+      <a href="#steps" data-i18n="hotmail.steps.title">Setup Steps</a>
+      <a href="#references" data-i18n="hotmail.references.title">Official References</a>
+      <div class="language-switch" aria-label="Language">
+        <button type="button" data-lang-option="en">EN</button>
+        <button type="button" data-lang-option="zh">中文</button>
+        <button type="button" data-lang-option="ms">BM</button>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero guide-hero">
+    <div>
+      <span class="eyebrow" data-i18n="hotmail.eyebrow">AI agent email setup</span>
+      <h1 data-i18n-html="hotmail.title">How to link an AI agent with a <span class="gradient">personal Hotmail account</span></h1>
+      <p data-i18n="hotmail.intro">Use Microsoft OAuth2 so the account owner signs in safely, gives consent, and your AI agent can connect to Hotmail through IMAP without collecting the email password.</p>
+    </div>
+    <div class="guide-badges" aria-label="Guide highlights">
+      <span data-i18n="hotmail.badge.safe">OAuth2 only</span>
+      <span data-i18n="hotmail.badge.personal">Personal Hotmail / Outlook.com</span>
+      <span data-i18n="hotmail.badge.imap">IMAP access</span>
+    </div>
+  </header>
+
+  <main class="guide-page">
+    <section class="guide-overview">
+      <div>
+        <span class="tag" data-i18n="hotmail.overview.title">Standard Structure</span>
+        <h2 data-i18n="hotmail.overview.title">Standard Structure</h2>
+      </div>
+      <p data-i18n="hotmail.overview.body">This guide is for a personal Microsoft account such as Hotmail, Outlook.com, or Live.com. The clean setup is: register an app, request delegated mail scopes, sign the user in with Microsoft, exchange the authorization code for tokens, then connect to IMAP with XOAUTH2.</p>
+    </section>
+
+    <section class="guide-section" id="steps">
+      <div class="section-title compact-title">
+        <h2 data-i18n="hotmail.steps.title">Setup Steps</h2>
+        <span class="squiggle">OAuth2 + IMAP</span>
+      </div>
+
+      <div class="steps-grid">
+        <article class="step-card">
+          <span class="step-number">01</span>
+          <h3 data-i18n="hotmail.step1.title">Register your Microsoft app</h3>
+          <p data-i18n="hotmail.step1.body">Create an app in Microsoft Entra. Choose personal Microsoft accounts, or both work and personal accounts if your agent supports both. Add your real redirect URL, such as your agent callback page.</p>
+        </article>
+        <article class="step-card">
+          <span class="step-number">02</span>
+          <h3 data-i18n="hotmail.step2.title">Add delegated permissions</h3>
+          <p data-i18n="hotmail.step2.body">Request only what you need. For IMAP reading, use offline_access and IMAP.AccessAsUser.All. Add SMTP.Send only if your agent must send email.</p>
+        </article>
+        <article class="step-card">
+          <span class="step-number">03</span>
+          <h3 data-i18n="hotmail.step3.title">Send the user to Microsoft login</h3>
+          <p data-i18n="hotmail.step3.body">Open the Microsoft authorization URL with your client_id, redirect_uri, response_type=code, scopes, and state. For public clients, use PKCE.</p>
+        </article>
+        <article class="step-card">
+          <span class="step-number">04</span>
+          <h3 data-i18n="hotmail.step4.title">Exchange the code for tokens</h3>
+          <p data-i18n="hotmail.step4.body">Your backend exchanges the authorization code at the token endpoint. Store refresh tokens securely and use them to get fresh access tokens when needed.</p>
+        </article>
+        <article class="step-card">
+          <span class="step-number">05</span>
+          <h3 data-i18n="hotmail.step5.title">Connect to Outlook IMAP</h3>
+          <p data-i18n="hotmail.step5.body">Connect to outlook.office365.com on port 993 with SSL/TLS. Authenticate with XOAUTH2 using the user email and the access token.</p>
+        </article>
+        <article class="step-card">
+          <span class="step-number">06</span>
+          <h3 data-i18n="hotmail.step6.title">Refresh and protect access</h3>
+          <p data-i18n="hotmail.step6.body">Access tokens expire. Refresh them quietly, encrypt stored tokens, and give the user a way to disconnect the agent.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="guide-section guide-columns">
+      <article class="guide-panel">
+        <h2 data-i18n="hotmail.config.title">Important Values</h2>
+        <dl class="config-list">
+          <div>
+            <dt data-i18n="hotmail.config.auth">Authorization endpoint</dt>
+            <dd><code>https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize</code></dd>
+          </div>
+          <div>
+            <dt data-i18n="hotmail.config.token">Token endpoint</dt>
+            <dd><code>https://login.microsoftonline.com/consumers/oauth2/v2.0/token</code></dd>
+          </div>
+          <div>
+            <dt data-i18n="hotmail.config.imapHost">IMAP host</dt>
+            <dd><code>outlook.office365.com</code></dd>
+          </div>
+          <div>
+            <dt data-i18n="hotmail.config.imapPort">IMAP port</dt>
+            <dd><code>993 SSL/TLS</code></dd>
+          </div>
+          <div>
+            <dt data-i18n="hotmail.config.scope">Main scopes</dt>
+            <dd><code>offline_access https://outlook.office.com/IMAP.AccessAsUser.All</code></dd>
+          </div>
+          <div>
+            <dt data-i18n="hotmail.config.xoauth">XOAUTH2 format</dt>
+            <dd><code>user=&lt;email&gt;\x01auth=Bearer &lt;access_token&gt;\x01\x01</code></dd>
+          </div>
+        </dl>
+      </article>
+
+      <article class="guide-panel safety-panel">
+        <h2 data-i18n="hotmail.safety.title">Safety Rules</h2>
+        <ul class="plain-list">
+          <li data-i18n="hotmail.safety.one">Never ask users to type their Hotmail password into your AI agent.</li>
+          <li data-i18n="hotmail.safety.two">Use the least permissions needed for the agent task.</li>
+          <li data-i18n="hotmail.safety.three">Encrypt refresh tokens and do not expose them to the browser.</li>
+          <li data-i18n="hotmail.safety.four">Let users revoke or disconnect access anytime.</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="guide-section guide-columns">
+      <article class="guide-panel">
+        <h2 data-i18n="hotmail.trouble.title">Quick Troubleshooting</h2>
+        <ul class="plain-list">
+          <li data-i18n="hotmail.trouble.auth">AUTHENTICATE failed usually means the token is expired, the scope is wrong, or the client is not using XOAUTH2.</li>
+          <li data-i18n="hotmail.trouble.grant">invalid_grant usually means the code expired, PKCE failed, or the redirect URI does not match.</li>
+          <li data-i18n="hotmail.trouble.consumer">For personal Hotmail accounts, use the consumers Microsoft login tenant.</li>
+        </ul>
+      </article>
+
+      <article class="guide-panel" id="references">
+        <h2 data-i18n="hotmail.references.title">Official References</h2>
+        <p data-i18n="hotmail.references.body">This page is based on Microsoft Learn documentation for OAuth, IMAP/SMTP authentication, and Microsoft identity app registration.</p>
+        <div class="reference-links">
+          <a href="https://learn.microsoft.com/en-us/exchange/client-developer/legacy-protocols/how-to-authenticate-an-imap-pop-smtp-application-by-using-oauth" target="_blank" rel="noopener noreferrer">Microsoft IMAP OAuth</a>
+          <a href="https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow" target="_blank" rel="noopener noreferrer">OAuth2 code flow</a>
+          <a href="https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app" target="_blank" rel="noopener noreferrer">Register an app</a>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <span data-i18n="footer.made">Made with</span> <span class="heart">♥</span> &middot; aligor &copy; <span id="year"></span>
+  </footer>
+
+  <script src="../language.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
