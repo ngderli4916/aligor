@@ -49,15 +49,16 @@
 </style>
 </head>
 <body>
-<nav class="nav">
-  <a href="../" class="logo">aligor</a>
-  <div class="nav-links">
-    <a href="../">Home</a>
-    <a href="../typelessforyou/">Typeless</a>
-    <a href="#copy-prompt">复制给 AI</a>
-    <a href="#rules">安全规则</a>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="../" aria-label="Aligor home">
+      <span class="mark">A</span>
+      <span class="brand-text">阿理哥 · Aligor · AI Agent / Vibe Coding / SME Automation</span>
+    </a>
+    <div class="top-meta"><span>AI Agent · Vibe Coding · SME Automation</span><span>Malaysia</span></div>
+    <a class="top-cta" href="../#contact">联系 / Follow</a>
   </div>
-</nav>
+</header>
 
 <main class="mail-guide">
   <header class="mail-hero">
@@ -245,12 +246,42 @@ BODY.PEEK[TEXT]</code></pre>
 
 </main>
 
-<footer>
-  <span>Made with</span> <span class="heart">♥</span> &middot; aligor &copy; <span id="year"></span>
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <h5>阿理哥 Aligor</h5>
+      <p>分享 AI Agent on Openclaw 小龙虾、Vibe Coding、Codex、Hermes Agent，以及适合真实 SME 工作的低成本自动化方法。</p>
+    </div>
+    <div>
+      <h5>Links</h5>
+      <ul>
+        <li><a href="https://www.instagram.com/aligor4916/">Instagram @aligor4916</a></li>
+        <li><a href="https://www.facebook.com/aligor4916/">Facebook @aligor4916</a></li>
+        <li><a href="https://www.threads.com/@aligor4916">Threads @aligor4916</a></li>
+        <li><a href="../#whatsapp-group-link-pending">Join AI WhatsApp Group</a></li>
+        <li><a href="../#work">What I build</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Focus</h5>
+      <ul>
+        <li>AI Agent</li>
+        <li>Openclaw 小龙虾</li>
+        <li>Vibe Coding</li>
+        <li>SME operations</li>
+        <li>AI automation</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 阿理哥 Aligor.</span>
+    <span>AI Agent · Vibe Coding · SME Automation</span>
+  </div>
 </footer>
 
 <script>
-  document.getElementById('year').textContent = new Date().getFullYear();
+  const yearEl = document.getElementById('year');
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
 </script>
 </body>
 </html>
