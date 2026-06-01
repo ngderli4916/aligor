@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>如何连接 Facebook 到 AI Agent｜小白教学</title>
+<meta name="description" content="给小白学习的 Facebook 连接 AI Agent 教学页面：如何交代 AI、准备资料、连接 Meta App、取得 token、设置 webhook、注意安全事项。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+<style>
+.fb-guide{max-width:1080px;margin:0 auto 72px;padding:24px}
+.fb-hero{padding:34px 0 18px}
+.fb-guide .eyebrow{font-size:14px;font-weight:800;color:var(--accent);margin:0 0 8px;text-transform:uppercase;letter-spacing:.08em}
+.fb-guide h1{font-size:clamp(30px,5vw,52px);line-height:1.14;margin:0 0 14px;color:var(--ink);letter-spacing:0}
+.fb-guide .lead{max-width:820px;font-size:18px;color:var(--ink-soft);margin:0}
+.fb-guide .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:22px 0}
+.fb-guide .grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.fb-guide .split{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.fb-guide .guide-card,.fb-guide section{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.fb-guide .guide-card{padding:18px}
+.fb-guide section{padding:24px;margin:18px 0}
+.fb-guide section.alt{background:var(--paper-soft)}
+.fb-guide section.dark{background:#000;color:#fff;border-color:#000}
+.fb-guide h2{font-size:24px;line-height:1.25;margin:0 0 12px;color:var(--ink)}
+.fb-guide .dark h2{color:#fff}
+.fb-guide h3{font-size:18px;margin:18px 0 8px;color:var(--ink)}
+.fb-guide .dark h3{color:#fff}
+.fb-guide p{margin:0 0 12px}
+.fb-guide ul,.fb-guide ol{margin:0 0 12px 22px;padding:0}
+.fb-guide li{margin:7px 0}
+.fb-guide .tag{display:inline-block;padding:3px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent-dark);font-size:13px;font-weight:800}
+.fb-guide .plain{border-left:5px solid var(--accent)}
+.fb-guide .agent{border-left:5px solid #16a34a}
+.fb-guide .human{border-left:5px solid #f97316}
+.fb-guide .risk{border-left:5px solid #dc2626}
+.fb-guide .muted{color:var(--ink-soft)}
+.fb-guide .dark .muted{color:rgba(255,255,255,.72)}
+.fb-guide .bigline{font-size:19px;font-weight:800;color:var(--ink)}
+.fb-guide code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--paper-soft);border-radius:5px;padding:2px 5px;font-size:.92em;overflow-wrap:anywhere}
+.fb-guide pre{margin:14px 0 0;padding:16px;background:#1f2933;color:#f8f5ef;border-radius:10px;overflow:auto;font-size:13px;line-height:1.55;white-space:pre-wrap}
+.fb-guide pre code{display:block;max-width:100%;background:transparent;color:inherit;padding:0;white-space:pre-wrap}
+.fb-guide .steps{counter-reset:step;list-style:none;margin-left:0}
+.fb-guide .steps li{counter-increment:step;padding:13px 0 13px 46px;position:relative;border-top:1px solid var(--line)}
+.fb-guide .steps li:first-child{border-top:0}
+.fb-guide .steps li::before{content:counter(step);position:absolute;left:0;top:13px;width:30px;height:30px;border-radius:50%;background:var(--accent);color:white;display:grid;place-items:center;font-weight:800}
+.fb-guide .table{width:100%;border-collapse:collapse;margin:10px 0 0;background:#fff}
+.fb-guide .table th,.fb-guide .table td{border:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}
+.fb-guide .table th{background:#000;color:var(--gold-bright);font-family:var(--font-mono);font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+.fb-guide .notice{border-left:4px solid var(--gold);background:rgba(181,139,57,.13);padding:18px 20px;margin:18px 0}
+.fb-guide .notice.good{border-color:var(--accent);background:var(--accent-soft)}
+.fb-guide .notice.bad{border-color:#dc2626;background:#f8e4de;color:#111}
+.fb-guide .notice.wa{border-color:#25d366;background:rgba(37,211,102,.12)}
+.fb-guide .list-clean{list-style:none;display:grid;gap:11px;margin-left:0}
+.fb-guide .list-clean li{display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:start}
+.fb-guide .check,.fb-guide .x{width:24px;height:24px;border-radius:999px;display:grid;place-items:center;font-weight:900}
+.fb-guide .check{background:var(--accent);color:#fff}
+.fb-guide .x{background:#dc2626;color:#fff}
+.fb-guide .flow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.fb-guide .flow span{background:#fff;color:var(--ink);border:1px solid var(--line);padding:10px 13px;font-weight:800}
+.fb-guide .flow i{color:var(--gold-bright);font-style:normal;font-weight:900}
+.fb-quick{background:#000;color:#fff;border:1px solid #000;border-radius:var(--radius);padding:24px;box-shadow:var(--shadow)}
+.fb-quick h2{color:#fff}
+.fb-quick ul{list-style:none;margin-left:0;display:grid;gap:11px}
+.fb-quick li{display:grid;grid-template-columns:28px 1fr;gap:10px;margin:0;color:rgba(255,255,255,.78)}
+@media(max-width:860px){
+  .fb-guide{padding:18px}
+  .fb-guide .grid,.fb-guide .grid.two,.fb-guide .split{grid-template-columns:1fr}
+  .fb-guide section{padding:18px}
+  .fb-guide .steps li{padding-left:22px;padding-top:58px}
+  .fb-guide .table{display:block;overflow-x:auto}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="../" aria-label="Aligor home">
+      <span class="mark">A</span>
+      <span class="brand-text">阿理哥 · Aligor · AI Agent / Vibe Coding / SME Automation</span>
+    </a>
+    <div class="top-meta"><span>AI Agent · Vibe Coding · SME Automation</span><span>Malaysia</span></div>
+    <a class="top-cta" href="../#contact">联系 / Follow</a>
+  </div>
+</header>
+
+<main class="fb-guide">
+  <header class="fb-hero" id="top">
+    <p class="eyebrow">Facebook × AI Agent 小白教学</p>
+    <h1>如何把 Facebook 连接到 AI Agent，让它帮你处理内容、留言和客户线索</h1>
+    <p class="lead">这不是叫 AI 帮你“想文案”而已，而是让 AI Agent 连接你的 Facebook Page，帮你执行任务、整理资料、发帖、回复、追踪客户和做自动化。</p>
+  </header>
+
+  <div class="grid two">
+    <div class="guide-card">
+      <span class="tag">一句话</span>
+      <h2>连接之后可以做什么</h2>
+      <p>AI Agent 可以帮老板处理重复工作：内容、留言、私信、客户资料、跟进和报告。</p>
+    </div>
+    <aside class="fb-quick">
+      <h2>最简单的理解方式</h2>
+      <ul>
+        <li><span class="check">✓</span><span>Facebook Page 是你的店。</span></li>
+        <li><span class="check">✓</span><span>Meta App 是门口的钥匙系统。</span></li>
+        <li><span class="check">✓</span><span>Access Token 是钥匙。</span></li>
+        <li><span class="check">✓</span><span>Webhook 是门铃。</span></li>
+        <li><span class="check">✓</span><span>AI Agent 是你的员工。</span></li>
+      </ul>
+    </aside>
+  </div>
+
+  <section class="plain" id="why">
+    <span class="tag">01 · What It Can Do</span>
+    <h2>连接之后，AI Agent 可以帮 Facebook 做什么？</h2>
+    <p class="muted">AI Agent 不只是聊天机器人。它可以帮老板处理重复工作：内容、留言、私信、客户资料、跟进和报告。</p>
+    <div class="grid">
+      <article class="guide-card"><h3>内容规划和写文案</h3><p>每周安排发帖主题，写 Facebook post、活动介绍、产品故事、老板个人品牌内容。</p></article>
+      <article class="guide-card"><h3>自动或半自动发帖</h3><p>把准备好的内容发布到 Facebook Page，也可以改成 Instagram / Threads 不同版本。</p></article>
+      <article class="guide-card"><h3>留言整理</h3><p>整理客户留言、常见问题、投诉、问价钱的人，并标记哪些需要真人处理。</p></article>
+      <article class="guide-card"><h3>Messenger 自动回复</h3><p>回复常见问题，发送价格表、catalog、预约链接，或引导客户去 WhatsApp。</p></article>
+      <article class="guide-card"><h3>客户线索整理</h3><p>整理谁问价钱、谁要地址、谁有兴趣报名、谁需要 follow up。</p></article>
+      <article class="guide-card"><h3>社交媒体报告</h3><p>总结哪些 post 表现好、哪些内容没人看、客户最常问什么、下周应该发什么。</p></article>
+    </div>
+  </section>
+
+  <section class="agent" id="prompt">
+    <span class="tag">02 · Prompt</span>
+    <h2>第一步：你要先这样交代你的 AI Agent</h2>
+    <p>你不需要会 programming。你只需要把目标讲清楚：你是谁、做什么生意、要 AI 帮你做什么、哪些可以自动、哪些必须问你。</p>
+    <pre><code>我要把我的 Facebook Page 连接到 AI Agent。
+
+我的目标：
+1. 帮我写 Facebook 内容
+2. 帮我自动或半自动发帖
+3. 帮我整理留言和 inbox
+4. 帮我自动回复简单问题
+5. 帮我把潜在客户引导去 WhatsApp
+6. 每个星期给我一份 Facebook 表现报告
+
+我的 Facebook Page 名字是：____
+我的行业是：____
+我的产品/服务是：____
+我的 WhatsApp link 是：____
+我的网站是：____
+
+请你用小白方式，一步一步带我完成。
+不要叫我给你 Facebook 密码。每一步只告诉我做什么，我完成后再继续。</code></pre>
+    <div class="notice good"><strong>重点：</strong>不是你要懂 API，而是你要懂得交代 AI：我要什么结果？哪些可以自动？哪些必须先问老板？</div>
+  </section>
+
+  <section class="plain" id="prepare">
+    <span class="tag">03 · Prepare</span>
+    <h2>第二步：你需要准备什么东西？</h2>
+    <div class="grid two">
+      <article class="guide-card"><h3>你需要有 Facebook Page</h3><p>注意，是 Facebook Page，不是个人 Profile。AI Agent 通常适合连接公司 Page、品牌 Page、个人品牌 Page。</p></article>
+      <article class="guide-card"><h3>你必须是 Page Admin</h3><p>打开 facebook.com/pages/?category=your_pages，确认你的 Page 出现在 “Pages you manage”。如果只是 follow 的 Page，就不能连接。</p></article>
+      <article class="guide-card"><h3>你需要一个 Meta Developer App</h3><p>Meta App 是 Facebook 官方给外部系统连接 Facebook 的桥梁。可以到 developers.facebook.com 创建。</p></article>
+      <article class="guide-card"><h3>你要准备业务资料</h3><p>例如产品资料、FAQ、价格表、营业时间、WhatsApp link、网站、回复语气和哪些情况要通知真人。</p></article>
+    </div>
+  </section>
+
+  <section class="human" id="setup">
+    <span class="tag">04 · Setup</span>
+    <h2>第三步：实际连接 Facebook 的流程</h2>
+    <ol class="steps">
+      <li><strong>打开 Meta Developer。</strong><br>去 <code>https://developers.facebook.com/apps/</code>，检查有没有现有 App。没有的话就 Create App。</li>
+      <li><strong>选择 Business 类型。</strong><br>通常选 Business。不要乱选 Gaming、Consumer 之类的类型。</li>
+      <li><strong>加入需要的产品。</strong><br>常见是 Facebook Login、Graph API、Messenger API。如果也要 Instagram，就加入 Instagram Graph API。</li>
+      <li><strong>选择需要的权限。</strong><br>例如 <code>pages_show_list</code>、<code>pages_read_engagement</code>、<code>pages_manage_posts</code>、<code>pages_messaging</code>、<code>pages_manage_metadata</code>。</li>
+      <li><strong>打开 Graph API Explorer。</strong><br>去 <code>https://developers.facebook.com/tools/explorer/</code>，选择你的 App，然后 Generate Access Token。</li>
+      <li><strong>授权并复制短期 User Token。</strong><br>Facebook 会问你是否授权。授权后会出现一串很长的 token，通常以 <code>EAA</code> 开头。</li>
+      <li><strong>把短期 token 换成长效 token。</strong><br>Graph API Explorer 的 token 通常很快过期。要让 AI 长期运作，需要换成 60 天 User Token。</li>
+      <li><strong>取得 Page Token。</strong><br>用长期 User Token 取得 Page Token。之后 AI Agent 用 Page Token 操作你的 Facebook Page。</li>
+      <li><strong>测试连接。</strong><br>先测试能不能读取 Page，再测试能不能发测试 post。真正发布前，建议先让老板确认。</li>
+      <li><strong>如果要自动回复，继续设置 Webhook。</strong><br>Webhook 是门铃。客户一留言或私信，Facebook 就通知 AI Agent，AI 才能马上处理。</li>
+    </ol>
+  </section>
+
+  <section class="dark" id="token">
+    <span class="tag">05 · Token Logic</span>
+    <h2>小白必须懂：Token 就是钥匙</h2>
+    <p class="muted">很多人连接失败，是因为没有分清楚短期 token、长期 token 和 Page token。</p>
+    <div class="flow" aria-label="Token flow">
+      <span>短期 User Token</span><i>→</i><span>60 天 User Token</span><i>→</i><span>Page Token</span><i>→</i><span>AI Agent 操作 Facebook Page</span>
+    </div>
+    <div class="notice bad"><strong>不要公开 token。</strong>Access Token 就像钥匙。别人拿到后，可能可以操作你的 Page。不要截图公开、不要放进网页、不要放 GitHub。</div>
+  </section>
+
+  <section class="plain" id="auto">
+    <span class="tag">06 · Automation</span>
+    <h2>哪些东西可以交给 AI 托管？哪些不建议？</h2>
+    <div class="split">
+      <div class="guide-card">
+        <h3>适合 AI 托管</h3>
+        <ul class="list-clean">
+          <li><span class="check">✓</span><span>FAQ 回复：价钱、地址、营业时间、课程资料、产品介绍。</span></li>
+          <li><span class="check">✓</span><span>Lead capture：姓名、电话、预算、地区、想买什么。</span></li>
+          <li><span class="check">✓</span><span>内容生产：post、caption、活动宣传、个人品牌文案。</span></li>
+          <li><span class="check">✓</span><span>评论整理：问价钱、投诉、潜在客户、需要人工回复。</span></li>
+          <li><span class="check">✓</span><span>Follow up 提醒和每周表现报告。</span></li>
+        </ul>
+      </div>
+      <div class="guide-card">
+        <h3>不要完全交给 AI</h3>
+        <ul class="list-clean">
+          <li><span class="x">×</span><span>客户生气、退款、法律、恶意留言、公开争吵。</span></li>
+          <li><span class="x">×</span><span>金钱决定：折扣、退款、大额交易、付款确认。</span></li>
+          <li><span class="x">×</span><span>品牌危机：负评爆发、政治、宗教、种族内容。</span></li>
+          <li><span class="x">×</span><span>广告预算：开广告、加预算、改 audience、改 payment。</span></li>
+          <li><span class="x">×</span><span>客户隐私：电话、地址、付款证明、身份证、银行资料。</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="plain" id="levels">
+    <span class="tag">07 · Control Level</span>
+    <h2>推荐从半自动开始，不要一开始全自动</h2>
+    <table class="table">
+      <thead><tr><th>等级</th><th>AI 做什么</th><th>真人做什么</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Level 1：AI 只帮你写</strong></td><td>写 post、reply 草稿、content calendar、广告文案。</td><td>检查、复制、发布。</td></tr>
+        <tr><td><strong>Level 2：AI 整理和提醒</strong></td><td>整理留言、inbox、潜在客户、每天报告、follow up 提醒。</td><td>亲自回复重要客户。</td></tr>
+        <tr><td><strong>Level 3：AI 半自动回复</strong></td><td>回复简单问题、发送资料、引导去 WhatsApp、把复杂问题交给真人。</td><td>处理成交、投诉、特殊情况。</td></tr>
+        <tr><td><strong>Level 4：AI 自动化经营流程</strong></td><td>自动发帖、自动回复、分类客户、报告、连接 CRM / Sheet / WhatsApp / Email。</td><td>看报告、做决策、优化策略。</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="risk" id="safe">
+    <span class="tag">08 · Safety</span>
+    <h2>重要注意事项</h2>
+    <div class="grid two">
+      <div class="notice"><strong>Personal Profile 和 Page 不一样。</strong><br>AI Agent 通常适合连接 Facebook Page，不适合直接自动化个人 Profile。</div>
+      <div class="notice"><strong>Instagram 个人账号功能有限。</strong><br>如果要自动发布和管理，最好转成 Business 或 Creator Account。</div>
+      <div class="notice bad"><strong>Token 会过期。</strong><br>如果没有换成长效 token，今天可以用，明天可能就坏。</div>
+      <div class="notice wa"><strong>WhatsApp 适合做成交和 follow up。</strong><br>Facebook 可以引流，WhatsApp 可以继续沟通、成交和维护关系。</div>
+      <div class="notice bad"><strong>自动回复不能乱开。</strong><br>先让 AI 写草稿，你确认后才发。稳定后再开放自动回复。</div>
+      <div class="notice good"><strong>AI 不是代替老板。</strong><br>AI 适合做重复、繁琐、整理型工作。老板负责方向、价格、关系和决策。</div>
+    </div>
+  </section>
+
+  <section class="agent" id="template">
+    <span class="tag">09 · Copy Template</span>
+    <h2>直接复制给你的 AI Agent</h2>
+    <p>把下面这段复制，填空后交给你的 AI Agent。</p>
+    <pre><code>我要把我的 Facebook Page 连接到 AI Agent。
+
+我的目标：
+1. 帮我写 Facebook 内容
+2. 帮我自动或半自动发帖
+3. 帮我整理留言和 inbox
+4. 帮我自动回复简单问题
+5. 帮我把潜在客户引导去 WhatsApp
+6. 每个星期给我一份 Facebook 表现报告
+
+我的 Facebook Page 名字是：____
+我的行业是：____
+我的产品/服务是：____
+我的 WhatsApp link 是：____
+我的网站是：____
+
+请你用小白方式，一步一步带我完成：
+1. 检查我有没有 Facebook Page 管理权限
+2. 创建或检查 Meta Developer App
+3. 告诉我需要哪些权限
+4. 指导我取得 Access Token
+5. 把短期 token 换成长效 token
+6. 取得 Page Token
+7. 测试能不能读取 Page
+8. 测试能不能发帖
+9. 如果我要 inbox 自动回复，请继续帮我设置 webhook
+
+注意：
+- 不要叫我给你 Facebook 密码
+- 每一步只告诉我做什么
+- 需要我复制 token 的时候，请提醒我不要公开分享
+- 在真正发布 post 之前，必须先让我确认</code></pre>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <h5>阿理哥 Aligor</h5>
+      <p>分享 AI Agent on Openclaw 小龙虾、Vibe Coding、Codex、Hermes Agent，以及适合真实 SME 工作的低成本自动化方法。</p>
+    </div>
+    <div>
+      <h5>Links</h5>
+      <ul>
+        <li><a href="https://www.instagram.com/aligor4916/">Instagram @aligor4916</a></li>
+        <li><a href="https://www.facebook.com/aligor4916/">Facebook @aligor4916</a></li>
+        <li><a href="https://www.threads.com/@aligor4916">Threads @aligor4916</a></li>
+        <li><a href="https://chat.whatsapp.com/G7i7qP4heXI007mhqWAiWo?s=cl&p=i&mlu=3">Join AI WhatsApp Group</a></li>
+        <li><a href="../#work">What I build</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Focus</h5>
+      <ul>
+        <li>AI Agent</li>
+        <li>Openclaw 小龙虾</li>
+        <li>Vibe Coding</li>
+        <li>SME operations</li>
+        <li>AI automation</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 阿理哥 Aligor.</span>
+    <span>AI Agent · Vibe Coding · SME Automation</span>
+  </div>
+</footer>
+</body>
+</html>
