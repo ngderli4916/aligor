@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aligor 页面清单 / List</title>
+  <meta name="description" content="Adrian 自用：Aligor 网站所有页面链接清单。">
+  <meta name="robots" content="noindex, nofollow">
+  <style>
+    :root {
+      --cream: #fcfaf1;
+      --card: #fffdf6;
+      --ink: #050505;
+      --muted: #5f5a4f;
+      --line: rgba(5, 5, 5, .16);
+      --teal: #17392b;
+      --gold: #d8a927;
+      --shadow: 0 18px 50px rgba(0, 0, 0, .10);
+      --max: 980px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "PingFang SC", sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      line-height: 1.65;
+    }
+
+    a { color: inherit; }
+
+    .wrap {
+      width: min(var(--max), calc(100% - 36px));
+      margin: 0 auto;
+    }
+
+    header {
+      padding: 42px 0 24px;
+      border-bottom: 3px solid var(--ink);
+      background:
+        radial-gradient(circle at top right, rgba(216, 169, 39, .18), transparent 34%),
+        linear-gradient(180deg, #fffdf6, var(--cream));
+    }
+
+    .eyebrow {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 6px 10px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: var(--gold);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(36px, 6vw, 64px);
+      line-height: 1;
+      letter-spacing: -.05em;
+    }
+
+    .lead {
+      max-width: 720px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    main { padding: 28px 0 56px; }
+
+    .section {
+      margin-top: 22px;
+      padding: 22px;
+      border: 3px solid var(--ink);
+      border-radius: 18px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .section h2 {
+      margin: 0 0 14px;
+      font-size: 22px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .link-card {
+      display: block;
+      min-height: 118px;
+      padding: 18px;
+      border: 2px solid var(--ink);
+      border-radius: 14px;
+      background: #fff;
+      text-decoration: none;
+      transition: transform .16s ease, box-shadow .16s ease, background .16s ease;
+    }
+
+    .link-card:hover {
+      transform: translateY(-2px);
+      background: #fff8dd;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, .12);
+    }
+
+    .link-card strong {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 18px;
+    }
+
+    .link-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .path {
+      margin-top: 10px;
+      color: var(--teal) !important;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 13px !important;
+      font-weight: 800;
+    }
+
+    footer {
+      padding: 28px 0;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 720px) {
+      .grid { grid-template-columns: 1fr; }
+      .section { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="eyebrow">Private Utility Page</div>
+      <h1>Aligor 页面清单</h1>
+      <p class="lead">Adrian 自己用的入口页。所有 Aligor 网站页面集中在这里，方便之后找链接、检查页面、发给别人。</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="section">
+      <h2>主要页面</h2>
+      <div class="grid">
+        <a class="link-card" href="/">
+          <strong>阿理哥主页面</strong>
+          <span>个人介绍、AI Agent / Vibe Coding / SME Automation 故事页。</span>
+          <span class="path">/</span>
+        </a>
+        <a class="link-card" href="/whatsapp-automated-webminar/">
+          <strong>WhatsApp Automated Webminar</strong>
+          <span>免费说明会报名页：WhatsApp / Facebook / Instagram AI 自动回复。</span>
+          <span class="path">/whatsapp-automated-webminar/</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>教学 / Guide 页面</h2>
+      <div class="grid">
+        <a class="link-card" href="/hotmail-ai-agent/">
+          <strong>Hotmail 邮箱连接 AI Agent</strong>
+          <span>小白流程：如何把 Hotmail / Outlook 邮箱连接到 AI Agent。</span>
+          <span class="path">/hotmail-ai-agent/</span>
+        </a>
+        <a class="link-card" href="/facebook-ai-agent/">
+          <strong>Facebook 连接 AI Agent</strong>
+          <span>小白教学：Meta App、token、webhook 与安全注意事项。</span>
+          <span class="path">/facebook-ai-agent/</span>
+        </a>
+        <a class="link-card" href="/typelessforyou/">
+          <strong>Typeless for You</strong>
+          <span>Typeless 下载 / 使用说明页面。</span>
+          <span class="path">/typelessforyou/</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>文章页面</h2>
+      <div class="grid">
+        <a class="link-card" href="/article.html?slug=welcome-to-aligor">
+          <strong>Welcome to Aligor</strong>
+          <span>第一篇文章 / intro。</span>
+          <span class="path">/article.html?slug=welcome-to-aligor</span>
+        </a>
+        <a class="link-card" href="/article.html">
+          <strong>Article Viewer</strong>
+          <span>文章读取页面；通常配合 slug 使用。</span>
+          <span class="path">/article.html</span>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">Last updated manually from repo pages. This page is marked noindex.</div>
+  </footer>
+</body>
+</html>
