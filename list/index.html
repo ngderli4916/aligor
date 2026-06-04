@@ -6,6 +6,8 @@
   <title>Aligor 页面清单 / List</title>
   <meta name="description" content="Adrian 自用：Aligor 网站所有页面链接清单。">
   <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" href="../assets/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
   <style>
     :root {
       --cream: #fcfaf1;
@@ -55,6 +57,21 @@
       font-weight: 900;
       letter-spacing: .08em;
       text-transform: uppercase;
+    }
+
+    .header-logo {
+      width: 112px;
+      height: 112px;
+      display: block;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+
+    .header-logo img,
+    .footer-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
 
     h1 {
@@ -137,6 +154,20 @@
       font-size: 13px;
     }
 
+    footer .wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .footer-logo {
+      width: 86px;
+      height: 86px;
+      display: block;
+      overflow: hidden;
+      flex: 0 0 auto;
+    }
+
     @media (max-width: 720px) {
       .grid { grid-template-columns: 1fr; }
       .section { padding: 16px; }
@@ -146,6 +177,7 @@
 <body>
   <header>
     <div class="wrap">
+      <span class="header-logo"><img src="../assets/logos/aligor-logo-transparent.png" alt="Aligor logo"></span>
       <div class="eyebrow">Private Utility Page</div>
       <h1>Aligor 页面清单</h1>
       <p class="lead">Adrian 自己用的入口页。所有 Aligor 网站页面集中在这里，方便之后找链接、检查页面、发给别人。</p>
@@ -208,7 +240,10 @@
   </main>
 
   <footer>
-    <div class="wrap">Last updated manually from repo pages. This page is marked noindex.</div>
+    <div class="wrap">
+      <span class="footer-logo"><img src="../assets/logos/aligor-logo-transparent.png" alt="Aligor logo"></span>
+      <span>Last updated manually from repo pages. This page is marked noindex.</span>
+    </div>
   </footer>
 </body>
 </html>

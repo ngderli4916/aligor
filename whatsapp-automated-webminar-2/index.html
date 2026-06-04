@@ -6,6 +6,8 @@
   <title>免费线上说明会 -2 · 小白也听得懂的 WhatsApp / Facebook / Instagram AI 客服 · 阿理哥 Aligor</title>
   <meta name="description" content="免费线上说明会第二版：用小白也听得懂的方式，解释 AI 客服怎样帮你自动回复 WhatsApp、Facebook 和 Instagram 客户，减少漏 follow-up、整理日程和节省时间。">
   <meta name="theme-color" content="#FCFAF1">
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
   <style>
     :root {
       --cream: #fcfaf1;
@@ -83,16 +85,17 @@
     }
 
     .mark {
-      width: 38px;
-      height: 38px;
-      display: grid;
-      place-items: center;
-      border: 2px solid var(--ink);
-      background: var(--ink);
-      color: var(--cream);
-      font-family: var(--serif);
-      font-weight: 900;
-      line-height: 1;
+      width: 82px;
+      height: 82px;
+      display: block;
+      overflow: hidden;
+      flex: 0 0 auto;
+    }
+
+    .mark img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
 
     .nav-meta {
@@ -804,6 +807,26 @@
       gap: 20px;
     }
 
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .footer-logo {
+      width: 148px;
+      height: 148px;
+      display: block;
+      overflow: hidden;
+      flex: 0 0 auto;
+    }
+
+    .footer-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
     footer p {
       margin: 0;
       color: #bfb8aa;
@@ -868,7 +891,7 @@
   <header class="topbar">
     <div class="wrap nav">
       <a class="brand" href="/" aria-label="回到阿理哥主页面">
-        <span class="mark">A</span>
+        <span class="mark"><img src="/assets/logos/aligor-logo-transparent.png" alt="Aligor logo"></span>
         <span>阿理哥 · Aligor</span>
       </a>
       <div class="nav-meta"><span>小白版</span><span>·</span><span>WhatsApp / FB / IG AI 客服</span><span>·</span><span>免费说明会</span></div>
@@ -1153,9 +1176,12 @@
 
   <footer>
     <div class="wrap footer-grid">
-      <div>
-        <strong>阿理哥 · Aligor</strong>
-        <p>Ukunili Music Sdn Bhd 老板 · AI Agent on Openclaw 小龙虾 · Vibe Coding · SME Automation</p>
+      <div class="footer-brand">
+        <span class="footer-logo"><img src="/assets/logos/aligor-logo-transparent.png" alt="Aligor logo"></span>
+        <div>
+          <strong>阿理哥 · Aligor</strong>
+          <p>Ukunili Music Sdn Bhd 老板 · AI Agent on Openclaw 小龙虾 · Vibe Coding · SME Automation</p>
+        </div>
       </div>
       <div class="footer-links">
         <a href="/">主页面</a>
