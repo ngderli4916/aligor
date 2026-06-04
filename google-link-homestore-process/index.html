@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Google Link 连接 Website 与 HomeStore 操作记录</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="description" content="Private Aligor process note for Website, HomeStore, Cloudflare Worker, Google Apps Script, and Google Sheet lead capture." />
+  <link rel="icon" type="image/png" href="../assets/favicon.png" />
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --ink: #0f172a;
+      --muted: #475569;
+      --card: #ffffff;
+      --line: #dbe3ef;
+      --blue: #2563eb;
+      --green: #16a34a;
+      --amber: #d97706;
+      --red: #dc2626;
+      --code: #0b1220;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "PingFang SC", Arial, sans-serif;
+      line-height: 1.7;
+    }
+    main {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 48px 22px 90px;
+    }
+    h1, h2, h3 { line-height: 1.25; }
+    h1 { font-size: clamp(32px, 4vw, 52px); margin: 0 0 14px; letter-spacing: -0.03em; }
+    h2 { margin-top: 44px; font-size: 28px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+    h3 { margin-top: 28px; font-size: 21px; color: var(--blue); }
+    p, li { font-size: 17px; }
+    a { color: var(--blue); }
+    .hero {
+      background: linear-gradient(135deg, #e0f2fe, #eef2ff 60%, #f0fdf4);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 34px;
+      margin-bottom: 28px;
+    }
+    .subtitle { color: var(--muted); font-size: 18px; max-width: 780px; }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.72);
+      border: 1px solid var(--line);
+      padding: 7px 12px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 22px 24px;
+      margin: 18px 0;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, .04);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .flow {
+      display: grid;
+      gap: 12px;
+      margin: 18px 0;
+    }
+    .step {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-left: 5px solid var(--blue);
+      border-radius: 14px;
+      padding: 16px 18px;
+    }
+    .step strong { color: var(--ink); }
+    .ok { color: var(--green); font-weight: 700; }
+    .warn { color: var(--amber); font-weight: 700; }
+    .danger { color: var(--red); font-weight: 700; }
+    code, pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      background: var(--code);
+      color: #e5e7eb;
+      border-radius: 12px;
+    }
+    code { padding: 2px 6px; font-size: 0.92em; }
+    pre { padding: 16px; overflow-x: auto; white-space: pre-wrap; }
+    .note {
+      border-left: 5px solid var(--amber);
+      background: #fffbeb;
+      padding: 14px 16px;
+      border-radius: 12px;
+      color: #78350f;
+    }
+    .success {
+      border-left: 5px solid var(--green);
+      background: #f0fdf4;
+      padding: 14px 16px;
+      border-radius: 12px;
+      color: #14532d;
+    }
+    .small { color: var(--muted); font-size: 14px; }
+    .private-label {
+      display: inline-flex;
+      margin-bottom: 14px;
+      border-radius: 999px;
+      background: #0f172a;
+      color: #fff;
+      padding: 7px 12px;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    @media print {
+      body { background: white; }
+      main { padding: 20px; max-width: none; }
+      .card, .hero, .step { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="../" aria-label="Aligor home">
+      <span class="mark"><img src="../assets/logos/aligor-logo-transparent.png" alt="Aligor logo"></span>
+      <span class="brand-text">阿理哥 · Aligor · AI Agent / Vibe Coding / SME Automation</span>
+    </a>
+    <div class="top-meta"><span>Private Process Note</span><span>Malaysia</span></div>
+    <a class="top-cta" href="https://wa.me/601165673478">WhatsApp 咨询</a>
+  </div>
+</header>
+<main>
+  <section class="hero">
+    <span class="private-label">Private · Noindex</span>
+    <h1>Google Link 连接 Website 与 HomeStore 操作记录</h1>
+    <p class="subtitle">这份记录整理今天把 Google Authentication / Google Sheet / Google Apps Script / Cloudflare Worker 接到 website 与 HomeStore 相关流程的做法。用途：以后放到 website，当成项目记录、教学内容或 Codex 继续加工的素材。</p>
+    <div class="meta">
+      <span class="pill">记录时间：2026-06-04 18:15 +0800</span>
+      <span class="pill">项目：Aligor / 阿理哥</span>
+      <span class="pill">主题：Website → Google Sheet Lead Capture</span>
+      <span class="pill">原则：不公开 secrets / token / shared secret</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>1. 最终做到的结果</h2>
+    <p>今天完成的重点不是单纯把一个 link 放到网页，而是让一个完整的数据流程可以跑起来：</p>
+    <div class="flow">
+      <div class="step"><strong>Website Form</strong>：访客在网页填写报名资料。</div>
+      <div class="step"><strong>Cloudflare Worker</strong>：网页把 form data 送到 Worker，Worker 做中间层。</div>
+      <div class="step"><strong>Google Apps Script Web App</strong>：Worker 再把资料转送到 Google Apps Script。</div>
+      <div class="step"><strong>Google Sheet</strong>：Apps Script 把资料 append 到指定 Google Sheet。</div>
+      <div class="step"><strong>Hermes / CRM</strong>：之后 AI agent 可以读取 Sheet，整理新 lead 给 Adrian 审核。</div>
+      <div class="step"><strong>WhatsApp / Email Follow-up</strong>：Adrian 批准后，才做 WhatsApp 邀请与 Email 确认。</div>
+    </div>
+    <p class="success"><strong>验证结果：</strong>有人提交 form 后，Google Sheet 已经成功增加报名名单，代表 Website → Cloudflare → Google → Sheet 的链路已经通。</p>
+  </section>
+
+  <section>
+    <h2>2. 这套架构为什么这样接</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Website</h3>
+        <p>负责展示内容和收集用户输入。网页不直接暴露 Google credential，也不直接把 sensitive endpoint 写死成公开秘密。</p>
+      </div>
+      <div class="card">
+        <h3>Cloudflare Worker</h3>
+        <p>作为安全中间层。它接收 website 的 form submission，再转发去 Google Apps Script。这样以后要换 backend、加验证、加通知，都可以在 Worker 处理。</p>
+      </div>
+      <div class="card">
+        <h3>Google Apps Script</h3>
+        <p>作为 Google 世界里的 bridge。它有权限写入 Google Sheet，也可以之后扩展成发内部通知 email。</p>
+      </div>
+      <div class="card">
+        <h3>Google Sheet</h3>
+        <p>作为 early-stage CRM。好处是透明、容易检查、容易修改 status，适合刚开始验证 webinar funnel。</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>3. Google Authentication 的准备</h2>
+    <div class="card">
+      <p>为了让本机 AI agent / Hermes 可以读取 Google Sheet、Drive、Calendar、Gmail 等资料，先完成 Google OAuth authentication。</p>
+      <ol>
+        <li>在 Google Cloud Console 建立或选择一个 project。</li>
+        <li>开启需要的 Google API，例如：Google Sheets API、Google Drive API、Google Calendar API、Gmail API、Google Docs API。</li>
+        <li>设定 Google Auth Platform / OAuth consent screen。</li>
+        <li>建立 OAuth Client，类型使用 <strong>Desktop app</strong>。</li>
+        <li>下载 OAuth client JSON。</li>
+        <li>在本机用 Google Workspace setup script 跑 OAuth 授权。</li>
+        <li>打开授权 URL，用自己的 Google account approve。</li>
+        <li>把 browser redirect 回来的 code / URL 交给 setup script 换 token。</li>
+        <li>最后检查 token 是否有效。</li>
+      </ol>
+      <pre>验证方式：
+setup.py --check
+
+成功状态：
+AUTHENTICATED</pre>
+      <p class="note"><strong>安全记录：</strong>OAuth client secret、refresh token、access token、Apps Script shared secret 都不能写进 website，也不要放进公开 repo。这里只记录流程，不记录秘密值。</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>4. Google Sheet 的准备</h2>
+    <div class="card">
+      <p>建立一个 Google Sheet 来接收网站报名名单。</p>
+      <ul>
+        <li>Spreadsheet 名称：<strong>Aligor Webinar Leads</strong></li>
+        <li>主要 Tab：<strong>Webinar Leads</strong></li>
+        <li>用途：记录每一个从 website form 进来的 lead。</li>
+      </ul>
+      <h3>建议 Sheet Header</h3>
+      <pre>submitted_at
+name
+whatsapp
+email
+city
+role
+ai_level
+class_time
+pain_point
+consent
+utm_source
+utm_medium
+utm_campaign
+utm_content
+utm_term
+fbclid
+landing_page_url
+referrer
+source_page
+Status
+WhatsApp Notification Sent
+Notification Sent At
+Joined WhatsApp Group
+Follow Up Needed
+Remark
+Opt Out</pre>
+      <p>前面是用户报名资料；后面是 CRM status，用来追踪 follow-up 进度。</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>5. Google Apps Script 做了什么</h2>
+    <div class="card">
+      <p>Google Apps Script 是接收资料和写入 Sheet 的地方。核心逻辑：</p>
+      <ol>
+        <li>接收 POST request。</li>
+        <li>读取 form data，例如 name、whatsapp、email、city、role、pain point。</li>
+        <li>检查 shared secret（如果有设）。</li>
+        <li>打开指定 Google Sheet。</li>
+        <li>确保 Sheet header 存在。</li>
+        <li>把报名资料 append 成新 row。</li>
+        <li>可选：发送内部通知 email 给管理员。</li>
+        <li>回传 JSON：<code>{ ok: true }</code>。</li>
+      </ol>
+      <pre>简化版逻辑：
+doPost(e)
+→ params = e.parameter
+→ verify form_secret
+→ open spreadsheet
+→ get / create sheet "Webinar Leads"
+→ append row
+→ return { ok: true }</pre>
+      <p class="note">Apps Script Web App URL 应该当成 backend endpoint 使用。不要把 shared secret 写在公开页面里。</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>6. Cloudflare Worker 做了什么</h2>
+    <div class="card">
+      <p>Cloudflare Worker 是 website 和 Google Apps Script 中间的保护层。</p>
+      <ol>
+        <li>Website submit form 到 Worker endpoint。</li>
+        <li>Worker 处理 CORS，限制 allowed origins。</li>
+        <li>Worker 检查 request method，允许 POST / OPTIONS。</li>
+        <li>Worker 从 environment variable 读取 <code>GOOGLE_APPS_SCRIPT_URL</code>。</li>
+        <li>如果有 <code>FORM_SHARED_SECRET</code>，Worker 自动加进 form data。</li>
+        <li>Worker 用 <code>fetch()</code> 把 form data 转发给 Google Apps Script。</li>
+        <li>Google 成功后，Worker 回传 <code>{ ok: true }</code> 给网站。</li>
+      </ol>
+      <pre>Website
+  POST formData
+    ↓
+Cloudflare Worker
+  add secret from env
+  forward to Google Apps Script
+    ↓
+Google Sheet append row</pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>7. Website 连接 Google Link 的方式</h2>
+    <div class="card">
+      <p>Website 不是直接连接 Google Sheet，而是连接 Cloudflare Worker endpoint。这样比较安全，也比较容易维护。</p>
+      <h3>网页 form submit flow</h3>
+      <ol>
+        <li>用户填写报名表。</li>
+        <li>JavaScript 收集 form data。</li>
+        <li>补上 tracking data，例如 landing page URL、referrer、utm、fbclid、source page。</li>
+        <li>送到 Cloudflare Worker endpoint。</li>
+        <li>收到成功 response 后，在页面显示报名成功讯息。</li>
+      </ol>
+      <pre>前端概念：
+const formData = new FormData(form)
+formData.set('submitted_at', new Date().toISOString())
+formData.set('landing_page_url', window.location.href)
+formData.set('referrer', document.referrer || '')
+
+fetch(WORKER_ENDPOINT, {
+  method: 'POST',
+  body: formData
+})</pre>
+      <p class="warn">重点：Website success message 只代表前端收到成功 response；真正验证要去 Google Sheet 看有没有新增 row。</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>8. HomeStore 连接 Google Link 的方式</h2>
+    <div class="card">
+      <p>HomeStore 的操作可以沿用同一套 Google Link 思路：不要让 HomeStore 直接暴露 Google token，而是让 HomeStore 把资料送到中间层，再由中间层写入 Google Sheet 或 Google 服务。</p>
+      <h3>HomeStore 推荐连接方式</h3>
+      <ol>
+        <li>HomeStore 页面 / 系统产生用户资料或订单资料。</li>
+        <li>HomeStore submit 到 Cloudflare Worker endpoint。</li>
+        <li>Worker 判断来源、加入 secret、整理字段。</li>
+        <li>Worker 转发到 Google Apps Script。</li>
+        <li>Apps Script 写入指定 Google Sheet tab。</li>
+        <li>Hermes / AI agent 再从 Sheet 读取资料，做后续整理、提醒或 follow-up。</li>
+      </ol>
+      <pre>HomeStore
+→ Cloudflare Worker
+→ Google Apps Script
+→ Google Sheet
+→ Hermes / CRM follow-up</pre>
+      <p class="note"><strong>记录说明：</strong>如果 HomeStore 使用的是另一个 page、另一个 Sheet 或另一个 Apps Script endpoint，正式放上 website 前，把名称和 URL 替换成实际版本即可；不要把 secret 放进去。</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>9. CRM / Follow-up 规则</h2>
+    <div class="card">
+      <p>Google Sheet 接到 lead 后，不代表立刻自动 WhatsApp 或 Email。现阶段使用人工审核比较安全。</p>
+      <div class="flow">
+        <div class="step"><strong>Step 1：</strong>Hermes 检查 Google Sheet 是否有新 lead。</div>
+        <div class="step"><strong>Step 2：</strong>Hermes 在 Telegram 汇报给 Adrian 审核。</div>
+        <div class="step"><strong>Step 3：</strong>Adrian 确认是否发送 WhatsApp。</div>
+        <div class="step"><strong>Step 4：</strong>发送前确认使用哪一个 WhatsApp connection / from number。</div>
+        <div class="step"><strong>Step 5：</strong>Adrian 批准后才 send WhatsApp 邀 group。</div>
+        <div class="step"><strong>Step 6：</strong>对方 join / OK 后，再发正式 Email 确认。</div>
+      </div>
+      <p class="danger">重要：不要自动 send WhatsApp。必须先问 Adrian，因为 sender / WhatsApp connection 可能会更换。</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>10. 验证 Checklist</h2>
+    <div class="card">
+      <ul>
+        <li><span class="ok">✓</span> Google OAuth authentication 成功。</li>
+        <li><span class="ok">✓</span> Google API 可以读取 Sheet / Drive / Calendar 等服务。</li>
+        <li><span class="ok">✓</span> Website form 可以 submit。</li>
+        <li><span class="ok">✓</span> Cloudflare Worker 可以接收 POST。</li>
+        <li><span class="ok">✓</span> Worker 可以转发到 Google Apps Script。</li>
+        <li><span class="ok">✓</span> Apps Script 可以 append row 到 Google Sheet。</li>
+        <li><span class="ok">✓</span> Google Sheet 已经出现真实报名名单。</li>
+        <li><span class="warn">待继续：</span>把新 lead 审核流程稳定下来：Telegram 汇报 → Adrian approve → WhatsApp → Email。</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>11. 可以变成教学内容的重点</h2>
+    <div class="card">
+      <p>这个流程本身可以直接放进 Free Webinar，作为真实 demo：</p>
+      <pre>有人报名 Free Webinar
+→ Google Sheet 自动新增名单
+→ AI Agent 读名单
+→ Telegram 通知老板
+→ 老板 approve
+→ AI 才 send WhatsApp
+→ Sheet 更新 status
+→ 后续 Email confirmation</pre>
+      <p>这比单纯讲 “AI 很厉害” 更有说服力，因为它展示的是 SME 真的可以用的 automation workflow。</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>12. 给 Codex / Website Editor 的说明</h2>
+    <div class="card">
+      <p>如果要把这份内容放到 website，可以把它改成：</p>
+      <ol>
+        <li>一篇项目记录文章。</li>
+        <li>Free Webinar 的 case study section。</li>
+        <li>正式课程的 lesson preview。</li>
+        <li>“我是怎样用 AI Agent 建立自己的报名 CRM” 的 blog post。</li>
+      </ol>
+      <p>风格建议：华语为主，马来西亚 SME 老板听得懂，强调实战、低成本、可以一步一步做，不要过度技术化。</p>
+    </div>
+  </section>
+</main>
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <span class="footer-logo"><img src="../assets/logos/aligor-logo-transparent.png" alt="Aligor logo"></span>
+      <h5>阿理哥 Aligor</h5>
+      <p>Private process note. This page is not linked from the main website and is marked noindex.</p>
+    </div>
+    <div>
+      <h5>Links</h5>
+      <ul>
+        <li><a href="../">Main page</a></li>
+        <li><a href="https://wa.me/601165673478">WhatsApp 培训咨询 +601165673478</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Focus</h5>
+      <ul>
+        <li>Website form</li>
+        <li>Cloudflare Worker</li>
+        <li>Google Sheet CRM</li>
+        <li>Hermes Agent</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 阿理哥 Aligor.</span>
+    <span>Private · Noindex · Not in navigation</span>
+  </div>
+</footer>
+</body>
+</html>
