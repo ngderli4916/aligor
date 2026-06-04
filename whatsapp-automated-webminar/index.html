@@ -210,6 +210,10 @@
       text-underline-offset: 0.08em;
     }
 
+    @media (min-width: 901px) {
+      .hero h1 { font-size: clamp(29px, 4.34vw, 55px); }
+    }
+
     .lead {
       max-width: 790px;
       margin-bottom: 26px;
@@ -923,7 +927,7 @@
           </div>
         </aside>
 
-        <form id="leadForm" action="#" method="post">
+        <form id="leadForm" action="#" method="post" data-endpoint="https://aligor-webinar-leads.aligor.workers.dev">
           <div class="form-grid">
             <div class="field"><label for="name">姓名 *</label><input id="name" name="name" autocomplete="name" required placeholder="例如：Adrian Ng"></div>
             <div class="field"><label for="whatsapp">WhatsApp *</label><input id="whatsapp" name="whatsapp" autocomplete="tel" required placeholder="例如：+6012xxxxxxx"></div>
@@ -944,6 +948,7 @@
           <input type="hidden" name="landing_page_url" id="landing_page_url">
           <input type="hidden" name="referrer" id="referrer">
           <input type="hidden" name="submitted_at" id="submitted_at">
+          <input type="hidden" name="source_page" value="whatsapp-automated-webminar">
 
           <label class="consent"><input type="checkbox" name="consent" value="yes" required> <span>我同意 Adrian 通过 WhatsApp（+601165673478）/ Email 通知我免费说明会相关内容。</span></label>
           <button class="btn primary full" type="submit">提交报名</button>
@@ -1059,19 +1064,44 @@
         if (event.key === 'Escape') hideSuccessModal();
       });
 
-      form.addEventListener('submit', function (event) {
+      form.addEventListener('submit', async function (event) {
         event.preventDefault();
         submittedAt.value = new Date().toISOString();
 
         const button = form.querySelector('button[type="submit"]');
+        const originalButtonText = button ? button.textContent : '';
         if (button) {
-          button.textContent = '已提交';
+          button.textContent = '提交中...';
           button.disabled = true;
         }
 
-        success.classList.add('show');
-        showSuccessModal();
-        success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const endpoint = (form.dataset.endpoint || '').trim();
+
+        try {
+          if (!endpoint) throw new Error('Missing form endpoint');
+
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            body: new FormData(form)
+          });
+          const data = await response.json();
+
+          if (!response.ok || !data.ok) {
+            throw new Error(data.error || 'Submission failed');
+          }
+
+          success.classList.add('show');
+          showSuccessModal();
+          success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          form.reset();
+        } catch (error) {
+          alert('提交失败，请 WhatsApp 到 +601165673478 联系我们。');
+        } finally {
+          if (button) {
+            button.textContent = originalButtonText || '提交报名';
+            button.disabled = false;
+          }
+        }
       });
     }());
   </script>
