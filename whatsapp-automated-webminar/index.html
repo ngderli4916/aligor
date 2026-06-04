@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>免费线上说明会 · WhatsApp AI 客服 / AI Agent 自动化 · 阿理哥 Aligor</title>
-  <meta name="description" content="免费线上说明会：我的目标是帮助马来西亚 10,000 个人，在今年可以拥有自己的 AI 助手，自动化工作流程。适合 SME 老板、老师、补习老师、顾问、Sales、服务业和电商卖家报名了解 AI Agent 自动化。">
+  <meta name="description" content="免费线上说明会：我的目标是帮助马来西亚 10,000 个人，在今年可以拥有自己的 AI 助手，自动化工作流程。适合教育中心、老师、SME 老板、Sales、服务业和电商卖家报名了解 AI Agent 自动化。">
   <meta name="theme-color" content="#FCFAF1">
   <style>
     :root {
@@ -717,6 +717,50 @@
       color: var(--muted);
     }
 
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .video-card {
+      display: grid;
+      min-height: 260px;
+      align-content: space-between;
+      padding: 18px;
+      border: 3px solid var(--ink);
+      border-radius: 18px;
+      background:
+        linear-gradient(180deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.56)),
+        var(--teal);
+      color: #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .video-card:hover { transform: translateY(-2px); color: #fff; }
+    .video-card .play {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--gold);
+      color: #111;
+      font-weight: 950;
+    }
+
+    .video-card strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 19px;
+      line-height: 1.2;
+    }
+
+    .video-card span {
+      color: rgba(255, 255, 255, 0.78);
+      font-size: 14px;
+    }
+
     footer {
       padding: 42px 0;
       background: var(--ink);
@@ -765,7 +809,8 @@
       .section-head,
       .form-shell { grid-template-columns: 1fr; }
       .grid-3,
-      .grid-2 { grid-template-columns: 1fr; }
+      .grid-2,
+      .video-grid { grid-template-columns: 1fr; }
       .form-note { position: static; }
       .form-grid { grid-template-columns: 1fr; }
       .hero h1 { font-size: 48px; }
@@ -815,7 +860,7 @@
             <span class="pill">Malaysia · 免费报名</span>
           </div>
           <h1>我设计出 <span class="accent">用多少付多少</span> 的 WhatsApp AI 客服：无需月费，低至约 RM0.06 一封信息。</h1>
-          <p class="lead">我本人是 <strong>Ukunili Music Sdn Bhd 的老板</strong>，每天面对订单、客服、团队、库存、内容和 follow-up，所以我很了解中小型企业的痛点。这不是讲概念的 AI talk；我会分享自己公司正在用、正在测试、正在修正的实战经验。<strong>重点是：我真正教的不是单纯自动回复 WhatsApp，而是如何创造你自己的 AI 助手（AI Agent）。它可以自动回复 WhatsApp、Facebook 和 Instagram，也可以整理资料、提醒 follow-up、通知团队和执行更多内部流程。</strong></p>
+          <p class="lead">我本人是 <strong>Ukunili Music Sdn Bhd 的老板</strong>，每天面对订单、客服、团队、库存、内容和 follow-up，所以我很了解中小型企业的痛点。这不是讲概念的 AI talk；我会分享我公司和我个人正在用的 AI 助理。<strong>重点是：我真正教的不是单纯自动回复 WhatsApp，而是如何创造你自己的 AI 助手（AI Agent）。它可以自动回复 WhatsApp、Facebook 和 Instagram，也可以整理资料、提醒 follow-up、通知团队和执行更多内部流程。</strong></p>
           <div class="mission" aria-label="阿理哥使命">
             <span class="label">My Mission</span>
             <p>我的目标是帮助马来西亚 <strong>10,000 个人</strong>，在今年可以拥有自己的 AI 助手，自动化工作流程。</p>
@@ -885,15 +930,13 @@
             <div class="icon">✓</div>
             <h3>适合对象包括：</h3>
             <ul>
-              <li>老师、补习老师、课程导师</li>
-              <li>顾问、资讯顾问、顾问老师</li>
-              <li>SME 老板</li>
+              <li>想用多少付多少，不想浪费钱给平台的人</li>
+              <li>想要一个 AI 助手帮你回复、整理日程工作，并告诉你每一天的业绩</li>
+              <li>想学习最新的 AI 助手和 Vibe Coding</li>
+              <li>SME 老板、教育中心、老师</li>
               <li>Sales、保险、直销、服务业从业者</li>
               <li>电商卖家，包含 Shopee / Lazada / TikTok seller</li>
-              <li>每天 WhatsApp 重复回复学生、家长、客户或顾客的问题</li>
-              <li>不想每个月固定 subscribe、定期还钱给软件平台的人</li>
-              <li>想减少漏 follow-up、漏报价、漏提醒</li>
-              <li>想先免费了解怎样自己做出可控制的 AI Agent 和内部自动服务</li>
+              <li>不想把公司数据交给别人看到的人</li>
             </ul>
           </article>
           <article class="card bad">
@@ -933,7 +976,7 @@
       <div class="wrap">
         <div class="section-head">
           <div class="kicker">报名资料 / 表格规划</div>
-          <h2>免费说明会已经安排在下个星期三晚上 7:45PM。报名成功后，系统会显示确认信息。</h2>
+          <h2>免费说明会目前有两个场次，都是星期三晚上 8:00PM。报名时请选择你要参加的日期。</h2>
         </div>
         <div class="table-wrap" aria-label="课程和报名规划表">
           <table>
@@ -941,7 +984,8 @@
               <tr><th>项目</th><th>上课时间</th><th>报名成功后</th></tr>
             </thead>
             <tbody>
-              <tr><td><span class="tag">免费线上说明会</span></td><td>下个星期三晚上 7:45PM</td><td>页面会弹出报名成功确认。</td></tr>
+              <tr><td><span class="tag">免费线上说明会</span></td><td>2026-06-10 星期三 8:00PM</td><td>页面会弹出报名成功确认。</td></tr>
+              <tr><td><span class="tag">免费线上说明会</span></td><td>2026-06-17 星期三 8:00PM</td><td>页面会弹出报名成功确认。</td></tr>
             </tbody>
           </table>
         </div>
@@ -953,7 +997,7 @@
         <aside class="form-note">
           <div class="kicker">Register Now</div>
           <h2>报名免费说明会</h2>
-          <p>填完后，页面会马上弹出报名成功确认。这一场安排在下个星期三晚上 7:45PM。如果你要直接问培训详情，也可以 WhatsApp 到 <a href="https://wa.me/601165673478">+601165673478</a>。</p>
+          <p>填完后，页面会马上弹出报名成功确认。目前有两个场次：2026-06-10 星期三 8:00PM，或 2026-06-17 星期三 8:00PM。如果你要直接问培训详情，也可以 WhatsApp 到 <a href="https://wa.me/601165673478">+601165673478</a>。</p>
           <p><strong>我卖的不是系统，我教的是如何做系统。</strong>我不会叫你去买某个 software，或者每个月持续付 subscription fee。我是 Ukunili Music Sdn Bhd 老板，会用我自己公司正在用的实战经验，教你怎样制作自己的系统，自己控制你公司的内部自动服务。</p>
           <p>学会以后，不只是请到 1 个 AI 助理，你可以拥有 1 到 10 个 AI 助理：客服助理、follow-up 助理、资料整理助理、提醒助理、报告助理，全部由自己决定。</p>
           <div class="hero-actions">
@@ -968,9 +1012,9 @@
             <div class="field"><label for="whatsapp">WhatsApp *</label><input id="whatsapp" name="whatsapp" autocomplete="tel" required placeholder="例如：+6012xxxxxxx"></div>
             <div class="field"><label for="email">Email *</label><input id="email" name="email" type="email" autocomplete="email" required placeholder="you@example.com"></div>
             <div class="field"><label for="city">城市 *</label><select id="city" name="city" required><option value="">请选择</option><option>Johor Bahru / JB</option><option>Kuala Lumpur / KL</option><option>Penang</option><option>Melaka</option><option>Other</option></select></div>
-            <div class="field"><label for="role">你的身份 *</label><select id="role" name="role" required><option value="">请选择</option><option>老师</option><option>补习老师</option><option>课程导师 / Trainer</option><option>顾问 / Consultant</option><option>资讯顾问</option><option>顾问老师</option><option>SME 老板 / Founder</option><option>Sales</option><option>保险 / Agent</option><option>直销 / Network Marketing</option><option>服务业</option><option>电商卖家</option><option>Admin / Customer Service</option><option>其他</option></select></div>
+            <div class="field"><label for="role">你的身份 *</label><select id="role" name="role" required><option value="">请选择</option><option>教育中心 / 老师</option><option>SME 老板 / Founder</option><option>Sales</option><option>保险 / Agent</option><option>直销 / Network Marketing</option><option>服务业</option><option>电商卖家</option><option>Admin / Customer Service</option><option>其他</option></select></div>
             <div class="field"><label for="ai_level">目前 AI 使用程度 *</label><select id="ai_level" name="ai_level" required><option value="">请选择</option><option>完全不会</option><option>用过 ChatGPT</option><option>已订阅 ChatGPT / Claude / Gemini</option><option>公司已有 AI 工具</option></select></div>
-            <div class="field"><label for="class_time">上课时间 *</label><input id="class_time" name="class_time" required readonly value="下个星期三晚上 7:45PM"></div>
+            <div class="field"><label for="class_time">上课时间 *</label><select id="class_time" name="class_time" required><option value="">请选择场次</option><option>2026-06-10 星期三 8:00PM</option><option>2026-06-17 星期三 8:00PM</option></select></div>
             <div class="field full"><label for="pain_point">你现在最大痛点 *</label><select id="pain_point" name="pain_point" required><option value="">请选择一个最主要的</option><option>WhatsApp 重复回复客户 / 学生 / 家长</option><option>课程询问太多，常常重复回答</option><option>报价慢 / 资料找不到</option><option>Follow-up 乱 / 常常漏</option><option>客户资料散乱</option><option>想做 AI 客服但不知道怎样开始</option><option>想让团队用 AI 提升效率</option><option>其他</option></select></div>
           </div>
 
@@ -987,7 +1031,7 @@
 
           <label class="consent"><input type="checkbox" name="consent" value="yes" required> <span>我同意 Adrian 通过 WhatsApp（+601165673478）/ Email 通知我免费说明会相关内容。</span></label>
           <button class="btn primary full" type="submit">提交报名</button>
-          <div class="success" id="successMsg" role="status">报名成功！请记得下个星期三晚上 7:45PM 准时参加。</div>
+          <div class="success" id="successMsg" role="status">报名成功！请记得准时参加你选择的 8:00PM 场次。</div>
         </form>
       </div>
     </section>
@@ -1005,6 +1049,38 @@
           <article class="card"><div class="icon">04</div><h3>Codex 改网站</h3><p>不会手写网站，也可以把需求写清楚，让 Codex 一次性改页面。</p></article>
           <article class="card"><div class="icon">05</div><h3>老板第二大脑</h3><p>把会议、WhatsApp、任务、SOP 整理成 AI 可以读取和执行的资料。</p></article>
           <article class="card"><div class="icon">06</div><h3>自动提醒下一步</h3><p>AI 不只是回答问题，而是每天提醒你该跟进什么、谁还没处理。</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="instagram">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="kicker">See More Results</div>
+          <h2>如果你想了解 AI 助手还能做什么，可以去看我的 Instagram。</h2>
+          <p>我把很多实际成果、测试过程和 AI 助手用法都分享在 Instagram 上面。记得关注我，后面你会看到更多真实案例和实战内容。</p>
+        </div>
+        <div class="video-grid" aria-label="Instagram latest video previews">
+          <a class="video-card" href="https://www.instagram.com/aligor4916/" target="_blank" rel="noopener">
+            <span class="play">▶</span>
+            <div><strong>AI 助手实战成果</strong><span>看我最近分享的 AI 助手应用。</span></div>
+          </a>
+          <a class="video-card" href="https://www.instagram.com/aligor4916/" target="_blank" rel="noopener">
+            <span class="play">▶</span>
+            <div><strong>Vibe Coding 测试</strong><span>不会写 program 也能做工具。</span></div>
+          </a>
+          <a class="video-card" href="https://www.instagram.com/aligor4916/" target="_blank" rel="noopener">
+            <span class="play">▶</span>
+            <div><strong>SME 自动化流程</strong><span>把重复工作交给 AI Agent。</span></div>
+          </a>
+          <a class="video-card" href="https://www.instagram.com/aligor4916/" target="_blank" rel="noopener">
+            <span class="play">▶</span>
+            <div><strong>Openclaw 小龙虾</strong><span>更多实战 demo 会持续更新。</span></div>
+          </a>
+        </div>
+        <div class="hero-actions">
+          <a class="btn primary" href="https://www.instagram.com/aligor4916/" target="_blank" rel="noopener">Follow Instagram @aligor4916</a>
+          <a class="btn ghost" href="#register">报名免费说明会</a>
         </div>
       </div>
     </section>
@@ -1034,7 +1110,7 @@
     <div class="success-modal">
       <div class="badge">✓</div>
       <h2 id="successModalTitle">报名成功！</h2>
-      <p>谢谢你报名 WhatsApp AI 客服免费说明会。请记得下个星期三晚上 7:45PM 准时参加。有问题也可以 WhatsApp 到 +601165673478。</p>
+      <p>谢谢你报名 WhatsApp AI 客服免费说明会。请记得准时参加你选择的 8:00PM 场次。有问题也可以 WhatsApp 到 +601165673478。</p>
       <button class="btn primary" type="button" id="closeSuccessModal">知道了</button>
     </div>
   </div>
