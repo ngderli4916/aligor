@@ -1,0 +1,1256 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>免费线上说明会 -2 · 小白也听得懂的 WhatsApp / Facebook / Instagram AI 客服 · 阿理哥 Aligor</title>
+  <meta name="description" content="免费线上说明会第二版：用小白也听得懂的方式，解释 AI 客服怎样帮你自动回复 WhatsApp、Facebook 和 Instagram 客户，减少漏 follow-up、整理日程和节省时间。">
+  <meta name="theme-color" content="#FCFAF1">
+  <style>
+    :root {
+      --cream: #fcfaf1;
+      --cream-2: #f4efe2;
+      --card: #fffdf6;
+      --ink: #050505;
+      --muted: #5f5a4f;
+      --soft-line: rgba(5, 5, 5, 0.14);
+      --teal: #17392b;
+      --teal-2: #0f5b43;
+      --gold: #d8a927;
+      --red: #b42318;
+      --whatsapp: #25d366;
+      --whatsapp-dark: #128c7e;
+      --dark: #10100f;
+      --dark-2: #171715;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.12);
+      --max: 1180px;
+      --mono: "SF Mono", "JetBrains Mono", ui-monospace, monospace;
+      --serif: Georgia, "Noto Serif SC", "Songti SC", serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      background: var(--cream);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.6;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    p { margin: 0 0 14px; color: #2c2a25; font-size: 17px; }
+    strong { color: var(--ink); }
+    ::selection { background: var(--ink); color: var(--cream); }
+
+    .wrap {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(252, 250, 241, 0.94);
+      border-bottom: 2px solid var(--ink);
+      backdrop-filter: blur(12px);
+    }
+
+    .nav {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+
+    .mark {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border: 2px solid var(--ink);
+      background: var(--ink);
+      color: var(--cream);
+      font-family: var(--serif);
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .nav-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn {
+      min-height: 46px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 12px 18px;
+      border: 2px solid var(--ink);
+      border-radius: 8px;
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+      font: inherit;
+      font-size: 15px;
+      font-weight: 850;
+      letter-spacing: -0.01em;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease, color 0.16s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 0 rgba(0, 0, 0, 0.12);
+    }
+
+    .btn.primary { background: var(--ink); color: var(--cream); }
+    .btn.teal { background: var(--teal); border-color: var(--teal); color: #fff; }
+    .btn.whatsapp { background: var(--whatsapp); color: #07170e; }
+    .btn.ghost { background: var(--cream); }
+    .btn.full { width: 100%; }
+
+    .hero {
+      padding: 72px 0 44px;
+      border-bottom: 3px solid var(--ink);
+      background-image:
+        linear-gradient(rgba(5, 5, 5, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(5, 5, 5, 0.04) 1px, transparent 1px);
+      background-size: 58px 58px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.06fr) minmax(300px, 0.94fr);
+      gap: 34px;
+      align-items: stretch;
+    }
+
+    .eyebrow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: var(--cream-2);
+      padding: 7px 11px;
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 850;
+      letter-spacing: 0.08em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    .pill.green { background: rgba(23, 57, 43, 0.1); color: var(--teal); }
+    .pill.gold { background: rgba(216, 169, 39, 0.2); color: #5b4300; }
+
+    h1,
+    h2,
+    h3 {
+      font-family: var(--serif);
+      font-weight: 800;
+      letter-spacing: -0.045em;
+      line-height: 1.06;
+    }
+
+    h1 {
+      max-width: 980px;
+      margin: 0 0 24px;
+      font-size: clamp(42px, 6.2vw, 78px);
+      letter-spacing: -0.07em;
+      line-height: 0.98;
+    }
+
+    h1 .accent {
+      color: var(--teal);
+      text-decoration: underline;
+      text-decoration-color: var(--gold);
+      text-decoration-thickness: 0.08em;
+      text-underline-offset: 0.08em;
+    }
+
+    @media (min-width: 901px) {
+      .hero h1 { font-size: clamp(29px, 4.34vw, 55px); }
+    }
+
+    .lead {
+      max-width: 790px;
+      margin-bottom: 26px;
+      color: #222;
+      font-size: clamp(18px, 2vw, 24px);
+      line-height: 1.45;
+    }
+
+    .mission {
+      max-width: 790px;
+      margin: -8px 0 24px;
+      padding: 18px 20px;
+      border: 3px solid var(--ink);
+      border-left: 10px solid var(--gold);
+      background: rgba(255, 253, 246, 0.9);
+      box-shadow: 8px 8px 0 rgba(216, 169, 39, 0.22);
+    }
+
+    .mission .label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--teal);
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 950;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .mission p {
+      margin: 0;
+      color: var(--ink);
+      font-size: clamp(18px, 2vw, 24px);
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    .mission strong { color: var(--teal); }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 28px 0 22px;
+    }
+
+    .fineprint {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .console {
+      position: relative;
+      min-height: 100%;
+      overflow: hidden;
+      padding: 28px;
+      border: 3px solid var(--ink);
+      background: var(--dark);
+      color: var(--cream);
+      box-shadow: var(--shadow);
+    }
+
+    .console::before {
+      content: "";
+      position: absolute;
+      right: -80px;
+      bottom: -90px;
+      width: 260px;
+      height: 260px;
+      border: 2px solid rgba(37, 211, 102, 0.28);
+      background: rgba(37, 211, 102, 0.12);
+      transform: rotate(12deg);
+    }
+
+    .console > * { position: relative; }
+
+    .console-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid rgba(252, 250, 241, 0.2);
+    }
+
+    .console-label {
+      color: #bcb6a8;
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 850;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .live-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #d8f7e4;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .live-dot::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--whatsapp);
+      box-shadow: 0 0 0 6px rgba(37, 211, 102, 0.16);
+    }
+
+    .console h2 {
+      margin: 0 0 16px;
+      color: #fff;
+      font-size: 30px;
+      line-height: 1.12;
+    }
+
+    .console-list {
+      display: grid;
+      gap: 12px;
+      margin: 20px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .console-list li {
+      display: grid;
+      grid-template-columns: 38px 1fr;
+      gap: 12px;
+      align-items: start;
+      padding: 14px;
+      border: 1px solid rgba(252, 250, 241, 0.18);
+      background: rgba(252, 250, 241, 0.045);
+    }
+
+    .num {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--cream);
+      color: var(--ink);
+      font-weight: 950;
+    }
+
+    .console-list strong {
+      display: block;
+      margin-bottom: 3px;
+      color: #fff;
+    }
+
+    .console-list span { color: #d6d0c2; font-size: 14px; }
+
+    section {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--soft-line);
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: 0.45fr 1fr;
+      gap: 30px;
+      align-items: start;
+      margin-bottom: 28px;
+    }
+
+    .kicker {
+      color: var(--teal);
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 950;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(34px, 4.4vw, 58px);
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 22px;
+      line-height: 1.18;
+    }
+
+    .grid-3,
+    .grid-2 {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+
+    .card {
+      padding: 24px;
+      border: 3px solid var(--ink);
+      background: var(--card);
+      box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.08);
+    }
+
+    .card .icon {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 14px;
+      border: 2px solid var(--ink);
+      border-radius: 50%;
+      background: var(--gold);
+      font-weight: 950;
+    }
+
+    .card.good .icon { background: var(--teal); color: #fff; }
+    .card.bad .icon { background: var(--red); color: #fff; }
+    .card.whats .icon { background: var(--whatsapp); color: #07170e; }
+
+    .card ul {
+      display: grid;
+      gap: 10px;
+      margin: 12px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .card li {
+      position: relative;
+      padding-left: 24px;
+      color: #27241f;
+      font-size: 16px;
+    }
+
+    .card li::before {
+      content: "-";
+      position: absolute;
+      left: 0;
+      color: var(--teal);
+      font-weight: 900;
+    }
+
+    .bad li::before { color: var(--red); }
+
+    .band {
+      border-top: 3px solid var(--ink);
+      border-bottom: 3px solid var(--ink);
+      background: var(--dark);
+      color: var(--cream);
+    }
+
+    .band p,
+    .band li { color: #ddd6c8; }
+    .band h2,
+    .band h3 { color: #fff; }
+    .band .kicker { color: #e8c95a; }
+    .band .card {
+      border-color: rgba(252, 250, 241, 0.32);
+      background: var(--dark-2);
+      box-shadow: none;
+    }
+    .band .card p { color: #ddd6c8; }
+
+    .agenda {
+      display: grid;
+      gap: 12px;
+      counter-reset: agenda;
+    }
+
+    .agenda-item {
+      display: grid;
+      grid-template-columns: 64px 1fr;
+      gap: 18px;
+      align-items: start;
+      padding: 18px;
+      border: 3px solid var(--ink);
+      background: var(--card);
+      counter-increment: agenda;
+    }
+
+    .agenda-item::before {
+      content: counter(agenda, decimal-leading-zero);
+      color: var(--teal);
+      font-size: 24px;
+      font-weight: 950;
+      line-height: 1;
+    }
+
+    .agenda-item strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 18px;
+    }
+
+    .agenda-item span { color: var(--muted); }
+
+    .table-wrap {
+      overflow: auto;
+      border: 3px solid var(--ink);
+      background: var(--card);
+      box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.08);
+    }
+
+    table {
+      width: 100%;
+      min-width: 760px;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 17px 18px;
+      border-bottom: 1px solid var(--soft-line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--ink);
+      color: var(--cream);
+      font-family: var(--mono);
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    td { font-size: 16px; }
+    tr:last-child td { border-bottom: 0; }
+    .tag { color: var(--teal); font-weight: 850; }
+
+    .form-section {
+      background: linear-gradient(180deg, var(--cream) 0%, var(--cream-2) 100%);
+      padding: 84px 0;
+    }
+
+    .form-shell {
+      display: grid;
+      grid-template-columns: 0.82fr 1.18fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .form-note { position: sticky; top: 96px; }
+
+    form {
+      padding: 26px;
+      border: 3px solid var(--ink);
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .field.full { grid-column: 1 / -1; }
+
+    label {
+      color: #17140f;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      min-height: 48px;
+      padding: 12px 13px;
+      border: 2px solid var(--ink);
+      border-radius: 6px;
+      outline: none;
+      background: #fffef9;
+      color: var(--ink);
+      font: inherit;
+      font-size: 15px;
+    }
+
+    textarea {
+      min-height: 112px;
+      resize: vertical;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      box-shadow: 0 0 0 4px rgba(216, 169, 39, 0.28);
+    }
+
+    .help {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .consent {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin: 18px 0;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .consent input {
+      width: 18px;
+      min-height: 18px;
+      margin-top: 4px;
+      flex: 0 0 auto;
+    }
+
+    .success {
+      display: none;
+      margin-top: 16px;
+      padding: 16px;
+      border: 2px solid var(--teal);
+      background: rgba(23, 57, 43, 0.1);
+      color: var(--teal);
+      font-weight: 850;
+    }
+
+    .success.show { display: block; }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 120;
+      display: none;
+      place-items: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.62);
+    }
+
+    .modal-backdrop.show { display: grid; }
+
+    .success-modal {
+      width: min(520px, 100%);
+      padding: 28px;
+      border: 4px solid var(--ink);
+      border-radius: 18px;
+      background: var(--card);
+      box-shadow: 0 28px 90px rgba(0, 0, 0, 0.34);
+      text-align: center;
+    }
+
+    .success-modal .badge {
+      display: inline-grid;
+      place-items: center;
+      width: 56px;
+      height: 56px;
+      margin-bottom: 14px;
+      border-radius: 50%;
+      background: var(--whatsapp);
+      color: #042412;
+      font-size: 28px;
+      font-weight: 950;
+    }
+
+    .success-modal h2 {
+      margin: 0 0 10px;
+      font-size: 30px;
+      letter-spacing: -0.03em;
+    }
+
+    .success-modal p {
+      margin: 0 0 18px;
+      color: var(--muted);
+    }
+
+    .faq {
+      display: grid;
+      gap: 12px;
+    }
+
+    .faq details {
+      padding: 18px;
+      border: 3px solid var(--ink);
+      background: var(--card);
+    }
+
+    .faq summary {
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .faq p {
+      margin-top: 10px;
+      color: var(--muted);
+    }
+
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .video-card {
+      position: relative;
+      display: block;
+      overflow: hidden;
+      aspect-ratio: 9 / 16;
+      min-height: 300px;
+      border: 3px solid var(--ink);
+      border-radius: 18px;
+      background: var(--ink);
+      color: #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .video-card:hover { transform: translateY(-2px); color: #fff; }
+
+    .video-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.25s ease;
+    }
+
+    .video-card:hover img { transform: scale(1.04); }
+
+    .video-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.02) 40%, rgba(0, 0, 0, 0.78) 100%);
+      pointer-events: none;
+    }
+
+    .video-card .play {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      z-index: 2;
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--gold);
+      color: #111;
+      font-weight: 950;
+    }
+
+    .video-card .video-copy {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: 16px;
+      z-index: 2;
+    }
+
+    .video-card strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 19px;
+      line-height: 1.2;
+    }
+
+    .video-card span {
+      color: rgba(255, 255, 255, 0.78);
+      font-size: 14px;
+    }
+
+    footer {
+      padding: 42px 0;
+      background: var(--ink);
+      color: var(--cream);
+    }
+
+    footer .footer-grid {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    footer p {
+      margin: 0;
+      color: #bfb8aa;
+    }
+
+    footer a {
+      color: #f0d46b;
+      font-weight: 850;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .mobile-sticky {
+      position: fixed;
+      right: 12px;
+      bottom: 12px;
+      left: 12px;
+      z-index: 60;
+      display: none;
+    }
+
+    .mobile-sticky .btn { box-shadow: 0 12px 36px rgba(0, 0, 0, 0.26); }
+
+    @media (max-width: 900px) {
+      .nav-meta,
+      .nav-actions .ghost { display: none; }
+      .hero { padding-top: 42px; }
+      .hero-grid,
+      .section-head,
+      .form-shell { grid-template-columns: 1fr; }
+      .grid-3,
+      .grid-2,
+      .video-grid { grid-template-columns: 1fr; }
+      .form-note { position: static; }
+      .form-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 48px; }
+      .console { padding: 22px; }
+      .mobile-sticky { display: block; }
+      section { padding: 54px 0; }
+      .wrap { padding: 0 18px; }
+      footer .footer-grid {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap nav">
+      <a class="brand" href="/" aria-label="回到阿理哥主页面">
+        <span class="mark">A</span>
+        <span>阿理哥 · Aligor</span>
+      </a>
+      <div class="nav-meta"><span>小白版</span><span>·</span><span>WhatsApp / FB / IG AI 客服</span><span>·</span><span>免费说明会</span></div>
+      <div class="nav-actions">
+        <a class="btn ghost" href="#agenda">看内容</a>
+        <a class="btn primary" href="#register">报名免费说明会</a>
+        <a class="btn whatsapp" href="https://wa.me/601165673478">WhatsApp 咨询</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="top">
+      <div class="wrap hero-grid">
+        <div>
+          <div class="eyebrow">
+            <span class="pill green">免费线上说明会</span>
+            <span class="pill gold">60-90 min online webinar</span>
+            <span class="pill">Malaysia · 免费报名</span>
+          </div>
+          <h1>想让 <span class="accent">AI 帮你回复 WhatsApp 客户</span>？先来听一场免费的线上说明会。</h1>
+          <p class="lead">如果你每天都在重复回复客户、忘记 follow-up、找不到资料、或者很想用 AI 但不知道从哪里开始，这场说明会就是给你先听懂方向的。<strong>我会用老板和普通人听得懂的方法，解释 AI 客服怎样帮你省时间、少漏客户，而且不只是 WhatsApp，之后也可以延伸到 Facebook 和 Instagram 自动回复。</strong></p>
+          <div class="mission" aria-label="阿理哥使命">
+            <span class="label">先听懂这 3 件事</span>
+            <p>AI 客服就是你的机器人。它是一个可以照着你的资料、规则和流程，帮你回复、整理和提醒的 <strong>AI 助手</strong>。</p>
+          </div>
+          <div class="hero-actions">
+            <a class="btn primary" href="#register">我要报名免费说明会</a>
+            <a class="btn teal" href="#fit">先看适不适合我</a>
+            <a class="btn whatsapp" href="https://wa.me/601165673478">WhatsApp 通知我</a>
+          </div>
+          <p class="fineprint">适合：有真实顾客、学生、家长、客户或学员询问，并且每天重复回复问题的人。完全不会写 program、完全不懂 AI，也可以参加。</p>
+        </div>
+
+        <aside class="console" aria-label="Webinar summary">
+          <div class="console-top">
+            <span class="console-label">Webinar Preview</span>
+            <span class="live-dot">报名开放中</span>
+          </div>
+          <h2>这场说明会会先把复杂的 AI 讲成人话。</h2>
+          <ul class="console-list">
+            <li><span class="num">1</span><div><strong>AI 客服可以帮你做什么</strong><span>回复 WhatsApp、Facebook 和 Instagram 常见问题，整理客户重点，提醒你下一步要跟进谁。</span></div></li>
+            <li><span class="num">2</span><div><strong>你要准备什么资料</strong><span>FAQ、产品资料、价格、公司规则和你平时怎样回复客户。</span></div></li>
+            <li><span class="num">3</span><div><strong>怎样低成本开始</strong><span>先从一个小流程开始测试，不需要一开始就买很贵的系统。</span></div></li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <section id="why">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="kicker">Why This Webinar</div>
+          <h2>你先不用买课。先搞清楚：你的工作到底哪一部分可以交给 AI 帮忙。</h2>
+        </div>
+        <div class="grid-3">
+          <article class="card good"><div class="icon">✓</div><h3>你会先看到真实例子</h3><p>我会用简单 demo 让你看到：客户问问题时，AI 怎样根据你的资料回复，而不是乱回答。</p></article>
+          <article class="card whats"><div class="icon">WA</div><h3>先从 WhatsApp 开始，再延伸到 Facebook / Instagram</h3><p>很多老板最乱的地方就是 inbox：WhatsApp、Facebook 和 Instagram 都有人问，员工回、老板追，资料全部散掉。所以我们先从最常发生的问题开始。</p></article>
+          <article class="card"><div class="icon">$</div><h3>先低成本，不先烧钱</h3><p><strong>我不会叫你一开始就买贵 software。</strong>重点是先明白流程，先测试小部分，确定有用才慢慢扩大。</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="learn">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="kicker">What You Will Learn</div>
+          <h2>听完以后，你会比较清楚：AI 助手到底可以怎样放进你的生意。</h2>
+        </div>
+        <div class="grid-3">
+          <article class="card"><h3>1. AI 客服是什么</h3><p>用最简单的话解释：它不是一个人，而是一个照着你公司资料和规则工作的 AI 助手，可以用在 WhatsApp、Facebook 和 Instagram。</p></article>
+          <article class="card"><h3>2. 为什么不要一开始买贵系统</h3><p>很多系统很好，但不一定适合每个小生意。先知道你的流程值不值得自动化。</p></article>
+          <article class="card"><h3>3. 什么叫用多少付多少</h3><p>用比较实际的方式控制成本，让你先从最常见、最重复的信息开始。</p></article>
+          <article class="card"><h3>4. AI 怎样帮你少漏 follow-up</h3><p>不管客户从 WhatsApp、Facebook 还是 Instagram 来，问过什么、谁还没回复、下一步要做什么，都可以整理出来提醒你。</p></article>
+          <article class="card"><h3>5. 不会写 program 可以吗</h3><p>可以。你最重要的是把业务场景、FAQ、产品资料和规则讲清楚。</p></article>
+          <article class="card"><h3>6. 以后可以做到什么</h3><p>客服助理、提醒助理、资料整理助理、报告助理，都可以慢慢从一个小流程开始做。</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="fit">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="kicker">Fit / Not Fit</div>
+          <h2>你不需要很懂 AI。你只需要有真实问题想解决。</h2>
+        </div>
+        <div class="grid-2">
+          <article class="card good">
+            <div class="icon">✓</div>
+            <h3>适合对象包括：</h3>
+            <ul>
+              <li>每天很多重复 WhatsApp / Facebook / Instagram 回复的人</li>
+              <li>常常漏 follow-up、漏报价、漏提醒的人</li>
+              <li>想低成本先了解 AI 客服，不想一开始就买贵平台的人</li>
+              <li>想要一个 AI 助手帮你整理日程、客户重点和每天工作的人</li>
+              <li>SME 老板、教育中心、老师</li>
+              <li>Sales、保险、直销、服务业从业者</li>
+              <li>电商卖家，包含 Shopee / Lazada / TikTok seller</li>
+              <li>不想把公司数据交给别人看到的人</li>
+            </ul>
+          </article>
+          <article class="card bad">
+            <div class="icon">✗</div>
+            <h3>不适合对象包括：</h3>
+            <ul>
+              <li>不愿意学习进步和亲手设置系统</li>
+              <li>不相信 AI / 讨厌 AI</li>
+              <li>没有电脑，或完全不打算用电脑操作</li>
+              <li>只想马上买工具，不想了解自己的流程</li>
+              <li>期待 AI 一键解决所有问题，却不愿意整理 FAQ、产品资料或公司规则</li>
+              <li>认为自动化等于完全不需要人，也不需要管理</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="agenda">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="kicker">60-90 Min Online Webinar</div>
+          <h2>说明会流程：一步一步来，先听懂，再看 demo，最后才决定要不要继续学。</h2>
+        </div>
+        <div class="agenda">
+          <div class="agenda-item"><div><strong>第一步：先找出你每天最浪费时间的回复</strong><span>例如价格、时间、服务内容、课程资料、订单状态、产品 FAQ。</span></div></div>
+          <div class="agenda-item"><div><strong>第二步：解释 AI 客服怎样读你的资料</strong><span>它不是凭空乱答，而是需要你的 FAQ、产品资料和公司规则。</span></div></div>
+          <div class="agenda-item"><div><strong>第三步：看一个简单 demo</strong><span>客户从 WhatsApp、Facebook 或 Instagram 问问题，AI 怎样根据资料回复；如果资料不够，应该怎样处理。</span></div></div>
+          <div class="agenda-item"><div><strong>第四步：AI 怎样整理重点和提醒 follow-up</strong><span>不只是回复，还可以帮你整理今天谁问了什么、谁需要再跟进。</span></div></div>
+          <div class="agenda-item"><div><strong>第五步：低成本开始的方法</strong><span>先从一个小流程开始，不要一开始就把整家公司丢进去。</span></div></div>
+          <div class="agenda-item"><div><strong>第六步：Q&A</strong><span>你可以问自己的行业、公司流程和目前遇到的问题。</span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="schedule">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="kicker">报名资料 / 表格规划</div>
+          <h2>免费说明会目前有两个场次，都是星期三晚上 8:00PM。报名时请选择你要参加的日期。</h2>
+        </div>
+        <div class="table-wrap" aria-label="课程和报名规划表">
+          <table>
+            <thead>
+              <tr><th>项目</th><th>上课时间</th><th>报名成功后</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><span class="tag">免费线上说明会</span></td><td>2026-06-10 星期三 8:00PM</td><td>页面会弹出报名成功确认。</td></tr>
+              <tr><td><span class="tag">免费线上说明会</span></td><td>2026-06-17 星期三 8:00PM</td><td>页面会弹出报名成功确认。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="form-section" id="register">
+      <div class="wrap form-shell">
+        <aside class="form-note">
+          <div class="kicker">Register Now</div>
+          <h2>报名免费说明会</h2>
+          <p>填完后，页面会马上弹出报名成功确认。目前有两个场次：2026-06-10 星期三 8:00PM，或 2026-06-17 星期三 8:00PM。如果你要直接问培训详情，也可以 WhatsApp 到 <a href="https://wa.me/601165673478">+601165673478</a>。</p>
+          <p><strong>这场说明会先帮你听懂方向。</strong>你不用先懂技术，也不用马上买软件。你只需要带着自己的真实问题来：客户一直问什么？团队哪里最乱？哪些 follow-up 最容易漏？</p>
+          <p>如果你听完觉得适合，之后才决定要不要继续深入学习怎样做自己的 AI 助手。</p>
+          <div class="hero-actions">
+            <a class="btn whatsapp" href="https://wa.me/601165673478">WhatsApp 培训咨询</a>
+            <a class="btn ghost" href="/" target="_blank" rel="noopener">看阿理哥主页面</a>
+          </div>
+        </aside>
+
+        <form id="leadForm" action="#" method="post" data-endpoint="https://aligor-webinar-leads.aligor.workers.dev">
+          <div class="form-grid">
+            <div class="field"><label for="name">姓名 *</label><input id="name" name="name" autocomplete="name" required placeholder="例如：Adrian Ng"></div>
+            <div class="field"><label for="whatsapp">WhatsApp *</label><input id="whatsapp" name="whatsapp" autocomplete="tel" required placeholder="例如：+6012xxxxxxx"></div>
+            <div class="field"><label for="email">Email *</label><input id="email" name="email" type="email" autocomplete="email" required placeholder="you@example.com"></div>
+            <div class="field"><label for="city">城市 *</label><select id="city" name="city" required><option value="">请选择</option><option>Johor Bahru / JB</option><option>Kuala Lumpur / KL</option><option>Penang</option><option>Melaka</option><option>Other</option></select></div>
+            <div class="field"><label for="role">你的身份 *</label><select id="role" name="role" required><option value="">请选择</option><option>教育中心 / 老师</option><option>SME 老板 / Founder</option><option>Sales</option><option>保险 / Agent</option><option>直销 / Network Marketing</option><option>服务业</option><option>电商卖家</option><option>Admin / Customer Service</option><option>其他</option></select></div>
+            <div class="field"><label for="ai_level">目前 AI 使用程度 *</label><select id="ai_level" name="ai_level" required><option value="">请选择</option><option>完全不会</option><option>用过 ChatGPT</option><option>已订阅 ChatGPT / Claude / Gemini</option><option>公司已有 AI 工具</option></select></div>
+            <div class="field"><label for="class_time">上课时间 *</label><select id="class_time" name="class_time" required><option value="">请选择场次</option><option>2026-06-10 星期三 8:00PM</option><option>2026-06-17 星期三 8:00PM</option></select></div>
+            <div class="field full"><label for="pain_point">你现在最大痛点 *</label><select id="pain_point" name="pain_point" required><option value="">请选择一个最主要的</option><option>WhatsApp 重复回复客户 / 学生 / 家长</option><option>Facebook / Instagram inbox 重复回复客户</option><option>课程询问太多，常常重复回答</option><option>报价慢 / 资料找不到</option><option>Follow-up 乱 / 常常漏</option><option>客户资料散乱</option><option>想做 AI 客服但不知道怎样开始</option><option>想让团队用 AI 提升效率</option><option>其他</option></select></div>
+          </div>
+
+          <input type="hidden" name="utm_source" id="utm_source">
+          <input type="hidden" name="utm_medium" id="utm_medium">
+          <input type="hidden" name="utm_campaign" id="utm_campaign">
+          <input type="hidden" name="utm_content" id="utm_content">
+          <input type="hidden" name="utm_term" id="utm_term">
+          <input type="hidden" name="fbclid" id="fbclid">
+          <input type="hidden" name="landing_page_url" id="landing_page_url">
+          <input type="hidden" name="referrer" id="referrer">
+          <input type="hidden" name="submitted_at" id="submitted_at">
+          <input type="hidden" name="source_page" value="whatsapp-automated-webminar-2">
+
+          <label class="consent"><input type="checkbox" name="consent" value="yes" required> <span>我同意 Adrian 通过 WhatsApp（+601165673478）/ Email 通知我免费说明会相关内容。</span></label>
+          <button class="btn primary full" type="submit">提交报名</button>
+          <div class="success" id="successMsg" role="status">报名成功！请记得准时参加你选择的 8:00PM 场次。</div>
+        </form>
+      </div>
+    </section>
+
+    <section id="proof">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="kicker">Real SME Use Cases</div>
+          <h2>说明会会用真实 SME 场景讲，不是只讲 AI 概念。</h2>
+        </div>
+        <div class="grid-3">
+          <article class="card"><div class="icon">01</div><h3>每日销售报告</h3><p>AI 每天看昨天卖了什么、哪些 SKU 动得快、哪些分类需要注意。</p></article>
+          <article class="card whats"><div class="icon">DM</div><h3>多平台客服知识库回复</h3><p>让 AI 根据 FAQ / 产品资料回复 WhatsApp、Facebook 和 Instagram 的询问，不乱讲，不需要员工一直复制粘贴。</p></article>
+          <article class="card"><div class="icon">03</div><h3>运输追踪提醒</h3><p>从中国到马来西亚的物流状态，用 Agent 定期检查和提醒。</p></article>
+          <article class="card"><div class="icon">04</div><h3>Codex 改网站</h3><p>不会手写网站，也可以把需求写清楚，让 Codex 一次性改页面。</p></article>
+          <article class="card"><div class="icon">05</div><h3>老板第二大脑</h3><p>把会议、WhatsApp、任务、SOP 整理成 AI 可以读取和执行的资料。</p></article>
+          <article class="card"><div class="icon">06</div><h3>自动提醒下一步</h3><p>AI 不只是回答问题，而是每天提醒你该跟进什么、谁还没处理。</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="instagram">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="kicker">See More Results</div>
+          <h2>如果你想了解 AI 助手还能做什么，可以去看我的 Instagram。</h2>
+          <p>我把很多实际成果、测试过程和 AI 助手用法都分享在 Instagram 上面。记得关注我，后面你会看到更多真实案例和实战内容。</p>
+        </div>
+        <div class="video-grid" aria-label="Instagram latest video previews">
+          <a class="video-card" href="https://www.instagram.com/reel/DY1peMcPZ7t/?igsh=cmw5Ym51OWUyN3Rx" target="_blank" rel="noopener" aria-label="Open Instagram Reel: AI 助手实战成果">
+            <img src="assets/instagram-covers/DY1peMcPZ7t.jpg" alt="AI 助手实战成果 Instagram Reel cover" loading="lazy">
+            <span class="play">▶</span>
+            <div class="video-copy"><strong>AI 助手实战成果</strong><span>点击去 Instagram 看完整影片。</span></div>
+          </a>
+          <a class="video-card" href="https://www.instagram.com/reel/DZCdRevv2iF/?igsh=d3F2anFsazdscHl5" target="_blank" rel="noopener" aria-label="Open Instagram Reel: Vibe Coding 测试">
+            <img src="assets/instagram-covers/DZCdRevv2iF.jpg" alt="Vibe Coding 测试 Instagram Reel cover" loading="lazy">
+            <span class="play">▶</span>
+            <div class="video-copy"><strong>Vibe Coding 测试</strong><span>点击去 Instagram 看完整影片。</span></div>
+          </a>
+          <a class="video-card" href="https://www.instagram.com/reel/DZHzBFRhVXk/?igsh=ZDNmMjI0ZHZiNTd2" target="_blank" rel="noopener" aria-label="Open Instagram Reel: SME 自动化流程">
+            <img src="assets/instagram-covers/DZHzBFRhVXk.jpg" alt="SME 自动化流程 Instagram Reel cover" loading="lazy">
+            <span class="play">▶</span>
+            <div class="video-copy"><strong>SME 自动化流程</strong><span>点击去 Instagram 看完整影片。</span></div>
+          </a>
+          <a class="video-card" href="https://www.instagram.com/reel/DY475Twvhy4/?igsh=cWgwN2U1bmtodmx4" target="_blank" rel="noopener" aria-label="Open Instagram Reel: Openclaw 小龙虾">
+            <img src="assets/instagram-covers/DY475Twvhy4.jpg" alt="Openclaw 小龙虾 Instagram Reel cover" loading="lazy">
+            <span class="play">▶</span>
+            <div class="video-copy"><strong>Openclaw 小龙虾</strong><span>点击去 Instagram 看完整影片。</span></div>
+          </a>
+        </div>
+        <div class="hero-actions">
+          <a class="btn primary" href="https://www.instagram.com/aligor4916/" target="_blank" rel="noopener">Follow Instagram @aligor4916</a>
+          <a class="btn ghost" href="#register">报名免费说明会</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="kicker">FAQ</div>
+          <h2>报名之前，你可能会想问这些。</h2>
+        </div>
+        <div class="faq">
+          <details open><summary>这场说明会免费吗？</summary><p>是，说明会免费。目的是先让你了解你的业务是否适合做 AI 客服 / AI Agent 自动化。</p></details>
+          <details><summary>我完全不会 AI 可以参加吗？</summary><p>可以。第二版页面就是用小白也听得懂的方式设计，不会一开始就讲复杂技术。</p></details>
+          <details><summary>需要会写 program 吗？</summary><p>不需要。你只要能讲清楚自己的业务场景、常见问题、产品资料和公司规则，就已经可以开始理解方向。</p></details>
+          <details><summary>只能用在 WhatsApp 吗？</summary><p>不是。说明会会先用 WhatsApp 做最容易理解的例子，但同样的思路也可以延伸到 Facebook inbox 和 Instagram DM 自动回复。</p></details>
+          <details><summary>这是教 ChatGPT 还是 AI 客服？</summary><p>ChatGPT 会提到，但重点是让你理解：怎样把 AI 变成可以帮你回复 WhatsApp、Facebook、Instagram，整理资料和提醒 follow-up 的工作助手。</p></details>
+          <details><summary>后续会有正式课吗？</summary><p>会，但这个页面目前主要是收集对免费说明会有兴趣的人。你先参加免费 webinar，了解方向、看 demo，再决定要不要继续深入学习。</p></details>
+          <details><summary>这是不是卖软件或卖系统？</summary><p>不是。我不会叫你去买某个 software，也不是要你每个月持续付 subscription fee。因为我卖的不是系统，我教的是如何做系统；这跟卖系统是不一样的。重点是让你拥有自己的 AI 工作方式，不是被固定月费的软件绑住。</p></details>
+          <details><summary>学会之后我可以做到什么？</summary><p>学会以后，你不只是请到了 1 个 AI 助理。你可以拥有 1 到 10 个 AI 助理：客服助理、follow-up 助理、资料整理助理、提醒助理、报告助理，全部由你自己决定。</p></details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="mobile-sticky"><a class="btn primary full" href="#register">报名免费说明会</a></div>
+
+  <div class="modal-backdrop" id="successModal" role="dialog" aria-modal="true" aria-labelledby="successModalTitle" aria-hidden="true">
+    <div class="success-modal">
+      <div class="badge">✓</div>
+      <h2 id="successModalTitle">报名成功！</h2>
+      <p>谢谢你报名 WhatsApp AI 客服免费说明会。请记得准时参加你选择的 8:00PM 场次。有问题也可以 WhatsApp 到 +601165673478。</p>
+      <button class="btn primary" type="button" id="closeSuccessModal">知道了</button>
+    </div>
+  </div>
+
+  <footer>
+    <div class="wrap footer-grid">
+      <div>
+        <strong>阿理哥 · Aligor</strong>
+        <p>Ukunili Music Sdn Bhd 老板 · AI Agent on Openclaw 小龙虾 · Vibe Coding · SME Automation</p>
+      </div>
+      <div class="footer-links">
+        <a href="/">主页面</a>
+        <a href="#register">报名</a>
+        <a href="https://wa.me/601165673478">WhatsApp +601165673478</a>
+        <a href="#faq">FAQ</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+      const trackingKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid'];
+
+      trackingKeys.forEach(function (key) {
+        const el = document.getElementById(key);
+        if (el) el.value = params.get(key) || '';
+      });
+
+      const landingPageEl = document.getElementById('landing_page_url');
+      const referrerEl = document.getElementById('referrer');
+      if (landingPageEl) landingPageEl.value = window.location.href;
+      if (referrerEl) referrerEl.value = document.referrer || '';
+
+      const form = document.getElementById('leadForm');
+      const success = document.getElementById('successMsg');
+      const modal = document.getElementById('successModal');
+      const closeModal = document.getElementById('closeSuccessModal');
+      const submittedAt = document.getElementById('submitted_at');
+      if (!form || !success || !submittedAt) return;
+
+      function showSuccessModal() {
+        if (!modal) return;
+        modal.classList.add('show');
+        modal.setAttribute('aria-hidden', 'false');
+      }
+
+      function hideSuccessModal() {
+        if (!modal) return;
+        modal.classList.remove('show');
+        modal.setAttribute('aria-hidden', 'true');
+      }
+
+      if (closeModal) closeModal.addEventListener('click', hideSuccessModal);
+      if (modal) {
+        modal.addEventListener('click', function (event) {
+          if (event.target === modal) hideSuccessModal();
+        });
+      }
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') hideSuccessModal();
+      });
+
+      form.addEventListener('submit', async function (event) {
+        event.preventDefault();
+        submittedAt.value = new Date().toISOString();
+
+        const button = form.querySelector('button[type="submit"]');
+        const originalButtonText = button ? button.textContent : '';
+        if (button) {
+          button.textContent = '提交中...';
+          button.disabled = true;
+        }
+
+        const endpoint = (form.dataset.endpoint || '').trim();
+
+        try {
+          if (!endpoint) throw new Error('Missing form endpoint');
+
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            body: new FormData(form)
+          });
+          const data = await response.json();
+
+          if (!response.ok || !data.ok) {
+            throw new Error(data.error || 'Submission failed');
+          }
+
+          success.classList.add('show');
+          showSuccessModal();
+          success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          form.reset();
+        } catch (error) {
+          alert('提交失败，请 WhatsApp 到 +601165673478 联系我们。');
+        } finally {
+          if (button) {
+            button.textContent = originalButtonText || '提交报名';
+            button.disabled = false;
+          }
+        }
+      });
+    }());
+  </script>
+</body>
+</html>
