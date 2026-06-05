@@ -1560,7 +1560,16 @@
         Object.entries(dict.text).forEach(function ([selector, value]) { setText(selector, value); });
         Object.entries(dict.html).forEach(function ([selector, value]) { setText(selector, value, true); });
 
-        setPairs('.console-list li', dict.consoleItems);
+        document.querySelectorAll('.console-list li').forEach(function (item, index) {
+          const copy = dict.consoleItems[index];
+          if (!copy) return;
+          const num = item.querySelector('.num');
+          const title = item.querySelector('strong');
+          const body = item.querySelector('div > span');
+          if (num) num.textContent = String(index + 1);
+          if (title) title.textContent = copy[0];
+          if (body) body.textContent = copy[1];
+        });
         setPairs('#why .card', dict.whyCards);
         setPairs('#learn .card', dict.learnCards);
         setList('#fit .good li', dict.fitGood);
