@@ -114,6 +114,34 @@
       gap: 10px;
     }
 
+    .lang-switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: var(--cream);
+    }
+
+    .lang-switch button {
+      min-height: 34px;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 900;
+      padding: 7px 10px;
+    }
+
+    .lang-switch button.active {
+      background: var(--ink);
+      color: var(--cream);
+    }
+
     .btn {
       min-height: 46px;
       display: inline-flex;
@@ -855,7 +883,30 @@
 
     @media (max-width: 900px) {
       .nav-meta,
-      .nav-actions .ghost { display: none; }
+      .nav-actions .ghost,
+      .nav-actions .whatsapp { display: none; }
+      .nav {
+        min-height: 68px;
+        gap: 10px;
+      }
+      .brand > span:last-child { display: none; }
+      .mark {
+        width: 52px;
+        height: 52px;
+      }
+      .nav-actions {
+        min-width: 0;
+        gap: 6px;
+      }
+      .lang-switch button {
+        min-height: 32px;
+        padding: 6px 9px;
+      }
+      .nav-actions .primary {
+        min-height: 42px;
+        padding: 10px 12px;
+        font-size: 13px;
+      }
       .hero { padding-top: 42px; }
       .hero-grid,
       .section-head,
@@ -895,6 +946,10 @@
       </a>
       <div class="nav-meta"><span>AI Agent</span><span>·</span><span>Openclaw 小龙虾</span><span>·</span><span>SME Automation</span></div>
       <div class="nav-actions">
+        <div class="lang-switch" aria-label="Change language">
+          <button type="button" data-lang-btn="zh" class="active">中文</button>
+          <button type="button" data-lang-btn="en">EN</button>
+        </div>
         <a class="btn ghost" href="#agenda">看内容</a>
         <a class="btn primary" href="#register">报名免费说明会</a>
         <a class="btn whatsapp" href="https://wa.me/601165673478">WhatsApp 咨询</a>
@@ -1191,6 +1246,371 @@
 
   <script>
     (function () {
+      const translations = {
+        zh: {
+          title: '免费线上说明会 · WhatsApp AI 客服 / AI Agent 自动化 · 阿理哥 Aligor',
+          description: '免费线上说明会：我的目标是帮助马来西亚 10,000 个人，在今年可以拥有自己的 AI 助手，自动化工作流程。适合教育中心、老师、SME 老板、Sales、服务业和电商卖家报名了解 AI Agent 自动化。',
+          text: {
+            '.brand span:last-child': '阿理哥 · Aligor',
+            '.nav-actions .ghost': '看内容',
+            '.nav-actions .primary': '报名免费说明会',
+            '.nav-actions .whatsapp': 'WhatsApp 咨询',
+            '.eyebrow .pill:nth-child(1)': '免费线上说明会',
+            '.eyebrow .pill:nth-child(2)': '60-90 min online webinar',
+            '.eyebrow .pill:nth-child(3)': 'Malaysia · 免费报名',
+            '.mission .label': 'My Mission',
+            '.hero-actions .primary': '我要报名免费说明会',
+            '.hero-actions .teal': '先看适不适合我',
+            '.hero-actions .whatsapp': 'WhatsApp 通知我',
+            '.fineprint': '适合：有真实顾客、学生、家长、客户或学员询问，并且每天重复回复问题的人。完全不会写 program 也可以参加。',
+            '.console-label': 'Webinar Preview',
+            '.live-dot': '报名开放中',
+            '.console h2': '你不是缺 AI 工具。你缺一套可以每天自动跑的工作方式。',
+            '#why .kicker': 'Why This Webinar',
+            '#why h2': '你先不用买课。先搞清楚你的公司，到底适不适合做 AI 客服。',
+            '#learn .kicker': 'What You Will Learn',
+            '#learn h2': '这场说明会会让你知道：AI Agent 可以怎样真正进入一门小生意。',
+            '#fit .kicker': 'Fit / Not Fit',
+            '#fit h2': '这不是给所有人的课。适合真实有流程、有客户、有重复问题的人。',
+            '#fit .good h3': '适合对象包括：',
+            '#fit .bad h3': '不适合对象包括：',
+            '#agenda .kicker': '60-90 Min Online Webinar',
+            '#agenda h2': '说明会流程：先理解问题，再看 demo，最后决定要不要继续深入学习。',
+            '#schedule .kicker': '报名资料 / 表格规划',
+            '#schedule h2': '免费说明会目前有两个场次，都是星期三晚上 8:00PM。报名时请选择你要参加的日期。',
+            '#register .kicker': 'Register Now',
+            '#register h2': '报名免费说明会',
+            '#register .form-note .hero-actions .whatsapp': 'WhatsApp 培训咨询',
+            '#register .form-note .hero-actions .ghost': '看阿理哥主页面',
+            '#proof .kicker': 'Real SME Use Cases',
+            '#proof h2': '说明会会用真实 SME 场景讲，不是只讲 AI 概念。',
+            '#instagram .kicker': 'See More Results',
+            '#instagram h2': '如果你想了解 AI 助手还能做什么，可以去看我的 Instagram。',
+            '#instagram .section-head p': '我把很多实际成果、测试过程和 AI 助手用法都分享在 Instagram 上面。记得关注我，后面你会看到更多真实案例和实战内容。',
+            '#instagram .hero-actions .primary': 'Follow Instagram @aligor4916',
+            '#instagram .hero-actions .ghost': '报名免费说明会',
+            '#faq .kicker': 'FAQ',
+            '#faq h2': '报名之前，你可能会想问这些。',
+            '.mobile-sticky .btn': '报名免费说明会',
+            '#successModalTitle': '报名成功！',
+            '#closeSuccessModal': '知道了',
+            'footer strong': '阿理哥 · Aligor',
+            'footer p': 'Ukunili Music Sdn Bhd 老板 · AI Agent on Openclaw 小龙虾 · Vibe Coding · SME Automation',
+            '.footer-links a:nth-child(1)': '主页面',
+            '.footer-links a:nth-child(2)': '报名',
+            '.footer-links a:nth-child(4)': 'FAQ'
+          },
+          html: {
+            'h1': '我设计出 <span class="accent">用多少付多少</span> 的 WhatsApp AI 客服：无需月费，低至约 RM0.06 一封信息。',
+            '.lead': '我本人是 <strong>Ukunili Music Sdn Bhd 的老板</strong>，每天面对订单、客服、团队、库存、内容和 follow-up，所以我很了解中小型企业的痛点。这不是讲概念的 AI talk；我会分享我公司和我个人正在用的 AI 助理。<strong>重点是：我真正教的不是单纯自动回复 WhatsApp，而是如何创造你自己的 AI 助手（AI Agent）。它可以自动回复 WhatsApp、Facebook 和 Instagram，也可以整理资料、提醒 follow-up、通知团队和执行更多内部流程。</strong>',
+            '.mission p': '我的目标是帮助马来西亚 <strong>10,000 个人</strong>，在今年可以拥有自己的 AI 助手，自动化工作流程。',
+            '#register .form-note p:nth-of-type(1)': '填完后，页面会马上弹出报名成功确认。目前有两个场次：2026-06-10 星期三 8:00PM，或 2026-06-17 星期三 8:00PM。如果你要直接问培训详情，也可以 WhatsApp 到 <a href="https://wa.me/601165673478">+601165673478</a>。',
+            '#register .form-note p:nth-of-type(2)': '<strong>我卖的不是系统，我教的是如何做系统。</strong>我不会叫你去买某个 software，或者每个月持续付 subscription fee。我是 Ukunili Music Sdn Bhd 老板，会用我自己公司正在用的实战经验，教你怎样制作自己的系统，自己控制你公司的内部自动服务。',
+            '#register .form-note p:nth-of-type(3)': '学会以后，不只是请到 1 个 AI 助理，你可以拥有 1 到 10 个 AI 助理：客服助理、follow-up 助理、资料整理助理、提醒助理、报告助理，全部由自己决定。',
+            '#successModal p': '谢谢你报名 WhatsApp AI 客服免费说明会。请记得准时参加你选择的 8:00PM 场次。有问题也可以 WhatsApp 到 +601165673478。'
+          },
+          consoleItems: [
+            ['看清楚哪里先自动化', '客服、报价、FAQ、follow-up、报告，不是一开始全部做。'],
+            ['理解低成本做法', '不要一开始就买贵系统，先用最低成本验证流程。'],
+            ['先免费了解，不急着买课', '说明会主要收集有兴趣的人，让你先知道这个方向适不适合你。']
+          ],
+          whyCards: [
+            ['先看 Demo，不先付钱', '你会先看到 AI 客服和 AI Agent 实际可以做什么，先免费了解，不需要一开始就付费。'],
+            ['从 WhatsApp 问题开始，再延伸到 FB / IG', '大多数 SME 最乱的地方不是系统，是 WhatsApp、Facebook inbox 和 Instagram DM：客户问、员工回、老板追，资料全部散掉。'],
+            ['老板实战，不是卖系统', '<strong>我不会叫你去买某个 software，也不是要你每个月持续付 subscription fee。</strong>我是 Ukunili Music Sdn Bhd 老板，会用自己 SME 的真实痛点和实战经验，教你怎样制作自己的 AI 助手和系统。这跟卖系统是不一样的。']
+          ],
+          learnCards: [
+            ['1. AI 客服系统为什么贵', '看懂市面 RM300-RM1000 月费背后的成本、功能和不适合小公司的地方。'],
+            ['2. 用多少付多少的思路', '设计一个用多少付多少的概念，让你不会浪费每一分钱；先从最常见、最重复、最值得自动化的信息开始。'],
+            ['3. Openclaw 小龙虾怎样用', '理解它怎样帮你做 WhatsApp、Facebook 和 Instagram 自动回复、整理顾客询问、提醒团队和连接后台流程。'],
+            ['4. ChatGPT vs 自己的 AI Agent', 'ChatGPT 是聊天工具；AI Agent 是你自己创造出来、可以照着 SOP 持续执行、整理资料、提醒 follow-up 和通知团队的 AI 助手。'],
+            ['5. 老板怎样 Vibe Coding', '不会写 program 也可以：把目标、场景、规则和资料讲清楚，让 AI 帮你生成工具。'],
+            ['6. 自己决定 AI 助理团队', '学会以后，不只是请到 1 个 AI 助理，可以拥有 1 到 10 个 AI 助理，全部由自己决定和控制。']
+          ],
+          fitGood: ['想用多少付多少，不想浪费钱给平台的人', '想要一个 AI 助手帮你回复、整理日程工作，并告诉你每一天的业绩', '想学习最新的 AI 助手和 Vibe Coding', 'SME 老板、教育中心、老师', 'Sales、保险、直销、服务业从业者', '电商卖家，包含 Shopee / Lazada / TikTok seller', '不想把公司数据交给别人看到的人'],
+          fitBad: ['不愿意学习进步和亲手设置系统', '不相信 AI / 讨厌 AI', '没有电脑，或完全不打算用电脑操作', '只想买工具，不想自己控制系统', '期待 AI 一键解决所有问题，却不愿意整理 FAQ / 产品资料 / SOP', '认为自动化等于完全不需要人，也不需要管理'],
+          agenda: [
+            ['SME WhatsApp / Facebook / Instagram 重复回复的真实问题', '为什么老板、sales、admin 每天都在不同 inbox 重复同样的工作。'],
+            ['市面 AI 客服系统为什么常常 RM300-RM1000 月费', '不是说它们不好，而是你要知道什么时候才值得买。'],
+            ['低成本开始：API / Openclaw / AI Agent 的思路', '先从小流程开始，不要一开始就做大系统。'],
+            ['Demo：AI 客服怎样根据 FAQ / 产品资料回复客户', '示范 AI 怎样在 WhatsApp、Facebook 和 Instagram 避免乱讲，以及为什么资料库很重要。'],
+            ['Demo：AI 怎样整理 WhatsApp 重点和 follow-up', '让 AI 帮你每天整理重点、提醒下一步和通知团队。'],
+            ['我不是卖软件：我是教你怎样制作自己的系统 + Q&A', '你会理解怎样自己控制公司的内部自动服务，而不是被某个固定月费软件绑住。']
+          ],
+          scheduleHeads: ['项目', '上课时间', '报名成功后'],
+          scheduleRows: [['免费线上说明会', '2026-06-10 星期三 8:00PM', '页面会弹出报名成功确认。'], ['免费线上说明会', '2026-06-17 星期三 8:00PM', '页面会弹出报名成功确认。']],
+          proofCards: [
+            ['每日销售报告', 'AI 每天看昨天卖了什么、哪些 SKU 动得快、哪些分类需要注意。'],
+            ['多平台客服知识库回复', '让 AI 根据 FAQ / 产品资料回复 WhatsApp、Facebook 和 Instagram 的询问，不乱讲，不需要员工一直复制粘贴。'],
+            ['运输追踪提醒', '从中国到马来西亚的物流状态，用 Agent 定期检查和提醒。'],
+            ['Codex 改网站', '不会手写网站，也可以把需求写清楚，让 Codex 一次性改页面。'],
+            ['老板第二大脑', '把会议、WhatsApp、任务、SOP 整理成 AI 可以读取和执行的资料。'],
+            ['自动提醒下一步', 'AI 不只是回答问题，而是每天提醒你该跟进什么、谁还没处理。']
+          ],
+          videos: [
+            ['AI 助手实战成果', '点击去 Instagram 看完整影片。'],
+            ['Vibe Coding 测试', '点击去 Instagram 看完整影片。'],
+            ['SME 自动化流程', '点击去 Instagram 看完整影片。'],
+            ['Openclaw 小龙虾', '点击去 Instagram 看完整影片。']
+          ],
+          faq: [
+            ['这场说明会免费吗？', '是，说明会免费。目的是先让你了解你的业务是否适合做 AI 客服 / AI Agent 自动化。'],
+            ['我完全不会 AI 可以参加吗？', '可以。内容会用 SME 老板、老师和顾问听得懂的方式讲，不会一开始就讲复杂技术。'],
+            ['需要会写 program 吗？', '不需要。重点是你能不能把业务场景、规则、FAQ、流程讲清楚。现在已经可以用 Vibe Coding 方式让 AI 帮你生成工具。'],
+            ['这是教 ChatGPT 还是 AI Agent？', 'ChatGPT 会提到，但重点是 AI Agent 工作流，尤其是 Openclaw 小龙虾在 WhatsApp 客服和后台流程上的应用。'],
+            ['后续会有正式课吗？', '会，但这个页面目前主要是收集对免费说明会有兴趣的人。你先参加免费 webinar，了解方向、看 demo，再决定要不要继续深入学习。'],
+            ['这是不是卖软件或卖系统？', '不是。我不会叫你去买某个 software，也不是要你每个月持续付 subscription fee。因为我卖的不是系统，我教的是如何做系统；这跟卖系统是不一样的。重点是让你拥有自己的 AI 工作方式，不是被固定月费的软件绑住。'],
+            ['学会之后我可以做到什么？', '学会以后，你不只是请到了 1 个 AI 助理。你可以拥有 1 到 10 个 AI 助理：客服助理、follow-up 助理、资料整理助理、提醒助理、报告助理，全部由你自己决定。']
+          ],
+          form: {
+            labels: ['姓名 *', 'WhatsApp *', 'Email *', '城市 *', '你的身份 *', '目前 AI 使用程度 *', '上课时间 *', '你现在最大痛点 *'],
+            placeholders: { name: '例如：Adrian Ng', whatsapp: '例如：+6012xxxxxxx' },
+            options: {
+              city: ['请选择', 'Johor Bahru / JB', 'Kuala Lumpur / KL', 'Penang', 'Melaka', 'Other'],
+              role: ['请选择', '教育中心 / 老师', 'SME 老板 / Founder', 'Sales', '保险 / Agent', '直销 / Network Marketing', '服务业', '电商卖家', 'Admin / Customer Service', '其他'],
+              ai_level: ['请选择', '完全不会', '用过 ChatGPT', '已订阅 ChatGPT / Claude / Gemini', '公司已有 AI 工具'],
+              class_time: ['请选择场次', '2026-06-10 星期三 8:00PM', '2026-06-17 星期三 8:00PM'],
+              pain_point: ['请选择一个最主要的', 'WhatsApp 重复回复客户 / 学生 / 家长', '课程询问太多，常常重复回答', '报价慢 / 资料找不到', 'Follow-up 乱 / 常常漏', '客户资料散乱', '想做 AI 客服但不知道怎样开始', '想让团队用 AI 提升效率', '其他']
+            },
+            consent: '我同意 Adrian 通过 WhatsApp（+601165673478）/ Email 通知我免费说明会相关内容。',
+            submit: '提交报名',
+            loading: '提交中...',
+            success: '报名成功！请记得准时参加你选择的 8:00PM 场次。',
+            fail: '提交失败，请 WhatsApp 到 +601165673478 联系我们。'
+          }
+        },
+        en: {
+          title: 'Free Online Webinar · WhatsApp AI Customer Service / AI Agent Automation · Aligor',
+          description: 'Free online webinar: My goal is to help 10,000 people in Malaysia own their own AI assistant this year and automate daily workflows. Suitable for SMEs, education centres, teachers, sales teams, service businesses and ecommerce sellers.',
+          text: {
+            '.brand span:last-child': 'Aligor · 阿理哥',
+            '.nav-actions .ghost': 'View Content',
+            '.nav-actions .primary': 'Register Free',
+            '.nav-actions .whatsapp': 'WhatsApp Me',
+            '.eyebrow .pill:nth-child(1)': 'Free Online Webinar',
+            '.eyebrow .pill:nth-child(2)': '60-90 min online webinar',
+            '.eyebrow .pill:nth-child(3)': 'Malaysia · Free registration',
+            '.mission .label': 'My Mission',
+            '.hero-actions .primary': 'Register for the free webinar',
+            '.hero-actions .teal': 'See if this fits me',
+            '.hero-actions .whatsapp': 'Notify me on WhatsApp',
+            '.fineprint': 'Best for people with real customers, students, parents, clients or learners asking repeated questions every day. You can join even if you cannot code.',
+            '.console-label': 'Webinar Preview',
+            '.live-dot': 'Registration open',
+            '.console h2': 'You are not missing another AI tool. You are missing a daily workflow that can run automatically.',
+            '#why .kicker': 'Why This Webinar',
+            '#why h2': 'Do not buy a course first. First understand whether your business is suitable for AI customer service.',
+            '#learn .kicker': 'What You Will Learn',
+            '#learn h2': 'This webinar shows how an AI Agent can enter a real small business workflow.',
+            '#fit .kicker': 'Fit / Not Fit',
+            '#fit h2': 'This is not for everyone. It is for people with real processes, real customers and repeated questions.',
+            '#fit .good h3': 'This is suitable for:',
+            '#fit .bad h3': 'This is not suitable for:',
+            '#agenda .kicker': '60-90 Min Online Webinar',
+            '#agenda h2': 'Webinar flow: understand the problem, watch the demo, then decide whether to learn deeper.',
+            '#schedule .kicker': 'Registration / Schedule',
+            '#schedule h2': 'There are currently two free webinar sessions, both on Wednesday at 8:00PM. Choose your date when registering.',
+            '#register .kicker': 'Register Now',
+            '#register h2': 'Register for the free webinar',
+            '#register .form-note .hero-actions .whatsapp': 'WhatsApp Training Enquiry',
+            '#register .form-note .hero-actions .ghost': 'View Aligor main page',
+            '#proof .kicker': 'Real SME Use Cases',
+            '#proof h2': 'The webinar uses real SME scenarios, not only AI concepts.',
+            '#instagram .kicker': 'See More Results',
+            '#instagram h2': 'If you want to see what AI assistants can do, visit my Instagram.',
+            '#instagram .section-head p': 'I share many real results, testing processes and AI assistant use cases on Instagram. Follow me to see more practical examples.',
+            '#instagram .hero-actions .primary': 'Follow Instagram @aligor4916',
+            '#instagram .hero-actions .ghost': 'Register for free webinar',
+            '#faq .kicker': 'FAQ',
+            '#faq h2': 'Before registering, you may want to ask these questions.',
+            '.mobile-sticky .btn': 'Register for free webinar',
+            '#successModalTitle': 'Registration successful!',
+            '#closeSuccessModal': 'Got it',
+            'footer strong': 'Aligor · 阿理哥',
+            'footer p': 'Owner of Ukunili Music Sdn Bhd · AI Agent on Openclaw · Vibe Coding · SME Automation',
+            '.footer-links a:nth-child(1)': 'Main page',
+            '.footer-links a:nth-child(2)': 'Register',
+            '.footer-links a:nth-child(4)': 'FAQ'
+          },
+          html: {
+            'h1': 'I designed a <span class="accent">pay-as-you-use</span> WhatsApp AI customer service workflow: no monthly fee, from about RM0.06 per message.',
+            '.lead': 'I am the <strong>owner of Ukunili Music Sdn Bhd</strong>. Every day I handle orders, customer service, team work, inventory, content and follow-up, so I understand the pain of small and medium businesses. This is not a theory-only AI talk. I will share AI assistants that my company and I personally use. <strong>The key point: I am not only teaching WhatsApp auto-reply. I am teaching you how to create your own AI assistant, or AI Agent. It can reply on WhatsApp, Facebook and Instagram, organize information, remind follow-ups, notify your team and run internal workflows.</strong>',
+            '.mission p': 'My goal is to help <strong>10,000 people in Malaysia</strong> own their own AI assistant this year and automate their work processes.',
+            '#register .form-note p:nth-of-type(1)': 'After you submit, the page will show a success confirmation immediately. There are two sessions: Wednesday 2026-06-10 at 8:00PM, or Wednesday 2026-06-17 at 8:00PM. For training questions, WhatsApp <a href="https://wa.me/601165673478">+601165673478</a>.',
+            '#register .form-note p:nth-of-type(2)': '<strong>I am not selling you a system. I teach you how to build a system.</strong> I will not ask you to buy a specific software or keep paying monthly subscription fees. As the owner of Ukunili Music Sdn Bhd, I will use real experience from my own company to show you how to build your own system and control your internal automation.',
+            '#register .form-note p:nth-of-type(3)': 'After learning this, you are not hiring only 1 AI assistant. You can own 1 to 10 AI assistants: customer service assistant, follow-up assistant, data organizing assistant, reminder assistant and reporting assistant, all controlled by you.',
+            '#successModal p': 'Thank you for registering for the WhatsApp AI customer service free webinar. Please remember to attend your selected 8:00PM session. For questions, WhatsApp +601165673478.'
+          },
+          consoleItems: [
+            ['See what to automate first', 'Customer service, quotation, FAQ, follow-up and reports. You do not automate everything on day one.'],
+            ['Understand the low-cost approach', 'Do not buy an expensive system first. Validate the workflow at the lowest possible cost.'],
+            ['Learn for free first', 'This webinar lets you understand whether this direction is suitable before you go deeper.']
+          ],
+          whyCards: [
+            ['Watch the demo first, no payment first', 'You will first see what AI customer service and AI Agents can actually do. Learn for free before paying for anything.'],
+            ['Start from WhatsApp, then extend to FB / IG', 'For most SMEs, the mess is not the system. It is WhatsApp, Facebook inbox and Instagram DM: customers ask, staff reply, the boss follows up, and information gets scattered.'],
+            ['Real owner experience, not software selling', '<strong>I will not ask you to buy a specific software or pay monthly subscription fees.</strong> I am the owner of Ukunili Music Sdn Bhd, and I will use real SME pain points to teach you how to build your own AI assistant and system. This is different from selling software.']
+          ],
+          learnCards: [
+            ['1. Why AI customer service systems are expensive', 'Understand the cost, features and limitations behind RM300-RM1000 monthly AI customer service tools.'],
+            ['2. Pay-as-you-use thinking', 'Design a pay-as-you-use concept so you do not waste money. Start with the most common, repeated and valuable messages.'],
+            ['3. How Openclaw can be used', 'Understand how it can help with WhatsApp, Facebook and Instagram replies, customer enquiries, team reminders and backend workflows.'],
+            ['4. ChatGPT vs your own AI Agent', 'ChatGPT is a chat tool. An AI Agent is an assistant you create to follow SOP, organize data, remind follow-ups and notify your team.'],
+            ['5. How a business owner can Vibe Code', 'You do not need to code. Explain the goal, scenario, rules and data clearly, then let AI help generate tools.'],
+            ['6. Decide your own AI assistant team', 'After learning, you can have not just 1 AI assistant, but 1 to 10 assistants that you control.']
+          ],
+          fitGood: ['People who want pay-as-you-use and do not want to waste money on platforms', 'People who want an AI assistant to reply, organize schedules and report daily performance', 'People who want to learn the latest AI assistant and Vibe Coding workflows', 'SME owners, education centres and teachers', 'Sales, insurance, direct selling and service industry teams', 'Ecommerce sellers, including Shopee / Lazada / TikTok sellers', 'People who do not want company data exposed to other platforms'],
+          fitBad: ['People who are not willing to learn and set up systems hands-on', 'People who do not believe in AI or hate AI', 'People without a computer or who do not plan to use one', 'People who only want to buy a tool and do not want control', 'People who expect AI to solve everything with one click without preparing FAQ, product data or SOP', 'People who think automation means no human management is needed'],
+          agenda: [
+            ['The real problem of repeated replies across WhatsApp, Facebook and Instagram', 'Why owners, sales and admins repeat the same work every day in different inboxes.'],
+            ['Why market AI customer service systems often cost RM300-RM1000 monthly', 'They are not necessarily bad, but you need to know when they are worth buying.'],
+            ['Start low-cost: API / Openclaw / AI Agent thinking', 'Start from small workflows instead of building a large system immediately.'],
+            ['Demo: how AI replies based on FAQ and product information', 'See how AI avoids making things up on WhatsApp, Facebook and Instagram, and why a knowledge base matters.'],
+            ['Demo: how AI organizes WhatsApp highlights and follow-ups', 'Let AI summarize daily key points, remind next steps and notify the team.'],
+            ['I am not selling software: I teach you how to build your own system + Q&A', 'You will understand how to control your own internal automation instead of being locked into fixed monthly software.']
+          ],
+          scheduleHeads: ['Item', 'Class Time', 'After Successful Registration'],
+          scheduleRows: [['Free Online Webinar', 'Wednesday 2026-06-10 8:00PM', 'The page will show a registration success confirmation.'], ['Free Online Webinar', 'Wednesday 2026-06-17 8:00PM', 'The page will show a registration success confirmation.']],
+          proofCards: [
+            ['Daily sales report', 'AI checks what sold yesterday, which SKUs moved fast and which categories need attention.'],
+            ['Multi-platform knowledge base replies', 'AI replies to WhatsApp, Facebook and Instagram enquiries based on FAQ and product data, without random answers or repeated copy-paste.'],
+            ['Shipping tracking reminders', 'Agent checks China-to-Malaysia logistics status regularly and sends reminders.'],
+            ['Codex website edits', 'Even if you cannot hand-code websites, you can describe your request clearly and let Codex update the page.'],
+            ['Business owner second brain', 'Turn meetings, WhatsApp, tasks and SOP into information that AI can read and execute.'],
+            ['Automatic next-step reminders', 'AI does not only answer questions. It reminds you what to follow up and who is still pending.']
+          ],
+          videos: [
+            ['AI assistant real results', 'Click to watch the full video on Instagram.'],
+            ['Vibe Coding test', 'Click to watch the full video on Instagram.'],
+            ['SME automation workflow', 'Click to watch the full video on Instagram.'],
+            ['Openclaw', 'Click to watch the full video on Instagram.']
+          ],
+          faq: [
+            ['Is this webinar free?', 'Yes, the webinar is free. The goal is to help you understand whether your business is suitable for AI customer service / AI Agent automation.'],
+            ['Can I join if I know nothing about AI?', 'Yes. The content will be explained in a way SME owners, teachers and consultants can understand, without starting from complex technical topics.'],
+            ['Do I need to know programming?', 'No. The key is whether you can explain your business scenario, rules, FAQ and process clearly. With Vibe Coding, AI can help you generate tools.'],
+            ['Is this about ChatGPT or AI Agent?', 'ChatGPT will be mentioned, but the focus is AI Agent workflows, especially Openclaw for WhatsApp customer service and backend processes.'],
+            ['Will there be a formal course later?', 'Yes, but this page is currently to collect people interested in the free webinar. Join first, understand the direction, watch the demo, then decide whether to go deeper.'],
+            ['Are you selling software or a system?', 'No. I will not ask you to buy a specific software or pay monthly subscription fees. I am not selling a system; I teach you how to build a system. The focus is owning your AI workflow instead of being locked into fixed monthly software.'],
+            ['What can I do after learning this?', 'After learning, you are not just getting 1 AI assistant. You can have 1 to 10 AI assistants: customer service assistant, follow-up assistant, data organizer, reminder assistant and reporting assistant, all decided by you.']
+          ],
+          form: {
+            labels: ['Name *', 'WhatsApp *', 'Email *', 'City *', 'Your role *', 'Current AI usage level *', 'Class time *', 'Your biggest pain point now *'],
+            placeholders: { name: 'Example: Adrian Ng', whatsapp: 'Example: +6012xxxxxxx' },
+            options: {
+              city: ['Please choose', 'Johor Bahru / JB', 'Kuala Lumpur / KL', 'Penang', 'Melaka', 'Other'],
+              role: ['Please choose', 'Education centre / Teacher', 'SME owner / Founder', 'Sales', 'Insurance / Agent', 'Direct selling / Network Marketing', 'Service industry', 'Ecommerce seller', 'Admin / Customer Service', 'Other'],
+              ai_level: ['Please choose', 'Never used AI', 'Used ChatGPT before', 'Subscribed to ChatGPT / Claude / Gemini', 'Company already uses AI tools'],
+              class_time: ['Please choose a session', 'Wednesday 2026-06-10 8:00PM', 'Wednesday 2026-06-17 8:00PM'],
+              pain_point: ['Please choose the main one', 'Repeated WhatsApp replies to customers / students / parents', 'Too many course enquiries and repeated answers', 'Slow quotation / cannot find information', 'Messy follow-up / often missed', 'Customer information is scattered', 'Want AI customer service but do not know where to start', 'Want team to use AI for better efficiency', 'Other']
+            },
+            consent: 'I agree that Adrian may contact me through WhatsApp (+601165673478) / Email about this free webinar.',
+            submit: 'Submit registration',
+            loading: 'Submitting...',
+            success: 'Registration successful! Please remember to attend your selected 8:00PM session.',
+            fail: 'Submission failed. Please WhatsApp us at +601165673478.'
+          }
+        }
+      };
+
+      let currentLang = localStorage.getItem('webinarLang') || 'zh';
+      let submitButtonDefault = translations[currentLang].form.submit;
+
+      function setText(selector, value, html) {
+        const el = document.querySelector(selector);
+        if (!el) return;
+        if (html) el.innerHTML = value;
+        else el.textContent = value;
+      }
+
+      function setPairs(selector, pairs) {
+        document.querySelectorAll(selector).forEach(function (el, index) {
+          if (!pairs[index]) return;
+          const title = el.querySelector('h3, strong, summary');
+          const body = el.querySelector('p, span');
+          if (title) title.textContent = pairs[index][0];
+          if (body) body.innerHTML = pairs[index][1];
+        });
+      }
+
+      function setList(selector, items) {
+        document.querySelectorAll(selector).forEach(function (el, index) {
+          if (items[index]) el.textContent = items[index];
+        });
+      }
+
+      function setSelect(id, labels) {
+        const select = document.getElementById(id);
+        if (!select) return;
+        Array.from(select.options).forEach(function (option, index) {
+          if (labels[index]) option.textContent = labels[index];
+        });
+      }
+
+      function applyLanguage(lang) {
+        const dict = translations[lang] || translations.zh;
+        currentLang = lang;
+        submitButtonDefault = dict.form.submit;
+        localStorage.setItem('webinarLang', lang);
+        document.documentElement.lang = lang === 'en' ? 'en' : 'zh-Hans';
+        document.title = dict.title;
+        const metaDescription = document.querySelector('meta[name="description"]');
+        if (metaDescription) metaDescription.setAttribute('content', dict.description);
+
+        Object.entries(dict.text).forEach(function ([selector, value]) { setText(selector, value); });
+        Object.entries(dict.html).forEach(function ([selector, value]) { setText(selector, value, true); });
+
+        setPairs('.console-list li', dict.consoleItems);
+        setPairs('#why .card', dict.whyCards);
+        setPairs('#learn .card', dict.learnCards);
+        setList('#fit .good li', dict.fitGood);
+        setList('#fit .bad li', dict.fitBad);
+        setPairs('.agenda-item', dict.agenda);
+        setList('#schedule th', dict.scheduleHeads);
+        document.querySelectorAll('#schedule tbody tr').forEach(function (row, index) {
+          const cells = row.querySelectorAll('td');
+          const item = dict.scheduleRows[index];
+          if (!item) return;
+          if (cells[0]) cells[0].innerHTML = '<span class="tag">' + item[0] + '</span>';
+          if (cells[1]) cells[1].textContent = item[1];
+          if (cells[2]) cells[2].textContent = item[2];
+        });
+        setPairs('#proof .card', dict.proofCards);
+        document.querySelectorAll('.video-card').forEach(function (card, index) {
+          const item = dict.videos[index];
+          if (!item) return;
+          const title = card.querySelector('.video-copy strong');
+          const caption = card.querySelector('.video-copy span');
+          if (title) title.textContent = item[0];
+          if (caption) caption.textContent = item[1];
+        });
+        setPairs('.faq details', dict.faq);
+
+        document.querySelectorAll('.field label').forEach(function (label, index) {
+          if (dict.form.labels[index]) label.textContent = dict.form.labels[index];
+        });
+        const name = document.getElementById('name');
+        const whatsapp = document.getElementById('whatsapp');
+        if (name) name.placeholder = dict.form.placeholders.name;
+        if (whatsapp) whatsapp.placeholder = dict.form.placeholders.whatsapp;
+        Object.entries(dict.form.options).forEach(function ([id, labels]) { setSelect(id, labels); });
+        setText('.consent span', dict.form.consent);
+        setText('#leadForm button[type="submit"]', dict.form.submit);
+        setText('#successMsg', dict.form.success);
+
+        document.querySelectorAll('[data-lang-btn]').forEach(function (button) {
+          button.classList.toggle('active', button.dataset.langBtn === lang);
+        });
+      }
+
+      document.querySelectorAll('[data-lang-btn]').forEach(function (button) {
+        button.addEventListener('click', function () {
+          applyLanguage(button.dataset.langBtn);
+        });
+      });
+
+      applyLanguage(currentLang);
+
       const params = new URLSearchParams(window.location.search);
       const trackingKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid'];
 
@@ -1241,7 +1661,7 @@
         const button = form.querySelector('button[type="submit"]');
         const originalButtonText = button ? button.textContent : '';
         if (button) {
-          button.textContent = '提交中...';
+          button.textContent = translations[currentLang].form.loading;
           button.disabled = true;
         }
 
@@ -1265,10 +1685,10 @@
           success.scrollIntoView({ behavior: 'smooth', block: 'center' });
           form.reset();
         } catch (error) {
-          alert('提交失败，请 WhatsApp 到 +601165673478 联系我们。');
+          alert(translations[currentLang].form.fail);
         } finally {
           if (button) {
-            button.textContent = originalButtonText || '提交报名';
+            button.textContent = originalButtonText || submitButtonDefault;
             button.disabled = false;
           }
         }
