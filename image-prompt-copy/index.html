@@ -385,6 +385,44 @@
       font-size: 14px;
     }
 
+    .before-after {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin: 18px 22px 0;
+    }
+
+    .image-result {
+      position: relative;
+      overflow: hidden;
+      margin: 0;
+      min-height: 260px;
+      border: 2px solid var(--ink);
+      background: var(--cream-2);
+    }
+
+    .image-result img {
+      width: 100%;
+      height: 100%;
+      min-height: 260px;
+      object-fit: cover;
+    }
+
+    .image-result span {
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      padding: 5px 9px;
+      border: 2px solid var(--ink);
+      background: var(--gold-bright);
+      color: #000;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      font-weight: 950;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
     .prompt-block {
       margin: 18px 22px 22px;
       border: 2px solid var(--ink);
@@ -499,6 +537,9 @@
       .prompt-grid {
         grid-template-columns: 1fr;
       }
+      .before-after {
+        grid-template-columns: 1fr;
+      }
       h1 {
         font-size: 46px;
       }
@@ -569,11 +610,15 @@
               <h3>模糊照片修复成 4K</h3>
               <p class="spoken">这个 prompt 可以修复 4K 高清图。</p>
             </div>
-            <div class="sample-slot" aria-label="成品图空位">
-              <span>
-                <span class="slot-title">成品图位置</span>
-                <span class="slot-note">放修复后的 4K 高清效果图</span>
-              </span>
+            <div class="before-after" aria-label="模糊照片修复前后对比">
+              <figure class="image-result">
+                <img src="../assets/image-prompts/restore-before.jpg" alt="模糊猫咪照片修复前" loading="lazy">
+                <span>Before</span>
+              </figure>
+              <figure class="image-result">
+                <img src="../assets/image-prompts/restore-after.jpg" alt="猫咪照片修复成高清 4K 后" loading="lazy">
+                <span>After 4K</span>
+              </figure>
             </div>
             <div class="prompt-block">
               <div class="prompt-toolbar">
