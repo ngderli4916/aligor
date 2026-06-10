@@ -262,7 +262,7 @@
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(360px, 460px);
       gap: 26px;
-      align-items: start;
+      align-items: stretch;
     }
 
     .offer-card,
@@ -284,11 +284,12 @@
     }
 
     .buy-box {
-      min-height: 500px;
+      min-height: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
       padding: 26px;
       background: #fff;
-      position: sticky;
-      top: 96px;
     }
 
     .offer-card {
@@ -416,7 +417,10 @@
     }
 
     .shopify-anchor {
-      min-height: 360px;
+      flex: 1;
+      min-height: 420px;
+      display: grid;
+      align-items: center;
     }
 
     .outline-box {
@@ -487,9 +491,6 @@
         grid-template-columns: 1fr;
       }
 
-      .buy-box {
-        position: static;
-      }
     }
 
     @media (max-width: 520px) {
@@ -653,10 +654,26 @@
             "margin-bottom": "0"
           }
         },
+        "title": {
+          "font-size": "25px",
+          "line-height": "1.25",
+          "font-weight": "700"
+        },
+        "price": {
+          "font-size": "24px",
+          "font-weight": "700"
+        },
+        "compareAt": {
+          "font-size": "20px"
+        },
         "button": {
           "border-radius": "8px",
-          "padding-left": "35px",
-          "padding-right": "35px"
+          "font-size": "20px",
+          "font-weight": "700",
+          "padding-top": "18px",
+          "padding-bottom": "18px",
+          "padding-left": "49px",
+          "padding-right": "49px"
         }
       },
       "text": {
@@ -689,8 +706,12 @@
         },
         "button": {
           "border-radius": "8px",
-          "padding-left": "35px",
-          "padding-right": "35px"
+          "font-size": "20px",
+          "font-weight": "700",
+          "padding-top": "18px",
+          "padding-bottom": "18px",
+          "padding-left": "49px",
+          "padding-right": "49px"
         }
       },
       "text": {
