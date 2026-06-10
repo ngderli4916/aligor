@@ -257,10 +257,15 @@
     }
 
     .purchase-wrap {
-      max-width: 900px;
+      max-width: var(--max);
       margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(360px, 460px);
+      gap: 26px;
+      align-items: start;
     }
 
+    .offer-card,
     .buy-box,
     .outline-box {
       border: 3px solid var(--ink);
@@ -279,21 +284,22 @@
     }
 
     .buy-box {
-      min-height: 360px;
+      min-height: 500px;
       padding: 26px;
       background: #fff;
+      position: sticky;
+      top: 96px;
     }
 
     .offer-card {
       display: grid;
-      gap: 18px;
-      margin-bottom: 24px;
-      padding-bottom: 24px;
-      border-bottom: 2px solid var(--line);
+      gap: 12px;
+      padding: 20px;
     }
 
     .offer-card h2 {
       max-width: 720px;
+      font-size: clamp(28px, 3.4vw, 42px);
     }
 
     .offer-kicker {
@@ -313,11 +319,14 @@
     .offer-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
+      gap: 10px;
     }
 
     .offer-item {
-      padding: 16px;
+      display: grid;
+      gap: 4px;
+      align-items: start;
+      padding: 11px 13px;
       border: 2px solid var(--line);
       border-radius: 8px;
       background: var(--cream);
@@ -325,7 +334,6 @@
 
     .offer-item span {
       display: block;
-      margin-bottom: 6px;
       color: var(--muted);
       font-size: 0.82rem;
       font-weight: 900;
@@ -334,14 +342,14 @@
     .offer-item strong {
       display: block;
       color: var(--ink);
-      font-size: 1.05rem;
-      line-height: 1.42;
+      font-size: 0.98rem;
+      line-height: 1.36;
     }
 
     .price-strip {
       display: grid;
-      gap: 8px;
-      padding: 18px;
+      gap: 6px;
+      padding: 14px 16px;
       border: 3px solid var(--ink);
       border-radius: 8px;
       background: var(--dark);
@@ -367,26 +375,48 @@
 
     .promise-list {
       display: grid;
-      gap: 10px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
       margin: 0;
       padding: 0;
       list-style: none;
     }
 
     .promise-list li {
-      padding: 14px 16px;
+      padding: 10px 12px;
       border-left: 5px solid var(--gold);
       background: var(--cream);
       color: #211f19;
       font-weight: 800;
+      line-height: 1.35;
     }
 
-    .promise-list span {
-      display: block;
-      margin-top: 4px;
+    .promise-title {
+      margin: 2px 0 0;
+      font-family: var(--serif);
+      font-size: 1.25rem;
+      font-weight: 900;
+      line-height: 1.2;
+    }
+
+    .checkout-head {
+      margin-bottom: 18px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--line);
+    }
+
+    .checkout-head h2 {
+      font-size: clamp(26px, 3vw, 38px);
+    }
+
+    .checkout-head p {
+      margin-top: 8px;
       color: var(--muted);
-      font-size: 0.94rem;
-      font-weight: 600;
+      font-weight: 800;
+    }
+
+    .shopify-anchor {
+      min-height: 360px;
     }
 
     .outline-box {
@@ -451,8 +481,14 @@
       }
 
       .hero-grid,
-      .offer-grid {
+      .purchase-wrap,
+      .offer-grid,
+      .promise-list {
         grid-template-columns: 1fr;
+      }
+
+      .buy-box {
+        position: static;
       }
     }
 
@@ -463,8 +499,14 @@
       .btn { width: 100%; }
       .hero-actions { width: 100%; }
       .date-card,
+      .offer-card,
       .buy-box,
       .outline-box { padding: 22px; }
+
+      .offer-item {
+        grid-template-columns: 1fr;
+        gap: 4px;
+      }
     }
   </style>
 </head>
@@ -502,45 +544,50 @@
 
     <section id="buy">
       <div class="wrap purchase-wrap">
-        <div class="buy-box" aria-label="购买按钮">
-          <div class="offer-card">
-            <span class="offer-kicker">Johor Bahru 线下实战班</span>
-            <h2>27–28/6/2026 AI Agent Hands-on 实战班</h2>
+        <div class="offer-card">
+          <span class="offer-kicker">Johor Bahru 线下实战班</span>
+          <h2>27–28/6/2026 AI Agent Hands-on 实战班</h2>
 
-            <div class="offer-grid" aria-label="课程资料">
-              <div class="offer-item">
-                <span>形式</span>
-                <strong>线下 hands-on，手把手带你下载、设置，当场让 AI Agent 跑起来。</strong>
-              </div>
-              <div class="offer-item">
-                <span>日期与时间</span>
-                <strong>6 月 27 日 & 28 日，两天，10:00 – 17:00。</strong>
-              </div>
-              <div class="offer-item">
-                <span>地点</span>
-                <strong>Johor Bahru，确切场地会在通知公布。</strong>
-              </div>
-              <div class="offer-item">
-                <span>适合你如果</span>
-                <strong>你想真正装好、设好，并让自己的 AI Agent 开始工作。</strong>
-              </div>
+          <div class="offer-grid" aria-label="课程资料">
+            <div class="offer-item">
+              <span>课程</span>
+              <strong>WhatsApp AI 客服 / AI Agent 自动化两天训练课程。</strong>
             </div>
-
-            <div class="price-strip">
-              <span><del>原价 RM 2,400</del></span>
-              <strong>本场限时 RM 1,200</strong>
-              <p>加码：报名再送价值 RM 1,200 的 Token，等于学费用 Token 全部赚回来。</p>
+            <div class="offer-item">
+              <span>形式</span>
+              <strong>线下 hands-on，手把手带你下载、设置，当场让 AI Agent 跑起来。</strong>
             </div>
-
-            <ul class="promise-list" aria-label="报名承诺">
-              <li>报名后，我给你三个承诺</li>
-              <li>一定帮你安装成功 <span>不会让你带着“装不到、跑不到”的问题回家。</span></li>
-              <li>你的 AI 助理一定跑得起来 <span>现场会把基础设置完成，让你看到自己的 Agent 开始执行任务。</span></li>
-              <li>三个月陪跑 <span>问题回复、远端进电脑协助、群组分享新功能。</span></li>
-              <li>一年问答服务 <span>任何 AI Agent 问题，都能继续问。</span></li>
-            </ul>
+            <div class="offer-item">
+              <span>日期时间</span>
+              <strong>6 月 27 日 & 28 日，两天，10:00 – 17:00。</strong>
+            </div>
+            <div class="offer-item">
+              <span>地点</span>
+              <strong>Johor Bahru，确切场地会在通知公布。</strong>
+            </div>
           </div>
-          <div id='product-component-1781013708087'></div>
+
+          <div class="price-strip">
+            <span><del>原价 RM 2,000</del></span>
+            <strong>本场限时 RM 1,200</strong>
+            <p>加码：报名再送价值 RM 1,200 的 Token，等于学费用 Token 全部赚回来。</p>
+          </div>
+
+          <h3 class="promise-title">报名后，我给你这些承诺</h3>
+          <ul class="promise-list" aria-label="报名承诺">
+            <li>一定帮你安装成功</li>
+            <li>你的 AI 助理一定跑得起来</li>
+            <li>三个月陪跑：问题回复、远端进电脑协助、群组分享新功能</li>
+            <li>一年问答服务：任何 AI Agent 问题，都能继续问</li>
+          </ul>
+        </div>
+
+        <div class="buy-box" aria-label="购买按钮">
+          <div class="checkout-head">
+            <h2>立即报名</h2>
+            <p>点击购买课程，进入 Shopify Checkout 完成付款。</p>
+          </div>
+          <div class="shopify-anchor" id='product-component-1781013708087'></div>
         </div>
       </div>
     </section>
