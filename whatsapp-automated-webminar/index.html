@@ -360,6 +360,10 @@
       margin-bottom: 14px;
     }
 
+    .webinar-ended .countdown-grid {
+      display: none;
+    }
+
     .countdown-box {
       min-width: 0;
       padding: 10px 4px 8px;
@@ -1069,7 +1073,7 @@
           <button type="button" data-lang-btn="en">EN</button>
         </div>
         <a class="btn ghost" href="#agenda">看内容</a>
-        <a class="btn primary" href="#register">报名免费说明会</a>
+        <a class="btn primary" href="#register">登记下次通知</a>
         <a class="btn whatsapp" href="https://wa.me/601165673478">WhatsApp 咨询</a>
       </div>
     </div>
@@ -1090,36 +1094,36 @@
             <span class="label">My Mission</span>
             <p>我的目标是帮助马来西亚 <strong>10,000 个人</strong>，在今年可以拥有自己的 AI 助手，自动化工作流程。</p>
           </div>
-          <div class="event-card" data-event-card aria-label="免费说明会倒数报名">
+          <div class="event-card webinar-ended" data-event-card aria-label="免费说明会下次开课通知">
             <div class="event-meta">
               <div class="event-row">
                 <span class="event-icon" aria-hidden="true">日</span>
                 <div>
                   <span class="event-label" data-event-label="date">日期</span>
-                  <span class="event-value" data-event-date>2026-06-10 星期三</span>
+                  <span class="event-value" data-event-date>有开课通知</span>
                 </div>
               </div>
               <div class="event-row">
                 <span class="event-icon" aria-hidden="true">时</span>
                 <div>
                   <span class="event-label" data-event-label="time">时间 (GMT+8)</span>
-                  <span class="event-value" data-event-time>晚上 8:00 PM</span>
+                  <span class="event-value" data-event-time>Email / WhatsApp 通知</span>
                 </div>
               </div>
             </div>
             <hr class="event-divider">
-            <p class="countdown-title" data-countdown-heading>距离开始还有：</p>
+            <p class="countdown-title" data-countdown-heading>本期免费课程已经结束</p>
             <div class="countdown-grid" aria-live="polite">
               <div class="countdown-box"><span class="countdown-number" data-countdown-days>0</span><span class="countdown-label" data-countdown-label="days">天</span></div>
               <div class="countdown-box"><span class="countdown-number" data-countdown-hours>0</span><span class="countdown-label" data-countdown-label="hours">时</span></div>
               <div class="countdown-box"><span class="countdown-number" data-countdown-minutes>0</span><span class="countdown-label" data-countdown-label="minutes">分</span></div>
               <div class="countdown-box"><span class="countdown-number" data-countdown-seconds>0</span><span class="countdown-label" data-countdown-label="seconds">秒</span></div>
             </div>
-            <a class="btn event-cta" href="#register" data-event-cta>预约免费席位 →</a>
-            <p class="event-note" data-event-note>席位有限，先到先排</p>
+            <a class="btn event-cta" href="#register" data-event-cta>登记下次开课通知 →</a>
+            <p class="event-note" data-event-note>报名后，下次开课会通过 Email 或 WhatsApp 通知你。</p>
           </div>
           <div class="hero-actions">
-            <a class="btn primary" href="#register">我要报名免费说明会</a>
+            <a class="btn primary" href="#register">登记下次开课通知</a>
             <a class="btn teal" href="#fit">先看适不适合我</a>
             <a class="btn whatsapp" href="https://wa.me/601165673478">WhatsApp 通知我</a>
           </div>
@@ -1129,7 +1133,7 @@
         <aside class="console" aria-label="Webinar summary">
           <div class="console-top">
             <span class="console-label">Webinar Preview</span>
-            <span class="live-dot">报名开放中</span>
+            <span class="live-dot">本期已结束</span>
           </div>
           <h2>你不是缺 AI 工具。你缺一套可以每天自动跑的工作方式。</h2>
           <ul class="console-list">
@@ -1229,7 +1233,7 @@
       <div class="wrap">
         <div class="section-head">
           <div class="kicker">报名资料 / 表格规划</div>
-          <h2>免费说明会目前有两个场次，都是星期三晚上 8:00PM。报名时请选择你要参加的日期。</h2>
+          <h2>本期免费课程已经结束。留下资料后，下次有新的免费说明会，我们会通过 Email 或 WhatsApp 通知你。</h2>
         </div>
         <div class="table-wrap" aria-label="课程和报名规划表">
           <table>
@@ -1237,8 +1241,7 @@
               <tr><th>项目</th><th>上课时间</th><th>报名成功后</th></tr>
             </thead>
             <tbody>
-              <tr><td><span class="tag">免费线上说明会</span></td><td>2026-06-10 星期三 8:00PM</td><td>页面会弹出报名成功确认。</td></tr>
-              <tr><td><span class="tag">免费线上说明会</span></td><td>2026-06-17 星期三 8:00PM</td><td>页面会弹出报名成功确认。</td></tr>
+              <tr><td><span class="tag">免费线上说明会</span></td><td>有开课通知</td><td>下次开课会通过 Email 或 WhatsApp 通知你。</td></tr>
             </tbody>
           </table>
         </div>
@@ -1248,9 +1251,9 @@
     <section class="form-section" id="register">
       <div class="wrap form-shell">
         <aside class="form-note">
-          <div class="kicker">免费席位 · 立即预留</div>
-          <h2>预留你的免费 LIVE 席位</h2>
-          <p>填写下方表单 · 1 分钟完成</p>
+          <div class="kicker">下次开课 · 优先通知</div>
+          <h2>登记免费说明会开课通知</h2>
+          <p>本期已经结束。填写下方表单，下次开课会通过 Email 或 WhatsApp 通知你。</p>
         </aside>
 
         <form id="leadForm" action="#" method="post" data-endpoint="https://aligor-webinar-leads.aligor.workers.dev">
@@ -1261,7 +1264,7 @@
             <div class="field"><label for="city">城市 *</label><select id="city" name="city" required><option value="">请选择</option><option>Johor Bahru / JB</option><option>Kuala Lumpur / KL</option><option>Penang</option><option>Melaka</option><option>Other</option></select></div>
             <div class="field"><label for="role">你的身份 *</label><select id="role" name="role" required><option value="">请选择</option><option>教育中心 / 老师</option><option>SME 老板 / Founder</option><option>Sales</option><option>保险 / Agent</option><option>直销 / Network Marketing</option><option>服务业</option><option>电商卖家</option><option>Admin / Customer Service</option><option>其他</option></select></div>
             <div class="field"><label for="ai_level">目前 AI 使用程度 *</label><select id="ai_level" name="ai_level" required><option value="">请选择</option><option>完全不会</option><option>用过 ChatGPT</option><option>已订阅 ChatGPT / Claude / Gemini</option><option>公司已有 AI 工具</option></select></div>
-            <div class="field"><label for="class_time">上课时间 *</label><select id="class_time" name="class_time" required><option value="">请选择场次</option><option>2026-06-10 星期三 8:00PM</option><option>2026-06-17 星期三 8:00PM</option></select></div>
+            <div class="field"><label for="class_time">开课通知 *</label><select id="class_time" name="class_time" required><option value="">请选择</option><option value="notify_next_session">有开课通知</option></select></div>
             <div class="field full"><label for="pain_point">你现在最大痛点 *</label><select id="pain_point" name="pain_point" required><option value="">请选择一个最主要的</option><option>WhatsApp 重复回复客户 / 学生 / 家长</option><option>课程询问太多，常常重复回答</option><option>报价慢 / 资料找不到</option><option>Follow-up 乱 / 常常漏</option><option>客户资料散乱</option><option>想做 AI 客服但不知道怎样开始</option><option>想让团队用 AI 提升效率</option><option>其他</option></select></div>
           </div>
 
@@ -1277,8 +1280,8 @@
           <input type="hidden" name="source_page" value="whatsapp-automated-webminar">
 
           <label class="consent"><input type="checkbox" name="consent" value="yes" required> <span>我同意 Adrian 通过 WhatsApp（+601165673478）/ Email 通知我免费说明会相关内容。</span></label>
-          <button class="btn primary full" type="submit">提交报名</button>
-          <div class="success" id="successMsg" role="status">报名成功！请记得准时参加你选择的 8:00PM 场次。</div>
+          <button class="btn primary full" type="submit">登记开课通知</button>
+          <div class="success" id="successMsg" role="status">登记成功！下次开课会通过 Email 或 WhatsApp 通知你。</div>
         </form>
       </div>
     </section>
@@ -1331,7 +1334,7 @@
         </div>
         <div class="hero-actions">
           <a class="btn primary" href="https://www.instagram.com/aligor4916/" target="_blank" rel="noopener">Follow Instagram @aligor4916</a>
-          <a class="btn ghost" href="#register">报名免费说明会</a>
+          <a class="btn ghost" href="#register">登记下次通知</a>
         </div>
       </div>
     </section>
@@ -1355,13 +1358,13 @@
     </section>
   </main>
 
-  <div class="mobile-sticky"><a class="btn primary full" href="#register">报名免费说明会</a></div>
+  <div class="mobile-sticky"><a class="btn primary full" href="#register">登记下次开课通知</a></div>
 
   <div class="modal-backdrop" id="successModal" role="dialog" aria-modal="true" aria-labelledby="successModalTitle" aria-hidden="true">
     <div class="success-modal">
       <div class="badge">✓</div>
       <h2 id="successModalTitle">报名成功！</h2>
-      <p>谢谢你报名 WhatsApp AI 客服免费说明会。请记得准时参加你选择的 8:00PM 场次。有问题也可以 WhatsApp 到 +601165673478。</p>
+      <p>谢谢你登记 WhatsApp AI 客服免费说明会。下次有新的免费课程，我们会通过 Email 或 WhatsApp 通知你。有问题也可以 WhatsApp 到 +601165673478。</p>
       <button class="btn primary" type="button" id="closeSuccessModal">知道了</button>
     </div>
   </div>
@@ -1393,18 +1396,18 @@
           text: {
             '.brand span:last-child': '阿理哥 · Aligor',
             '.nav-actions .ghost': '看内容',
-            '.nav-actions .primary': '报名免费说明会',
+            '.nav-actions .primary': '登记下次通知',
             '.nav-actions .whatsapp': 'WhatsApp 咨询',
             '.eyebrow .pill:nth-child(1)': '免费线上说明会',
             '.eyebrow .pill:nth-child(2)': '60-90 min online webinar',
             '.eyebrow .pill:nth-child(3)': 'Malaysia · 免费报名',
             '.mission .label': 'My Mission',
-            '.hero-actions .primary': '我要报名免费说明会',
+            '.hero-actions .primary': '登记下次开课通知',
             '.hero-actions .teal': '先看适不适合我',
             '.hero-actions .whatsapp': 'WhatsApp 通知我',
             '.fineprint': '适合：有真实顾客、学生、家长、客户或学员询问，并且每天重复回复问题的人。完全不会写 program 也可以参加。',
             '.console-label': 'Webinar Preview',
-            '.live-dot': '报名开放中',
+            '.live-dot': '本期已结束',
             '.console h2': '你不是缺 AI 工具。你缺一套可以每天自动跑的工作方式。',
             '#why .kicker': 'Why This Webinar',
             '#why h2': '先搞清楚你的公司，到底适不适合做 AI 客服,什么是AI Agent',
@@ -1417,33 +1420,33 @@
             '#agenda .kicker': '60-90 Min Online Webinar',
             '#agenda h2': '说明会流程：先理解问题，再看 demo，最后决定要不要继续深入学习。',
             '#schedule .kicker': '报名资料 / 表格规划',
-            '#schedule h2': '免费说明会目前有两个场次，都是星期三晚上 8:00PM。报名时请选择你要参加的日期。',
-            '#register .kicker': '免费席位 · 立即预留',
-            '#register h2': '预留你的免费 LIVE 席位',
-            '#register .form-note p': '填写下方表单 · 1 分钟完成',
+            '#schedule h2': '本期免费课程已经结束。留下资料后，下次有新的免费说明会，我们会通过 Email 或 WhatsApp 通知你。',
+            '#register .kicker': '下次开课 · 优先通知',
+            '#register h2': '登记免费说明会开课通知',
+            '#register .form-note p': '本期已经结束。填写下方表单，下次开课会通过 Email 或 WhatsApp 通知你。',
             '#proof .kicker': 'Real SME Use Cases',
             '#proof h2': '说明会会用真实 SME 场景讲，不是只讲 AI 概念。',
             '#instagram .kicker': 'See More Results',
             '#instagram h2': '如果你想了解 AI 助手还能做什么，可以去看我的 Instagram。',
             '#instagram .section-head p': '我把很多实际成果、测试过程和 AI 助手用法都分享在 Instagram 上面。记得关注我，后面你会看到更多真实案例和实战内容。',
             '#instagram .hero-actions .primary': 'Follow Instagram @aligor4916',
-            '#instagram .hero-actions .ghost': '报名免费说明会',
+            '#instagram .hero-actions .ghost': '登记下次通知',
             '#faq .kicker': 'FAQ',
             '#faq h2': '报名之前，你可能会想问这些。',
-            '.mobile-sticky .btn': '报名免费说明会',
+            '.mobile-sticky .btn': '登记下次开课通知',
             '#successModalTitle': '报名成功！',
             '#closeSuccessModal': '知道了',
             'footer strong': '阿理哥 · Aligor',
             'footer p': 'Ukunili Music Sdn Bhd 老板 · AI Agent on Openclaw 小龙虾 · Vibe Coding · SME Automation',
             '.footer-links a:nth-child(1)': '主页面',
-            '.footer-links a:nth-child(2)': '报名',
+            '.footer-links a:nth-child(2)': '登记通知',
             '.footer-links a:nth-child(4)': 'FAQ'
           },
           html: {
             'h1': '你电脑设置好 <span class="accent">AI Agent</span> 就可以让你公司的 WhatsApp 自动回复。',
             '.hero-description': '我本人是 Ukunili Music Sdn Bhd 的老板，每天面对订单、客服、团队、库存、内容和 follow-up，所以我很了解中小型企业的痛点。这不是讲概念的 AI talk；我会分享我公司和我个人正在用的 AI 助理。重点是：我分享如何让 AI 动手工作，自动回复 WhatsApp，它可以自动回复 WhatsApp、Facebook 和 Instagram，也可以整理资料、提醒 follow-up、通知团队和执行更多内部流程。',
             '.mission p': '我的目标是帮助马来西亚 <strong>10,000 个人</strong>，在今年可以拥有自己的 AI 助手，自动化工作流程。',
-            '#successModal p': '谢谢你报名 WhatsApp AI 客服免费说明会。请记得准时参加你选择的 8:00PM 场次。有问题也可以 WhatsApp 到 +601165673478。'
+            '#successModal p': '谢谢你登记 WhatsApp AI 客服免费说明会。下次有新的免费课程，我们会通过 Email 或 WhatsApp 通知你。有问题也可以 WhatsApp 到 +601165673478。'
           },
           consoleItems: [
             ['看清楚哪里先自动化', '客服、报价、FAQ、follow-up、报告，不是一开始全部做。'],
@@ -1474,7 +1477,7 @@
             ['我是教你怎样制作自己的系统 + Q&A', '你会理解怎样自己控制公司的内部自动服务，而不是被某个固定月费软件绑住。']
           ],
           scheduleHeads: ['项目', '上课时间', '报名成功后'],
-          scheduleRows: [['免费线上说明会', '2026-06-10 星期三 8:00PM', '页面会弹出报名成功确认。'], ['免费线上说明会', '2026-06-17 星期三 8:00PM', '页面会弹出报名成功确认。']],
+          scheduleRows: [['免费线上说明会', '有开课通知', '下次开课会通过 Email 或 WhatsApp 通知你。']],
           proofCards: [
             ['每日销售报告', 'AI 每天看昨天卖了什么、哪些 SKU 动得快、哪些分类需要注意。'],
             ['多平台客服知识库回复', '让 AI 根据 FAQ / 产品资料回复 WhatsApp、Facebook 和 Instagram 的询问，不乱讲，不需要员工一直复制粘贴。'],
@@ -1499,29 +1502,31 @@
             ['学会之后我可以做到什么？', '学会以后，你不只是请到了 1 个 AI 助理。你可以拥有 1 到 10 个 AI 助理：客服助理、follow-up 助理、资料整理助理、提醒助理、报告助理，全部由你自己决定。']
           ],
           form: {
-            labels: ['姓名 *', 'WhatsApp *', 'Email *', '城市 *', '你的身份 *', '目前 AI 使用程度 *', '上课时间 *', '你现在最大痛点 *'],
+            labels: ['姓名 *', 'WhatsApp *', 'Email *', '城市 *', '你的身份 *', '目前 AI 使用程度 *', '开课通知 *', '你现在最大痛点 *'],
             placeholders: { name: '例如：Adrian Ng', whatsapp: '例如：+6012xxxxxxx' },
             options: {
               city: ['请选择', 'Johor Bahru / JB', 'Kuala Lumpur / KL', 'Penang', 'Melaka', 'Other'],
               role: ['请选择', '教育中心 / 老师', 'SME 老板 / Founder', 'Sales', '保险 / Agent', '直销 / Network Marketing', '服务业', '电商卖家', 'Admin / Customer Service', '其他'],
               ai_level: ['请选择', '完全不会', '用过 ChatGPT', '已订阅 ChatGPT / Claude / Gemini', '公司已有 AI 工具'],
-              class_time: ['请选择场次', '2026-06-10 星期三 8:00PM', '2026-06-17 星期三 8:00PM'],
+              class_time: ['请选择', '有开课通知'],
               pain_point: ['请选择一个最主要的', 'WhatsApp 重复回复客户 / 学生 / 家长', '课程询问太多，常常重复回答', '报价慢 / 资料找不到', 'Follow-up 乱 / 常常漏', '客户资料散乱', '想做 AI 客服但不知道怎样开始', '想让团队用 AI 提升效率', '其他']
             },
             consent: '我同意 Adrian 通过 WhatsApp（+601165673478）/ Email 通知我免费说明会相关内容。',
-            submit: '提交报名',
+            submit: '登记开课通知',
             loading: '提交中...',
-            success: '报名成功！请记得准时参加你选择的 8:00PM 场次。',
+            success: '登记成功！下次开课会通过 Email 或 WhatsApp 通知你。',
             fail: '提交失败，请 WhatsApp 到 +601165673478 联系我们。'
           },
           eventCard: {
-            dateLabel: '日期',
-            timeLabel: '时间 (GMT+8)',
-            heading: '距离开始还有：',
+            dateLabel: '开课状态',
+            timeLabel: '通知方式',
+            dateValue: '有开课通知',
+            timeValue: 'Email / WhatsApp 通知',
+            heading: '本期免费课程已经结束',
             labels: { days: '天', hours: '时', minutes: '分', seconds: '秒' },
-            cta: '预约免费席位 →',
-            note: '席位有限，先到先排',
-            ended: '说明会已开始'
+            cta: '登记下次开课通知 →',
+            note: '报名后，下次开课会通过 Email 或 WhatsApp 通知你。',
+            ended: '本期免费课程已经结束'
           }
         },
         en: {
@@ -1530,18 +1535,18 @@
           text: {
             '.brand span:last-child': 'Aligor · 阿理哥',
             '.nav-actions .ghost': 'View Content',
-            '.nav-actions .primary': 'Register Free',
+            '.nav-actions .primary': 'Get Next Session Notice',
             '.nav-actions .whatsapp': 'WhatsApp Me',
             '.eyebrow .pill:nth-child(1)': 'Free Online Webinar',
             '.eyebrow .pill:nth-child(2)': '60-90 min online webinar',
             '.eyebrow .pill:nth-child(3)': 'Malaysia · Free registration',
             '.mission .label': 'My Mission',
-            '.hero-actions .primary': 'Register for the free webinar',
+            '.hero-actions .primary': 'Get next session notice',
             '.hero-actions .teal': 'See if this fits me',
             '.hero-actions .whatsapp': 'Notify me on WhatsApp',
             '.fineprint': 'Best for people with real customers, students, parents, clients or learners asking repeated questions every day. You can join even if you cannot code.',
             '.console-label': 'Webinar Preview',
-            '.live-dot': 'Registration open',
+            '.live-dot': 'Current session ended',
             '.console h2': 'You are not missing another AI tool. You are missing a daily workflow that can run automatically.',
             '#why .kicker': 'Why This Webinar',
             '#why h2': 'Do not buy a course first. First understand whether your business is suitable for AI customer service.',
@@ -1554,33 +1559,33 @@
             '#agenda .kicker': '60-90 Min Online Webinar',
             '#agenda h2': 'Webinar flow: understand the problem, watch the demo, then decide whether to learn deeper.',
             '#schedule .kicker': 'Registration / Schedule',
-            '#schedule h2': 'There are currently two free webinar sessions, both on Wednesday at 8:00PM. Choose your date when registering.',
-            '#register .kicker': 'Free Seat · Reserve Now',
-            '#register h2': 'Reserve your free LIVE seat',
-            '#register .form-note p': 'Fill in the form below · Complete in 1 minute',
+            '#schedule h2': 'The current free course has ended. Leave your details and we will notify you by Email or WhatsApp when the next free webinar opens.',
+            '#register .kicker': 'Next Session · Priority Notice',
+            '#register h2': 'Register for the next free webinar notice',
+            '#register .form-note p': 'The current session has ended. Fill in the form and we will notify you by Email or WhatsApp when the next session opens.',
             '#proof .kicker': 'Real SME Use Cases',
             '#proof h2': 'The webinar uses real SME scenarios, not only AI concepts.',
             '#instagram .kicker': 'See More Results',
             '#instagram h2': 'If you want to see what AI assistants can do, visit my Instagram.',
             '#instagram .section-head p': 'I share many real results, testing processes and AI assistant use cases on Instagram. Follow me to see more practical examples.',
             '#instagram .hero-actions .primary': 'Follow Instagram @aligor4916',
-            '#instagram .hero-actions .ghost': 'Register for free webinar',
+            '#instagram .hero-actions .ghost': 'Get next session notice',
             '#faq .kicker': 'FAQ',
             '#faq h2': 'Before registering, you may want to ask these questions.',
-            '.mobile-sticky .btn': 'Register for free webinar',
+            '.mobile-sticky .btn': 'Get next session notice',
             '#successModalTitle': 'Registration successful!',
             '#closeSuccessModal': 'Got it',
             'footer strong': 'Aligor · 阿理哥',
             'footer p': 'Owner of Ukunili Music Sdn Bhd · AI Agent on Openclaw · Vibe Coding · SME Automation',
             '.footer-links a:nth-child(1)': 'Main page',
-            '.footer-links a:nth-child(2)': 'Register',
+            '.footer-links a:nth-child(2)': 'Get notified',
             '.footer-links a:nth-child(4)': 'FAQ'
           },
           html: {
             'h1': 'Set up an <span class="accent">AI Agent</span> on your computer, and your company WhatsApp can reply automatically.',
             '.hero-description': 'I am the owner of Ukunili Music Sdn Bhd. Every day I handle orders, customer service, team work, inventory, content and follow-up, so I understand the pain points of small and medium businesses. This is not a theory-only AI talk. I will share AI assistants that my company and I personally use. The key point: I share how to make AI do the work and automatically reply on WhatsApp. It can automatically reply on WhatsApp, Facebook and Instagram, organize information, remind follow-ups, notify your team and run more internal processes.',
             '.mission p': 'My goal is to help <strong>10,000 people in Malaysia</strong> own their own AI assistant this year and automate their work processes.',
-            '#successModal p': 'Thank you for registering for the WhatsApp AI customer service free webinar. Please remember to attend your selected 8:00PM session. For questions, WhatsApp +601165673478.'
+            '#successModal p': 'Thank you for registering your interest in the WhatsApp AI customer service free webinar. We will notify you by Email or WhatsApp when the next free session opens. For questions, WhatsApp +601165673478.'
           },
           consoleItems: [
             ['See what to automate first', 'Customer service, quotation, FAQ, follow-up and reports. You do not automate everything on day one.'],
@@ -1611,7 +1616,7 @@
             ['I am not selling software: I teach you how to build your own system + Q&A', 'You will understand how to control your own internal automation instead of being locked into fixed monthly software.']
           ],
           scheduleHeads: ['Item', 'Class Time', 'After Successful Registration'],
-          scheduleRows: [['Free Online Webinar', 'Wednesday 2026-06-10 8:00PM', 'The page will show a registration success confirmation.'], ['Free Online Webinar', 'Wednesday 2026-06-17 8:00PM', 'The page will show a registration success confirmation.']],
+          scheduleRows: [['Free Online Webinar', 'Next session notification', 'We will notify you by Email or WhatsApp when the next session opens.']],
           proofCards: [
             ['Daily sales report', 'AI checks what sold yesterday, which SKUs moved fast and which categories need attention.'],
             ['Multi-platform knowledge base replies', 'AI replies to WhatsApp, Facebook and Instagram enquiries based on FAQ and product data, without random answers or repeated copy-paste.'],
@@ -1636,29 +1641,31 @@
             ['What can I do after learning this?', 'After learning, you are not just getting 1 AI assistant. You can have 1 to 10 AI assistants: customer service assistant, follow-up assistant, data organizer, reminder assistant and reporting assistant, all decided by you.']
           ],
           form: {
-            labels: ['Name *', 'WhatsApp *', 'Email *', 'City *', 'Your role *', 'Current AI usage level *', 'Class time *', 'Your biggest pain point now *'],
+            labels: ['Name *', 'WhatsApp *', 'Email *', 'City *', 'Your role *', 'Current AI usage level *', 'Session notification *', 'Your biggest pain point now *'],
             placeholders: { name: 'Example: Adrian Ng', whatsapp: 'Example: +6012xxxxxxx' },
             options: {
               city: ['Please choose', 'Johor Bahru / JB', 'Kuala Lumpur / KL', 'Penang', 'Melaka', 'Other'],
               role: ['Please choose', 'Education centre / Teacher', 'SME owner / Founder', 'Sales', 'Insurance / Agent', 'Direct selling / Network Marketing', 'Service industry', 'Ecommerce seller', 'Admin / Customer Service', 'Other'],
               ai_level: ['Please choose', 'Never used AI', 'Used ChatGPT before', 'Subscribed to ChatGPT / Claude / Gemini', 'Company already uses AI tools'],
-              class_time: ['Please choose a session', 'Wednesday 2026-06-10 8:00PM', 'Wednesday 2026-06-17 8:00PM'],
+              class_time: ['Please choose', 'Notify me about the next session'],
               pain_point: ['Please choose the main one', 'Repeated WhatsApp replies to customers / students / parents', 'Too many course enquiries and repeated answers', 'Slow quotation / cannot find information', 'Messy follow-up / often missed', 'Customer information is scattered', 'Want AI customer service but do not know where to start', 'Want team to use AI for better efficiency', 'Other']
             },
             consent: 'I agree that Adrian may contact me through WhatsApp (+601165673478) / Email about this free webinar.',
-            submit: 'Submit registration',
+            submit: 'Get session notification',
             loading: 'Submitting...',
-            success: 'Registration successful! Please remember to attend your selected 8:00PM session.',
+            success: 'Registration successful! We will notify you by Email or WhatsApp when the next session opens.',
             fail: 'Submission failed. Please WhatsApp us at +601165673478.'
           },
           eventCard: {
-            dateLabel: 'Date',
-            timeLabel: 'Time (GMT+8)',
-            heading: 'Starts in:',
+            dateLabel: 'Session status',
+            timeLabel: 'Notification method',
+            dateValue: 'Next session notification',
+            timeValue: 'Email / WhatsApp notification',
+            heading: 'The current free course has ended',
             labels: { days: 'Days', hours: 'Hours', minutes: 'Min', seconds: 'Sec' },
-            cta: 'Reserve free seat →',
-            note: 'Limited seats, first come first served',
-            ended: 'The webinar has started'
+            cta: 'Get next session notice →',
+            note: 'Register and we will notify you by Email or WhatsApp when the next session opens.',
+            ended: 'The current free course has ended'
           }
         }
       };
@@ -1758,6 +1765,8 @@
         setText('#successMsg', dict.form.success);
         setText('[data-event-label="date"]', dict.eventCard.dateLabel);
         setText('[data-event-label="time"]', dict.eventCard.timeLabel);
+        setText('[data-event-date]', dict.eventCard.dateValue);
+        setText('[data-event-time]', dict.eventCard.timeValue);
         setText('[data-countdown-heading]', dict.eventCard.heading);
         setText('[data-countdown-label="days"]', dict.eventCard.labels.days);
         setText('[data-countdown-label="hours"]', dict.eventCard.labels.hours);
@@ -1791,55 +1800,6 @@
       const referrerEl = document.getElementById('referrer');
       if (landingPageEl) landingPageEl.value = window.location.href;
       if (referrerEl) referrerEl.value = document.referrer || '';
-
-      function initEventCountdown() {
-        const card = document.querySelector('[data-event-card]');
-        if (!card) return;
-
-        const sessions = [
-          { dateText: '2026-06-10 星期三', timeText: '晚上 8:00 PM', iso: '2026-06-10T20:00:00+08:00' },
-          { dateText: '2026-06-17 星期三', timeText: '晚上 8:00 PM', iso: '2026-06-17T20:00:00+08:00' }
-        ].map(function (session) {
-          return Object.assign({}, session, { startsAt: new Date(session.iso) });
-        });
-
-        const now = new Date();
-        const futureSession = sessions.find(function (session) { return session.startsAt > now; });
-        const activeSession = futureSession || sessions[sessions.length - 1];
-        const dateEl = card.querySelector('[data-event-date]');
-        const timeEl = card.querySelector('[data-event-time]');
-        if (dateEl) dateEl.textContent = activeSession.dateText;
-        if (timeEl) timeEl.textContent = activeSession.timeText;
-
-        function setValue(selector, value) {
-          const el = card.querySelector(selector);
-          if (el) el.textContent = String(value);
-        }
-
-        function updateCountdown() {
-          const remaining = Math.max(0, activeSession.startsAt.getTime() - Date.now());
-          const totalSeconds = Math.floor(remaining / 1000);
-          const days = Math.floor(totalSeconds / 86400);
-          const hours = Math.floor((totalSeconds % 86400) / 3600);
-          const minutes = Math.floor((totalSeconds % 3600) / 60);
-          const seconds = totalSeconds % 60;
-
-          setValue('[data-countdown-days]', days);
-          setValue('[data-countdown-hours]', hours);
-          setValue('[data-countdown-minutes]', minutes);
-          setValue('[data-countdown-seconds]', seconds);
-
-          if (remaining === 0 && !futureSession) {
-            const dict = translations[currentLang] || translations.zh;
-            setText('[data-countdown-heading]', dict.eventCard.ended);
-          }
-        }
-
-        updateCountdown();
-        window.setInterval(updateCountdown, 1000);
-      }
-
-      initEventCountdown();
 
       const form = document.getElementById('leadForm');
       const success = document.getElementById('successMsg');
