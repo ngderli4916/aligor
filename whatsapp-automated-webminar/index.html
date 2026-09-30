@@ -168,7 +168,6 @@
 
     .btn.primary { background: var(--ink); color: var(--cream); }
     .btn.teal { background: var(--teal); border-color: var(--teal); color: #fff; }
-    .btn.whatsapp { background: var(--whatsapp); color: #07170e; }
     .btn.ghost { background: var(--cream); }
     .btn.full { width: 100%; }
 
@@ -1005,8 +1004,7 @@
 
     @media (max-width: 900px) {
       .nav-meta,
-      .nav-actions .ghost,
-      .nav-actions .whatsapp { display: none; }
+      .nav-actions .ghost { display: none; }
       .nav {
         min-height: 68px;
         gap: 10px;
@@ -1074,7 +1072,6 @@
         </div>
         <a class="btn ghost" href="#agenda">看内容</a>
         <a class="btn primary" href="#register">登记下次通知</a>
-        <a class="btn whatsapp" href="https://wa.me/601165673478">WhatsApp 咨询</a>
       </div>
     </div>
   </header>
@@ -1125,7 +1122,6 @@
           <div class="hero-actions">
             <a class="btn primary" href="#register">登记下次开课通知</a>
             <a class="btn teal" href="#fit">先看适不适合我</a>
-            <a class="btn whatsapp" href="https://wa.me/601165673478">WhatsApp 通知我</a>
           </div>
           <p class="fineprint">适合：有真实顾客、学生、家长、客户或学员询问，并且每天重复回复问题的人。完全不会写 program 也可以参加。</p>
         </div>
@@ -1279,7 +1275,7 @@
           <input type="hidden" name="submitted_at" id="submitted_at">
           <input type="hidden" name="source_page" value="whatsapp-automated-webminar">
 
-          <label class="consent"><input type="checkbox" name="consent" value="yes" required> <span>我同意 Adrian 通过 WhatsApp（+601165673478）/ Email 通知我免费说明会相关内容。</span></label>
+          <label class="consent"><input type="checkbox" name="consent" value="yes" required> <span>我同意 Adrian 通过 WhatsApp / Email 通知我免费说明会相关内容。</span></label>
           <button class="btn primary full" type="submit">登记开课通知</button>
           <div class="success" id="successMsg" role="status">登记成功！下次开课会通过 Email 或 WhatsApp 通知你。</div>
         </form>
@@ -1364,7 +1360,7 @@
     <div class="success-modal">
       <div class="badge">✓</div>
       <h2 id="successModalTitle">报名成功！</h2>
-      <p>谢谢你登记 WhatsApp AI 客服免费说明会。下次有新的免费课程，我们会通过 Email 或 WhatsApp 通知你。有问题也可以 WhatsApp 到 +601165673478。</p>
+      <p>谢谢你登记 WhatsApp AI 客服免费说明会。下次有新的免费课程，我们会通过 Email 或 WhatsApp 通知你。</p>
       <button class="btn primary" type="button" id="closeSuccessModal">知道了</button>
     </div>
   </div>
@@ -1381,7 +1377,6 @@
       <div class="footer-links">
         <a href="/">主页面</a>
         <a href="#register">报名</a>
-        <a href="https://wa.me/601165673478">WhatsApp +601165673478</a>
         <a href="#faq">FAQ</a>
       </div>
     </div>
@@ -1397,14 +1392,12 @@
             '.brand span:last-child': '阿理哥 · Aligor',
             '.nav-actions .ghost': '看内容',
             '.nav-actions .primary': '登记下次通知',
-            '.nav-actions .whatsapp': 'WhatsApp 咨询',
             '.eyebrow .pill:nth-child(1)': '免费线上说明会',
             '.eyebrow .pill:nth-child(2)': '60-90 min online webinar',
             '.eyebrow .pill:nth-child(3)': 'Malaysia · 免费报名',
             '.mission .label': 'My Mission',
             '.hero-actions .primary': '登记下次开课通知',
             '.hero-actions .teal': '先看适不适合我',
-            '.hero-actions .whatsapp': 'WhatsApp 通知我',
             '.fineprint': '适合：有真实顾客、学生、家长、客户或学员询问，并且每天重复回复问题的人。完全不会写 program 也可以参加。',
             '.console-label': 'Webinar Preview',
             '.live-dot': '本期已结束',
@@ -1440,13 +1433,13 @@
             'footer p': 'Ukunili Music Sdn Bhd 老板 · AI Agent on Openclaw 小龙虾 · Vibe Coding · SME Automation',
             '.footer-links a:nth-child(1)': '主页面',
             '.footer-links a:nth-child(2)': '登记通知',
-            '.footer-links a:nth-child(4)': 'FAQ'
+            '.footer-links a:nth-child(3)': 'FAQ'
           },
           html: {
             'h1': '你电脑设置好 <span class="accent">AI Agent</span> 就可以让你公司的 WhatsApp 自动回复。',
             '.hero-description': '我本人是 Ukunili Music Sdn Bhd 的老板，每天面对订单、客服、团队、库存、内容和 follow-up，所以我很了解中小型企业的痛点。这不是讲概念的 AI talk；我会分享我公司和我个人正在用的 AI 助理。重点是：我分享如何让 AI 动手工作，自动回复 WhatsApp，它可以自动回复 WhatsApp、Facebook 和 Instagram，也可以整理资料、提醒 follow-up、通知团队和执行更多内部流程。',
             '.mission p': '我的目标是帮助马来西亚 <strong>10,000 个人</strong>，在今年可以拥有自己的 AI 助手，自动化工作流程。',
-            '#successModal p': '谢谢你登记 WhatsApp AI 客服免费说明会。下次有新的免费课程，我们会通过 Email 或 WhatsApp 通知你。有问题也可以 WhatsApp 到 +601165673478。'
+            '#successModal p': '谢谢你登记 WhatsApp AI 客服免费说明会。下次有新的免费课程，我们会通过 Email 或 WhatsApp 通知你。'
           },
           consoleItems: [
             ['看清楚哪里先自动化', '客服、报价、FAQ、follow-up、报告，不是一开始全部做。'],
@@ -1511,11 +1504,11 @@
               class_time: ['请选择', '有开课通知'],
               pain_point: ['请选择一个最主要的', 'WhatsApp 重复回复客户 / 学生 / 家长', '课程询问太多，常常重复回答', '报价慢 / 资料找不到', 'Follow-up 乱 / 常常漏', '客户资料散乱', '想做 AI 客服但不知道怎样开始', '想让团队用 AI 提升效率', '其他']
             },
-            consent: '我同意 Adrian 通过 WhatsApp（+601165673478）/ Email 通知我免费说明会相关内容。',
+            consent: '我同意 Adrian 通过 WhatsApp / Email 通知我免费说明会相关内容。',
             submit: '登记开课通知',
             loading: '提交中...',
             success: '登记成功！下次开课会通过 Email 或 WhatsApp 通知你。',
-            fail: '提交失败，请 WhatsApp 到 +601165673478 联系我们。'
+            fail: '提交失败，请稍后再试。'
           },
           eventCard: {
             dateLabel: '开课状态',
@@ -1536,14 +1529,12 @@
             '.brand span:last-child': 'Aligor · 阿理哥',
             '.nav-actions .ghost': 'View Content',
             '.nav-actions .primary': 'Get Next Session Notice',
-            '.nav-actions .whatsapp': 'WhatsApp Me',
             '.eyebrow .pill:nth-child(1)': 'Free Online Webinar',
             '.eyebrow .pill:nth-child(2)': '60-90 min online webinar',
             '.eyebrow .pill:nth-child(3)': 'Malaysia · Free registration',
             '.mission .label': 'My Mission',
             '.hero-actions .primary': 'Get next session notice',
             '.hero-actions .teal': 'See if this fits me',
-            '.hero-actions .whatsapp': 'Notify me on WhatsApp',
             '.fineprint': 'Best for people with real customers, students, parents, clients or learners asking repeated questions every day. You can join even if you cannot code.',
             '.console-label': 'Webinar Preview',
             '.live-dot': 'Current session ended',
@@ -1579,13 +1570,13 @@
             'footer p': 'Owner of Ukunili Music Sdn Bhd · AI Agent on Openclaw · Vibe Coding · SME Automation',
             '.footer-links a:nth-child(1)': 'Main page',
             '.footer-links a:nth-child(2)': 'Get notified',
-            '.footer-links a:nth-child(4)': 'FAQ'
+            '.footer-links a:nth-child(3)': 'FAQ'
           },
           html: {
             'h1': 'Set up an <span class="accent">AI Agent</span> on your computer, and your company WhatsApp can reply automatically.',
             '.hero-description': 'I am the owner of Ukunili Music Sdn Bhd. Every day I handle orders, customer service, team work, inventory, content and follow-up, so I understand the pain points of small and medium businesses. This is not a theory-only AI talk. I will share AI assistants that my company and I personally use. The key point: I share how to make AI do the work and automatically reply on WhatsApp. It can automatically reply on WhatsApp, Facebook and Instagram, organize information, remind follow-ups, notify your team and run more internal processes.',
             '.mission p': 'My goal is to help <strong>10,000 people in Malaysia</strong> own their own AI assistant this year and automate their work processes.',
-            '#successModal p': 'Thank you for registering your interest in the WhatsApp AI customer service free webinar. We will notify you by Email or WhatsApp when the next free session opens. For questions, WhatsApp +601165673478.'
+            '#successModal p': 'Thank you for registering your interest in the WhatsApp AI customer service free webinar. We will notify you by Email or WhatsApp when the next free session opens.'
           },
           consoleItems: [
             ['See what to automate first', 'Customer service, quotation, FAQ, follow-up and reports. You do not automate everything on day one.'],
@@ -1650,11 +1641,11 @@
               class_time: ['Please choose', 'Notify me about the next session'],
               pain_point: ['Please choose the main one', 'Repeated WhatsApp replies to customers / students / parents', 'Too many course enquiries and repeated answers', 'Slow quotation / cannot find information', 'Messy follow-up / often missed', 'Customer information is scattered', 'Want AI customer service but do not know where to start', 'Want team to use AI for better efficiency', 'Other']
             },
-            consent: 'I agree that Adrian may contact me through WhatsApp (+601165673478) / Email about this free webinar.',
+            consent: 'I agree that Adrian may contact me through WhatsApp / Email about this free webinar.',
             submit: 'Get session notification',
             loading: 'Submitting...',
             success: 'Registration successful! We will notify you by Email or WhatsApp when the next session opens.',
-            fail: 'Submission failed. Please WhatsApp us at +601165673478.'
+            fail: 'Submission failed. Please try again later.'
           },
           eventCard: {
             dateLabel: 'Session status',
