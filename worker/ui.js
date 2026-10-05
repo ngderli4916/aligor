@@ -18,7 +18,6 @@ input,select,textarea{width:100%;padding:13px 15px;border:1.5px solid var(--fiel
 input:focus,select:focus,textarea:focus{outline:3px solid var(--yellow);outline-offset:1px;border-color:var(--ink)}
 textarea{min-height:100px;resize:vertical}
 input[readonly]{background:#F6F2E6;color:var(--ink2);cursor:default}
-.when{display:inline-block;margin:18px 0 0;padding:9px 20px;border-radius:999px;background:var(--yellow);border:2px solid var(--ink);font-weight:700;font-size:16px;color:var(--ink)}
 fieldset{border:0;padding:0;margin:0;min-width:0}
 legend{font-weight:700;font-size:15px;padding:0;margin-bottom:10px}
 .choices{display:flex;flex-wrap:wrap;gap:10px}
@@ -63,17 +62,17 @@ function shell(title, body, script = '') {
 }
 
 export function registerPage(defaultBatch = '') {
-  return shell('Aligor 课程报名', `
+  return shell('Aligor Preview 报名', `
     <a class="brand" href="/" style="text-decoration:none;color:inherit">阿理哥 · Aligor</a>
-    <section class="hero"><small>课程报名</small><h1>留下 WhatsApp，<br>我会直接联系你</h1><p>报名资料会保存到 Aligor 后台。新报名会通知 Adrian，并由 Adrian 通过 WhatsApp 跟进。</p><p class="when">10 月 7 日（星期三）晚上 8:00 – 9:00（马来西亚时间）</p></section>
+    <section class="hero"><small>Preview 报名</small><h1>留下 WhatsApp，<br>我会直接联络你</h1><p>选择你想参加的场次，填写资料后，我会通过 WhatsApp 联络你。</p></section>
     <form id="leadForm" class="card grid">
       <label>姓名<input name="name" required maxlength="80" autocomplete="name"></label>
-      <label>WhatsApp 电话<input name="phone" required maxlength="30" inputmode="tel" placeholder="例如 0167871902" autocomplete="tel"></label>
-      <label>报名项目<input name="course" value="免费 AI Preview" readonly></label>
-      <input type="hidden" name="batch" value="${defaultBatch||'PREVIEW-1'}">
+      <label>WhatsApp 号码<input name="phone" required maxlength="30" inputmode="tel" placeholder="例如 0167871902" autocomplete="tel"></label>
+      <label class="full">报名项目<select name="course" id="course"><option value="免费 AI Preview · 10 月 7 日（星期三）8 PM – 9 PM" data-batch="PREVIEW-1007">免费 AI Preview · 10 月 7 日（星期三）8 PM – 9 PM</option><option value="免费 AI Preview · 10 月 14 日（星期三）8 PM – 9 PM" data-batch="PREVIEW-1014">免费 AI Preview · 10 月 14 日（星期三）8 PM – 9 PM</option></select></label>
+      <input type="hidden" name="batch" id="batch" value="${defaultBatch||'PREVIEW-1007'}">
       <label>公司名称（选填）<input name="company" maxlength="100"></label>
       <label>行业（选填）<input name="industry" maxlength="80"></label>
-      <fieldset class="full"><legend>你有使用过 AI Agent 吗？</legend><div class="choices">
+      <fieldset class="full"><legend>你有用过 AI Agent 吗？</legend><div class="choices">
         <label class="choice"><input type="radio" name="used_ai_agent" value="有，正在使用" required>有，正在使用</label>
         <label class="choice"><input type="radio" name="used_ai_agent" value="有，曾经试过">有，曾经试过</label>
         <label class="choice"><input type="radio" name="used_ai_agent" value="听过，但还没用过">听过，但还没用过</label>
@@ -91,14 +90,17 @@ export function registerPage(defaultBatch = '') {
       </div><label style="margin-top:12px">其他（选填）<input name="ai_tools_other" maxlength="100" placeholder="填写其他 AI 工具"></label></fieldset>
       <label class="full">你最想让 AI 帮你解决什么？<textarea name="goal" maxlength="800"></textarea></label>
       <input class="hidden" name="website" tabindex="-1" autocomplete="off">
-      <label class="check full"><input type="checkbox" name="consent" required value="true"><span>我同意 Aligor 使用以上资料处理课程报名，并通过 WhatsApp 联系我。我可以要求停止联络或删除资料。</span></label>
+      <label class="check full"><input type="checkbox" name="consent" required value="true"><span>我同意 Aligor 使用以上资料处理 Preview 报名，并通过 WhatsApp 联络我。我可以随时要求停止联络或删除资料。</span></label>
       <div class="full actions"><button class="btn" type="submit">提交报名</button></div>
       <p id="message" class="full" role="status"></p>
     </form>
-    <section id="success" class="card success hidden"><h2>报名资料已收到</h2><p>Preview 时间：10 月 7 日（星期三）晚上 8:00 – 9:00，请预留时间。你可以现在直接 WhatsApp Adrian，获得更快回复。</p><a id="wa" class="btn wa" target="_blank" rel="noopener">打开 WhatsApp</a></section>
+    <section id="success" class="card success hidden"><h2>报名成功！</h2><p id="successNote"></p><a id="wa" class="btn wa" target="_blank" rel="noopener">打开 WhatsApp</a></section>
   `, `
     const form=document.querySelector('#leadForm'),msg=document.querySelector('#message');
-    form.addEventListener('submit',async e=>{e.preventDefault();msg.textContent='提交中…';const button=form.querySelector('button');button.disabled=true;try{const fd=new FormData(form),data=Object.fromEntries(fd);data.ai_tools=fd.getAll('ai_tools');data.consent=form.consent.checked;const r=await fetch('/api/leads',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(data)});const out=await r.json();if(!r.ok)throw new Error(out.error||'提交失败');form.classList.add('hidden');document.querySelector('#success').classList.remove('hidden');document.querySelector('#wa').href=out.whatsapp_url;}catch(err){msg.textContent=err.message;msg.className='full error';button.disabled=false;}});
+    const qb=new URLSearchParams(location.search).get('batch'),sel=document.querySelector('#course'),bt=document.querySelector('#batch');
+    function syncBatch(){if(!qb)bt.value=sel.selectedOptions[0].dataset.batch}
+    sel.addEventListener('change',syncBatch);syncBatch();
+    form.addEventListener('submit',async e=>{e.preventDefault();msg.textContent='提交中…';const button=form.querySelector('button');button.disabled=true;try{const fd=new FormData(form),data=Object.fromEntries(fd);data.ai_tools=fd.getAll('ai_tools');data.consent=form.consent.checked;const r=await fetch('/api/leads',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(data)});const out=await r.json();if(!r.ok)throw new Error(out.error||'提交失败');form.classList.add('hidden');document.querySelector('#success').classList.remove('hidden');document.querySelector('#wa').href=out.whatsapp_url;document.querySelector('#successNote').textContent='你报名的是：'+data.course+'。我会通过 WhatsApp 联络你，也可以现在直接 WhatsApp 我，获得更快回复。';}catch(err){msg.textContent=err.message;msg.className='full error';button.disabled=false;}});
   `);
 }
 
