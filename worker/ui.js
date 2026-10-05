@@ -17,6 +17,7 @@ label{display:grid;gap:7px;font-weight:700;font-size:15px}
 input,select,textarea{width:100%;padding:13px 15px;border:1.5px solid var(--field);border-radius:12px;font:inherit;font-weight:400;background:#fff;color:var(--ink)}
 input:focus,select:focus,textarea:focus{outline:3px solid var(--yellow);outline-offset:1px;border-color:var(--ink)}
 textarea{min-height:100px;resize:vertical}
+input[readonly]{background:#F6F2E6;color:var(--ink2);cursor:default}
 fieldset{border:0;padding:0;margin:0;min-width:0}
 legend{font-weight:700;font-size:15px;padding:0;margin-bottom:10px}
 .choices{display:flex;flex-wrap:wrap;gap:10px}
@@ -67,7 +68,7 @@ export function registerPage(defaultBatch = '') {
     <form id="leadForm" class="card grid">
       <label>姓名<input name="name" required maxlength="80" autocomplete="name"></label>
       <label>WhatsApp 电话<input name="phone" required maxlength="30" inputmode="tel" placeholder="例如 0167871902" autocomplete="tel"></label>
-      <label>报名项目<select name="course"><option>免费 AI Preview</option><option>AI 个人助理一天课程</option></select></label>
+      <label>报名项目<input name="course" value="免费 AI Preview" readonly></label>
       <input type="hidden" name="batch" value="${defaultBatch||'PREVIEW-1'}">
       <label>公司名称（选填）<input name="company" maxlength="100"></label>
       <label>行业（选填）<input name="industry" maxlength="80"></label>
