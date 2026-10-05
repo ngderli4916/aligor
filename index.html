@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>阿理哥 · Aligor · 从 0 开始建立你的 AI 数字员工</title>
-  <meta name="description" content="阿理哥 Aligor：一天实战课，从 0 开始建立你的 AI 数字员工。手机指挥 Hermes Agent、WhatsApp AI 自动回复、AI 制作 Landing Page。Preview 免费。">
+  <title>阿理哥 · Aligor · 从 0 开始建立你的 AI 个人助理</title>
+  <meta name="description" content="阿理哥 Aligor：一天实战课，从 0 开始建立你的 AI 个人助理。手机指挥 AI 助理、WhatsApp AI 自动回复、AI 制作 Landing Page。Preview 免费。">
   <meta name="theme-color" content="#FAF6EE">
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
@@ -279,6 +279,9 @@ nav{position:sticky;top:0;z-index:50;background:rgba(251,248,238,.92);backdrop-f
 .v2 a{color:inherit;text-decoration:none}
 .v2 ul{list-style:none}
 .v2 details,.v2 summary{font-family:var(--sans)}
+.v2 .outs3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:40px}
+.v2 .outs3 .outcome.sm{padding:26px 26px}
+@media(max-width:900px){.v2 .outs3{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -303,7 +306,7 @@ nav{position:sticky;top:0;z-index:50;background:rgba(251,248,238,.92);backdrop-f
   <div class="wrap n-hero-grid">
     <div>
       <div class="pill"><i></i>零基础 · 一天实战 · 三个成果</div>
-      <h1>从 0 开始建立<br>你的 <mark>AI 数字员工</mark></h1>
+      <h1>从 0 开始建立<br>你的 <mark>AI 个人助理</mark></h1>
       <p class="n-lead">会记资料、会执行任务、会主动提醒，而且可以用手机指挥。不用写代码，一天后你会拥有自己的 AI Agent、WhatsApp 自动回复，和一个已发布的 Landing Page。</p>
       <div class="cta-row">
         <a class="btn btn-y" href="#preview">报名一小时免费 Preview →</a>
@@ -314,7 +317,7 @@ nav{position:sticky;top:0;z-index:50;background:rgba(251,248,238,.92);backdrop-f
     <div>
       <div class="phone" aria-label="手机对话示意图">
         <div class="phone-in">
-          <div class="phone-top"><div class="avatar">H</div><div><b>我的 AI 数字员工</b><small>Hermes Agent · 在线</small></div></div>
+          <div class="phone-top"><div class="avatar">AI</div><div><b>我的 AI 个人助理</b><small>AI Agent · 在线</small></div></div>
           <div class="chat">
             <div class="msg me m1"><div class="voice"><span>▶</span><span class="bars"><i style="height:8px"></i><i style="height:16px"></i><i style="height:11px"></i><i style="height:20px"></i><i style="height:9px"></i><i style="height:15px"></i><i style="height:7px"></i></span><span>0:12</span></div></div>
             <div class="msg ai m2">听到了：帮你把顾客的询问整理成回复草稿，并提醒你下午三点跟进。<br><span class="n-tag">已整理</span></div>
@@ -340,9 +343,9 @@ nav{position:sticky;top:0;z-index:50;background:rgba(251,248,238,.92);backdrop-f
 <!-- FOUR SKILLS -->
 <section class="skills" id="what">
   <div class="wrap">
-    <div class="n-eyebrow">什么是 AI 数字员工</div>
-    <h2>不是聊天机器人，<br>是会把事情做完的员工。</h2>
-    <p class="n-lead">普通 AI 回答问题就结束了。数字员工有四个基本功，课程里你会一个一个亲手做出来。</p>
+    <div class="n-eyebrow">什么是 AI 个人助理</div>
+    <h2>不是聊天机器人，<br>是会把事情做完的助理。</h2>
+    <p class="n-lead">普通 AI 回答问题就结束了。AI 个人助理有四个基本功，课程里你会一个一个亲手做出来。</p>
     <div class="skill-grid">
       <div class="skill"><div class="ico" style="background:#DCE6FF">🧠</div><div><h3>记得住</h3><p>公司、产品、价格和客服规则，长期记住，不用每次重新解释。</p></div></div>
       <div class="skill"><div class="ico" style="background:var(--teal-l)">🛠️</div><div><h3>做得到</h3><p>整理资料、读写文件、执行你交代的任务，并把结果汇报给你。</p></div></div>
@@ -355,41 +358,23 @@ nav{position:sticky;top:0;z-index:50;background:rgba(251,248,238,.92);backdrop-f
 <!-- COURSE -->
 <section class="course" id="course">
   <div class="wrap">
-    <div class="n-eyebrow">一天实战课程</div>
+    <div class="n-eyebrow">一天课程</div>
     <h2>一天，带走三个看得见的成果。</h2>
-    <p class="n-lead">从早到晚，一天完成。老师讲一个小概念，马上带你操作，每个步骤都有检查点，没完成的同学会得到协助。</p>
-    <div class="n-panel on" style="margin-top:40px">
-      <div class="pbox">
-        <h3>一天时间表</h3>
-        <p class="sub">安装在课前 Setup Check 完成，当天直接开始动手。</p>
-        <ul class="tl">
-          <li><b>9:00</b>认识 AI Agent：和 ChatGPT 的区别，什么交给 AI，什么必须人确认</li>
-          <li><b>9:45</b>安装并启动 Hermes，发出第一条指令，让它记住公司资料</li>
-          <li><b>11:30</b>连接手机，文字和语音指挥，结果发回手机</li>
-          <li><b>12:30</b>午餐与个别排障</li>
-          <li><b>1:30</b>安装 AnyDesk，设定安全连接，分清楚 Hermes 与 AnyDesk</li>
-          <li><b>2:30</b>WhatsApp AI 自动回复：整理 FAQ，客服 SOP 变 AI 技能，测试号码实测</li>
-          <li><b>4:00</b>AI 制作 Landing Page：写文案、做网页、手机版、发布并测试</li>
-          <li><b>5:30</b>验收、安全回顾与 Q&amp;A</li>
-        </ul>
+    <div class="outs3">
+      <div class="outcome sm">
+        <small>成果 1 · 随身 AI 个人助理</small>
+        <p class="big">用手机指挥你电脑里的 AI 助理做事。</p>
+        <ul><li>手机自动操作，直接操控电脑</li></ul>
       </div>
-      <div class="outs">
-        <div class="outcome sm">
-          <small>成果 1 · 随身 AI 数字员工</small>
-          <p class="big">从手机发任务，Hermes 在电脑完成并汇报。</p>
-          <ul><li>AnyDesk 可以从手机安全连接电脑</li></ul>
-        </div>
-        <div class="outcome sm">
-          <small>成果 2 · WhatsApp AI 客服</small>
-          <p class="big">会回答、会收集需求、不懂就转人工。</p>
-          <ul><li>全程使用测试号码，不擅自报价、付款或退款</li></ul>
-        </div>
-        <div class="outcome sm">
-          <small>成果 3 · Landing Page</small>
-          <p class="big">已发布、手机显示正常、能引导顾客进 WhatsApp。</p>
-          <ul><li>每个按钮都实际测试过</li></ul>
-        </div>
-        <p class="note-s" style="color:#CFC9BC;opacity:1">AnyDesk 只负责显示和人工接管，不是让 AI 自动开放整台电脑。</p>
+      <div class="outcome sm">
+        <small>成果 2 · WhatsApp AI 客服</small>
+        <p class="big">会回答、会收集需求、不懂就转人工。</p>
+        <ul><li>全程使用测试号码，不擅自报价、付款或退款</li></ul>
+      </div>
+      <div class="outcome sm">
+        <small>成果 3 · Landing Page</small>
+        <p class="big">已发布、手机显示正常、能引导顾客进 WhatsApp。</p>
+        <ul><li>每个按钮都实际测试过</li></ul>
       </div>
     </div>
   </div>
@@ -399,40 +384,26 @@ nav{position:sticky;top:0;z-index:50;background:rgba(251,248,238,.92);backdrop-f
 <section id="method">
   <div class="wrap">
     <div class="n-eyebrow">怎样教</div>
-    <h2>边讲边做，没有人被丢下。</h2>
-    <p class="n-lead">不先讲一大堆理论，也不先看老师示范半天。一次一个小概念，马上动手。</p>
-    <div class="method-grid">
-      <div class="mstep"><h3>说明目的</h3><p>先讲这一步要解决什么问题，只用几分钟。</p></div>
-      <div class="mstep"><h3>同步操作</h3><p>老师现场做，你同时跟着做同一个步骤。</p></div>
-      <div class="mstep"><h3>AI 执行时讲解</h3><p>AI 在跑的时候，讲怎样判断对错、常见错误。</p></div>
-      <div class="mstep"><h3>检查点</h3><p>看到真实结果才算完成，没完成的由老师和助教协助。</p></div>
-    </div>
-      </div>
+    <h2>边做边讲原理</h2>
+    <p class="n-lead">用最短的时间教会大家 AI Agent，不会浪费大家宝贵的时间。</p>
+  </div>
 </section>
 
 <!-- PREVIEW -->
 <section class="preview" id="preview">
-  <div class="wrap pv-grid">
+  <div class="wrap pv-grid" style="grid-template-columns:1fr">
     <div>
-      <div class="n-eyebrow">一小时免费 Preview</div>
+      <div class="n-eyebrow">一小时 Preview · 免费</div>
       <h2>先看，再决定要不要学。</h2>
-      <p class="n-lead" style="color:var(--ink)">不教安装，也不讲技术名词。一小时内，你会亲眼看到数字员工真的做事。</p>
+      <p class="n-lead" style="color:var(--ink)">报名一小时的 Preview 课，让你知道我会教什么课、学了之后你能做什么事。所以这个是免费的。</p>
       <div class="pv-meta">
         <div>💸 完全免费，不需要先付款</div>
         <div>📅 日期确定后，会通过 WhatsApp 通知你</div>
         <div>💬 报名：WhatsApp 直接联络阿理哥</div>
       </div>
-      <a class="btn btn-k" href="https://wa.me/60167871902?text=%E6%88%91%E6%83%B3%E6%8A%A5%E5%90%8D%E4%B8%80%E5%B0%8F%E6%97%B6%20AI%20%E6%95%B0%E5%AD%97%E5%91%98%E5%B7%A5%20Preview" target="_blank" rel="noopener">WhatsApp 报名 Preview →</a>
+      <a class="btn btn-k" href="https://wa.me/60167871902?text=%E6%88%91%E6%83%B3%E6%8A%A5%E5%90%8D%E4%B8%80%E5%B0%8F%E6%97%B6%20AI%20%E4%B8%AA%E4%BA%BA%E5%8A%A9%E7%90%86%20Preview" target="_blank" rel="noopener">WhatsApp 报名 Preview →</a>
     </div>
-    <div class="pv-list">
-      <div class="pv-row"><b>0–10</b><div><strong>聊天助手 vs 数字员工</strong>用最简单的比喻讲清楚 AI Agent</div></div>
-      <div class="pv-row"><b>10–20</b><div><strong>手机语音指挥 Hermes</strong>对手机说一段话，变成回复、任务和文案</div></div>
-      <div class="pv-row"><b>20–30</b><div><strong>人在外面也能用电脑</strong>Hermes 执行，AnyDesk 查看和接管</div></div>
-      <div class="pv-row"><b>30–40</b><div><strong>WhatsApp AI 自动回复</strong>回答、收资料、转人工</div></div>
-      <div class="pv-row"><b>40–50</b><div><strong>一句话做出网页</strong>Landing Page 加 WhatsApp 按钮</div></div>
-      <div class="pv-row"><b>50–60</b><div><strong>课程成果 · 报名 · Q&amp;A</strong>一天课程带走什么</div></div>
-    </div>
-  </div>
+      </div>
 </section>
 
 <!-- SAFETY -->
@@ -456,7 +427,7 @@ nav{position:sticky;top:0;z-index:50;background:rgba(251,248,238,.92);backdrop-f
     <div class="n-eyebrow">报名费用</div>
     <h2>一天课程，一个价钱。</h2>
     <div class="price-grid" style="grid-template-columns:minmax(0,520px);margin-inline:0">
-      <div class="pc hot"><small>一天完整课程</small><h3>从 0 开始建立你的 AI 数字员工</h3><div class="p">RM 399 <span>/ 人</span></div><span style="height:10px"></span><ul><li>三个成果：手机 AI 数字员工、WhatsApp 客服、Landing Page</li><li>每个步骤设有检查点，助教协助</li><li>课前 Setup Check，先处理好安装</li><li>先来看免费 Preview，觉得有用再决定上课</li><li>上课日期与名额：WhatsApp 咨询</li></ul><a class="btn btn-y" href="https://wa.me/60167871902?text=%E6%88%91%E6%83%B3%E4%BA%86%E8%A7%A3%E4%B8%80%E5%A4%A9%20AI%20%E6%95%B0%E5%AD%97%E5%91%98%E5%B7%A5%E8%AF%BE%E7%A8%8B" target="_blank" rel="noopener">WhatsApp 咨询一天课程</a></div>
+      <div class="pc hot"><small>如果 Preview 正是你想要的</small><h3>一天课程</h3><div class="p">RM 399 <span>/ 人 / 天</span></div><span style="height:10px"></span><ul><li>边做边学，当天做出三个成果</li><li>上课日期与名额：WhatsApp 咨询</li></ul><a class="btn btn-y" href="https://wa.me/60167871902?text=%E6%88%91%E6%83%B3%E4%BA%86%E8%A7%A3%E4%B8%80%E5%A4%A9%20AI%20%E4%B8%AA%E4%BA%BA%E5%8A%A9%E7%90%86%E8%AF%BE%E7%A8%8B" target="_blank" rel="noopener">WhatsApp 咨询一天课程</a></div>
     </div>
   </div>
 </section>
@@ -470,8 +441,7 @@ nav{position:sticky;top:0;z-index:50;background:rgba(251,248,238,.92);backdrop-f
       <details><summary>我完全不会写代码，可以吗？</summary><p>可以。初级班不要求写代码，你只需要把需求和流程讲清楚，每一步都有检查点。</p></details>
       <details><summary>要准备什么？</summary><p>一台自己的 Mac 或 Windows 电脑、一部手机、稳定网络、一个 WhatsApp 测试号码，以及公司简介、产品资料和常见顾客问题。正式开课前会安排 30 至 60 分钟的线上 Setup Check。</p></details>
       <details><summary>AI 会不会乱回复我的客户？</summary><p>课程里会用你自己整理的资料和规则，并加入转人工与审批机制，还要通过八种情境测试才算完成。WhatsApp 部分全程使用测试号码。</p></details>
-      <details><summary>AnyDesk 安全吗？</summary><p>课程会教你设置独立的强密码、限制权限、只允许自己的设备连接，涉及付款和密码时保留人工操作。任何远程工具都有风险，我们的做法是降低风险并保留人工控制，而不是承诺绝对安全。</p></details>
-      <details><summary>要每个月付费订阅你的系统吗？</summary><p>不需要。我不会叫你去买某个 software，也不会要你每个月 subscribe 我的系统。我卖的不是系统，我教的是如何做系统。课前我会列清楚需要准备的账号。</p></details>
+            <details><summary>要每个月付费订阅你的系统吗？</summary><p>不需要。我不会叫你去买某个 software，也不会要你每个月 subscribe 我的系统。我卖的不是系统，我教的是如何做系统。课前我会列清楚需要准备的账号。</p></details>
       <details><summary>一天真的学得完吗？</summary><p>课程设计成一天内完成三个成果，所以当天节奏会比较紧。我们会在课前安排 30 至 60 分钟的线上 Setup Check，先把安装处理好；当天每一步都有检查点，没跟上的同学由老师和助教协助。</p></details>
     </div>
   </div>
@@ -492,10 +462,10 @@ nav{position:sticky;top:0;z-index:50;background:rgba(251,248,238,.92);backdrop-f
       <div class="narrow">
         <div class="kicker">Why this page exists</div>
         <h2 class="section-h">我做生意的方式很简单：<br><span class="em">真实卖货，真实服务，真实自动化。</span></h2>
-        <p class="lead">我不喜欢空谈。一个系统如果不能让我少问一次库存、少追一次物流、少复制一次客服回复、少漏一张订单，它就还不算完成。</p>
-        <div class="pull">我相信 SME 老板不缺努力。<br>缺的是一套不会累、不会忘、不会情绪化的第二大脑。</div>
-        <p class="lead">所以我一直把自己的公司 <strong>Ukunili Music Sdn Bhd</strong> 当成实验场：BigSeller 日销报告、Shopee / Lazada 客服流程、中国到马来西亚的运输追踪、Meta 内容发布、网站搭建、团队通知。凡是重复、容易漏、需要人盯的动作，都应该先变成 SOP，再交给 AI Agent 执行。</p>
-        <p class="lead">我自己用过 Hermes Agent、Codex、ChatGPT、Claude、Gemini 等工具。不同工具有不同用途；如果要让中小型企业真正落地，我会把重点放在 <strong>Hermes Agent</strong>，让 AI 变成可以用手机指挥的数字员工，处理自动回复、顾客沟通整理，以及后台工作。</p>
+        
+        
+        
+        <p class="lead">我自己用过 AI Agent、Codex、ChatGPT、Claude、Gemini 等工具。不同工具有不同用途；如果要让中小型企业真正落地，我会把重点放在 <strong>AI Agent</strong>，让 AI 变成可以用手机指挥的个人助理，处理自动回复、顾客沟通整理，以及后台工作。</p>
         <p class="lead">我也常用 Codex 做自己的工具：改网站、写脚本、整理资料、测试自动化流程。很多人花大钱测试工具和系统；但对中小型企业来说，更实际的是先找到便宜、好用，甚至免费的方式，让流程先跑起来。</p>
         <p class="lead"><strong>我不会叫你去买某个 software，或者每个月持续付 subscription fee。</strong>因为我卖的不是系统，我教的是如何做系统；这跟卖系统是不一样的。</p>
         <p class="lead"><strong>这不是为了看起来很科技。</strong>这是为了让一门小生意，也可以拥有大公司的纪律、速度和可复制性。</p>
@@ -510,15 +480,13 @@ nav{position:sticky;top:0;z-index:50;background:rgba(251,248,238,.92);backdrop-f
           <div class="panel gold-top">
             <h3><span class="icon">✓</span> 我通常会帮到这些人</h3>
             <ul class="list">
-              <li>想每天自动收到公司进度、销售和营销报告的人</li>
-              <li>想自动整理 WhatsApp 一整天重点内容的人</li>
-              <li>想每天有人提醒重要事项、未完成事项和下一步行动的人</li>
-              <li>做零售、电商、教育、服务业的 SME 老板</li>
-              <li>想把客服、销售、库存、报表变成系统的人</li>
-              <li>已经用 ChatGPT / Claude / Gemini，但还没落地到团队日常的人</li>
-              <li>想学用 Hermes Agent 建立 AI 数字员工，让客服回复和后台流程自动跑的人</li>
-              <li>有产品、有订单、有团队，但流程越来越乱的人</li>
-              <li>不会写 program，但愿意用 Vibe Coding 把需求、场景和流程讲清楚的人</li>
+              <li>想要有自己的助理，帮你安排和整理所有事情</li>
+              <li>想要一个听话、会做事的 AI 助理</li>
+              <li>信息太多，想一句话就得到总结</li>
+              <li>零售、电商、教育、服务业、保险、Property agent，信息量大，最适合</li>
+              <li>想自动回复顾客，不再漏回、不再流失</li>
+              <li>想让每天重复的工作自动跑起来</li>
+              <li>有很多想法和设计，但不会写 program</li>
             </ul>
           </div>
           <div class="panel red-top">
@@ -538,18 +506,14 @@ nav{position:sticky;top:0;z-index:50;background:rgba(251,248,238,.92);backdrop-f
 
     <section class="section quiet" id="reframe">
       <div class="narrow">
-        <div class="kicker">The Reframe</div>
-        <h2 class="section-h">大多数 SME 老板以为自己有 <span class="em">AI</span> 问题。<br>其实没有。</h2>
-        <p class="lead">真正的问题通常是这些：</p>
+        <div class="kicker">What you learn</div>
+        <h2 class="section-h">上这个课，<br>你可以学到<span class="em">什么？</span></h2>
         <div class="reframe">
-          <div class="reframe-item"><span class="num">01</span><p><strong>营运问题：</strong>资料散在 WhatsApp、Excel、平台后台和脑袋里。</p></div>
-          <div class="reframe-item"><span class="num">02</span><p><strong>跟进问题：</strong>客户问了，货到了，款付了，但没有一个稳定提醒系统。</p></div>
-          <div class="reframe-item"><span class="num">03</span><p><strong>内容问题：</strong>每天都知道要发帖，但老板太忙，Facebook、Instagram、TikTok、Threads 最后都没有稳定更新。AI Agent 可以帮你安排内容，并定时发布到社交平台。</p></div>
-          <div class="reframe-item"><span class="num">04</span><p><strong>老板瓶颈：</strong>每个决定、每个检查、每个例外，都要回到老板身上。</p></div>
-          <div class="reframe-item"><span class="num">05</span><p><strong>误解问题：</strong>很多人以为要会写 program 才能做自动化。其实现在已经进入 Vibe Coding：你把目标、场景、流程和感觉讲清楚，AI 就能帮你生成 app 或后台 program。</p></div>
+          <div class="reframe-item"><span class="num">01</span><p><strong>用手机指挥 AI 助理：</strong>一句话交代任务，它在电脑里帮你做完。</p></div>
+          <div class="reframe-item"><span class="num">02</span><p><strong>让 AI 记住你的资料：</strong>公司、产品、客户规则，不用每次重讲。</p></div>
+          <div class="reframe-item"><span class="num">03</span><p><strong>自动回复顾客：</strong>WhatsApp 自动回答，不懂的转给你。</p></div>
+          <div class="reframe-item"><span class="num">04</span><p><strong>做出自己的网页：</strong>一天内写好文案、发布页面，顾客一点就能联系你。</p></div>
         </div>
-        <div class="pull">AI 是杠杆。<br>把你脑子里面的东西用 AI 杠杆<br>缩短时间，减少人员成本。<br>把一切可能变成现实。</div>
-        <p class="lead"><strong>如果你希望每天都有一个 AI Agent 自动告诉你：</strong><br>1. 公司的进度、销售和营销报告<br>2. WhatsApp 一整天的重点内容<br>3. 当天的重要事项、未完成事项和下一步行动<br><br>这个课程就非常适合你。我们要做的不是单个工具，而是一套会自动汇报、整理、提醒和执行的 AI Agent 工作流。</p>
       </div>
     </section>
 
@@ -575,7 +539,7 @@ nav{position:sticky;top:0;z-index:50;background:rgba(251,248,238,.92);backdrop-f
         </div>
         <div class="narrow" style="padding-inline:0;text-align:center">
           <p class="lead">我现在更关心的是：怎样把 SME 每天遇到的碎片工作，变成可追踪、可复用、可交给团队的系统。客服回复、网站搭建、运输追踪、内容生产、内部报表，都有低成本甚至免费的做法。</p>
-          <p class="lead">所以我想教的不是“买最贵的软件”，也不是让你每个月固定还钱 subscribe 某个系统；而是怎样把 Hermes Agent、Codex、ChatGPT、Claude、Gemini 放进真实场景，用最小成本让流程自动运作。<strong>我卖的不是系统，我教的是如何做系统。</strong></p>
+          <p class="lead">所以我想教的不是“买最贵的软件”，也不是让你每个月固定还钱 subscribe 某个系统；而是怎样把 AI Agent、Codex、ChatGPT、Claude、Gemini 放进真实场景，用最小成本让流程自动运作。<strong>我卖的不是系统，我教的是如何做系统。</strong></p>
           <p class="lead">目前我自己已经有三个网站在运行，也持续把 AI Agent 放进 Ukunili Music Sdn Bhd 的日常营运，所以这些不是理论，而是从真实生意里一边用、一边修出来的方式。</p>
           <p class="lead"><strong>如果一个自动化不能让真实工作变轻，它就只是玩具。</strong></p>
         </div>
@@ -591,9 +555,9 @@ nav{position:sticky;top:0;z-index:50;background:rgba(251,248,238,.92);backdrop-f
         <div class="card-grid">
           <div class="work-card"><div class="idx">01</div><span class="small">Daily Sales Intelligence</span><h3>每天自动看昨天卖了什么</h3><p>把平台订单、BigSeller 数据、Top SKU 和最近 7 天趋势整理成老板可以直接读的报告。</p></div>
           <div class="work-card"><div class="idx">02</div><span class="small">Customer Reply System</span><h3>客服回复更像真人，但不乱讲</h3><p>根据 Ukunili 的政策、语气、产品资料，快速生成简短、准确、有温度的回复。</p></div>
-          <div class="work-card"><div class="idx">03</div><span class="small">Hermes Agent</span><h3>AI 数字员工：手机指挥与自动回复</h3><p>重点教大家用 Hermes Agent 做数字员工：用手机指挥它，让客服回复、询问整理、内部通知和后台任务自动跑起来。</p></div>
+          <div class="work-card"><div class="idx">03</div><span class="small">AI Agent</span><h3>AI 个人助理：手机指挥与自动回复</h3><p>重点教大家用 AI Agent 做个人助理：用手机指挥它，让客服回复、询问整理、内部通知和后台任务自动跑起来。</p></div>
           <div class="work-card"><div class="idx">04</div><span class="small">Vibe Coding</span><h3>不会写 program 也能做 app</h3><p>把你想要的功能、场景、流程和感觉讲清楚，AI 就可以帮你生成 app 或后台 program。表达能力比代码能力更重要。</p></div>
-          <div class="work-card"><div class="idx">05</div><span class="small">Codex / Hermes Agent</span><h3>用 Codex 和 Hermes Agent 做自己的工具</h3><p>改网站、写脚本、整理资料、做自动化，不一定每次都要找 agency 或 developer。能自己测试的，就先低成本测试。</p></div>
+          <div class="work-card"><div class="idx">05</div><span class="small">Codex / AI Agent</span><h3>用 Codex 和 AI Agent 做自己的工具</h3><p>改网站、写脚本、整理资料、做自动化，不一定每次都要找 agency 或 developer。能自己测试的，就先低成本测试。</p></div>
           <div class="work-card"><div class="idx">06</div><span class="small">Social Media Scheduler</span><h3>自动安排和发布社交平台内容</h3><p>很多老板忙到最后没有办法统一更新社交平台。AI Agent 可以帮你整理内容、安排日期，并且定时发布到 Facebook、Instagram、TikTok 或其他平台。</p></div>
           <div class="work-card"><div class="idx">07</div><span class="small">Freight Tracking</span><h3>从中国到马来西亚的运输追踪</h3><p>把运输状态、到货提醒、团队通知这些动作整理成固定流程，让货在哪里、下一步做什么更清楚。</p></div>
           <div class="work-card"><div class="idx">08</div><span class="small">Jombuy</span><h3>社区团购平台，真实在跑</h3><p>招邻居一起买，人越多越便宜。开团、购物车、查单、积分和配送都做成系统，是我自己经营的平台。<a href="https://jombuy.com.my/" target="_blank" rel="noopener" style="text-decoration:underline">jombuy.com.my →</a></p></div>
@@ -606,7 +570,7 @@ nav{position:sticky;top:0;z-index:50;background:rgba(251,248,238,.92);backdrop-f
       <div class="narrow">
         <div class="kicker">AI Group · Community</div>
         <h2 class="section-h">加入我的 <span class="em">AI WhatsApp Group</span>，先一起学习、测试和累积案例。</h2>
-        <p class="lead">这个 AI group 会先开放给大家加入。我会在里面分享我亲自测试过的 AI Agent、Vibe Coding、Codex、Hermes Agent，以及适合中小型企业的自动化内容。</p>
+        <p class="lead">这个 AI group 会先开放给大家加入。我会在里面分享我亲自测试过的 AI Agent、Vibe Coding、Codex，以及适合中小型企业的自动化内容。</p>
         <p class="lead">欢迎加入我的 WhatsApp Group。我们会在那边分享更多实战内容，大家有什么问题也可以在群组里面讨论，我可以在那边教你们。</p>
         <div class="pull">如果你在 AI 上遇到什么问题，<br>可以直接在群组里面问我们。<br>一起讨论，一起实战，一起把 AI 用起来。</div>
         <div class="actions" style="margin-bottom:0">
@@ -641,7 +605,7 @@ nav{position:sticky;top:0;z-index:50;background:rgba(251,248,238,.92);backdrop-f
         <a class="btn-secondary" style="color:#fff;border-color:rgba(255,255,255,.28)" href="https://www.facebook.com/aligor4916/">Facebook @aligor4916</a>
         <a class="btn-secondary" style="color:#fff;border-color:rgba(255,255,255,.28)" href="https://www.threads.com/@aligor4916">Threads @aligor4916</a>
       </div>
-      <div class="closing-meta">阿理哥(Aligor) · Malaysia · Hermes Agent / Vibe Coding / SME Automation</div>
+      <div class="closing-meta">阿理哥(Aligor) · Malaysia · AI Agent / Vibe Coding / SME Automation</div>
     </section>
   
 </main>
@@ -650,7 +614,7 @@ nav{position:sticky;top:0;z-index:50;background:rgba(251,248,238,.92);backdrop-f
       <div>
         <span class="footer-logo"><img src="assets/logos/aligor-logo-transparent.png" alt="Aligor logo"></span>
         <h5>阿理哥(Aligor)</h5>
-        <p>阿理哥 Aligor。Ukunili Music Sdn Bhd 老板。分享 AI Agent、Hermes Agent、Vibe Coding、Codex，以及自己公司正在使用、适合真实 SME 工作的低成本自动化方法。</p>
+        <p>阿理哥 Aligor。Ukunili Music Sdn Bhd 老板。分享 AI Agent、Vibe Coding、Codex，以及自己公司正在使用、适合真实 SME 工作的低成本自动化方法。</p>
       </div>
       <div>
         <h5>Links</h5>
@@ -669,7 +633,6 @@ nav{position:sticky;top:0;z-index:50;background:rgba(251,248,238,.92);backdrop-f
         <h5>Focus</h5>
         <ul>
           <li>AI Agent</li>
-          <li>Hermes Agent</li>
           <li>Vibe Coding</li>
           <li>SME operations</li>
           <li>AI automation</li>
