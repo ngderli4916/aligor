@@ -15,7 +15,7 @@ async function route(request, env) {
   if (request.method==='GET' && path==='/') return Response.redirect(`${url.origin}/register`,302);
   if (request.method==='GET' && path==='/register') return html(registerPage(cleanText(url.searchParams.get('batch'),50)));
   if (request.method==='POST' && path==='/api/leads') return createLead(request,env);
-  if (request.method==='GET' && path==='/admin') return html(await isAdmin(request,env) ? adminPage() : loginPage());
+  if (request.method==='GET' && path==='/4916') return html(await isAdmin(request,env) ? adminPage() : loginPage());
   if (request.method==='POST' && path==='/api/admin/login') return login(request,env);
   if (request.method==='POST' && path==='/api/admin/logout') return new Response(null,{status:204,headers:{'set-cookie':sessionCookie('',request,0)}});
   if (path.startsWith('/api/admin/')) {
@@ -89,7 +89,7 @@ async function exportCsv(env) {
 async function login(request,env) {
   const data=await bodyData(request); if(!env.ADMIN_PASSWORD||!env.SESSION_SECRET)return html(loginPage('服务器尚未设置管理员密码'));
   if(!safeEqual(String(data.password||''),env.ADMIN_PASSWORD))return html(loginPage('密码不正确'));
-  const token=await signSession(env.SESSION_SECRET); return new Response(null,{status:303,headers:{location:'/admin','set-cookie':sessionCookie(token,request,28800)}});
+  const token=await signSession(env.SESSION_SECRET); return new Response(null,{status:303,headers:{location:'/4916','set-cookie':sessionCookie(token,request,28800)}});
 }
 
 function sessionCookie(token,request,maxAge){
@@ -130,7 +130,7 @@ async function handleCommand(env,chatId,text) {
 
 async function notifyNewLead(env,lead) {
   if(!env.TELEGRAM_BOT_TOKEN||!env.TELEGRAM_CHAT_ID)return;
-  const base=env.PUBLIC_BASE_URL||''; await sendText(env,env.TELEGRAM_CHAT_ID,`🔔 <b>新报名</b>\n\n${leadLine(lead)}\n\n<a href="${htmlEscape(base+'/admin')}">打开 Aligor 后台</a>`,{inline_keyboard:[[{text:'WhatsApp 顾客',url:waUrl(lead.phone_e164,followupText(lead))}],[{text:'标记已联系',callback_data:`status:${lead.id}:contacted`},{text:'标记已报名',callback_data:`status:${lead.id}:registered`}]]});
+  const base=env.PUBLIC_BASE_URL||''; await sendText(env,env.TELEGRAM_CHAT_ID,`🔔 <b>新报名</b>\n\n${leadLine(lead)}\n\n<a href="${htmlEscape(base+'/4916')}">打开 Aligor 后台</a>`,{inline_keyboard:[[{text:'WhatsApp 顾客',url:waUrl(lead.phone_e164,followupText(lead))}],[{text:'标记已联系',callback_data:`status:${lead.id}:contacted`},{text:'标记已报名',callback_data:`status:${lead.id}:registered`}]]});
 }
 function leadLine(x){return `#${x.id} · ${htmlEscape(x.name)}\n电话：${htmlEscape(maskPhone(x.phone_e164))}\n课程：${htmlEscape(x.course)}\n批次：${htmlEscape(x.batch)}\n用过 Agent：${htmlEscape(x.used_ai_agent||'未填写')}\n目前 AI：${htmlEscape([x.ai_tools,x.ai_tools_other].filter(Boolean).join('、')||'未填写')}\n状态：${htmlEscape(x.status)}`}
 function followupText(x){return `你好 ${x.name}，我是 Adrian（阿理哥）。我看到你报名了 ${x.course}（${x.batch}），想先了解你最希望 AI 帮你解决什么工作？`}
