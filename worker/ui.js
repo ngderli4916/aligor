@@ -18,6 +18,7 @@ input,select,textarea{width:100%;padding:13px 15px;border:1.5px solid var(--fiel
 input:focus,select:focus,textarea:focus{outline:3px solid var(--yellow);outline-offset:1px;border-color:var(--ink)}
 textarea{min-height:100px;resize:vertical}
 input[readonly]{background:#F6F2E6;color:var(--ink2);cursor:default}
+.when{display:inline-block;margin:18px 0 0;padding:9px 20px;border-radius:999px;background:var(--yellow);border:2px solid var(--ink);font-weight:700;font-size:16px;color:var(--ink)}
 fieldset{border:0;padding:0;margin:0;min-width:0}
 legend{font-weight:700;font-size:15px;padding:0;margin-bottom:10px}
 .choices{display:flex;flex-wrap:wrap;gap:10px}
@@ -64,7 +65,7 @@ function shell(title, body, script = '') {
 export function registerPage(defaultBatch = '') {
   return shell('Aligor 课程报名', `
     <a class="brand" href="/" style="text-decoration:none;color:inherit">阿理哥 · Aligor</a>
-    <section class="hero"><small>课程报名</small><h1>留下 WhatsApp，<br>我会直接联系你</h1><p>报名资料会保存到 Aligor 后台。新报名会通知 Adrian，并由 Adrian 通过 WhatsApp 跟进。</p></section>
+    <section class="hero"><small>课程报名</small><h1>留下 WhatsApp，<br>我会直接联系你</h1><p>报名资料会保存到 Aligor 后台。新报名会通知 Adrian，并由 Adrian 通过 WhatsApp 跟进。</p><p class="when">10 月 7 日（星期三）晚上 8:00 – 9:00（马来西亚时间）</p></section>
     <form id="leadForm" class="card grid">
       <label>姓名<input name="name" required maxlength="80" autocomplete="name"></label>
       <label>WhatsApp 电话<input name="phone" required maxlength="30" inputmode="tel" placeholder="例如 0167871902" autocomplete="tel"></label>
@@ -94,7 +95,7 @@ export function registerPage(defaultBatch = '') {
       <div class="full actions"><button class="btn" type="submit">提交报名</button></div>
       <p id="message" class="full" role="status"></p>
     </form>
-    <section id="success" class="card success hidden"><h2>报名资料已收到</h2><p>你可以现在直接 WhatsApp Adrian，获得更快回复。</p><a id="wa" class="btn wa" target="_blank" rel="noopener">打开 WhatsApp</a></section>
+    <section id="success" class="card success hidden"><h2>报名资料已收到</h2><p>Preview 时间：10 月 7 日（星期三）晚上 8:00 – 9:00，请预留时间。你可以现在直接 WhatsApp Adrian，获得更快回复。</p><a id="wa" class="btn wa" target="_blank" rel="noopener">打开 WhatsApp</a></section>
   `, `
     const form=document.querySelector('#leadForm'),msg=document.querySelector('#message');
     form.addEventListener('submit',async e=>{e.preventDefault();msg.textContent='提交中…';const button=form.querySelector('button');button.disabled=true;try{const fd=new FormData(form),data=Object.fromEntries(fd);data.ai_tools=fd.getAll('ai_tools');data.consent=form.consent.checked;const r=await fetch('/api/leads',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(data)});const out=await r.json();if(!r.ok)throw new Error(out.error||'提交失败');form.classList.add('hidden');document.querySelector('#success').classList.remove('hidden');document.querySelector('#wa').href=out.whatsapp_url;}catch(err){msg.textContent=err.message;msg.className='full error';button.disabled=false;}});
