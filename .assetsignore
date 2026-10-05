@@ -1,0 +1,6 @@
+worker/
+wrangler.jsonc
+.assetsignore
+.dev.vars
+.wrangler/
+node_modules/

@@ -1,0 +1,25 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "aligor",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
+  "assets": {
+    "directory": ".",
+    "binding": "ASSETS",
+    "run_worker_first": ["/register", "/register/*", "/admin", "/admin/*", "/api/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "aligor-leads",
+      "database_id": "0ecc5f24-f4c9-452b-9afd-bec7d0825255"
+    }
+  ],
+  "vars": {
+    "PUBLIC_BASE_URL": "https://aligor.aligor.workers.dev",
+    "WHATSAPP_NUMBER": "60167871902",
+    "ALLOWED_ORIGINS": "https://aligor.aligor.workers.dev"
+  }
+}

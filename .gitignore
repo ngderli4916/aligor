@@ -3,3 +3,7 @@ node_modules/
 .vscode/
 .idea/
 *.log
+
+.dev.vars
+.wrangler/
+node_modules/
