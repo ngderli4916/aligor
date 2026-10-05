@@ -2,7 +2,7 @@ import { STATUSES, normalizePhone, cleanText, maskPhone, waUrl, csvEscape, htmlE
 import { registerPage, loginPage, adminPage } from './ui.js';
 
 const json = (data, status=200, headers={}) => new Response(JSON.stringify(data), {status, headers:{'content-type':'application/json; charset=utf-8',...headers}});
-const html = body => new Response(body,{headers:{'content-type':'text/html; charset=utf-8','content-security-policy':"default-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; form-action 'self'; frame-ancestors 'none'",'x-frame-options':'DENY','referrer-policy':'same-origin'}});
+const html = body => new Response(body,{headers:{'content-type':'text/html; charset=utf-8','content-security-policy':"default-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; form-action 'self'; frame-ancestors 'none'",'x-frame-options':'DENY','referrer-policy':'same-origin'}});
 const now = () => new Date().toISOString();
 
 export default { async fetch(request, env) {
@@ -24,6 +24,7 @@ async function route(request, env) {
     if (request.method==='GET' && path==='/api/admin/export.csv') return exportCsv(env);
     const match=path.match(/^\/api\/admin\/leads\/(\d+)$/);
     if (request.method==='PATCH' && match) return updateLead(Number(match[1]),await request.json(),env,'admin');
+    if (request.method==='DELETE' && match) return deleteLead(Number(match[1]),env);
   }
   if (request.method==='POST' && path==='/telegram/webhook') return telegramWebhook(request,env);
   if (request.method==='GET' && path==='/health') return json({ok:true,time:now()});
@@ -68,6 +69,13 @@ async function listLeads(url,env) {
   const counts=await env.DB.prepare('SELECT status,COUNT(*) count FROM leads GROUP BY status').all();
   const stats={total:0,new:0,contacted:0,paid:0}; counts.results.forEach(x=>{stats[x.status]=x.count;stats.total+=x.count});
   return json({leads:result.results.map(x=>({...x,whatsapp_url:waUrl(x.phone_e164,followupText(x))})),stats});
+}
+
+async function deleteLead(id,env) {
+  const lead=await env.DB.prepare('SELECT id FROM leads WHERE id=?').bind(id).first(); if(!lead)return json({error:'Lead not found'},404);
+  await env.DB.prepare('DELETE FROM lead_events WHERE lead_id=?').bind(id).run();
+  await env.DB.prepare('DELETE FROM leads WHERE id=?').bind(id).run();
+  return json({ok:true});
 }
 
 async function updateLead(id,data,env,actor) {

@@ -5,7 +5,7 @@ const css = `
 body{margin:0;font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased}
 main{width:min(880px,calc(100% - 32px));margin:28px auto 64px}
 .brand{display:flex;align-items:center;gap:10px;font-weight:900;font-size:18px}
-.brand::before{content:"";width:30px;height:30px;background:url(https://aligor.aligor.workers.dev/assets/logos/aligor-logo-transparent.png) center/contain no-repeat}
+.brand::before{content:"";width:30px;height:30px;background:url(/assets/logos/aligor-logo-transparent.png) center/contain no-repeat}
 .hero{margin:44px 0 28px}
 .hero small{display:inline-block;font-size:13px;font-weight:700;letter-spacing:.1em;color:var(--green)}
 .hero h1{font-family:var(--serif);font-weight:900;font-size:clamp(32px,6vw,52px);line-height:1.2;margin:10px 0 14px;letter-spacing:-.01em}
@@ -31,6 +31,7 @@ legend{font-weight:700;font-size:15px;padding:0;margin-bottom:10px}
 .btn:disabled{opacity:.6;cursor:wait;transform:none;box-shadow:none}
 .btn.dark{background:var(--ink);color:#fff}
 .btn.wa{background:#25D366;color:#06260f;border-color:#0b3d1d}
+.btn.danger{background:#fff;color:var(--red);border-color:var(--red)}
 .btn.small{padding:8px 14px;font-size:13px;border-width:1.5px}
 .actions{display:flex;gap:10px;flex-wrap:wrap}
 .notice{padding:14px 16px;border-radius:12px;background:#FFF5D1;margin:14px 0}
@@ -117,8 +118,8 @@ export function adminPage() {
   `, `
     const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const q=document.querySelector('#q'),batch=document.querySelector('#batch'),status=document.querySelector('#status'),stats=document.querySelector('#stats'),rows=document.querySelector('#rows'),search=document.querySelector('#search'),logout=document.querySelector('#logout');
-    async function load(){const p=new URLSearchParams({q:q.value,batch:batch.value,status:status.value});const r=await fetch('/api/admin/leads?'+p);if(r.status===401){location='/4916';return}const out=await r.json();stats.innerHTML=Object.entries(out.stats).map(([k,v])=>'<div class="stat"><small>'+esc(k)+'</small><strong>'+v+'</strong></div>').join('');rows.innerHTML=out.leads.map(x=>'<tr><td>#'+x.id+'<br><small>'+esc(x.public_id)+'</small></td><td><b>'+esc(x.name)+'</b><br><a href="tel:+'+esc(x.phone_e164)+'">+'+esc(x.phone_e164)+'</a><br><small>'+esc(x.company||x.industry)+'</small></td><td>'+esc(x.course)+'<br><small>'+esc(x.batch)+'</small><br><small>Agent：'+esc(x.used_ai_agent||'未填写')+'</small><br><small>AI：'+esc([x.ai_tools,x.ai_tools_other].filter(Boolean).join('、')||'未填写')+'</small></td><td><span class="status">'+esc(x.status)+'</span></td><td>'+new Date(x.created_at).toLocaleString()+'</td><td><div class="actions"><a class="btn wa small" target="_blank" href="'+esc(x.whatsapp_url)+'">WhatsApp</a><button class="btn small" data-id="'+x.id+'" data-status="contacted">已联系</button><button class="btn small" data-id="'+x.id+'" data-status="paid">已付款</button></div></td></tr>').join('')||'<tr><td colspan="6">没有资料</td></tr>';}
-    document.addEventListener('click',async e=>{const b=e.target.closest('[data-id]');if(!b)return;await fetch('/api/admin/leads/'+b.dataset.id,{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({status:b.dataset.status})});load();});
+    async function load(){const p=new URLSearchParams({q:q.value,batch:batch.value,status:status.value});const r=await fetch('/api/admin/leads?'+p);if(r.status===401){location='/4916';return}const out=await r.json();stats.innerHTML=Object.entries(out.stats).map(([k,v])=>'<div class="stat"><small>'+esc(k)+'</small><strong>'+v+'</strong></div>').join('');rows.innerHTML=out.leads.map(x=>'<tr><td>#'+x.id+'<br><small>'+esc(x.public_id)+'</small></td><td><b>'+esc(x.name)+'</b><br><a href="tel:+'+esc(x.phone_e164)+'">+'+esc(x.phone_e164)+'</a><br><small>'+esc(x.company||x.industry)+'</small></td><td>'+esc(x.course)+'<br><small>'+esc(x.batch)+'</small><br><small>Agent：'+esc(x.used_ai_agent||'未填写')+'</small><br><small>AI：'+esc([x.ai_tools,x.ai_tools_other].filter(Boolean).join('、')||'未填写')+'</small></td><td><span class="status">'+esc(x.status)+'</span></td><td>'+new Date(x.created_at).toLocaleString()+'</td><td><div class="actions"><a class="btn wa small" target="_blank" href="'+esc(x.whatsapp_url)+'">WhatsApp</a><button class="btn small" data-id="'+x.id+'" data-status="contacted">已联系</button><button class="btn small" data-id="'+x.id+'" data-status="paid">已付款</button><button class="btn small danger" data-del="'+x.id+'" data-name="'+esc(x.name)+'">删除</button></div></td></tr>').join('')||'<tr><td colspan="6">没有资料</td></tr>';}
+    document.addEventListener('click',async e=>{const d=e.target.closest('[data-del]');if(d){if(!confirm('确定要删除「'+d.dataset.name+'」（#'+d.dataset.del+'）的报名资料吗？\\n删除后无法恢复。'))return;const r=await fetch('/api/admin/leads/'+d.dataset.del,{method:'DELETE'});if(!r.ok)alert('删除失败，请重试');load();return}const b=e.target.closest('[data-id]');if(!b)return;await fetch('/api/admin/leads/'+b.dataset.id,{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({status:b.dataset.status})});load();});
     search.onclick=load;logout.onclick=async()=>{await fetch('/api/admin/logout',{method:'POST'});location='/4916'};load();
   `);
 }
