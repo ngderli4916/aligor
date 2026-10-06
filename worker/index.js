@@ -1,5 +1,5 @@
 import { STATUSES, normalizePhone, cleanText, waUrl, csvEscape, htmlEscape, parseBotCommand } from './lib.js';
-import { buildCustomerMessage, buildLeadNotification, redactSecrets } from './notify.js';
+import { buildCustomerMessage, buildLeadNotification, leadCode, parseLeadCode, redactSecrets } from './notify.js';
 import { registerPage, loginPage, adminPage } from './ui.js';
 
 const json = (data, status=200, headers={}) => new Response(JSON.stringify(data), {status, headers:{'content-type':'application/json; charset=utf-8',...headers}});
@@ -60,18 +60,18 @@ async function createLead(request,env,ctx) {
   await addEvent(env,lead.id,existing?'resubmitted':'submitted','customer',`source=${values.source}`);
   const notification=notifyNewLead(env,lead,{resubmitted:Boolean(existing)});
   if(ctx&&typeof ctx.waitUntil==='function')ctx.waitUntil(notification); else await notification;
-  return json({ok:true,lead_id:lead.public_id,whatsapp_url:waUrl(env.WHATSAPP_NUMBER||'60167871902',`你好 Adrian，我是 ${name}。我刚报名了 ${course}，报名编号 ${lead.public_id}。`)},201);
+  return json({ok:true,lead_id:leadCode(lead.id),whatsapp_url:waUrl(env.WHATSAPP_NUMBER||'60167871902',`你好 Adrian，我是 ${name}。我刚报名了 ${course}，报名编号 ${leadCode(lead.id)}。`)},201);
 }
 
 async function listLeads(url,env) {
   const filters=[], binds=[];
   const status=cleanText(url.searchParams.get('status'),20),batch=cleanText(url.searchParams.get('batch'),50),q=cleanText(url.searchParams.get('q'),80);
-  if(status){filters.push('status=?');binds.push(status)} if(batch){filters.push('batch LIKE ?');binds.push(`%${batch}%`)} if(q){filters.push('(name LIKE ? OR phone_e164 LIKE ?)');binds.push(`%${q}%`,`%${q.replace(/\D/g,'')}%`)}
+  if(status){filters.push('status=?');binds.push(status)} if(batch){filters.push('batch LIKE ?');binds.push(`%${batch}%`)} if(q){const byCode=/^#?AIPR\d+$/i.test(q)?parseLeadCode(q):null;if(byCode){filters.push('id=?');binds.push(byCode)}else{filters.push('(name LIKE ? OR phone_e164 LIKE ?)');binds.push(`%${q}%`,`%${q.replace(/\D/g,'')}%`)}}
   const where=filters.length?`WHERE ${filters.join(' AND ')}`:'';
   const result=await env.DB.prepare(`SELECT * FROM leads ${where} ORDER BY created_at DESC LIMIT 300`).bind(...binds).all();
   const counts=await env.DB.prepare('SELECT status,COUNT(*) count FROM leads GROUP BY status').all();
   const stats={total:0,new:0,contacted:0,paid:0}; counts.results.forEach(x=>{stats[x.status]=x.count;stats.total+=x.count});
-  return json({leads:result.results.map(x=>({...x,whatsapp_url:waUrl(x.phone_e164,buildCustomerMessage(x,env))})),stats});
+  return json({leads:result.results.map(x=>({...x,code:leadCode(x.id),whatsapp_url:waUrl(x.phone_e164,buildCustomerMessage(x,env))})),stats});
 }
 
 async function deleteLead(id,env) {
@@ -92,8 +92,8 @@ async function updateLead(id,data,env,actor) {
 
 async function exportCsv(env) {
   const rows=(await env.DB.prepare('SELECT * FROM leads ORDER BY created_at DESC').all()).results;
-  const cols=['id','public_id','name','phone_e164','batch','course','company','industry','used_ai_agent','ai_tools','ai_tools_other','goal','source','status','consent_at','notes','created_at','updated_at'];
-  const body='\ufeff'+[cols.join(','),...rows.map(r=>cols.map(c=>csvEscape(r[c])).join(','))].join('\n');
+  const cols=['code','id','public_id','name','phone_e164','batch','course','company','industry','used_ai_agent','ai_tools','ai_tools_other','goal','source','status','consent_at','notes','created_at','updated_at'];
+  const body='\ufeff'+[cols.join(','),...rows.map(r=>({...r,code:leadCode(r.id)})).map(r=>cols.map(c=>csvEscape(r[c])).join(','))].join('\n');
   return new Response(body,{headers:{'content-type':'text/csv; charset=utf-8','content-disposition':'attachment; filename="aligor-leads.csv"'}});
 }
 
@@ -134,7 +134,7 @@ async function handleCommand(env,chatId,text) {
   if(command==='/note'){const id=Number(args.shift());const note=cleanText(args.join(' '),1000);const lead=await env.DB.prepare('SELECT notes FROM leads WHERE id=?').bind(id).first();if(!lead)return sendText(env,chatId,'找不到顾客');await updateLead(id,{notes:[lead.notes,note].filter(Boolean).join('\n')},env,'telegram');return sendText(env,chatId,`📝 #${id} 已加入备注`);}
   if(command==='/wa'){const id=Number(args.shift()),lead=await env.DB.prepare('SELECT * FROM leads WHERE id=?').bind(id).first();if(!lead)return sendText(env,chatId,'找不到顾客');const msg=args.join(' ')||buildCustomerMessage(lead,env);return sendText(env,chatId,`WhatsApp ${lead.name}`,{inline_keyboard:[[{text:'打开并确认发送',url:waUrl(lead.phone_e164,msg)}]]});}
   let sql='SELECT * FROM leads ',binds=[];
-  if(command==='/new')sql+="WHERE status='new' ";else if(command==='/batch'){sql+='WHERE batch LIKE ? ';binds=[`%${cleanText(args.join(' '),50)}%`]}else if(command==='/find'){const q=cleanText(args.join(' '),80);sql+='WHERE name LIKE ? OR phone_e164 LIKE ? ';binds=[`%${q}%`,`%${q.replace(/\D/g,'')}%`]}else return sendText(env,chatId,'无法识别。输入 /help 查看指令。');
+  if(command==='/new')sql+="WHERE status='new' ";else if(command==='/batch'){sql+='WHERE batch LIKE ? ';binds=[`%${cleanText(args.join(' '),50)}%`]}else if(command==='/find'){const q=cleanText(args.join(' '),80),byCode=/^#?AIPR\d+$/i.test(q)?parseLeadCode(q):null;if(byCode){sql+='WHERE id=? ';binds=[byCode]}else{sql+='WHERE name LIKE ? OR phone_e164 LIKE ? ';binds=[`%${q}%`,`%${q.replace(/\D/g,'')}%`]}}else return sendText(env,chatId,'无法识别。输入 /help 查看指令。');
   const rows=(await env.DB.prepare(sql+'ORDER BY created_at DESC LIMIT 10').bind(...binds).all()).results;if(!rows.length)return sendText(env,chatId,'没有找到报名资料');
   return sendText(env,chatId,rows.map(leadLine).join('\n\n'));
 }
@@ -142,8 +142,8 @@ async function handleCommand(env,chatId,text) {
 async function notifyNewLead(env,lead,options={}) {
   if(!env.TELEGRAM_BOT_TOKEN||!env.TELEGRAM_CHAT_ID){await safeEvent(env,lead.id,'telegram_skipped','system','missing_telegram_config');return;}
   try{
-    const {text,reply_markup}=buildLeadNotification(lead,env,options);
-    const response=await sendText(env,env.TELEGRAM_CHAT_ID,text,reply_markup);
+    const {text}=buildLeadNotification(lead,env,options);
+    const response=await sendText(env,env.TELEGRAM_CHAT_ID,text);
     if(!response||!response.ok)throw new Error(`telegram_http_${response?.status??'none'}`);
     await safeEvent(env,lead.id,'telegram_sent','system','');
   }catch(error){
@@ -153,7 +153,7 @@ async function notifyNewLead(env,lead,options={}) {
   }
 }
 async function safeEvent(env,leadId,type,actor,details){try{await addEvent(env,leadId,type,actor,details)}catch(error){console.error('lead_event_failed',redactSecrets(error?.message,env))}}
-function leadLine(x){return `#${x.id} · ${htmlEscape(x.name)}\nWhatsApp：${htmlEscape(x.phone_e164)}\n课程：${htmlEscape(x.course)}\n批次：${htmlEscape(x.batch)}\n用过 Agent：${htmlEscape(x.used_ai_agent||'未填写')}\n目前 AI：${htmlEscape([x.ai_tools,x.ai_tools_other].filter(Boolean).join('、')||'未填写')}\n状态：${htmlEscape(x.status)}`}
+function leadLine(x){return `#${leadCode(x.id)} · ${htmlEscape(x.name)}\nWhatsApp：${htmlEscape(x.phone_e164)}\n课程：${htmlEscape(x.course)}\n批次：${htmlEscape(x.batch)}\n用过 Agent：${htmlEscape(x.used_ai_agent||'未填写')}\n目前 AI：${htmlEscape([x.ai_tools,x.ai_tools_other].filter(Boolean).join('、')||'未填写')}\n状态：${htmlEscape(x.status)}`}
 async function sendText(env,chatId,text,reply_markup){return telegram(env,'sendMessage',{chat_id:chatId,text,parse_mode:'HTML',disable_web_page_preview:true,...(reply_markup?{reply_markup}: {})})}
 async function telegram(env,method,payload){if(!env.TELEGRAM_BOT_TOKEN)return null;const r=await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/${method}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)});if(!r.ok)console.error('Telegram error',redactSecrets((await r.text()).slice(0,300),env));return r}
 async function addEvent(env,leadId,type,actor,details=''){await env.DB.prepare('INSERT INTO lead_events(lead_id,event_type,actor,details,created_at) VALUES(?,?,?,?,?)').bind(leadId,type,actor,details,now()).run()}

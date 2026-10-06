@@ -1,8 +1,6 @@
-import { htmlEscape, waUrl } from './lib.js';
+import { htmlEscape } from './lib.js';
 
-export const DEFAULT_BASE_URL = 'https://aligor.aligor.workers.dev';
 const GROUP_URL_PATTERN = /^https:\/\/chat\.whatsapp\.com\/[A-Za-z0-9_-]+(\?\S*)?$/;
-const TELEGRAM_BUTTON_URL_LIMIT = 2000;
 
 export function groupLinkState(env) {
   const raw = String(env?.WHATSAPP_GROUP_URL || '').trim();
@@ -28,23 +26,26 @@ export function formatMalaysiaTime(iso) {
   return `${t.getUTCFullYear()}-${p(t.getUTCMonth() + 1)}-${p(t.getUTCDate())} ${p(t.getUTCHours())}:${p(t.getUTCMinutes())}（马来西亚时间 UTC+8）`;
 }
 
-function safeWhatsappUrl(phone, message) {
-  const url = waUrl(phone, message);
-  return url.length > TELEGRAM_BUTTON_URL_LIMIT ? `https://wa.me/${String(phone).replace(/\D/g, '')}` : url;
-}
-
 const orEmpty = (value, fallback = '未填写') => (String(value || '').trim() ? String(value).trim() : fallback);
 
+// Public lead code used everywhere Adrian and his agent look at a lead: AIPR00003, AIPR00004, ...
+export function leadCode(id) {
+  return `AIPR${String(Number(id) || 0).padStart(5, '0')}`;
+}
+
+// Accepts "AIPR00003", "#aipr3" or "3" and returns the numeric id, or null.
+export function parseLeadCode(text) {
+  const match = String(text || '').trim().match(/^#?(?:AIPR)?0*(\d+)$/i);
+  return match ? Number(match[1]) : null;
+}
+
+// Compact message for Adrian's assistant bot. Everything after this is handled by his agent.
 export function buildLeadNotification(lead, env, { resubmitted = false } = {}) {
-  const message = buildCustomerMessage(lead, env);
-  const group = groupLinkState(env);
   const tools = [lead.ai_tools, lead.ai_tools_other].filter(Boolean).join('、');
-  const base = String(env?.PUBLIC_BASE_URL || DEFAULT_BASE_URL).replace(/\/+$/, '');
   const e = htmlEscape;
   const lines = [
     resubmitted ? '🔁 重复提交｜免费AI Preview' : '🔔 新报名｜免费AI Preview',
-    '',
-    `报名ID：#${e(lead.id)}`,
+    `报名ID：#${leadCode(lead.id)}`,
     `姓名：${e(lead.name)}`,
     `WhatsApp：${e(lead.phone_e164)}`,
     `课程／场次：${e(lead.course)}`,
@@ -56,24 +57,7 @@ export function buildLeadNotification(lead, env, { resubmitted = false } = {}) {
     `想让AI解决的问题：${e(orEmpty(lead.goal))}`,
     `报名时间：${e(formatMalaysiaTime(lead.created_at))}`,
   ];
-  if (group.state === 'missing') lines.push('', '⚠️ WhatsApp Group链接尚未设置');
-  if (group.state === 'invalid') lines.push('', '⚠️ WhatsApp Group链接格式不正确');
-  lines.push('', '📋 WhatsApp回复（直接复制）', '', `<pre>${e(message)}</pre>`);
-  // Status buttons use Telegram callbacks, which go to whichever service owns the bot's webhook.
-  // When the bot is shared with the personal assistant (Hermes), that is not this Worker, so they stay off
-  // unless TELEGRAM_STATUS_BUTTONS=on is set for a bot whose webhook points at /telegram/webhook.
-  const statusRow = String(env?.TELEGRAM_STATUS_BUTTONS || '').toLowerCase() === 'on' ? [[
-    { text: '标记已联系', callback_data: `status:${lead.id}:contacted` },
-    { text: '标记已确认', callback_data: `status:${lead.id}:registered` },
-  ]] : [];
-  const reply_markup = {
-    inline_keyboard: [
-      [{ text: '打开WhatsApp顾客', url: safeWhatsappUrl(lead.phone_e164, message) }],
-      ...statusRow,
-      [{ text: '打开Aligor后台 /4916', url: `${base}/4916` }],
-    ],
-  };
-  return { text: lines.join('\n'), reply_markup, message };
+  return { text: lines.join('\n') };
 }
 
 export function redactSecrets(text, env) {
