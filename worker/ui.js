@@ -26,6 +26,10 @@ legend{font-weight:700;font-size:15px;padding:0;margin-bottom:10px}
 .choice:has(input:checked){background:var(--yellow);border-color:var(--ink)}
 .check{display:flex;align-items:flex-start;gap:10px;font-weight:400;font-size:14px;color:var(--ink2)}
 .check input{width:auto;margin-top:5px;accent-color:var(--ink)}
+.proof{display:inline-flex;align-items:center;gap:9px;margin:18px 0 0;padding:8px 18px;border-radius:999px;background:#fff;border:1.5px solid var(--line);font-weight:500;color:var(--ink2)}
+.proof b{font-family:var(--serif);font-size:20px;color:var(--ink)}
+.dot{width:9px;height:9px;border-radius:50%;background:#25D366;box-shadow:0 0 0 4px rgba(37,211,102,.22)}
+.hint{font-size:13px;color:var(--muted);font-weight:400;min-height:1.2em}
 .btn{display:inline-flex;align-items:center;justify-content:center;border:2px solid var(--ink);border-radius:999px;padding:14px 28px;background:var(--yellow);color:var(--ink);font:700 16px var(--sans);cursor:pointer;text-decoration:none;transition:transform .15s,box-shadow .15s}
 .btn:hover{transform:translateY(-2px);box-shadow:0 5px 0 var(--ink)}
 .btn:disabled{opacity:.6;cursor:wait;transform:none;box-shadow:none}
@@ -62,14 +66,18 @@ function shell(title, body, script = '') {
   return `<!doctype html><html lang="zh-Hans"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title><style>${css}</style></head><body><main>${body}</main>${script ? `<script>${script}</script>` : ''}</body></html>`;
 }
 
-export function registerPage(defaultBatch = '') {
+const jsonForScript = value => JSON.stringify(value).replace(/</g, '\\u003c');
+
+export function registerPage(defaultBatch = '', stats = null) {
+  const total = Number(stats?.total) || 0;
+  const proof = total > 0 ? `<p class="proof"><span class="dot"></span>已有 <b>${total}</b> 人报名免费 AI Preview</p>` : '';
   return shell('Aligor Preview 报名', `
     <a class="brand" href="/" style="text-decoration:none;color:inherit">阿理哥 · Aligor</a>
-    <section class="hero"><small>Preview 报名</small><h1>留下 WhatsApp，<br>我会直接联络你</h1><p>选择你想参加的场次，填写资料后，我会通过 WhatsApp 联络你。</p></section>
+    <section class="hero"><small>Preview 报名</small><h1>留下 WhatsApp，<br>我会直接联络你</h1><p>选择你想参加的场次，填写资料后，我会通过 WhatsApp 联络你。</p>${proof}</section>
     <form id="leadForm" class="card grid">
       <label>姓名<input name="name" required maxlength="80" autocomplete="name"></label>
       <label>WhatsApp 号码<input name="phone" required maxlength="30" inputmode="tel" placeholder="例如 0167871902" autocomplete="tel"></label>
-      <label class="full">报名项目<select name="course" id="course"><option value="免费 AI Preview · 10 月 7 日（星期三）8 PM – 9 PM" data-batch="PREVIEW-1007">免费 AI Preview · 10 月 7 日（星期三）8 PM – 9 PM</option><option value="免费 AI Preview · 10 月 14 日（星期三）8 PM – 9 PM" data-batch="PREVIEW-1014">免费 AI Preview · 10 月 14 日（星期三）8 PM – 9 PM</option></select></label>
+      <label class="full">报名项目<select name="course" id="course"><option value="免费 AI Preview · 10 月 7 日（星期三）8 PM – 9 PM" data-batch="PREVIEW-1007">免费 AI Preview · 10 月 7 日（星期三）8 PM – 9 PM</option><option value="免费 AI Preview · 10 月 14 日（星期三）8 PM – 9 PM" data-batch="PREVIEW-1014">免费 AI Preview · 10 月 14 日（星期三）8 PM – 9 PM</option></select><small class="hint" id="sessionCount"></small></label>
       <input type="hidden" name="batch" id="batch" value="${defaultBatch||'PREVIEW-1007'}">
       <label>公司名称（选填）<input name="company" maxlength="100"></label>
       <label>行业（选填）<input name="industry" maxlength="80"></label>
@@ -99,7 +107,8 @@ export function registerPage(defaultBatch = '') {
   `, `
     const form=document.querySelector('#leadForm'),msg=document.querySelector('#message');
     const qb=new URLSearchParams(location.search).get('batch'),sel=document.querySelector('#course'),bt=document.querySelector('#batch');
-    function syncBatch(){if(!qb)bt.value=sel.selectedOptions[0].dataset.batch}
+    const counts=${jsonForScript(stats?.byBatch||{})},hint=document.querySelector('#sessionCount');
+    function syncBatch(){const b=sel.selectedOptions[0].dataset.batch;if(!qb)bt.value=b;const n=Number(counts[b])||0;hint.textContent=n>0?'这一场已有 '+n+' 人报名':''}
     sel.addEventListener('change',syncBatch);syncBatch();
     form.addEventListener('submit',async e=>{e.preventDefault();msg.textContent='提交中…';const button=form.querySelector('button');button.disabled=true;try{const fd=new FormData(form),data=Object.fromEntries(fd);data.ai_tools=fd.getAll('ai_tools');data.consent=form.consent.checked;const r=await fetch('/api/leads',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(data)});const out=await r.json();if(!r.ok)throw new Error(out.error||'提交失败');form.classList.add('hidden');document.querySelector('#success').classList.remove('hidden');document.querySelector('#wa').href=out.whatsapp_url;document.querySelector('#successNote').textContent='你报名的是：'+data.course+'。我会通过 WhatsApp 联络你，也可以现在直接 WhatsApp 我，获得更快回复。';}catch(err){msg.textContent=err.message;msg.className='full error';button.disabled=false;}});
   `);

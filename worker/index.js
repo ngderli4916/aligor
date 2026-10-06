@@ -18,7 +18,7 @@ async function route(request, env, ctx) {
   if (request.method==='GET' && path==='/register') {
     const tracking=isAdmin(request,env).then(skip=>recordView(env,request,{path:'/register',ref:request.headers.get('referer'),source:'server',skip})).catch(error=>console.error('track_failed',redactSecrets(error?.message,env)));
     if(ctx&&typeof ctx.waitUntil==='function')ctx.waitUntil(tracking); else await tracking;
-    return html(registerPage(cleanText(url.searchParams.get('batch'),50)));
+    return html(registerPage(cleanText(url.searchParams.get('batch'),50),await registrationStats(env)));
   }
   if (request.method==='POST' && path==='/api/track') return track(request,env,ctx);
   if (request.method==='POST' && path==='/api/leads') return createLead(request,env,ctx);
@@ -68,6 +68,15 @@ async function createLead(request,env,ctx) {
   const notification=notifyNewLead(env,lead,{resubmitted:Boolean(existing)});
   if(ctx&&typeof ctx.waitUntil==='function')ctx.waitUntil(notification); else await notification;
   return json({ok:true,lead_id:leadCode(lead.id),whatsapp_url:waUrl(env.WHATSAPP_NUMBER||'60167871902',`你好 Adrian，我是 ${name}。我刚报名了 ${course}，报名编号 ${leadCode(lead.id)}。`)},201);
+}
+
+// Real numbers only: distinct people overall, and registrations per session. Cancelled sign-ups are not counted.
+async function registrationStats(env) {
+  try {
+    const total=(await env.DB.prepare("SELECT COUNT(DISTINCT phone_e164) n FROM leads WHERE status!='cancelled'").first())?.n||0;
+    const rows=(await env.DB.prepare("SELECT batch,COUNT(*) n FROM leads WHERE status!='cancelled' GROUP BY batch").all()).results;
+    return {total,byBatch:Object.fromEntries(rows.map(row=>[row.batch,row.n]))};
+  } catch(error) { console.error('registration_stats_failed',redactSecrets(error?.message,env)); return null; }
 }
 
 async function track(request,env,ctx) {
