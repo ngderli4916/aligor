@@ -1,4 +1,5 @@
 import { STATUSES, normalizePhone, cleanText, waUrl, csvEscape, htmlEscape, parseBotCommand } from './lib.js';
+import { recordView, getStats } from './analytics.js';
 import { buildCustomerMessage, buildLeadNotification, leadCode, parseLeadCode, redactSecrets } from './notify.js';
 import { registerPage, loginPage, adminPage } from './ui.js';
 
@@ -14,7 +15,12 @@ export default { async fetch(request, env, ctx) {
 async function route(request, env, ctx) {
   const url = new URL(request.url), path=url.pathname;
   if (request.method==='GET' && path==='/') return Response.redirect(`${url.origin}/register`,302);
-  if (request.method==='GET' && path==='/register') return html(registerPage(cleanText(url.searchParams.get('batch'),50)));
+  if (request.method==='GET' && path==='/register') {
+    const tracking=isAdmin(request,env).then(skip=>recordView(env,request,{path:'/register',ref:request.headers.get('referer'),source:'server',skip})).catch(error=>console.error('track_failed',redactSecrets(error?.message,env)));
+    if(ctx&&typeof ctx.waitUntil==='function')ctx.waitUntil(tracking); else await tracking;
+    return html(registerPage(cleanText(url.searchParams.get('batch'),50)));
+  }
+  if (request.method==='POST' && path==='/api/track') return track(request,env,ctx);
   if (request.method==='POST' && path==='/api/leads') return createLead(request,env,ctx);
   if (request.method==='GET' && path==='/4916') return html(await isAdmin(request,env) ? adminPage() : loginPage());
   if (request.method==='POST' && path==='/api/admin/login') return login(request,env);
@@ -23,6 +29,7 @@ async function route(request, env, ctx) {
     if (!await isAdmin(request,env)) return json({error:'Unauthorized'},401);
     if (request.method==='GET' && path==='/api/admin/leads') return listLeads(url,env);
     if (request.method==='GET' && path==='/api/admin/export.csv') return exportCsv(env);
+    if (request.method==='GET' && path==='/api/admin/stats') return json(await getStats(env));
     const match=path.match(/^\/api\/admin\/leads\/(\d+)$/);
     if (request.method==='PATCH' && match) return updateLead(Number(match[1]),await request.json(),env,'admin');
     if (request.method==='DELETE' && match) return deleteLead(Number(match[1]),env);
@@ -61,6 +68,13 @@ async function createLead(request,env,ctx) {
   const notification=notifyNewLead(env,lead,{resubmitted:Boolean(existing)});
   if(ctx&&typeof ctx.waitUntil==='function')ctx.waitUntil(notification); else await notification;
   return json({ok:true,lead_id:leadCode(lead.id),whatsapp_url:waUrl(env.WHATSAPP_NUMBER||'60167871902',`你好 Adrian，我是 ${name}。我刚报名了 ${course}，报名编号 ${leadCode(lead.id)}。`)},201);
+}
+
+async function track(request,env,ctx) {
+  let data={}; try{ if((request.headers.get('content-length')||'0')<2000) data=await request.json(); }catch{}
+  const tracking=isAdmin(request,env).then(skip=>recordView(env,request,{path:cleanText(data.path,80),ref:cleanText(data.ref,300),source:'beacon',skip})).catch(error=>console.error('track_failed',redactSecrets(error?.message,env)));
+  if(ctx&&typeof ctx.waitUntil==='function')ctx.waitUntil(tracking); else await tracking;
+  return new Response(null,{status:204});
 }
 
 async function listLeads(url,env) {

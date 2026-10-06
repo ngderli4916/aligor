@@ -615,5 +615,21 @@ nav{position:sticky;top:0;z-index:50;background:rgba(251,248,238,.92);backdrop-f
       <span>AI Agent · Vibe Coding · SME Automation</span>
     </div>
   </footer>
+<script>
+(function(){
+  function send(path){
+    try{
+      var body=JSON.stringify({path:path,ref:document.referrer||''});
+      if(navigator.sendBeacon){navigator.sendBeacon('/api/track',new Blob([body],{type:'application/json'}));}
+      else{fetch('/api/track',{method:'POST',keepalive:true,headers:{'content-type':'application/json'},body:body});}
+    }catch(e){}
+  }
+  send('/');
+  document.addEventListener('click',function(e){
+    var a=e.target.closest&&e.target.closest('a[href^="/register"]');
+    if(a)send('/click/preview');
+  });
+})();
+</script>
 </body>
 </html>

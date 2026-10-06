@@ -112,6 +112,7 @@ export function loginPage(error = '') {
 export function adminPage() {
   return shell('Aligor 报名后台', `
     <div class="top"><div><div class="brand">阿理哥 · Aligor</div><h1>报名后台</h1></div><div class="actions"><a class="btn small" href="/api/admin/export.csv">导出 CSV</a><button id="logout" class="btn dark small">登出</button></div></div>
+    <div id="traffic"></div>
     <div id="stats" class="stats"></div>
     <div class="tools"><input id="q" placeholder="姓名、电话或报名ID"><input id="batch" placeholder="批次"><select id="status"><option value="">全部状态</option><option>new</option><option>contacted</option><option>registered</option><option>paid</option><option>attended</option><option>cancelled</option></select><button id="search" class="btn small">查询</button></div>
     <div id="message"></div><div class="table-wrap"><table><thead><tr><th>ID</th><th>顾客</th><th>课程 / 批次</th><th>状态</th><th>报名时间</th><th>操作</th></tr></thead><tbody id="rows"></tbody></table></div>
@@ -120,6 +121,17 @@ export function adminPage() {
     const q=document.querySelector('#q'),batch=document.querySelector('#batch'),status=document.querySelector('#status'),stats=document.querySelector('#stats'),rows=document.querySelector('#rows'),search=document.querySelector('#search'),logout=document.querySelector('#logout');
     async function load(){const p=new URLSearchParams({q:q.value,batch:batch.value,status:status.value});const r=await fetch('/api/admin/leads?'+p);if(r.status===401){location='/4916';return}const out=await r.json();stats.innerHTML=Object.entries(out.stats).map(([k,v])=>'<div class="stat"><small>'+esc(k)+'</small><strong>'+v+'</strong></div>').join('');rows.innerHTML=out.leads.map(x=>'<tr><td><b>'+esc(x.code)+'</b></td><td><b>'+esc(x.name)+'</b><br><a href="tel:+'+esc(x.phone_e164)+'">+'+esc(x.phone_e164)+'</a><br><small>'+esc(x.company||x.industry)+'</small></td><td>'+esc(x.course)+'<br><small>'+esc(x.batch)+'</small><br><small>Agent：'+esc(x.used_ai_agent||'未填写')+'</small><br><small>AI：'+esc([x.ai_tools,x.ai_tools_other].filter(Boolean).join('、')||'未填写')+'</small></td><td><span class="status">'+esc(x.status)+'</span></td><td>'+new Date(x.created_at).toLocaleString()+'</td><td><div class="actions"><a class="btn wa small" target="_blank" href="'+esc(x.whatsapp_url)+'">WhatsApp</a><button class="btn small" data-id="'+x.id+'" data-status="contacted">已联系</button><button class="btn small" data-id="'+x.id+'" data-status="paid">已付款</button><button class="btn small danger" data-del="'+x.id+'" data-name="'+esc(x.name)+'">删除</button></div></td></tr>').join('')||'<tr><td colspan="6">没有资料</td></tr>';}
     document.addEventListener('click',async e=>{const d=e.target.closest('[data-del]');if(d){if(!confirm('确定要删除「'+d.dataset.name+'」（#'+d.dataset.del+'）的报名资料吗？\\n删除后无法恢复。'))return;const r=await fetch('/api/admin/leads/'+d.dataset.del,{method:'DELETE'});if(!r.ok)alert('删除失败，请重试');load();return}const b=e.target.closest('[data-id]');if(!b)return;await fetch('/api/admin/leads/'+b.dataset.id,{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({status:b.dataset.status})});load();});
-    search.onclick=load;logout.onclick=async()=>{await fetch('/api/admin/logout',{method:'POST'});location='/4916'};load();
+    const traffic=document.querySelector('#traffic');
+    async function loadTraffic(){try{const r=await fetch('/api/admin/stats');if(!r.ok)return;const s=await r.json();
+      const card=(l,v,n)=>'<div class="stat"><small>'+l+'</small><strong>'+v+'</strong>'+(n?'<small>'+n+'</small>':'')+'</div>';
+      const days=s.days.map(d=>'<tr><td>'+esc(d.day)+'</td><td>'+d.home_visitors+'</td><td>'+d.clicks+'</td><td>'+d.register_visitors+'</td><td>'+d.leads+'</td></tr>').join('');
+      const sources=s.sources.map(x=>'<span class="status">'+esc(x.source)+' · '+x.visitors+'</span>').join(' ')||'暂无';
+      const devices=s.devices.map(x=>'<span class="status">'+(x.device==='mobile'?'手机':'电脑')+' · '+x.visitors+'</span>').join(' ')||'暂无';
+      traffic.innerHTML='<h2 style="font-family:var(--serif);margin:26px 0 0">访客统计</h2><p style="color:var(--muted);margin:4px 0 0">统计从 '+esc(s.first_day||'今天')+' 开始。不用 Cookie，不记录个人资料；管理员自己的访问不计算。</p>'
+        +'<div class="stats">'+card('今日首页访客',s.today_home_visitors)+card('近 7 天首页访客',s.last7_home_visitors)+card('累计首页访客',s.total_home_visitors,'每天各算一次')+card('累计点击报名',s.total_clicks)+'</div>'
+        +'<div class="stats">'+card('报名页访客',s.total_register_visitors)+card('累计报名',s.total_leads)+card('转化率',s.conversion==null?'-':s.conversion+'%','报名 ÷ 首页访客')+card('首页浏览次数',s.total_home_views)+'</div>'
+        +'<div class="table-wrap"><table style="min-width:520px"><thead><tr><th>日期</th><th>首页访客</th><th>点击报名</th><th>报名页访客</th><th>报名</th></tr></thead><tbody>'+days+'</tbody></table></div>'
+        +'<p style="margin:14px 0 0"><b>来源（近 14 天）</b>　'+sources+'</p><p style="margin:6px 0 26px"><b>设备（近 14 天）</b>　'+devices+'</p>';}catch(e){}}
+    search.onclick=load;logout.onclick=async()=>{await fetch('/api/admin/logout',{method:'POST'});location='/4916'};load();loadTraffic();
   `);
 }
