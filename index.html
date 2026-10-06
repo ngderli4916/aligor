@@ -282,6 +282,13 @@ nav{position:sticky;top:0;z-index:50;background:rgba(251,248,238,.92);backdrop-f
 .v2 .outs3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:40px}
 .v2 .outs3 .outcome.sm{padding:26px 26px}
 @media(max-width:900px){.v2 .outs3{grid-template-columns:1fr}}
+.v2 .reel-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center}
+.v2 .reel-grid h2{margin-bottom:12px}
+.v2 .reel-grid p{color:var(--ink2);font-size:18px;margin:0 0 24px}
+.v2 .reel-links{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.v2 .reel-frame{width:100%;max-width:360px;margin-inline:auto;border-radius:22px;overflow:hidden;border:2px solid var(--ink);box-shadow:10px 10px 0 var(--yellow);background:#fff}
+.v2 .reel-frame iframe{display:block;width:100%;height:640px;border:0}
+@media(max-width:860px){.v2 .reel-grid{grid-template-columns:1fr;gap:32px}.v2 .reel-frame{max-width:340px;box-shadow:6px 6px 0 var(--yellow)}}
 </style>
 </head>
 <body>
@@ -376,6 +383,24 @@ nav{position:sticky;top:0;z-index:50;background:rgba(251,248,238,.92);backdrop-f
         <p class="big">已发布、手机显示正常、能引导顾客进 WhatsApp。</p>
         <ul><li>每个按钮都实际测试过</li></ul>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- REEL -->
+<section id="reel">
+  <div class="wrap reel-grid">
+    <div>
+      <div class="n-eyebrow">先看一段短片</div>
+      <h2>AI 助理，是什么样的？</h2>
+      <p>看完觉得有兴趣，再来报名免费 Preview。</p>
+      <div class="reel-links">
+        <a class="btn btn-y" href="/register">报名免费 Preview →</a>
+        <a class="btn btn-o" href="https://www.instagram.com/reel/DeJkJy6vJs_/" target="_blank" rel="noopener">在 Instagram 观看</a>
+      </div>
+    </div>
+    <div class="reel-frame">
+      <iframe src="https://www.instagram.com/reel/DeJkJy6vJs_/embed/" title="阿理哥 Instagram 短片：AI 助理" loading="lazy" allowfullscreen scrolling="no"></iframe>
     </div>
   </div>
 </section>
