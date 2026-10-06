@@ -59,13 +59,17 @@ export function buildLeadNotification(lead, env, { resubmitted = false } = {}) {
   if (group.state === 'missing') lines.push('', '⚠️ WhatsApp Group链接尚未设置');
   if (group.state === 'invalid') lines.push('', '⚠️ WhatsApp Group链接格式不正确');
   lines.push('', '📋 WhatsApp回复（直接复制）', '', `<pre>${e(message)}</pre>`);
+  // Status buttons use Telegram callbacks, which go to whichever service owns the bot's webhook.
+  // When the bot is shared with the personal assistant (Hermes), that is not this Worker, so they stay off
+  // unless TELEGRAM_STATUS_BUTTONS=on is set for a bot whose webhook points at /telegram/webhook.
+  const statusRow = String(env?.TELEGRAM_STATUS_BUTTONS || '').toLowerCase() === 'on' ? [[
+    { text: '标记已联系', callback_data: `status:${lead.id}:contacted` },
+    { text: '标记已确认', callback_data: `status:${lead.id}:registered` },
+  ]] : [];
   const reply_markup = {
     inline_keyboard: [
       [{ text: '打开WhatsApp顾客', url: safeWhatsappUrl(lead.phone_e164, message) }],
-      [
-        { text: '标记已联系', callback_data: `status:${lead.id}:contacted` },
-        { text: '标记已确认', callback_data: `status:${lead.id}:registered` },
-      ],
+      ...statusRow,
       [{ text: '打开Aligor后台 /4916', url: `${base}/4916` }],
     ],
   };

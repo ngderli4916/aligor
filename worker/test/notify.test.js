@@ -145,10 +145,20 @@ test('6. wa.me button uses the customer number and the exact prefilled reply', a
   assert.equal(wa.text, '打开WhatsApp顾客');
   assert.ok(wa.url.startsWith('https://wa.me/60123456789?text='));
   assert.equal(decodeWa(wa.url), buildCustomerMessage(rows(env, 'SELECT * FROM leads')[0], env));
-  const lead = rows(env, 'SELECT * FROM leads')[0];
-  assert.deepEqual(keyboard[1].map(b => [b.text, b.callback_data]), [['标记已联系', `status:${lead.id}:contacted`], ['标记已确认', `status:${lead.id}:registered`]]);
-  assert.deepEqual([keyboard[2][0].text, keyboard[2][0].url], ['打开Aligor后台 /4916', 'https://aligor.aligor.workers.dev/4916']);
   assert.ok(wa.url.length <= 2000);
+  // default (shared assistant bot): only URL buttons, no callback buttons that would be delivered to Hermes
+  assert.equal(keyboard.length, 2);
+  assert.deepEqual([keyboard[1][0].text, keyboard[1][0].url], ['打开Aligor后台 /4916', 'https://aligor.aligor.workers.dev/4916']);
+  assert.ok(!JSON.stringify(keyboard).includes('callback_data'));
+});
+
+test('6b. status buttons appear only when TELEGRAM_STATUS_BUTTONS=on', async () => {
+  const env = makeEnv({ TELEGRAM_STATUS_BUTTONS: 'on' }), ctx = makeCtx();
+  await submit(env, ctx, payload()); await settle(ctx);
+  const keyboard = telegramCalls[0].body.reply_markup.inline_keyboard;
+  const lead = rows(env, 'SELECT * FROM leads')[0];
+  assert.equal(keyboard.length, 3);
+  assert.deepEqual(keyboard[1].map(b => [b.text, b.callback_data]), [['标记已联系', `status:${lead.id}:contacted`], ['标记已确认', `status:${lead.id}:registered`]]);
 });
 
 test('7. special characters are escaped for Telegram HTML', async () => {
