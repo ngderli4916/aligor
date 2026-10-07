@@ -114,29 +114,29 @@ catch(x){err.textContent='网络出现问题，请再按一次提交';err.classL
 }
 
 export const classAdminTabHtml = `
-<div id="tab-class" class="hidden">
-  <div class="top" style="margin-top:6px"><div><h1 style="font-size:26px">一天课程报名</h1></div><div class="actions"><a class="btn small" href="/api/admin/class/export.csv">导出 CSV</a></div></div>
+<section class="view" id="tab-class">
+  <div class="page-head"><div><h1>一天课程报名</h1><p class="sub">核对银行到账后，才按“确认付款成功”</p></div><div class="actions"><a class="btn small" href="/api/admin/class/export.csv">导出 CSV</a></div></div>
   <div id="cstats" class="stats"></div>
   <div class="tools"><input id="cq" placeholder="订单编号、姓名或电话"><select id="cregion"><option value="">全部地区</option><option>JOHOR</option><option>SELANGOR</option><option>PENANG</option></select><select id="cpkg"><option value="">全部配套</option>${Object.entries(PACKAGES).map(([c, p]) => `<option value="${c}">${p.title}</option>`).join('')}</select><select id="cstatus"><option value="">全部付款状态</option>${Object.entries(STATUS_LABELS).map(([c, l]) => `<option value="${c}">${l}</option>`).join('')}</select><button id="csearch" class="btn small">查询</button></div>
-  <div class="table-wrap"><table style="min-width:1100px"><thead><tr><th>订单</th><th>联络人</th><th>地区 / 配套</th><th>金额</th><th>付款</th><th>Telegram</th><th>操作</th></tr></thead><tbody id="crows"></tbody></table></div>
-</div>`;
+  <div class="table-wrap"><table style="min-width:1000px"><thead><tr><th>订单</th><th>联络人</th><th>地区 / 配套</th><th>金额</th><th>付款</th><th>Telegram</th><th>操作</th></tr></thead><tbody id="crows"></tbody></table></div>
+</section>`;
 
 export const classAdminScript = `
 const STATUS_LABELS=${jsonForScript(STATUS_LABELS)};
-const tabP=document.querySelector('#tab-preview'),tabC=document.querySelector('#tab-class'),btnP=document.querySelector('#btn-preview'),btnC=document.querySelector('#btn-class');
-function openTab(w){const c=w==='class';tabP.classList.toggle('hidden',c);tabC.classList.toggle('hidden',!c);btnP.classList.toggle('dark',!c);btnC.classList.toggle('dark',c);if(c)loadClass();try{location.hash=c?'#class':''}catch(e){}}
-btnP.onclick=()=>openTab('preview');btnC.onclick=()=>openTab('class');
+const TABS={overview:['#tab-overview','#nav-overview'],class:['#tab-class','#btn-class'],preview:['#tab-preview','#btn-preview']};
+function openTab(w){if(!TABS[w])w='overview';for(const k in TABS){const on=k===w;document.querySelector(TABS[k][0]).classList.toggle('on',on);document.querySelector(TABS[k][1]).classList.toggle('on',on)}if(w==='class'||w==='overview')loadClass();try{history.replaceState(null,'','#'+w)}catch(e){}}
+for(const k in TABS)document.querySelector(TABS[k][1]).onclick=()=>openTab(k);
 async function loadClass(){const p=new URLSearchParams({q:document.querySelector('#cq').value,region:document.querySelector('#cregion').value,package:document.querySelector('#cpkg').value,status:document.querySelector('#cstatus').value});
 const r=await fetch('/api/admin/class?'+p);if(r.status===401){location='/4916';return}const out=await r.json(),s=out.stats;
 const card=(l,v)=>'<div class="stat"><small>'+l+'</small><strong>'+v+'</strong></div>';
-document.querySelector('#cstats').innerHTML=card('全部报名',s.total)+card('等待付款',s.awaiting_payment||0)+card('已提交付款资料',s.payment_submitted||0)+card('已确认',(s.payment_confirmed||0)+' · RM'+s.confirmed_amount);
+const cards=card('全部报名',s.total)+card('等待付款',s.awaiting_payment||0)+card('已提交付款资料',s.payment_submitted||0)+card('已确认付款',(s.payment_confirmed||0)+' 笔 · RM'+s.confirmed_amount);document.querySelector('#cstats').innerHTML=cards;const o=document.querySelector('#ostats');if(o)o.innerHTML='<div class="stat"><small>一天课程 · 待核对付款</small><strong>'+(s.payment_submitted||0)+'</strong></div><div class="stat"><small>一天课程 · 等待付款</small><strong>'+(s.awaiting_payment||0)+'</strong></div><div class="stat"><small>一天课程 · 已确认</small><strong>'+(s.payment_confirmed||0)+'</strong><small>RM'+s.confirmed_amount+'</small></div><div class="stat"><small>一天课程 · 全部报名</small><strong>'+s.total+'</strong></div>';
 document.querySelector('#crows').innerHTML=out.registrations.map(x=>{const open=x.payment_status!=='cancelled';
 const tg={sent:'已发送',failed:'失败',skipped:'未设置',pending:'等待中',sending:'发送中'}[x.telegram_notification_status]||x.telegram_notification_status;
 return '<tr><td><b>'+esc(x.public_order_id)+'</b><br><small>'+new Date(x.created_at).toLocaleString()+'</small></td>'
 +'<td><b>'+esc(x.primary_name)+'</b><br><a href="tel:+'+esc(x.primary_phone_normalized)+'">+'+esc(x.primary_phone_normalized)+'</a>'+(x.second_name?'<br><small>第二位：'+esc(x.second_name)+' · +'+esc(x.second_phone_normalized)+'</small>':'')+'</td>'
 +'<td>'+esc(x.region)+'<br><small>'+esc(x.package_title)+'<br>'+x.participant_count+' 人 / '+x.computer_count+' 台</small></td>'
 +'<td><b>RM'+x.final_amount+'</b><br><small>原价 RM'+x.original_amount+' · 优惠 RM'+x.discount_amount+'</small></td>'
-+'<td><span class="status">'+esc(x.status_label)+'</span><br><small>参考：'+esc(x.payment_reference||'-')+'</small>'+(x.admin_notes?'<br><small>备注：'+esc(x.admin_notes)+'</small>':'')+'</td>'
++'<td><span class="status s-'+esc(x.payment_status)+'">'+esc(x.status_label)+'</span><br><small>参考：'+esc(x.payment_reference||'-')+'</small>'+(x.admin_notes?'<br><small>备注：'+esc(x.admin_notes)+'</small>':'')+'</td>'
 +'<td><span class="status">'+tg+'</span>'+(x.telegram_notification_status!=='sent'&&open?'<br><button class="btn small" data-cact="telegram" data-cid="'+x.id+'">重发</button>':'')+'</td>'
 +'<td><div class="actions">'+(['awaiting_payment','payment_submitted','payment_rejected'].includes(x.payment_status)?'<button class="btn small dark" data-cact="confirm" data-cid="'+x.id+'" data-o="'+esc(x.public_order_id)+'" data-a="'+x.final_amount+'">确认付款成功</button>':'')+(x.payment_status==='payment_submitted'?'<button class="btn small" data-cact="reject" data-cid="'+x.id+'" data-o="'+esc(x.public_order_id)+'" data-a="'+x.final_amount+'">付款资料不符</button>':'')+(open?'<button class="btn small danger" data-cact="cancel" data-cid="'+x.id+'" data-o="'+esc(x.public_order_id)+'" data-a="'+x.final_amount+'">取消报名</button>':'')+'<button class="btn small" data-cact="note" data-cid="'+x.id+'" data-n="'+esc(x.admin_notes||'')+'">备注</button><button class="btn small" data-cact="events" data-cid="'+x.id+'">事件记录</button></div><div id="ev'+x.id+'"></div></td></tr>'}).join('')||'<tr><td colspan="7">没有资料</td></tr>'}
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-cact]');if(!b)return;const id=b.dataset.cid,act=b.dataset.cact,o=b.dataset.o,a=b.dataset.a;
@@ -148,5 +148,5 @@ if(act==='telegram')return post('telegram',{});
 if(act==='note'){const v=prompt('内部备注（顾客看不到）',b.dataset.n||'');if(v===null)return;return post('notes',{notes:v})}
 if(act==='events'){const box=document.querySelector('#ev'+id);if(box.innerHTML){box.innerHTML='';return}const r=await fetch('/api/admin/class/'+id+'/events');const out=await r.json();box.innerHTML='<small>'+out.events.map(v=>esc(new Date(v.created_at).toLocaleString())+' · '+esc(v.event_type)+' · '+esc(v.actor)+(v.details?' · '+esc(v.details):'')).join('<br>')+'</small>'}});
 document.querySelector('#csearch').onclick=loadClass;
-if(location.hash==='#class')openTab('class');
+openTab((location.hash||'').slice(1)||'overview');
 `;

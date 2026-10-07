@@ -67,6 +67,63 @@ function shell(title, body, script = '') {
   return `<!doctype html><html lang="zh-Hans"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title><style>${css}</style></head><body><main>${body}</main>${script ? `<script>${script}</script>` : ''}</body></html>`;
 }
 
+
+const adminCss = `
+body.admin{background:#F4F5F7;color:#1B1F27;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif;font-size:14px;line-height:1.5}
+.adm{display:grid;grid-template-columns:232px minmax(0,1fr);min-height:100vh}
+.side{background:#11141A;color:#C9CED8;padding:22px 14px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh}
+.side .logo{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;font-size:16px;padding:4px 10px 18px}
+.side .logo::before{content:"";width:28px;height:28px;background:url(/assets/logos/aligor-logo-transparent.png) center/contain no-repeat}
+.side .logo small{display:block;font-weight:500;font-size:11px;color:#7C8494;letter-spacing:.08em}
+.nav{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;background:transparent;color:#C9CED8;font:500 14px inherit;font-family:inherit;padding:10px 12px;border-radius:8px;cursor:pointer}
+.nav:hover{background:#1B2029;color:#fff}.nav.on{background:#2A3140;color:#fff}
+.nav i{font-style:normal;width:18px;text-align:center;opacity:.85}
+.side .sp{flex:1}
+.side .out{border:1px solid #2A3140;background:transparent;color:#9AA2B1;padding:9px 12px;border-radius:8px;cursor:pointer;font:500 13px inherit;font-family:inherit}.side .out:hover{color:#fff;border-color:#4A5366}
+.content{padding:28px 32px 60px;min-width:0;max-width:1400px}
+.content h1{font-family:inherit;font-size:22px;font-weight:700;margin:0;letter-spacing:-.01em;color:#11141A}
+.content .sub{color:#6B7380;margin:2px 0 0;font-size:13px}
+.page-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.content .top{margin:0 0 20px;display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
+.content .top h1{margin:0}
+.content .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:0 0 18px}
+.content .stat{background:#fff;border:1px solid #E4E7EC;border-radius:12px;padding:16px 18px;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+.content .stat small{display:block;color:#6B7380;font-weight:500;text-transform:none;letter-spacing:0;font-size:12.5px}
+.content .stat strong{font-family:inherit;font-size:26px;font-weight:700;line-height:1.25;color:#11141A;display:block;margin-top:2px}
+.content .stat strong + small{margin-top:2px;font-size:11.5px;color:#98A0AE}
+.content .tools{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
+.content .tools input,.content .tools select{width:auto;min-width:150px;padding:8px 12px;border:1px solid #D5D9E0;border-radius:8px;font:400 14px inherit;font-family:inherit;background:#fff;color:#1B1F27}
+.content .tools input:focus,.content .tools select:focus{outline:2px solid #C7D2FE;border-color:#6366F1}
+.content .table-wrap{background:#fff;border:1px solid #E4E7EC;border-radius:12px;overflow:auto;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+.content table{border-collapse:collapse;width:100%}
+.content th{background:#F9FAFB;font-size:11.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#6B7380;text-align:left;padding:10px 14px;border-bottom:1px solid #E4E7EC;white-space:nowrap}
+.content td{padding:12px 14px;border-bottom:1px solid #EEF0F4;vertical-align:top;font-size:13.5px}
+.content tbody tr:hover{background:#FAFBFC}.content tbody tr:last-child td{border-bottom:0}
+.content td small{color:#6B7380;font-size:12px}
+.content td a{color:#3B49DF;text-decoration:none}.content td a:hover{text-decoration:underline}
+.content .status{display:inline-block;font-size:12px;font-weight:600;padding:2px 10px;border-radius:999px;background:#EEF0F4;color:#475066;white-space:nowrap}
+.status.s-new,.status.s-awaiting_payment{background:#FEF3C7;color:#92400E}
+.status.s-contacted,.status.s-payment_submitted,.status.s-registered{background:#DBEAFE;color:#1E40AF}
+.status.s-paid,.status.s-attended,.status.s-payment_confirmed{background:#DCFCE7;color:#166534}
+.status.s-cancelled,.status.s-payment_rejected{background:#FEE2E2;color:#991B1B}
+.content .actions{display:flex;gap:6px;flex-wrap:wrap}
+.content .btn{display:inline-flex;align-items:center;justify-content:center;border:1px solid #D5D9E0;background:#fff;color:#1B1F27;border-radius:8px;padding:8px 14px;font:600 13px inherit;font-family:inherit;cursor:pointer;text-decoration:none;min-height:0;box-shadow:none;transform:none}
+.content .btn:hover{background:#F4F5F7;transform:none;box-shadow:none}
+.content .btn.small{padding:5px 10px;font-size:12.5px;border-width:1px}
+.content .btn.dark{background:#11141A;color:#fff;border-color:#11141A}.content .btn.dark:hover{background:#2A3140}
+.content .btn.wa{background:#fff;color:#15803D;border-color:#BBE5C8}.content .btn.wa:hover{background:#F0FDF4}
+.content .btn.danger{background:#fff;color:#B42318;border-color:#F4C7C3}.content .btn.danger:hover{background:#FEF3F2}
+.content h2{font-family:inherit}
+.view{display:none}.view.on{display:block}
+.card-box{background:#fff;border:1px solid #E4E7EC;border-radius:12px;padding:16px 18px;box-shadow:0 1px 2px rgba(16,24,40,.04);margin:0 0 18px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+@media(max-width:900px){.adm{grid-template-columns:1fr}.side{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;padding:12px}.side .logo{padding:0 8px 0 0}.side .sp{display:none}.nav{width:auto;padding:8px 12px}.content{padding:18px 14px 50px}.content .stats{grid-template-columns:repeat(2,1fr)}}
+`;
+
+function adminShell(title, body, script = '') {
+  return `<!doctype html><html lang="zh-Hans"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>${title}</title><style>${css}${adminCss}</style></head><body class="admin"><div class="adm">${body}</div><script>${script}</script></body></html>`;
+}
+
 const jsonForScript = value => JSON.stringify(value).replace(/</g, '\\u003c');
 
 export function registerPage(defaultBatch = '', stats = null) {
@@ -120,16 +177,22 @@ export function loginPage(error = '') {
 }
 
 export function adminPage() {
-  return shell('Aligor 报名后台', `
-    <div class="top"><div><div class="brand">阿理哥 · Aligor</div><h1>报名后台</h1></div><div class="actions"><a class="btn small" href="/api/admin/export.csv">导出 CSV</a><button id="logout" class="btn dark small">登出</button></div></div>
-    <div class="actions" style="margin:0 0 14px"><button id="btn-preview" class="btn small dark" type="button">免费 Preview 报名</button><button id="btn-class" class="btn small" type="button">一天课程报名</button></div>
-    <div id="tab-preview">
-    <div id="traffic"></div>
-    <div id="stats" class="stats"></div>
-    <div class="tools"><input id="q" placeholder="姓名、电话或报名ID"><input id="batch" placeholder="批次"><select id="status"><option value="">全部状态</option><option>new</option><option>contacted</option><option>registered</option><option>paid</option><option>attended</option><option>cancelled</option></select><button id="search" class="btn small">查询</button></div>
-    <div id="message"></div><div class="table-wrap"><table><thead><tr><th>ID</th><th>顾客</th><th>课程 / 批次</th><th>状态</th><th>报名时间</th><th>操作</th></tr></thead><tbody id="rows"></tbody></table></div>
+  return adminShell('Aligor 后台', `
+    <aside class="side"><div class="logo"><div>阿理哥 · Aligor<small>ADMIN</small></div></div>
+      <button class="nav on" id="nav-overview" type="button"><i>▦</i>总览</button>
+      <button class="nav" id="btn-class" type="button"><i>✓</i>一天课程报名</button>
+      <button class="nav" id="btn-preview" type="button"><i>☰</i>免费 Preview 报名</button>
+      <div class="sp"></div><button id="logout" class="out" type="button">登出</button></aside>
+    <div class="content">
+      <section class="view on" id="tab-overview"><div class="page-head"><div><h1>总览</h1><p class="sub">访客、报名与付款一览</p></div></div>
+        <div id="ostats" class="stats"></div><div id="traffic"></div></section>
+      <section class="view" id="tab-preview"><div class="page-head"><div><h1>免费 Preview 报名</h1><p class="sub">10 月 7 日、10 月 14 日两场</p></div><div class="actions"><a class="btn small" href="/api/admin/export.csv">导出 CSV</a></div></div>
+        <div id="stats" class="stats"></div>
+        <div class="tools"><input id="q" placeholder="姓名、电话或报名ID"><input id="batch" placeholder="批次"><select id="status"><option value="">全部状态</option><option>new</option><option>contacted</option><option>registered</option><option>paid</option><option>attended</option><option>cancelled</option></select><button id="search" class="btn small">查询</button></div>
+        <div id="message"></div><div class="table-wrap"><table><thead><tr><th>ID</th><th>顾客</th><th>课程 / 批次</th><th>状态</th><th>报名时间</th><th>操作</th></tr></thead><tbody id="rows"></tbody></table></div>
+      </section>
+      ${classAdminTabHtml}
     </div>
-    ${classAdminTabHtml}
   `, `
     const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const q=document.querySelector('#q'),batch=document.querySelector('#batch'),status=document.querySelector('#status'),stats=document.querySelector('#stats'),rows=document.querySelector('#rows'),search=document.querySelector('#search'),logout=document.querySelector('#logout');
