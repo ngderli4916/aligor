@@ -53,12 +53,12 @@ export function classRegisterPage() {
 <section class="card"><div class="step-head"><span class="step-no">01</span><div><h2>填写报名资料</h2><p>只需要基本资料。</p></div></div><div class="grid2"><div class="field"><label for="name">姓名</label><input id="name" name="name" autocomplete="name" maxlength="80" placeholder="请输入姓名"></div><div class="field"><label for="phone">WhatsApp 电话号码</label><input id="phone" name="phone" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="例如：016 787 1902"></div><div class="field full"><label for="region">上课地区</label><select id="region" name="region"><option value="">请选择地区</option><option value="JOHOR">JOHOR</option><option value="SELANGOR">SELANGOR</option><option value="PENANG">PENANG</option></select></div></div><p class="hint">我们会根据各地区的报名人数安排上课地点。</p></section>
 <section class="card"><div class="step-head"><span class="step-no">02</span><div><h2>选择上课方式</h2><p>选择后，费用会马上更新。</p></div></div><div class="packages" id="packages">${cards}</div>
 <div class="second" id="second"><h3 style="font:800 18px var(--serif);margin:0 0 14px">第二位参加者</h3><div class="grid2"><div class="field"><label for="second_name">第二位姓名</label><input id="second_name" maxlength="80" placeholder="请输入姓名"></div><div class="field"><label for="second_phone">第二位 WhatsApp</label><input id="second_phone" inputmode="tel" maxlength="20" placeholder="例如：012 345 6789"></div></div></div></section>
-<section class="card"><div class="step-head"><span class="step-no">03</span><div><h2>提交报名</h2><p>提交后会出现订单编号和付款页面。</p></div></div>
+<section class="card"><div class="step-head"><span class="step-no">03</span><div><h2>提交报名</h2><p>提交后会直接带你到付款页面。</p></div></div>
 <input class="hidden" id="website" tabindex="-1" autocomplete="off" aria-hidden="true">
 <button class="btn gold" style="width:100%;font-size:16px;padding:16px" type="submit" id="submit">提交报名</button><div class="err" id="err" role="alert"></div></section>
-<section class="success" id="success"><div class="tick">✓</div><h2>报名已建立</h2><p>请用下面的按钮完成付款。付款页面的链接只属于你，请不要转发。</p><div class="result-grid"><div class="result-item"><span>订单编号</span><strong id="rOrder"></strong></div><div class="result-item"><span>应付金额</span><strong id="rAmount"></strong></div></div><a class="btn gold" id="rPay" href="#">前往付款页面</a><p class="hint">提交付款资料后，我们核对到账才算完成。</p></section>
+<section class="success" id="success"><div class="tick">✓</div><h2>报名已建立</h2><p>正在带你到付款页面…如果没有自动跳转，请按下面的按钮。</p><div class="result-grid"><div class="result-item"><span>订单编号</span><strong id="rOrder"></strong></div><div class="result-item"><span>应付金额</span><strong id="rAmount"></strong></div></div><a class="btn gold" id="rPay" href="#">前往付款页面</a></section>
 </form>
-<aside class="summary"><span class="kicker">REGISTRATION SUMMARY</span><h2>报名摘要</h2><div class="sum-row"><span>上课方式</span><strong id="sumPackage"></strong></div><div class="sum-row"><span>参加人数</span><strong id="sumPeople"></strong></div><div class="sum-row"><span>电脑数量</span><strong id="sumPc"></strong></div><div class="sum-total"><span>应付金额</span><strong id="sumTotal"></strong><small id="sumSave"></small></div><div class="flow"><div><b>1</b><span>填写姓名、电话、地区</span></div><div><b>2</b><span>选择上课方式</span></div><div><b>3</b><span>提交后取得订单编号</span></div><div><b>4</b><span>在付款页面完成付款</span></div></div></aside></div>
+<aside class="summary"><span class="kicker">REGISTRATION SUMMARY</span><h2>报名摘要</h2><div class="sum-row"><span>上课方式</span><strong id="sumPackage"></strong></div><div class="sum-row"><span>参加人数</span><strong id="sumPeople"></strong></div><div class="sum-row"><span>电脑数量</span><strong id="sumPc"></strong></div><div class="sum-total"><span>应付金额</span><strong id="sumTotal"></strong><small id="sumSave"></small></div><div class="flow"><div><b>1</b><span>填写姓名、电话、地区</span></div><div><b>2</b><span>选择上课方式</span></div><div><b>3</b><span>提交后取得订单编号</span></div><div><b>4</b><span>扫 QR 付款，再 WhatsApp 通知我们</span></div></div></aside></div>
 <footer class="footer">Aligor · 阿理哥</footer>
 <script>(()=>{'use strict';
 const P=${jsonForScript(PACKAGES)};
@@ -79,7 +79,7 @@ if(P[pick].participants===2){if(d.second_name.length<2)return fail('请填写第
 const sig=JSON.stringify(d);if(!attempt||attempt.sig!==sig)attempt={sig,key:uuid()};d.idempotency_key=attempt.key;
 btn.disabled=true;btn.textContent='提交中…';
 try{const r=await fetch('/api/classregister',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(d)});const out=await r.json().catch(()=>({}));if(!r.ok||!out.ok)return fail(out.error||'提交失败，请稍后重试');
-$('#rOrder').textContent=out.order_id;$('#rAmount').textContent='RM'+out.amount;$('#rPay').href=out.payment_url;$('#success').classList.add('show');btn.textContent='已提交';$('#success').scrollIntoView({behavior:'smooth',block:'center'});
+$('#rOrder').textContent=out.order_id;$('#rAmount').textContent='RM'+out.amount;$('#rPay').href=out.payment_url;$('#success').classList.add('show');btn.textContent='前往付款页面…';location.href=out.payment_url;
 }catch(x){fail('网络出现问题，请检查网络后再按一次提交（不会重复报名）')}});
 })();</script></body></html>`;
 }
@@ -88,13 +88,15 @@ export function invalidPaymentPage() {
   return head('Aligor 付款', '<meta name="robots" content="noindex,nofollow">') + `<body>${topBar}<div class="invalid"><h1>这个付款链接无效</h1><p>链接可能不完整或已经失效。请回到报名页面重新报名，或联络 Adrian。</p><a class="btn gold" href="/classregister">回到报名页面</a></div></body></html>`;
 }
 
-export function paymentPage(view, token) {
+export function paymentPage(view, token, waNumber = '60167871902') {
   const s = view.status;
   const done = s === 'payment_confirmed';
+  const waMsg = `你好 Adrian，我已完成付款。\n订单编号：${view.order_id}\n配套：${view.package_title}\n金额：RM${view.amount}`;
+  const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(waMsg)}`;
   const banner = s === 'payment_confirmed' ? '<div class="notice ok">付款已由 Aligor 核对确认。谢谢你！上课日期与地点，会在报名后第二天或第三天通知。</div>'
-    : s === 'payment_submitted' ? `<div class="notice">已收到你的付款参考编号：<b>${h(view.reference)}</b>。我们核对到账后会再通知你。</div>`
-    : s === 'payment_rejected' ? '<div class="notice bad">你提交的付款资料我们暂时对不上。请检查付款参考编号，重新提交。</div>' : '';
-  const form = done ? '' : `<form id="pf"><div class="field"><label for="ref">付款参考编号（银行转账收据上的 Reference / Transaction ID）</label><input id="ref" maxlength="60" autocomplete="off" placeholder="例如：DuitNow 转账参考编号" value="${h(view.reference)}"></div><div class="err" id="err" role="alert"></div><button class="btn gold" style="width:100%;margin-top:14px" id="go" type="submit">${s === 'payment_submitted' ? '更新付款参考编号' : '我已完成付款'}</button></form><div class="notice" id="after" style="display:none"></div>`;
+    : s === 'payment_submitted' ? '<div class="notice">已收到你的付款通知。请记得 WhatsApp 把付款收据发给我们，核对到账后会再通知你。</div>'
+    : s === 'payment_rejected' ? '<div class="notice bad">你提交的付款资料我们暂时对不上。请检查后重新付款，再按“我已完成付款”，并 WhatsApp 我们。</div>' : '';
+  const form = done ? '' : `<div class="err" id="err" role="alert"></div><button class="btn gold" style="width:100%;margin-top:14px" id="go" type="button">我已完成付款</button><p class="hint">付款后按这个按钮，会打开 WhatsApp：请把付款收据发给我们，我们核对后确认。</p><a class="btn" style="width:100%;margin-top:10px" id="wa" href="${h(waUrl)}">WhatsApp 发付款收据给 Adrian</a>`;
   return head('Aligor 付款', '<meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">') + `<body>${topBar}
 <div class="pay-wrap"><div class="pay-card">
 <div class="qr"><img src="/assets/payment/duitnow-nili-resources.jpg" alt="DuitNow 付款二维码" width="839" height="1280"><p>收款名称：NILI RESOURCES</p></div>
@@ -105,12 +107,12 @@ export function paymentPage(view, token) {
 <p class="meta">请用银行 App 扫描二维码，付款金额必须是 <b>RM${view.amount}</b>。</p>
 ${banner}${form}
 <p class="hint">提交付款资料不代表付款已经确认。我们核对到账后会再通知你。</p></div></div></div>
-<script>(()=>{const f=document.querySelector('#pf');if(!f)return;const T=${jsonForScript(token)},err=document.querySelector('#err'),go=document.querySelector('#go'),after=document.querySelector('#after');
-f.addEventListener('submit',async e=>{e.preventDefault();err.classList.remove('show');go.disabled=true;const label=go.textContent;go.textContent='提交中…';
-try{const r=await fetch('/api/payment/submit',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({t:T,reference:document.querySelector('#ref').value})});const out=await r.json().catch(()=>({}));
+<script>(()=>{const go=document.querySelector('#go');if(!go)return;const T=${jsonForScript(token)},WA=${jsonForScript(waUrl)},err=document.querySelector('#err');
+go.addEventListener('click',async()=>{err.classList.remove('show');go.disabled=true;const label=go.textContent;go.textContent='提交中…';
+try{const r=await fetch('/api/payment/submit',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({t:T})});const out=await r.json().catch(()=>({}));
 if(!r.ok||!out.ok){err.textContent=out.error||'提交失败，请稍后重试';err.classList.add('show');go.disabled=false;go.textContent=label;return}
-after.style.display='block';after.className='notice ok';after.textContent='已收到你的付款参考编号。这不代表付款已经确认；我们核对到账后会再通知你。';go.textContent='更新付款参考编号';go.disabled=false;}
-catch(x){err.textContent='网络出现问题，请再按一次提交';err.classList.add('show');go.disabled=false;go.textContent=label}});})();</script></body></html>`;
+go.textContent='正在打开 WhatsApp…';location.href=WA;setTimeout(()=>{go.disabled=false;go.textContent='我已完成付款'},3000)}
+catch(x){err.textContent='网络出现问题，请再按一次';err.classList.add('show');go.disabled=false;go.textContent=label}});})();</script></body></html>`;
 }
 
 export const classAdminTabHtml = `

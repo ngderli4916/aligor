@@ -98,7 +98,7 @@ test('6b. a deleted newest row never frees its AICL number', async () => {
 
 test('7. token is unguessable; stored only as a hash; invalid tokens reveal nothing', async () => {
   const env = makeEnv();
-  const { json } = await register(env);
+  const { json } = await register(env, { phone: '0123450099' });
   const t = tokenOf(json);
   assert.match(t, /^[A-Za-z0-9_-]{43}$/);
   const r = row(env);
@@ -107,7 +107,7 @@ test('7. token is unguessable; stored only as a hash; invalid tokens reveal noth
   const t2 = tokenOf((await register(env, { phone: '0162000000' })).json); assert.notEqual(t, t2);
   const good = await call(env, 'GET', `/payment?t=${t}`, undefined); const goodHtml = await good.text();
   assert.equal(good.status, 200); assert.ok(goodHtml.includes('AICL00001') && goodHtml.includes('RM399'));
-  assert.ok(!goodHtml.includes('60167871902') && !goodHtml.includes('0167871902') && !goodHtml.includes('Ah Test'));
+  assert.ok(!goodHtml.includes('60123450099') && !goodHtml.includes('0123450099') && !goodHtml.includes('Ah Test'));
   assert.match(good.headers.get('x-robots-tag'), /noindex/); assert.ok(goodHtml.includes('name="robots" content="noindex'));
   const bad = [`/payment?t=${'A'.repeat(43)}`, '/payment?t=AICL00001', '/payment?t=', '/payment', '/payment?order=AICL00001'];
   const bodies = [];
@@ -150,7 +150,7 @@ test('10. Telegram success: one message, exact content, secrets only from env', 
   const tg = calls.filter(c => c.url.includes('api.telegram.org')); assert.equal(tg.length, 1);
   assert.ok(tg[0].url.endsWith(`/bot${TG}/sendMessage`)); assert.equal(tg[0].body.chat_id, CHAT);
   const t = tg[0].body.text;
-  for (const s of ['新的 Aligor 一天课程报名', 'AICL00001', '60167871902', 'JOHOR', '两个人 · 共用一台电脑', '2 人／1 台', 'Siti &lt;b&gt;', '60123456789', '原价：RM698', '优惠：RM199', '应付：RM499', '等待付款', 'https://aligor.test/4916']) assert.ok(t.includes(s), s);
+  for (const s of ['新的 Aligor 一天课程报名', '#AICL00001', '60167871902', 'JOHOR', '两个人 · 共用一台电脑', '2 人／1 台', 'Siti &lt;b&gt;', '60123456789', '原价：RM698', '优惠：RM199', '应付：RM499', '等待付款', 'https://aligor.test/4916']) assert.ok(t.includes(s), s);
   assert.ok(!t.includes('/payment') && !t.includes(TG));
   assert.equal(row(env).telegram_notification_status, 'sent');
 });
@@ -207,31 +207,32 @@ test('13. admin: auth required; list, search, filters, CSV, events; no token lea
   assert.equal((await q('?q=AICL00001')).registrations[0].admin_notes, 'WhatsApp 过了');
 });
 
-test('14/15. customer submits a reference -> payment_submitted only; only the admin confirms', async () => {
+test('14/15. "我已完成付款" -> payment_submitted (no reference needed); only the admin confirms', async () => {
   const env = makeEnv();
   const { json } = await register(env); const t = tokenOf(json);
-  const sub = async (ref, tok = t) => call(env, 'POST', '/api/payment/submit', { t: tok, reference: ref });
-  assert.equal((await sub('ab')).status, 400); assert.equal((await sub('<script>x</script>')).status, 400);
-  assert.equal((await sub('REF1234', 'A'.repeat(43))).status, 404);
-  const ok = await sub('DUITNOW 998877'); assert.equal(ok.status, 200);
-  let r = row(env); assert.equal(r.payment_status, 'payment_submitted'); assert.equal(r.payment_reference, 'DUITNOW 998877'); assert.equal(r.payment_confirmed_at, null);
-  assert.equal((await sub('DUITNOW 998877')).status, 200);
-  assert.equal(events(env).filter(e => e.event_type === 'payment_submitted').length, 1, 'same reference twice is one event');
-  // hostile payloads cannot confirm
-  for (const body of [{ t, reference: 'REF1234', payment_status: 'payment_confirmed' }, { t, reference: 'REF1234', status: 'payment_confirmed', confirmed: true }]) await call(env, 'POST', '/api/payment/submit', body);
+  const sub = async (body, tok = t) => call(env, 'POST', '/api/payment/submit', { t: tok, ...body });
+  assert.equal((await sub({}, 'A'.repeat(43))).status, 404);
+  assert.equal((await sub({ reference: '<script>x</script>' })).status, 400);
+  assert.equal((await sub({})).status, 200);
+  let r = row(env); assert.equal(r.payment_status, 'payment_submitted'); assert.equal(r.payment_reference, null); assert.equal(r.payment_confirmed_at, null);
+  assert.equal((await sub({})).status, 200);
+  assert.equal(events(env).filter(e => e.event_type === 'payment_submitted').length, 1, 'pressing twice is one event');
+  for (const body of [{ payment_status: 'payment_confirmed' }, { status: 'payment_confirmed', confirmed: true }]) await sub(body);
   assert.equal(row(env).payment_status, 'payment_submitted');
   assert.equal((await call(env, 'POST', '/api/admin/class/1/confirm', { confirm: true })).status, 401);
   const page = await (await call(env, 'GET', `/payment?t=${t}`, undefined)).text();
-  assert.ok(page.includes('已收到你的付款参考编号') && page.includes('提交付款资料不代表付款已经确认。我们核对到账后会再通知你。') && !page.includes('付款已由 Aligor 核对确认'));
-  // admin
-  const cookie = await adminCookie(env);
+  assert.ok(page.includes('已收到你的付款通知') && page.includes('提交付款资料不代表付款已经确认。我们核对到账后会再通知你。') && !page.includes('付款已由 Aligor 核对确认'));
+  assert.ok(!page.includes('id="ref"'), 'no reference input');
+  const wa = page.match(/https:\/\/wa\.me\/60167871902\?text=[^"]+/); assert.ok(wa, 'WhatsApp link to Adrian');
+  const text = decodeURIComponent(wa[0].split('text=')[1].replace(/&amp;/g, '&')); assert.ok(text.includes('AICL00001') && text.includes('RM399'));
+  const { cookie: _ } = {}; const cookie = await adminCookie(env);
   assert.equal((await call(env, 'POST', '/api/admin/class/1/confirm', {}, cookie)).status, 400, 'needs confirm:true');
   assert.equal(row(env).payment_status, 'payment_submitted');
-  const done = await call(env, 'POST', '/api/admin/class/1/confirm', { confirm: true }, cookie); assert.equal(done.status, 200);
+  assert.equal((await call(env, 'POST', '/api/admin/class/1/confirm', { confirm: true }, cookie)).status, 200);
   r = row(env); assert.equal(r.payment_status, 'payment_confirmed'); assert.ok(r.payment_confirmed_at);
   const ev = events(env).find(e => e.event_type === 'payment_confirmed'); assert.equal(ev.actor, 'admin'); assert.match(ev.details, /before=payment_submitted after=payment_confirmed/);
   assert.equal((await call(env, 'POST', '/api/admin/class/1/confirm', { confirm: true }, cookie)).status, 409, 'cannot confirm twice');
-  assert.equal((await sub('NEWREF99')).status, 409, 'customer cannot change a confirmed payment');
+  assert.equal((await sub({ reference: 'NEWREF99' })).status, 200); assert.equal(row(env).payment_status, 'payment_confirmed', 'customer cannot change a confirmed payment');
   assert.ok((await (await call(env, 'GET', `/payment?t=${t}`, undefined)).text()).includes('付款已由 Aligor 核对确认'));
 });
 

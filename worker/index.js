@@ -64,7 +64,7 @@ async function paymentRoute(url,env) {
   const token=url.searchParams.get('t')||'', row=await findByToken(env,token);
   if(!row){const res=html(invalidPaymentPage(),noindex);return new Response(res.body,{status:404,headers:res.headers})}
   await recordPaymentPageOpened(env,row);
-  return html(paymentPage(publicPaymentView(row),token),noindex);
+  return html(paymentPage(publicPaymentView(row),token,env.WHATSAPP_NUMBER||'60167871902'),noindex);
 }
 async function classPaymentSubmit(request,env) {
   const data=await smallJson(request), view=await submitPayment(env,String(data.t||''),data.reference);

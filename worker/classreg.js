@@ -183,7 +183,7 @@ export function buildClassNotification(row, env) {
   const base = (env.PUBLIC_BASE_URL || 'https://aligor.aligor.workers.dev').replace(/\/$/, '');
   const lines = [
     '🔔 新的 Aligor 一天课程报名',
-    `订单编号：${row.public_order_id}`,
+    `订单编号：#${row.public_order_id}`,
     `联络人：${e(row.primary_name)}`,
     `WhatsApp：${e(row.primary_phone_normalized)}`,
     `地区：${e(row.region)}`,
@@ -239,17 +239,18 @@ export function validReference(input) {
   return ref;
 }
 
-// The customer can only move awaiting/rejected/submitted -> payment_submitted. Never to confirmed.
+// The customer taps "我已完成付款": awaiting/rejected -> payment_submitted. Never to confirmed. No reference needed
+// (the customer WhatsApps Adrian instead); a reference is still accepted if one is sent.
 export async function submitPayment(env, token, referenceInput) {
   const row = await findByToken(env, token);
   if (!row) throw new ClassError('这个付款链接无效或已失效', 404);
-  if (row.payment_status === 'payment_confirmed') throw new ClassError('这个订单的付款已经确认，不需要再提交', 409);
-  const ref = validReference(referenceInput);
-  if (row.payment_status === 'payment_submitted' && row.payment_reference === ref) return publicPaymentView(row);
+  if (row.payment_status === 'payment_confirmed') return publicPaymentView(row);
+  const ref = String(referenceInput ?? '').trim() ? validReference(referenceInput) : (row.payment_reference || null);
+  if (row.payment_status === 'payment_submitted' && ref === (row.payment_reference || null)) return publicPaymentView(row);
   const t = nowIso();
   const res = await env.DB.prepare(`UPDATE class_registrations SET payment_reference=?,payment_status='payment_submitted',payment_submitted_at=?,updated_at=? WHERE id=? AND payment_status IN ('awaiting_payment','payment_rejected','payment_submitted') AND registration_status='registered'`).bind(ref, t, t, row.id).run();
   if (!res?.meta?.changes) throw new ClassError('这个订单目前不能提交付款资料', 409);
-  await safeClassEvent(env, row.id, 'payment_submitted', 'customer', `before=${row.payment_status} after=payment_submitted ref=${ref}`);
+  await safeClassEvent(env, row.id, 'payment_submitted', 'customer', `before=${row.payment_status} after=payment_submitted${ref ? ` ref=${ref}` : ''}`);
   return publicPaymentView({ ...row, payment_status: 'payment_submitted', payment_reference: ref });
 }
 
