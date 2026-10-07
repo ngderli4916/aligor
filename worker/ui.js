@@ -135,8 +135,8 @@ export function registerPage(defaultBatch = '', stats = null) {
     <form id="leadForm" class="card grid">
       <label>姓名<input name="name" required maxlength="80" autocomplete="name"></label>
       <label>WhatsApp 号码<input name="phone" required maxlength="30" inputmode="tel" placeholder="例如 0167871902" autocomplete="tel"></label>
-      <label class="full">报名项目<select name="course" id="course"><option value="免费 AI Preview · 10 月 7 日（星期三）8 PM – 9 PM" data-batch="PREVIEW-1007">免费 AI Preview · 10 月 7 日（星期三）8 PM – 9 PM</option><option value="免费 AI Preview · 10 月 14 日（星期三）8 PM – 9 PM" data-batch="PREVIEW-1014">免费 AI Preview · 10 月 14 日（星期三）8 PM – 9 PM</option></select><small class="hint" id="sessionCount"></small></label>
-      <input type="hidden" name="batch" id="batch" value="${defaultBatch||'PREVIEW-1007'}">
+      <label class="full">报名项目<select name="course" id="course"><option value="免费 AI Preview · 10 月 14 日（星期三）8 PM – 9 PM" data-batch="PREVIEW-1014">免费 AI Preview · 10 月 14 日（星期三）8 PM – 9 PM</option><option value="免费 AI Preview · 10 月 21 日（星期三）8 PM – 9 PM" data-batch="PREVIEW-1021">免费 AI Preview · 10 月 21 日（星期三）8 PM – 9 PM</option></select><small class="hint" id="sessionCount"></small></label>
+      <input type="hidden" name="batch" id="batch" value="${defaultBatch||'PREVIEW-1014'}">
       <label>公司名称（选填）<input name="company" maxlength="100"></label>
       <label>行业（选填）<input name="industry" maxlength="80"></label>
       <fieldset class="full"><legend>你有用过 AI Agent 吗？</legend><div class="choices">
@@ -186,7 +186,7 @@ export function adminPage() {
     <div class="content">
       <section class="view on" id="tab-overview"><div class="page-head"><div><h1>总览</h1><p class="sub">访客、报名与付款一览</p></div></div>
         <div id="ostats" class="stats"></div><div id="traffic"></div></section>
-      <section class="view" id="tab-preview"><div class="page-head"><div><h1>免费 Preview 报名</h1><p class="sub">10 月 7 日、10 月 14 日两场</p></div><div class="actions"><a class="btn small" href="/api/admin/export.csv">导出 CSV</a></div></div>
+      <section class="view" id="tab-preview"><div class="page-head"><div><h1>免费 Preview 报名</h1><p class="sub">10 月 14 日、10 月 21 日两场</p></div><div class="actions"><a class="btn small" href="/api/admin/export.csv">导出 CSV</a></div></div>
         <div id="stats" class="stats"></div>
         <div class="tools"><input id="q" placeholder="姓名、电话或报名ID"><input id="batch" placeholder="批次"><select id="status"><option value="">全部状态</option><option>new</option><option>contacted</option><option>registered</option><option>paid</option><option>attended</option><option>cancelled</option></select><button id="search" class="btn small">查询</button></div>
         <div id="message"></div><div class="table-wrap"><table><thead><tr><th>ID</th><th>顾客</th><th>课程 / 批次</th><th>状态</th><th>报名时间</th><th>操作</th></tr></thead><tbody id="rows"></tbody></table></div>
