@@ -152,6 +152,9 @@ export function registerPage(defaultBatch = '', stats = null) {
         <label class="choice"><input type="checkbox" name="ai_tools" value="DeepSeek">DeepSeek</label>
         <label class="choice"><input type="checkbox" name="ai_tools" value="Microsoft Copilot">Microsoft Copilot</label>
         <label class="choice"><input type="checkbox" name="ai_tools" value="Codex">Codex</label>
+        <label class="choice"><input type="checkbox" name="ai_tools" value="豆包">豆包</label>
+        <label class="choice"><input type="checkbox" name="ai_tools" value="Hermes">Hermes</label>
+        <label class="choice"><input type="checkbox" name="ai_tools" value="OpenClaw">OpenClaw</label>
         <label class="choice"><input type="checkbox" name="ai_tools" value="其他 AI Agent">其他 AI Agent</label>
         <label class="choice"><input type="checkbox" name="ai_tools" value="还没有使用任何 AI">还没有使用任何 AI</label>
       </div><label style="margin-top:12px">其他（选填）<input name="ai_tools_other" maxlength="100" placeholder="填写其他 AI 工具"></label></fieldset>
