@@ -31,6 +31,7 @@ input,select,textarea{width:100%;border:1px solid #bcb4a5;background:#fff;paddin
 .qr{border:1px solid #000;padding:12px;background:#fff;align-self:start}.qr img{width:100%;display:block;height:auto}.qr p{font:600 12px var(--sans);text-align:center;margin:10px 0 2px;color:var(--muted)}
 .pay-copy h1{font:900 30px var(--serif);margin:0 0 4px}.order{font:800 15px var(--mono);background:#000;color:var(--yellow);display:inline-block;padding:5px 10px;margin:6px 0 14px}.amount{font:900 46px/1 var(--serif);color:#8a6100;margin:10px 0}.meta{font-size:14px;color:#3f3c36;margin:3px 0}.meta b{color:#000}
 .notice{margin:16px 0;padding:12px 14px;border-left:4px solid var(--gold);background:#fff4cc;font-size:13px}.ok{border-left-color:var(--green);background:#e6f2ea}.bad{border-left-color:var(--red);background:#fdeae4}
+.bank{margin:16px 0;border:1px solid var(--line);background:#fffdf7;padding:14px 16px}.bank h3{font:800 14px var(--sans);margin:0 0 8px}.bank .row{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:3px 0}.bank .row span{color:var(--muted)}.bank .acc{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px}.bank .acc b{font:900 22px var(--mono);letter-spacing:.04em}.bank .btn{min-height:0;padding:6px 12px;font-size:12px}
 .invalid{max-width:520px;margin:90px auto;padding:34px;background:#fff;border:1px solid var(--line);text-align:center}.invalid h1{font:900 26px var(--serif);margin:0 0 10px}
 @media(max-width:900px){.hero-in{grid-template-columns:1fr}.hero-note{max-width:360px}.layout{grid-template-columns:1fr}.summary{position:relative;top:auto;order:-1}.packages{grid-template-columns:1fr 1fr}}
 @media(max-width:700px){.pay-card{grid-template-columns:1fr;padding:20px;box-shadow:6px 6px 0 var(--yellow)}.qr{max-width:300px;margin:auto}}
@@ -105,9 +106,10 @@ export function paymentPage(view, token, waNumber = '60167871902') {
 <div class="amount">RM${view.amount}</div>${view.discount ? `<p class="meta">原价 RM${view.original}，已优惠 RM${view.discount}</p>` : ''}
 <p class="meta">收款名称：<b>NILI RESOURCES</b>（DuitNow）</p>
 <p class="meta">请用银行 App 扫描二维码，付款金额必须是 <b>RM${view.amount}</b>。</p>
+<div class="bank"><h3>或使用银行转账（Maybank）</h3><div class="row"><span>户口名称</span><b>NILI RESOURCES</b></div><div class="row"><span>银行</span><b>Maybank</b></div><div class="acc"><b id="acc">5512 0352 7689</b><button class="btn" type="button" id="copy">复制户口号码</button></div><p class="hint" style="margin:8px 0 0">转账金额必须是 RM${view.amount}，并保留转账收据。</p></div>
 ${banner}${form}
 <p class="hint">提交付款资料不代表付款已经确认。我们核对到账后会再通知你。</p></div></div></div>
-<script>(()=>{const go=document.querySelector('#go');if(!go)return;const T=${jsonForScript(token)},WA=${jsonForScript(waUrl)},err=document.querySelector('#err');
+<script>(()=>{const cp=document.querySelector('#copy');if(cp)cp.addEventListener('click',async()=>{try{await navigator.clipboard.writeText('551203527689');cp.textContent='已复制'}catch(e){cp.textContent='请手动复制'}setTimeout(()=>cp.textContent='复制户口号码',2000)});const go=document.querySelector('#go');if(!go)return;const T=${jsonForScript(token)},WA=${jsonForScript(waUrl)},err=document.querySelector('#err');
 go.addEventListener('click',async()=>{err.classList.remove('show');go.disabled=true;const label=go.textContent;go.textContent='提交中…';
 try{const r=await fetch('/api/payment/submit',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({t:T})});const out=await r.json().catch(()=>({}));
 if(!r.ok||!out.ok){err.textContent=out.error||'提交失败，请稍后重试';err.classList.add('show');go.disabled=false;go.textContent=label;return}

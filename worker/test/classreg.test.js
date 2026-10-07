@@ -223,6 +223,7 @@ test('14/15. "我已完成付款" -> payment_submitted (no reference needed); on
   const page = await (await call(env, 'GET', `/payment?t=${t}`, undefined)).text();
   assert.ok(page.includes('已收到你的付款通知') && page.includes('提交付款资料不代表付款已经确认。我们核对到账后会再通知你。') && !page.includes('付款已由 Aligor 核对确认'));
   assert.ok(!page.includes('id="ref"'), 'no reference input');
+  assert.ok(page.includes('Maybank') && page.includes('5512 0352 7689') && page.includes('NILI RESOURCES'), 'bank transfer details');
   const wa = page.match(/https:\/\/wa\.me\/60167871902\?text=[^"]+/); assert.ok(wa, 'WhatsApp link to Adrian');
   const text = decodeURIComponent(wa[0].split('text=')[1].replace(/&amp;/g, '&')); assert.ok(text.includes('AICL00001') && text.includes('RM399'));
   const { cookie: _ } = {}; const cookie = await adminCookie(env);
