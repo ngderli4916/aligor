@@ -1,3 +1,4 @@
+import { classAdminTabHtml, classAdminScript } from './classui.js';
 const css = `
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+SC:wght@700;900&display=swap");
 :root{--ink:#14110F;--ink2:#3B3731;--muted:#6F6A60;--paper:#FBF8EE;--card:#fff;--yellow:#FFC93C;--green:#0F766E;--line:#E7E1D0;--field:#D9D2BF;--red:#B42318;--serif:"Noto Serif SC","Songti SC","Source Han Serif SC",serif;--sans:"Noto Sans SC","PingFang SC","Microsoft YaHei",-apple-system,system-ui,sans-serif}
@@ -121,10 +122,14 @@ export function loginPage(error = '') {
 export function adminPage() {
   return shell('Aligor 报名后台', `
     <div class="top"><div><div class="brand">阿理哥 · Aligor</div><h1>报名后台</h1></div><div class="actions"><a class="btn small" href="/api/admin/export.csv">导出 CSV</a><button id="logout" class="btn dark small">登出</button></div></div>
+    <div class="actions" style="margin:0 0 14px"><button id="btn-preview" class="btn small dark" type="button">免费 Preview 报名</button><button id="btn-class" class="btn small" type="button">一天课程报名</button></div>
+    <div id="tab-preview">
     <div id="traffic"></div>
     <div id="stats" class="stats"></div>
     <div class="tools"><input id="q" placeholder="姓名、电话或报名ID"><input id="batch" placeholder="批次"><select id="status"><option value="">全部状态</option><option>new</option><option>contacted</option><option>registered</option><option>paid</option><option>attended</option><option>cancelled</option></select><button id="search" class="btn small">查询</button></div>
     <div id="message"></div><div class="table-wrap"><table><thead><tr><th>ID</th><th>顾客</th><th>课程 / 批次</th><th>状态</th><th>报名时间</th><th>操作</th></tr></thead><tbody id="rows"></tbody></table></div>
+    </div>
+    ${classAdminTabHtml}
   `, `
     const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const q=document.querySelector('#q'),batch=document.querySelector('#batch'),status=document.querySelector('#status'),stats=document.querySelector('#stats'),rows=document.querySelector('#rows'),search=document.querySelector('#search'),logout=document.querySelector('#logout');
@@ -142,5 +147,6 @@ export function adminPage() {
         +'<div class="table-wrap"><table style="min-width:520px"><thead><tr><th>日期</th><th>首页访客</th><th>点击报名</th><th>报名页访客</th><th>报名</th></tr></thead><tbody>'+days+'</tbody></table></div>'
         +'<p style="margin:14px 0 0"><b>来源（近 14 天）</b>　'+sources+'</p><p style="margin:6px 0 26px"><b>设备（近 14 天）</b>　'+devices+'</p>';}catch(e){}}
     search.onclick=load;logout.onclick=async()=>{await fetch('/api/admin/logout',{method:'POST'});location='/4916'};load();loadTraffic();
+    ${classAdminScript}
   `);
 }

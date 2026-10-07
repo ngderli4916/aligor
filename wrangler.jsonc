@@ -8,7 +8,7 @@
   "assets": {
     "directory": ".",
     "binding": "ASSETS",
-    "run_worker_first": ["/register", "/register/*", "/4916", "/4916/*", "/api/*"]
+    "run_worker_first": ["/register", "/register/*", "/classregister", "/payment", "/4916", "/4916/*", "/api/*"]
   },
   "d1_databases": [
     {

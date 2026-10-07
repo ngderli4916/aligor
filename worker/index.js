@@ -2,14 +2,17 @@ import { STATUSES, normalizePhone, cleanText, waUrl, csvEscape, htmlEscape, pars
 import { recordView, getStats } from './analytics.js';
 import { buildCustomerMessage, buildLeadNotification, leadCode, parseLeadCode, redactSecrets } from './notify.js';
 import { registerPage, loginPage, adminPage } from './ui.js';
+import { PACKAGES, ClassError, createRegistration, notifyClassRegistration, paymentUrl, findByToken, publicPaymentView, recordPaymentPageOpened, submitPayment, listClassRegistrations, classEvents, classCsv, adminAction, setClassNotes } from './classreg.js';
+import { classRegisterPage, paymentPage, invalidPaymentPage } from './classui.js';
 
 const json = (data, status=200, headers={}) => new Response(JSON.stringify(data), {status, headers:{'content-type':'application/json; charset=utf-8',...headers}});
-const html = body => new Response(body,{headers:{'content-type':'text/html; charset=utf-8','content-security-policy':"default-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; form-action 'self'; frame-ancestors 'none'",'x-frame-options':'DENY','referrer-policy':'same-origin'}});
+const html = (body,extra={}) => new Response(body,{headers:{...extra,'content-type':'text/html; charset=utf-8','content-security-policy':"default-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; form-action 'self'; frame-ancestors 'none'",'x-frame-options':'DENY','referrer-policy':'same-origin'}});
 const now = () => new Date().toISOString();
 
 export default { async fetch(request, env, ctx) {
   try { return await route(request, env, ctx); }
-  catch (error) { console.error(error); return json({error:'系统暂时无法处理，请稍后重试'},500); }
+  catch (error) {
+    if (error instanceof ClassError) return json({ok:false,error:error.message},error.status); console.error(error); return json({error:'系统暂时无法处理，请稍后重试'},500); }
 }};
 
 async function route(request, env, ctx) {
@@ -20,6 +23,10 @@ async function route(request, env, ctx) {
     if(ctx&&typeof ctx.waitUntil==='function')ctx.waitUntil(tracking); else await tracking;
     return html(registerPage(cleanText(url.searchParams.get('batch'),50),await registrationStats(env)));
   }
+  if (request.method==='GET' && path==='/classregister') return html(classRegisterPage(),{'cache-control':'no-store'});
+  if (request.method==='GET' && path==='/payment') return paymentRoute(url,env);
+  if (request.method==='POST' && path==='/api/classregister') return classRegister(request,env,ctx,url);
+  if (request.method==='POST' && path==='/api/payment/submit') return classPaymentSubmit(request,env);
   if (request.method==='POST' && path==='/api/track') return track(request,env,ctx);
   if (request.method==='POST' && path==='/api/leads') return createLead(request,env,ctx);
   if (request.method==='GET' && path==='/4916') return html(await isAdmin(request,env) ? adminPage() : loginPage());
@@ -30,6 +37,10 @@ async function route(request, env, ctx) {
     if (request.method==='GET' && path==='/api/admin/leads') return listLeads(url,env);
     if (request.method==='GET' && path==='/api/admin/export.csv') return exportCsv(env);
     if (request.method==='GET' && path==='/api/admin/stats') return json(await getStats(env));
+    if (path==='/api/admin/class' && request.method==='GET') return json(await listClassRegistrations(env,url));
+    if (path==='/api/admin/class/export.csv' && request.method==='GET') return new Response(await classCsv(env),{headers:{'content-type':'text/csv; charset=utf-8','content-disposition':'attachment; filename="aligor-class-registrations.csv"'}});
+    const cm=path.match(/^\/api\/admin\/class\/(\d+)\/(confirm|reject|cancel|notes|telegram|events)$/);
+    if (cm) return classAdmin(request,env,ctx,Number(cm[1]),cm[2]);
     const match=path.match(/^\/api\/admin\/leads\/(\d+)$/);
     if (request.method==='PATCH' && match) return updateLead(Number(match[1]),await request.json(),env,'admin');
     if (request.method==='DELETE' && match) return deleteLead(Number(match[1]),env);
@@ -37,6 +48,35 @@ async function route(request, env, ctx) {
   if (request.method==='POST' && path==='/telegram/webhook') return telegramWebhook(request,env);
   if (request.method==='GET' && path==='/health') return json({ok:true,time:now()});
   return json({error:'Not found'},404);
+}
+
+const noindex={'x-robots-tag':'noindex, nofollow','cache-control':'no-store','referrer-policy':'no-referrer'};
+async function smallJson(request){const text=await request.text();if(text.length>6000)throw new ClassError('资料太长',413);try{return JSON.parse(text||'{}')}catch{throw new ClassError('资料格式不正确')}}
+
+async function classRegister(request,env,ctx,url) {
+  const data=await smallJson(request);
+  if (cleanText(data.website,100)) return json({ok:true},202);
+  const {row,token,created}=await createRegistration(env,data);
+  if(created||row.telegram_notification_status==='pending'){const n=notifyClassRegistration(env,row.id).catch(error=>console.error('class_notify_failed',redactSecrets(error?.message,env))); if(ctx&&typeof ctx.waitUntil==='function')ctx.waitUntil(n); else await n;}
+  return json({ok:true,order_id:row.public_order_id,amount:row.final_amount,package_title:PACKAGES[row.package_code]?.title,payment_url:paymentUrl(env,request,token)},created?201:200,{'cache-control':'no-store'});
+}
+async function paymentRoute(url,env) {
+  const token=url.searchParams.get('t')||'', row=await findByToken(env,token);
+  if(!row){const res=html(invalidPaymentPage(),noindex);return new Response(res.body,{status:404,headers:res.headers})}
+  await recordPaymentPageOpened(env,row);
+  return html(paymentPage(publicPaymentView(row),token),noindex);
+}
+async function classPaymentSubmit(request,env) {
+  const data=await smallJson(request), view=await submitPayment(env,String(data.t||''),data.reference);
+  return json({ok:true,status:view.status},200,{'cache-control':'no-store'});
+}
+async function classAdmin(request,env,ctx,id,action) {
+  if(action==='events'&&request.method==='GET') return json({events:await classEvents(env,id)});
+  if(request.method!=='POST') return json({error:'Not found'},404);
+  const body=await smallJson(request);
+  if(action==='notes'){await setClassNotes(env,id,body.notes);return json({ok:true})}
+  if(action==='telegram'){const result=await notifyClassRegistration(env,id,'admin');return json({ok:true,result})}
+  return json(await adminAction(env,id,action,body,'admin'));
 }
 
 async function bodyData(request) {
