@@ -283,7 +283,9 @@ test('18. registration page, old /register, admin, health still work; migrations
 test('19. promo: before the deadline the discount applies and the page shows a real countdown', async () => {
   const env = makeEnv({ PROMO_ENDS_AT: new Date(Date.now() + 3600e3).toISOString() });
   const page = await (await call(env, 'GET', '/classregister', undefined)).text();
-  assert.ok(page.includes('id="promo"') && page.includes('折扣价，只到今天 23:59') && page.includes('<del>RM699</del>'));
+  assert.ok(page.includes('id="promo"') && page.includes('限时折扣，只到今天 23:59') && page.includes('<del>RM699</del>'));
+  assert.ok(page.includes('class="deal"') && page.includes('今天省 RM300') && page.includes('过了今天，要付 RM1398') && page.includes('平均每人 RM349.5') && page.includes('锁定今天的折扣价'));
+  assert.ok(page.indexOf('class="deal"') > page.indexOf('选择上课方式') && page.indexOf('class="deal"') < page.indexOf('class="packages"'), 'deal sits inside step 2, above the packages');
   const { json } = await register(env, { package: 'pair_2pc', second_name: 'Siti', second_phone: '0123456789' });
   assert.equal(json.amount, 699); assert.equal(row(env).original_amount, 1398); assert.equal(row(env).discount_amount, 699);
 });
@@ -291,7 +293,7 @@ test('19. promo: before the deadline the discount applies and the page shows a r
 test('20. promo: after the deadline the server charges the full price, whatever the browser sends', async () => {
   const env = makeEnv({ PROMO_ENDS_AT: new Date(Date.now() - 1000).toISOString() });
   const page = await (await call(env, 'GET', '/classregister', undefined)).text();
-  assert.ok(!page.includes('id="promo"') && page.includes('今天的折扣价已经结束') && !page.includes('<del>'));
+  assert.ok(!page.includes('id="promo"') && !page.includes('class="deal"') && page.includes('今天的折扣价已经结束') && !page.includes('<del>') && !page.includes('锁定今天'));
   const a = await register(env, { amount: 399, final_amount: 399 }); assert.equal(a.json.amount, 699);
   const b = await register(env, { phone: '0162000001', package: 'pair_1pc', second_name: 'Siti', second_phone: '0123456789' }); assert.equal(b.json.amount, 1098);
   const r = row(env, 2); assert.deepEqual([r.original_amount, r.discount_amount, r.final_amount], [1098, 0, 1098]);

@@ -27,6 +27,8 @@ input,select,textarea{width:100%;border:1px solid #bcb4a5;background:#fff;paddin
 .result-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px auto;max-width:520px;text-align:left}.result-item{border:1px solid var(--line);padding:14px;background:var(--paper)}.result-item span{display:block;font-size:11px;color:var(--muted);margin-bottom:5px}.result-item strong{font:800 17px var(--mono);word-break:break-all}
 .footer{background:#080808;color:#aaa;text-align:center;padding:26px 20px;font-size:12px}
 .hidden{display:none!important}
+.deal{margin:0 0 20px;border:2px solid #b8462e;background:#fff3ee;padding:16px 18px;box-shadow:6px 6px 0 #b8462e}.deal .tagline{display:inline-block;background:#b8462e;color:#fff;font:800 11px var(--mono);letter-spacing:.12em;padding:4px 9px}.deal-cd{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0 8px}.deal-cd span{font:800 14px var(--sans)}.deal-cd b{font:900 34px/1 var(--mono);letter-spacing:.05em;background:#080808;color:var(--yellow);padding:6px 14px}.deal p{margin:0;font-size:14px;color:#3f1d14}.deal p b{color:#b8462e}
+.package .save.hot{background:#b8462e;color:#fff;font:800 13px var(--sans);padding:6px 10px;letter-spacing:0}.package .after{display:block;margin-top:8px;font-size:12px;color:#b8462e;font-weight:700}.package .per{display:block;margin-top:4px;font-size:12px;color:#17392b;font-weight:700}.sum-total small.hot{color:var(--yellow);font-weight:700}
 .promo{position:sticky;top:0;z-index:20;background:#b8462e;color:#fff;display:flex;gap:14px;justify-content:center;align-items:center;flex-wrap:wrap;padding:10px 14px;font:700 14px var(--sans);text-align:center}.promo b{font:900 22px var(--mono);letter-spacing:.06em;background:#080808;color:var(--yellow);padding:2px 10px}.promo.ended{background:#3a3631;font-weight:600}
 /* payment */
 .pay-wrap{max-width:860px;margin:36px auto 70px;padding:0 20px}.pay-card{background:#fff;border:1px solid var(--line);padding:30px;display:grid;grid-template-columns:300px minmax(0,1fr);gap:30px;box-shadow:9px 9px 0 var(--yellow)}
@@ -48,34 +50,39 @@ export function classRegisterPage(prices = PACKAGES, promo = { enabled: false, a
   const cards = Object.entries(prices).map(([code, p], i) => {
     const tag = code === 'solo_1pc' ? 'SOLO' : code === 'pair_1pc' ? 'DOUBLE · SHARE' : 'DOUBLE · 2 COMPUTERS';
     const lines = p.title.split(' · ');
-    return `<label class="package${i === 0 ? ' active' : ''}" data-code="${code}"><input type="radio" name="package" value="${code}"${i === 0 ? ' checked' : ''}><span class="tag">${tag}</span><h3>${lines[0]}<br>${lines[1]}</h3>${p.discount ? `<span class="original">原价 <del>RM${p.original}</del></span>` : '<span class="original">课程价格</span>'}<div class="price">RM${p.final} <small>${p.participants === 2 ? '／两人总价' : '／总价'}</small></div>${p.discount ? `<span class="save">优惠 RM${p.discount}</span>` : ''}</label>`;
+    const live = promo?.enabled && promo?.active && p.discount > 0;
+    const orig = `<span class="original">${p.discount ? `原价 <del>RM${p.original}</del>` : '课程价格'}</span>`;
+    const save = p.discount ? `<span class="save${live ? ' hot' : ''}">${live ? '今天省' : '优惠'} RM${p.discount}</span>` : '';
+    const after = live ? `<span class="after">过了今天，要付 RM${p.original}</span>` : '';
+    const per = p.participants === 2 ? `<span class="per">平均每人 RM${(p.final / 2).toFixed(p.final % 2 ? 2 : 0)}</span>` : '';
+    return `<label class="package${i === 0 ? ' active' : ''}" data-code="${code}"><input type="radio" name="package" value="${code}"${i === 0 ? ' checked' : ''}><span class="tag">${tag}</span><h3>${lines[0]}<br>${lines[1]}</h3>${orig}<div class="price">RM${p.final} <small>${p.participants === 2 ? '／两人总价' : '／总价'}</small></div>${per}${save}${after}</label>`;
   }).join('');
   return head('Aligor｜一天实战课程报名') + `<body>${promoBar(promo)}${topBar}
 <section class="hero"><div class="hero-in"><div><span class="eyebrow">一天实战课程 · 报名</span><h1>从 0 开始建立你的 <em>AI 个人助理</em></h1><p>填写资料，选择上课方式，提交后取得订单编号和付款页面。</p></div><aside class="hero-note"><strong>10 月 18 日</strong><span>星期天 9AM–6PM<br>Skudai, Johor</span></aside></div></section>
 <div class="layout"><form class="main" id="form" novalidate>
 <section class="card"><div class="step-head"><span class="step-no">01</span><div><h2>填写报名资料</h2><p>只需要基本资料。</p></div></div><div class="grid2"><div class="field"><label for="name">姓名</label><input id="name" name="name" autocomplete="name" maxlength="80" placeholder="请输入姓名"></div><div class="field"><label for="phone">WhatsApp 电话号码</label><input id="phone" name="phone" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="例如：016 787 1902"></div><div class="field full"><label for="region">上课地区</label><select id="region" name="region"><option value="">请选择地区</option><option value="JOHOR">JOHOR</option><option value="SELANGOR">SELANGOR</option><option value="PENANG">PENANG</option></select></div></div><p class="hint">我们会根据各地区的报名人数安排上课地点。</p></section>
-<section class="card"><div class="step-head"><span class="step-no">02</span><div><h2>选择上课方式</h2><p>选择后，费用会马上更新。</p></div></div><div class="packages" id="packages">${cards}</div>
+<section class="card"><div class="step-head"><span class="step-no">02</span><div><h2>选择上课方式</h2><p>选择后，费用会马上更新。</p></div></div>${dealBox(promo, prices)}<div class="packages" id="packages">${cards}</div>
 <div class="second" id="second"><h3 style="font:800 18px var(--serif);margin:0 0 14px">第二位参加者</h3><div class="grid2"><div class="field"><label for="second_name">第二位姓名</label><input id="second_name" maxlength="80" placeholder="请输入姓名"></div><div class="field"><label for="second_phone">第二位 WhatsApp</label><input id="second_phone" inputmode="tel" maxlength="20" placeholder="例如：012 345 6789"></div></div></div></section>
 <section class="card"><div class="step-head"><span class="step-no">03</span><div><h2>提交报名</h2><p>提交后会直接带你到付款页面。</p></div></div>
 <input class="hidden" id="website" tabindex="-1" autocomplete="off" aria-hidden="true">
-<button class="btn gold" style="width:100%;font-size:16px;padding:16px" type="submit" id="submit">提交报名</button><div class="err" id="err" role="alert"></div></section>
+<button class="btn gold" style="width:100%;font-size:16px;padding:16px" type="submit" id="submit">${promo?.enabled && promo?.active ? '锁定今天的折扣价，提交报名' : '提交报名'}</button><div class="err" id="err" role="alert"></div></section>
 <section class="success" id="success"><div class="tick">✓</div><h2>报名已建立</h2><p>正在带你到付款页面…如果没有自动跳转，请按下面的按钮。</p><div class="result-grid"><div class="result-item"><span>订单编号</span><strong id="rOrder"></strong></div><div class="result-item"><span>应付金额</span><strong id="rAmount"></strong></div></div><a class="btn gold" id="rPay" href="#">前往付款页面</a></section>
 </form>
 <aside class="summary"><span class="kicker">REGISTRATION SUMMARY</span><h2>报名摘要</h2><div class="sum-row"><span>上课方式</span><strong id="sumPackage"></strong></div><div class="sum-row"><span>参加人数</span><strong id="sumPeople"></strong></div><div class="sum-row"><span>电脑数量</span><strong id="sumPc"></strong></div><div class="sum-total"><span>应付金额</span><strong id="sumTotal"></strong><small id="sumSave"></small></div><div class="flow"><div><b>1</b><span>填写姓名、电话、地区</span></div><div><b>2</b><span>选择上课方式</span></div><div><b>3</b><span>提交后取得订单编号</span></div><div><b>4</b><span>扫 QR 付款，再 WhatsApp 通知我们</span></div></div></aside></div>
 <footer class="footer">Aligor · 阿理哥</footer>
 <script>(()=>{'use strict';
-const P=${jsonForScript(prices)};
+const P=${jsonForScript(prices)},LIVE=${promo?.enabled && promo?.active ? 'true' : 'false'};
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const form=$('#form'),err=$('#err'),btn=$('#submit');
+const form=$('#form'),err=$('#err'),btn=$('#submit'),LABEL=btn.textContent;
 let pick='solo_1pc',attempt=null;
-function show(){const p=P[pick],pair=p.participants===2;$('#second').classList.toggle('show',pair);$('#sumPackage').textContent=p.title;$('#sumPeople').textContent=p.participants+' 人';$('#sumPc').textContent=p.computers+' 台';$('#sumTotal').textContent='RM'+p.final;$('#sumSave').textContent=p.discount?'原价 RM'+p.original+'，已优惠 RM'+p.discount:''}
+function show(){const p=P[pick],pair=p.participants===2;$('#second').classList.toggle('show',pair);$('#sumPackage').textContent=p.title;$('#sumPeople').textContent=p.participants+' 人';$('#sumPc').textContent=p.computers+' 台';$('#sumTotal').textContent='RM'+p.final;const ss=$('#sumSave');ss.textContent=p.discount?(LIVE?'今天下单，省 RM'+p.discount+'。过了今天，要付 RM'+p.original:'原价 RM'+p.original+'，已优惠 RM'+p.discount):'';ss.className=LIVE&&p.discount?'hot':''}
 $$('.package').forEach(el=>el.addEventListener('click',()=>{pick=el.dataset.code;$$('.package').forEach(x=>x.classList.toggle('active',x===el));el.querySelector('input').checked=true;show()}));show();
 const params=new URLSearchParams(location.search);
-const promo=$('#promo');if(promo){const end=Number(promo.dataset.end),off=Number(promo.dataset.now)-Date.now(),el=$('#pcd'),p2=n=>String(n).padStart(2,'0');
-const tick=()=>{const left=Math.max(0,Math.floor((end-(Date.now()+off))/1000));el.textContent=p2(Math.floor(left/3600))+':'+p2(Math.floor(left%3600/60))+':'+p2(left%60);if(left===0){clearInterval(t);location.reload()}};const t=setInterval(tick,1000);tick()}
+const promo=$('#promo');if(promo){const end=Number(promo.dataset.end),off=Number(promo.dataset.now)-Date.now(),els=$$('.cd'),p2=n=>String(n).padStart(2,'0');
+const tick=()=>{const left=Math.max(0,Math.floor((end-(Date.now()+off))/1000));const tx=p2(Math.floor(left/3600))+':'+p2(Math.floor(left%3600/60))+':'+p2(left%60);els.forEach(e=>e.textContent=tx);if(left===0){clearInterval(t);location.reload()}};const t=setInterval(tick,1000);tick()}
 const phoneOk=v=>{const raw=v.trim();if(!/^\\+?[\\d\\s\\-()]+$/.test(raw))return false;const d=raw.replace(/\\D/g,'');const n=raw.startsWith('+')||d.startsWith('60')?d:d.startsWith('0')?'60'+d.slice(1):'';return /^601\\d{8,9}$/.test(n)};
 const uuid=()=>crypto.randomUUID?crypto.randomUUID().replace(/-/g,''):Array.from(crypto.getRandomValues(new Uint8Array(16)),b=>b.toString(16).padStart(2,'0')).join('');
-function fail(m){err.textContent=m;err.classList.add('show');btn.disabled=false;btn.textContent='提交报名'}
+function fail(m){err.textContent=m;err.classList.add('show');btn.disabled=false;btn.textContent=LABEL}
 form.addEventListener('submit',async e=>{e.preventDefault();err.classList.remove('show');
 const d={name:$('#name').value.trim(),phone:$('#phone').value,region:$('#region').value,package:pick,second_name:'',second_phone:'',website:$('#website').value,source:params.get('source')||params.get('ref')||'',utm_source:params.get('utm_source')||'',utm_medium:params.get('utm_medium')||'',utm_campaign:params.get('utm_campaign')||''};
 if(P[pick].participants===2){d.second_name=$('#second_name').value.trim();d.second_phone=$('#second_phone').value}
@@ -89,10 +96,16 @@ $('#rOrder').textContent=out.order_id;$('#rAmount').textContent='RM'+out.amount;
 })();</script></body></html>`;
 }
 
+function dealBox(promo, prices) {
+  if (!promo?.enabled || !promo.active) return '';
+  const max = Math.max(...Object.values(prices).map(p => p.discount || 0)), min = Math.min(...Object.values(prices).map(p => p.discount || 0).filter(Boolean));
+  return `<div class="deal"><span class="tagline">限时折扣　·　只有今天</span><div class="deal-cd"><span>折扣倒数</span><b class="cd">--:--:--</b></div><p>今天 23:59（马来西亚时间）一过，价格马上恢复原价。<b>现在报名，每份课程可以省 RM${min} – RM${max}。</b></p></div>`;
+}
+
 function promoBar(promo) {
   if (!promo?.enabled) return '';
   if (!promo.active) return '<div class="promo ended">今天的折扣价已经结束，现在是原价。</div>';
-  return `<div class="promo" id="promo" data-end="${promo.endsAt}" data-now="${promo.now}"><span>折扣价，只到今天 23:59（马来西亚时间）</span><b id="pcd">--:--:--</b></div>`;
+  return `<div class="promo" id="promo" data-end="${promo.endsAt}" data-now="${promo.now}"><span>限时折扣，只到今天 23:59（马来西亚时间）</span><b class="cd">--:--:--</b></div>`;
 }
 
 export function invalidPaymentPage() {
