@@ -52,10 +52,8 @@ export function classRegisterPage(prices = PACKAGES, promo = { enabled: false, a
     const lines = p.title.split(' · ');
     const live = promo?.enabled && promo?.active && p.discount > 0;
     const orig = `<span class="original">${p.discount ? `原价 <del>RM${p.original}</del>` : '课程价格'}</span>`;
-    const save = p.discount ? `<span class="save${live ? ' hot' : ''}">${live ? '今天省' : '优惠'} RM${p.discount}</span>` : '';
-    const after = live ? `<span class="after">过了今天，要付 RM${p.original}</span>` : '';
     const per = p.participants === 2 ? `<span class="per">平均每人 RM${(p.final / 2).toFixed(p.final % 2 ? 2 : 0)}</span>` : '';
-    return `<label class="package${i === 0 ? ' active' : ''}" data-code="${code}"><input type="radio" name="package" value="${code}"${i === 0 ? ' checked' : ''}><span class="tag">${tag}</span><h3>${lines[0]}<br>${lines[1]}</h3>${orig}<div class="price">RM${p.final} <small>${p.participants === 2 ? '／两人总价' : '／总价'}</small></div>${per}${save}${after}</label>`;
+    return `<label class="package${i === 0 ? ' active' : ''}" data-code="${code}"><input type="radio" name="package" value="${code}"${i === 0 ? ' checked' : ''}><span class="tag">${tag}</span><h3>${lines[0]}<br>${lines[1]}</h3>${orig}<div class="price">RM${p.final} <small>${p.participants === 2 ? '／两人总价' : '／总价'}</small></div>${per}</label>`;
   }).join('');
   return head('Aligor｜一天实战课程报名') + `<body>${promoBar(promo)}${topBar}
 <section class="hero"><div class="hero-in"><div><span class="eyebrow">一天实战课程 · 报名</span><h1>从 0 开始建立你的 <em>AI 个人助理</em></h1><p>填写资料，选择上课方式，提交后取得订单编号和付款页面。</p></div><aside class="hero-note"><strong>10 月 18 日</strong><span>星期天 9AM–6PM<br>Skudai, Johor</span></aside></div></section>
@@ -65,17 +63,17 @@ export function classRegisterPage(prices = PACKAGES, promo = { enabled: false, a
 <div class="second" id="second"><h3 style="font:800 18px var(--serif);margin:0 0 14px">第二位参加者</h3><div class="grid2"><div class="field"><label for="second_name">第二位姓名</label><input id="second_name" maxlength="80" placeholder="请输入姓名"></div><div class="field"><label for="second_phone">第二位 WhatsApp</label><input id="second_phone" inputmode="tel" maxlength="20" placeholder="例如：012 345 6789"></div></div></div></section>
 <section class="card"><div class="step-head"><span class="step-no">03</span><div><h2>提交报名</h2><p>提交后会直接带你到付款页面。</p></div></div>
 <input class="hidden" id="website" tabindex="-1" autocomplete="off" aria-hidden="true">
-<button class="btn gold" style="width:100%;font-size:16px;padding:16px" type="submit" id="submit">${promo?.enabled && promo?.active ? '锁定今天的折扣价，提交报名' : '提交报名'}</button><div class="err" id="err" role="alert"></div></section>
+<button class="btn gold submit-btn" style="width:100%;font-size:16px;padding:16px" type="submit" id="submit">${promo?.enabled && promo?.active ? '锁定今天的折扣价，提交报名' : '提交报名'}</button><div class="err" id="err" role="alert"></div></section>
 <section class="success" id="success"><div class="tick">✓</div><h2>报名已建立</h2><p>正在带你到付款页面…如果没有自动跳转，请按下面的按钮。</p><div class="result-grid"><div class="result-item"><span>订单编号</span><strong id="rOrder"></strong></div><div class="result-item"><span>应付金额</span><strong id="rAmount"></strong></div></div><a class="btn gold" id="rPay" href="#">前往付款页面</a></section>
 </form>
-<aside class="summary"><span class="kicker">REGISTRATION SUMMARY</span><h2>报名摘要</h2><div class="sum-row"><span>上课方式</span><strong id="sumPackage"></strong></div><div class="sum-row"><span>参加人数</span><strong id="sumPeople"></strong></div><div class="sum-row"><span>电脑数量</span><strong id="sumPc"></strong></div><div class="sum-total"><span>应付金额</span><strong id="sumTotal"></strong><small id="sumSave"></small></div><div class="flow"><div><b>1</b><span>填写姓名、电话、地区</span></div><div><b>2</b><span>选择上课方式</span></div><div><b>3</b><span>提交后取得订单编号</span></div><div><b>4</b><span>扫 QR 付款，再 WhatsApp 通知我们</span></div></div></aside></div>
+<aside class="summary"><span class="kicker">REGISTRATION SUMMARY</span><h2>报名摘要</h2><div class="sum-row"><span>上课方式</span><strong id="sumPackage"></strong></div><div class="sum-row"><span>参加人数</span><strong id="sumPeople"></strong></div><div class="sum-row"><span>电脑数量</span><strong id="sumPc"></strong></div><div class="sum-total"><span>应付金额</span><strong id="sumTotal"></strong><small id="sumSave"></small></div><div class="flow"><div><b>1</b><span>填写姓名、电话、地区</span></div><div><b>2</b><span>选择上课方式</span></div><div><b>3</b><span>提交后取得订单编号</span></div><div><b>4</b><span>扫 QR 付款，再 WhatsApp 通知我们</span></div></div><button class="btn gold submit-btn" style="width:100%;margin-top:20px;font-size:16px;padding:16px" type="button" id="submit2">${promo?.enabled && promo?.active ? '锁定今天的折扣价，提交报名' : '提交报名'}</button></aside></div>
 <footer class="footer">Aligor · 阿理哥</footer>
 <script>(()=>{'use strict';
 const P=${jsonForScript(prices)},LIVE=${promo?.enabled && promo?.active ? 'true' : 'false'};
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const form=$('#form'),err=$('#err'),btn=$('#submit'),LABEL=btn.textContent;
+const form=$('#form'),err=$('#err'),btns=$$('.submit-btn'),LABEL=btns[0].textContent,btn={set disabled(v){btns.forEach(b=>b.disabled=v)},set textContent(v){btns.forEach(b=>b.textContent=v)}};$('#submit2').addEventListener('click',()=>form.requestSubmit());
 let pick='solo_1pc',attempt=null;
-function show(){const p=P[pick],pair=p.participants===2;$('#second').classList.toggle('show',pair);$('#sumPackage').textContent=p.title;$('#sumPeople').textContent=p.participants+' 人';$('#sumPc').textContent=p.computers+' 台';$('#sumTotal').textContent='RM'+p.final;const ss=$('#sumSave');ss.textContent=p.discount?(LIVE?'今天下单，省 RM'+p.discount+'。过了今天，要付 RM'+p.original:'原价 RM'+p.original+'，已优惠 RM'+p.discount):'';ss.className=LIVE&&p.discount?'hot':''}
+function show(){const p=P[pick],pair=p.participants===2;$('#second').classList.toggle('show',pair);$('#sumPackage').textContent=p.title;$('#sumPeople').textContent=p.participants+' 人';$('#sumPc').textContent=p.computers+' 台';$('#sumTotal').textContent='RM'+p.final;const ss=$('#sumSave');ss.textContent=p.discount?'原价 RM'+p.original:'';ss.className=''}
 $$('.package').forEach(el=>el.addEventListener('click',()=>{pick=el.dataset.code;$$('.package').forEach(x=>x.classList.toggle('active',x===el));el.querySelector('input').checked=true;show()}));show();
 const params=new URLSearchParams(location.search);
 const promo=$('#promo');if(promo){const end=Number(promo.dataset.end),off=Number(promo.dataset.now)-Date.now(),els=$$('.cd'),p2=n=>String(n).padStart(2,'0');
@@ -98,8 +96,7 @@ $('#rOrder').textContent=out.order_id;$('#rAmount').textContent='RM'+out.amount;
 
 function dealBox(promo, prices) {
   if (!promo?.enabled || !promo.active) return '';
-  const max = Math.max(...Object.values(prices).map(p => p.discount || 0)), min = Math.min(...Object.values(prices).map(p => p.discount || 0).filter(Boolean));
-  return `<div class="deal"><span class="tagline">限时折扣　·　只有今天</span><div class="deal-cd"><span>折扣倒数</span><b class="cd">--:--:--</b></div><p>今天 23:59（马来西亚时间）一过，价格马上恢复原价。<b>现在报名，每份课程可以省 RM${min} – RM${max}。</b></p></div>`;
+  return `<div class="deal"><span class="tagline">限时折扣　·　只有今天</span><div class="deal-cd"><span>折扣倒数</span><b class="cd">--:--:--</b></div><p>今天 23:59（马来西亚时间）一过，<b>价格马上恢复原价。</b></p></div>`;
 }
 
 function promoBar(promo) {

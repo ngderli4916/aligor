@@ -284,7 +284,7 @@ test('19. promo: before the deadline the discount applies and the page shows a r
   const env = makeEnv({ PROMO_ENDS_AT: new Date(Date.now() + 3600e3).toISOString() });
   const page = await (await call(env, 'GET', '/classregister', undefined)).text();
   assert.ok(page.includes('id="promo"') && page.includes('限时折扣，只到今天 23:59') && page.includes('<del>RM699</del>'));
-  assert.ok(page.includes('class="deal"') && page.includes('今天省 RM300') && page.includes('过了今天，要付 RM1398') && page.includes('平均每人 RM349.5') && page.includes('锁定今天的折扣价'));
+  assert.ok(page.includes('class="deal"') && !page.includes('今天省') && !page.includes('省 RM') && !page.includes('过了今天，要付') && page.includes('平均每人 RM349.5') && page.includes('id="submit2"') && page.includes('锁定今天的折扣价'));
   assert.ok(page.indexOf('class="deal"') > page.indexOf('选择上课方式') && page.indexOf('class="deal"') < page.indexOf('class="packages"'), 'deal sits inside step 2, above the packages');
   const { json } = await register(env, { package: 'pair_2pc', second_name: 'Siti', second_phone: '0123456789' });
   assert.equal(json.amount, 699); assert.equal(row(env).original_amount, 1398); assert.equal(row(env).discount_amount, 699);
