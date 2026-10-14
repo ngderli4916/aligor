@@ -63,7 +63,7 @@ test('3 & 4. packages: server amounts; tampered amounts are ignored; unknown pac
   const c = await register(env, { package: 'pair_2pc', ...two, phone: '0162222222', final_amount: 1 });
   assert.deepEqual([a.json.amount, b.json.amount, c.json.amount], [399, 499, 699]);
   const rs = env.DB.raw.prepare('SELECT package_code,original_amount,discount_amount,final_amount,participant_count,computer_count FROM class_registrations ORDER BY id').all();
-  assert.deepEqual(rs.map(r => [r.original_amount, r.discount_amount, r.final_amount, r.participant_count, r.computer_count]), [[399, 0, 399, 1, 1], [698, 199, 499, 2, 1], [798, 99, 699, 2, 2]]);
+  assert.deepEqual(rs.map(r => [r.original_amount, r.discount_amount, r.final_amount, r.participant_count, r.computer_count]), [[699, 300, 399, 1, 1], [1098, 599, 499, 2, 1], [1398, 699, 699, 2, 2]]);
   assert.equal((await register(env, { package: 'free' })).res.status, 400);
 });
 
@@ -150,7 +150,7 @@ test('10. Telegram success: one message, exact content, secrets only from env', 
   const tg = calls.filter(c => c.url.includes('api.telegram.org')); assert.equal(tg.length, 1);
   assert.ok(tg[0].url.endsWith(`/bot${TG}/sendMessage`)); assert.equal(tg[0].body.chat_id, CHAT);
   const t = tg[0].body.text;
-  for (const s of ['新的 Aligor 一天课程报名', '#AICL00001', '60167871902', 'JOHOR', '两个人 · 共用一台电脑', '2 人／1 台', 'Siti &lt;b&gt;', '60123456789', '原价：RM698', '优惠：RM199', '应付：RM499', '等待付款', 'https://aligor.test/4916']) assert.ok(t.includes(s), s);
+  for (const s of ['新的 Aligor 一天课程报名', '#AICL00001', '60167871902', 'JOHOR', '两个人 · 共用一台电脑', '2 人／1 台', 'Siti &lt;b&gt;', '60123456789', '原价：RM1098', '优惠：RM599', '应付：RM499', '等待付款', 'https://aligor.test/4916']) assert.ok(t.includes(s), s);
   assert.ok(!t.includes('/payment') && !t.includes(TG));
   assert.equal(row(env).telegram_notification_status, 'sent');
 });
@@ -278,4 +278,34 @@ test('18. registration page, old /register, admin, health still work; migrations
   // old lead flow untouched
   const lead = await call(env, 'POST', '/api/leads', { name: 'Old Lead', phone: '0161234567', batch: 'PREVIEW-1007', course: 'x', used_ai_agent: '有', consent: true });
   assert.equal(lead.status, 201); assert.match((await lead.json()).lead_id, /^AIPR\d{5}$/);
+});
+
+test('19. promo: before the deadline the discount applies and the page shows a real countdown', async () => {
+  const env = makeEnv({ PROMO_ENDS_AT: new Date(Date.now() + 3600e3).toISOString() });
+  const page = await (await call(env, 'GET', '/classregister', undefined)).text();
+  assert.ok(page.includes('id="promo"') && page.includes('折扣价，只到今天 23:59') && page.includes('<del>RM699</del>'));
+  const { json } = await register(env, { package: 'pair_2pc', second_name: 'Siti', second_phone: '0123456789' });
+  assert.equal(json.amount, 699); assert.equal(row(env).original_amount, 1398); assert.equal(row(env).discount_amount, 699);
+});
+
+test('20. promo: after the deadline the server charges the full price, whatever the browser sends', async () => {
+  const env = makeEnv({ PROMO_ENDS_AT: new Date(Date.now() - 1000).toISOString() });
+  const page = await (await call(env, 'GET', '/classregister', undefined)).text();
+  assert.ok(!page.includes('id="promo"') && page.includes('今天的折扣价已经结束') && !page.includes('<del>'));
+  const a = await register(env, { amount: 399, final_amount: 399 }); assert.equal(a.json.amount, 699);
+  const b = await register(env, { phone: '0162000001', package: 'pair_1pc', second_name: 'Siti', second_phone: '0123456789' }); assert.equal(b.json.amount, 1098);
+  const r = row(env, 2); assert.deepEqual([r.original_amount, r.discount_amount, r.final_amount], [1098, 0, 1098]);
+  assert.ok((await (await call(env, 'GET', `/payment?t=${tokenOf(a.json)}`, undefined)).text()).includes('RM699'));
+});
+
+test('21. promo: no PROMO_ENDS_AT means no countdown and the discount stays', async () => {
+  const env = makeEnv();
+  const page = await (await call(env, 'GET', '/classregister', undefined)).text();
+  assert.ok(!page.includes('id="promo"') && !page.includes('已经结束'));
+  assert.equal((await register(env)).json.amount, 399);
+});
+
+test('22. registration page shows the class date and place', async () => {
+  const page = await (await call(makeEnv(), 'GET', '/classregister', undefined)).text();
+  assert.ok(page.includes('10 月 18 日') && page.includes('Skudai, Johor') && !page.includes('第二天或第三天'));
 });

@@ -1,6 +1,7 @@
 import { htmlEscape as h } from './lib.js';
 import { PACKAGES, STATUS_LABELS } from './classreg.js';
 
+
 const css = `
 :root{--cream:#fcfaf1;--paper:#fffdf7;--ink:#080808;--muted:#68645c;--gold:#d8a11d;--yellow:#ffce32;--line:#d9d1c1;--green:#17392b;--red:#b8462e;--sans:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;--serif:"Songti SC","Noto Serif SC",serif;--mono:"SFMono-Regular",Menlo,monospace}
 *{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased}
@@ -26,6 +27,7 @@ input,select,textarea{width:100%;border:1px solid #bcb4a5;background:#fff;paddin
 .result-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px auto;max-width:520px;text-align:left}.result-item{border:1px solid var(--line);padding:14px;background:var(--paper)}.result-item span{display:block;font-size:11px;color:var(--muted);margin-bottom:5px}.result-item strong{font:800 17px var(--mono);word-break:break-all}
 .footer{background:#080808;color:#aaa;text-align:center;padding:26px 20px;font-size:12px}
 .hidden{display:none!important}
+.promo{position:sticky;top:0;z-index:20;background:#b8462e;color:#fff;display:flex;gap:14px;justify-content:center;align-items:center;flex-wrap:wrap;padding:10px 14px;font:700 14px var(--sans);text-align:center}.promo b{font:900 22px var(--mono);letter-spacing:.06em;background:#080808;color:var(--yellow);padding:2px 10px}.promo.ended{background:#3a3631;font-weight:600}
 /* payment */
 .pay-wrap{max-width:860px;margin:36px auto 70px;padding:0 20px}.pay-card{background:#fff;border:1px solid var(--line);padding:30px;display:grid;grid-template-columns:300px minmax(0,1fr);gap:30px;box-shadow:9px 9px 0 var(--yellow)}
 .qr{border:1px solid #000;padding:12px;background:#fff;align-self:start}.qr img{width:100%;display:block;height:auto}.qr p{font:600 12px var(--sans);text-align:center;margin:10px 0 2px;color:var(--muted)}
@@ -42,14 +44,14 @@ const head = (title, extra = '') => `<!doctype html><html lang="zh-Hans"><head><
 const topBar = '<header class="top"><div class="top-in"><div class="brand">阿理哥 · Aligor<small>AI AGENT PRACTICAL CLASS</small></div></div></header>';
 const jsonForScript = v => JSON.stringify(v).replace(/</g, '\\u003c');
 
-export function classRegisterPage() {
-  const cards = Object.entries(PACKAGES).map(([code, p], i) => {
+export function classRegisterPage(prices = PACKAGES, promo = { enabled: false, active: true }) {
+  const cards = Object.entries(prices).map(([code, p], i) => {
     const tag = code === 'solo_1pc' ? 'SOLO' : code === 'pair_1pc' ? 'DOUBLE · SHARE' : 'DOUBLE · 2 COMPUTERS';
     const lines = p.title.split(' · ');
-    return `<label class="package${i === 0 ? ' active' : ''}" data-code="${code}"><input type="radio" name="package" value="${code}"${i === 0 ? ' checked' : ''}><span class="tag">${tag}</span><h3>${lines[0]}<br>${lines[1]}</h3>${p.discount ? `<span class="original">原价 <del>RM${p.original}</del></span>` : '<span class="original">标准课程价格</span>'}<div class="price">RM${p.final} <small>${p.participants === 2 ? '／两人总价' : '／总价'}</small></div>${p.discount ? `<span class="save">优惠 RM${p.discount}</span>` : ''}</label>`;
+    return `<label class="package${i === 0 ? ' active' : ''}" data-code="${code}"><input type="radio" name="package" value="${code}"${i === 0 ? ' checked' : ''}><span class="tag">${tag}</span><h3>${lines[0]}<br>${lines[1]}</h3>${p.discount ? `<span class="original">原价 <del>RM${p.original}</del></span>` : '<span class="original">课程价格</span>'}<div class="price">RM${p.final} <small>${p.participants === 2 ? '／两人总价' : '／总价'}</small></div>${p.discount ? `<span class="save">优惠 RM${p.discount}</span>` : ''}</label>`;
   }).join('');
-  return head('Aligor｜一天实战课程报名') + `<body>${topBar}
-<section class="hero"><div class="hero-in"><div><span class="eyebrow">一天实战课程 · 报名</span><h1>从 0 开始建立你的 <em>AI 个人助理</em></h1><p>填写资料，选择上课方式，提交后取得订单编号和付款页面。</p></div><aside class="hero-note"><strong>星期天</strong><span>9AM–6PM · 新山<br>实际日期与地点，会在报名后第二天或第三天通知</span></aside></div></section>
+  return head('Aligor｜一天实战课程报名') + `<body>${promoBar(promo)}${topBar}
+<section class="hero"><div class="hero-in"><div><span class="eyebrow">一天实战课程 · 报名</span><h1>从 0 开始建立你的 <em>AI 个人助理</em></h1><p>填写资料，选择上课方式，提交后取得订单编号和付款页面。</p></div><aside class="hero-note"><strong>10 月 18 日</strong><span>星期天 9AM–6PM<br>Skudai, Johor</span></aside></div></section>
 <div class="layout"><form class="main" id="form" novalidate>
 <section class="card"><div class="step-head"><span class="step-no">01</span><div><h2>填写报名资料</h2><p>只需要基本资料。</p></div></div><div class="grid2"><div class="field"><label for="name">姓名</label><input id="name" name="name" autocomplete="name" maxlength="80" placeholder="请输入姓名"></div><div class="field"><label for="phone">WhatsApp 电话号码</label><input id="phone" name="phone" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="例如：016 787 1902"></div><div class="field full"><label for="region">上课地区</label><select id="region" name="region"><option value="">请选择地区</option><option value="JOHOR">JOHOR</option><option value="SELANGOR">SELANGOR</option><option value="PENANG">PENANG</option></select></div></div><p class="hint">我们会根据各地区的报名人数安排上课地点。</p></section>
 <section class="card"><div class="step-head"><span class="step-no">02</span><div><h2>选择上课方式</h2><p>选择后，费用会马上更新。</p></div></div><div class="packages" id="packages">${cards}</div>
@@ -62,13 +64,15 @@ export function classRegisterPage() {
 <aside class="summary"><span class="kicker">REGISTRATION SUMMARY</span><h2>报名摘要</h2><div class="sum-row"><span>上课方式</span><strong id="sumPackage"></strong></div><div class="sum-row"><span>参加人数</span><strong id="sumPeople"></strong></div><div class="sum-row"><span>电脑数量</span><strong id="sumPc"></strong></div><div class="sum-total"><span>应付金额</span><strong id="sumTotal"></strong><small id="sumSave"></small></div><div class="flow"><div><b>1</b><span>填写姓名、电话、地区</span></div><div><b>2</b><span>选择上课方式</span></div><div><b>3</b><span>提交后取得订单编号</span></div><div><b>4</b><span>扫 QR 付款，再 WhatsApp 通知我们</span></div></div></aside></div>
 <footer class="footer">Aligor · 阿理哥</footer>
 <script>(()=>{'use strict';
-const P=${jsonForScript(PACKAGES)};
+const P=${jsonForScript(prices)};
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const form=$('#form'),err=$('#err'),btn=$('#submit');
 let pick='solo_1pc',attempt=null;
 function show(){const p=P[pick],pair=p.participants===2;$('#second').classList.toggle('show',pair);$('#sumPackage').textContent=p.title;$('#sumPeople').textContent=p.participants+' 人';$('#sumPc').textContent=p.computers+' 台';$('#sumTotal').textContent='RM'+p.final;$('#sumSave').textContent=p.discount?'原价 RM'+p.original+'，已优惠 RM'+p.discount:''}
 $$('.package').forEach(el=>el.addEventListener('click',()=>{pick=el.dataset.code;$$('.package').forEach(x=>x.classList.toggle('active',x===el));el.querySelector('input').checked=true;show()}));show();
 const params=new URLSearchParams(location.search);
+const promo=$('#promo');if(promo){const end=Number(promo.dataset.end),off=Number(promo.dataset.now)-Date.now(),el=$('#pcd'),p2=n=>String(n).padStart(2,'0');
+const tick=()=>{const left=Math.max(0,Math.floor((end-(Date.now()+off))/1000));el.textContent=p2(Math.floor(left/3600))+':'+p2(Math.floor(left%3600/60))+':'+p2(left%60);if(left===0){clearInterval(t);location.reload()}};const t=setInterval(tick,1000);tick()}
 const phoneOk=v=>{const raw=v.trim();if(!/^\\+?[\\d\\s\\-()]+$/.test(raw))return false;const d=raw.replace(/\\D/g,'');const n=raw.startsWith('+')||d.startsWith('60')?d:d.startsWith('0')?'60'+d.slice(1):'';return /^601\\d{8,9}$/.test(n)};
 const uuid=()=>crypto.randomUUID?crypto.randomUUID().replace(/-/g,''):Array.from(crypto.getRandomValues(new Uint8Array(16)),b=>b.toString(16).padStart(2,'0')).join('');
 function fail(m){err.textContent=m;err.classList.add('show');btn.disabled=false;btn.textContent='提交报名'}
@@ -83,6 +87,12 @@ try{const r=await fetch('/api/classregister',{method:'POST',headers:{'content-ty
 $('#rOrder').textContent=out.order_id;$('#rAmount').textContent='RM'+out.amount;$('#rPay').href=out.payment_url;$('#success').classList.add('show');btn.textContent='前往付款页面…';location.href=out.payment_url;
 }catch(x){fail('网络出现问题，请检查网络后再按一次提交（不会重复报名）')}});
 })();</script></body></html>`;
+}
+
+function promoBar(promo) {
+  if (!promo?.enabled) return '';
+  if (!promo.active) return '<div class="promo ended">今天的折扣价已经结束，现在是原价。</div>';
+  return `<div class="promo" id="promo" data-end="${promo.endsAt}" data-now="${promo.now}"><span>折扣价，只到今天 23:59（马来西亚时间）</span><b id="pcd">--:--:--</b></div>`;
 }
 
 export function invalidPaymentPage() {

@@ -20,6 +20,7 @@
   "vars": {
     "PUBLIC_BASE_URL": "https://aligor.aligor.workers.dev",
     "WHATSAPP_NUMBER": "60167871902",
+    "PROMO_ENDS_AT": "2026-10-14T23:59:59+08:00",
     "ALLOWED_ORIGINS": "https://aligor.aligor.workers.dev"
   }
 }

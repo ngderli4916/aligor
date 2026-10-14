@@ -3,11 +3,27 @@ import { redactSecrets } from './notify.js';
 
 export const REGIONS = ['JOHOR', 'SELANGOR', 'PENANG'];
 // Server-side source of truth. Amounts are whole RM integers; the browser never supplies them.
+// original/discount/final are the promo prices. After PROMO_ENDS_AT the server charges `original` (see priceFor).
 export const PACKAGES = {
-  solo_1pc: { title: '一个人 · 一台电脑', participants: 1, computers: 1, original: 399, discount: 0, final: 399 },
-  pair_1pc: { title: '两个人 · 共用一台电脑', participants: 2, computers: 1, original: 698, discount: 199, final: 499 },
-  pair_2pc: { title: '两个人 · 各带一台电脑', participants: 2, computers: 2, original: 798, discount: 99, final: 699 },
+  solo_1pc: { title: '一个人 · 一台电脑', participants: 1, computers: 1, original: 699, discount: 300, final: 399 },
+  pair_1pc: { title: '两个人 · 共用一台电脑', participants: 2, computers: 1, original: 1098, discount: 599, final: 499 },
+  pair_2pc: { title: '两个人 · 各带一台电脑', participants: 2, computers: 2, original: 1398, discount: 699, final: 699 },
 };
+
+// PROMO_ENDS_AT (ISO time, set in wrangler.jsonc). Unset = the discount never expires and no countdown is shown.
+export function promoState(env, now = Date.now()) {
+  const raw = String(env?.PROMO_ENDS_AT || '').trim();
+  const endsAt = raw ? Date.parse(raw) : NaN;
+  if (Number.isNaN(endsAt)) return { enabled: false, active: true, endsAt: null, now };
+  return { enabled: true, active: now < endsAt, endsAt, now };
+}
+export function priceFor(env, code, now = Date.now()) {
+  const p = PACKAGES[code], promo = promoState(env, now);
+  return promo.active ? { original: p.original, discount: p.discount, final: p.final } : { original: p.original, discount: 0, final: p.original };
+}
+export function currentPackages(env, now = Date.now()) {
+  return Object.fromEntries(Object.entries(PACKAGES).map(([code, p]) => [code, { ...p, ...priceFor(env, code, now) }]));
+}
 export const PAYMENT_STATUSES = ['awaiting_payment', 'payment_submitted', 'payment_confirmed', 'payment_rejected', 'cancelled'];
 export const STATUS_LABELS = { awaiting_payment: '等待付款', payment_submitted: '已提交付款资料', payment_confirmed: '付款已确认', payment_rejected: '付款资料不符', cancelled: '已取消' };
 
@@ -90,7 +106,7 @@ export function normalizeClassPhone(input) {
   return out;
 }
 
-export function validateRegistration(data) {
+export function validateRegistration(data, env = {}, now = Date.now()) {
   const name = cleanText(data.name, 80);
   if (name.length < 2) throw new ClassError('请输入姓名');
   let phone;
@@ -99,7 +115,7 @@ export function validateRegistration(data) {
   if (!REGIONS.includes(region)) throw new ClassError('请选择上课地区');
   const pkgCode = String(data.package || data.package_code || '').trim();
   if (!Object.prototype.hasOwnProperty.call(PACKAGES, pkgCode)) throw new ClassError('请选择上课方式');
-  const pkg = PACKAGES[pkgCode];
+  const pkg = { ...PACKAGES[pkgCode], ...priceFor(env, pkgCode, now) };
   let secondName = null, secondPhone = null;
   if (pkg.participants === 2) {
     secondName = cleanText(data.second_name, 80);
@@ -144,7 +160,7 @@ VALUES((SELECT 'AICL'||printf('%05d',MAX(COALESCE((SELECT seq FROM sqlite_sequen
 // Returns { row, token, created }. Safe to call twice with the same payload (browser retry, double click).
 export async function createRegistration(env, data) {
   await ensureClassTables(env);
-  const v = validateRegistration(data);
+  const v = validateRegistration(data, env);
   const token = await derivePaymentToken(env, v.key);
   const existing = await env.DB.prepare('SELECT * FROM class_registrations WHERE idempotency_key=?').bind(v.key).first();
   if (existing) {

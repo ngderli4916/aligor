@@ -2,7 +2,7 @@ import { STATUSES, normalizePhone, cleanText, waUrl, csvEscape, htmlEscape, pars
 import { recordView, getStats } from './analytics.js';
 import { buildCustomerMessage, buildLeadNotification, leadCode, parseLeadCode, redactSecrets } from './notify.js';
 import { registerPage, loginPage, adminPage } from './ui.js';
-import { PACKAGES, ClassError, createRegistration, notifyClassRegistration, paymentUrl, findByToken, publicPaymentView, recordPaymentPageOpened, submitPayment, listClassRegistrations, classEvents, classCsv, adminAction, setClassNotes } from './classreg.js';
+import { PACKAGES, promoState, currentPackages, ClassError, createRegistration, notifyClassRegistration, paymentUrl, findByToken, publicPaymentView, recordPaymentPageOpened, submitPayment, listClassRegistrations, classEvents, classCsv, adminAction, setClassNotes } from './classreg.js';
 import { classRegisterPage, paymentPage, invalidPaymentPage } from './classui.js';
 
 const json = (data, status=200, headers={}) => new Response(JSON.stringify(data), {status, headers:{'content-type':'application/json; charset=utf-8',...headers}});
@@ -23,7 +23,7 @@ async function route(request, env, ctx) {
     if(ctx&&typeof ctx.waitUntil==='function')ctx.waitUntil(tracking); else await tracking;
     return html(registerPage(cleanText(url.searchParams.get('batch'),50),await registrationStats(env)));
   }
-  if (request.method==='GET' && path==='/classregister') return html(classRegisterPage(),{'cache-control':'no-store'});
+  if (request.method==='GET' && path==='/classregister') return html(classRegisterPage(currentPackages(env),promoState(env)),{'cache-control':'no-store'});
   if (request.method==='GET' && path==='/payment') return paymentRoute(url,env);
   if (request.method==='POST' && path==='/api/classregister') return classRegister(request,env,ctx,url);
   if (request.method==='POST' && path==='/api/payment/submit') return classPaymentSubmit(request,env);
