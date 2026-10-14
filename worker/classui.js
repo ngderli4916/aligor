@@ -36,6 +36,7 @@ input,select,textarea{width:100%;border:1px solid #bcb4a5;background:#fff;paddin
 .pay-copy h1{font:900 30px var(--serif);margin:0 0 4px}.order{font:800 15px var(--mono);background:#000;color:var(--yellow);display:inline-block;padding:5px 10px;margin:6px 0 14px}.amount{font:900 46px/1 var(--serif);color:#8a6100;margin:10px 0}.meta{font-size:14px;color:#3f3c36;margin:3px 0}.meta b{color:#000}
 .notice{margin:16px 0;padding:12px 14px;border-left:4px solid var(--gold);background:#fff4cc;font-size:13px}.ok{border-left-color:var(--green);background:#e6f2ea}.bad{border-left-color:var(--red);background:#fdeae4}
 .bank{margin:16px 0;border:1px solid var(--line);background:#fffdf7;padding:14px 16px}.bank h3{font:800 14px var(--sans);margin:0 0 8px}.bank .row{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:3px 0}.bank .row span{color:var(--muted)}.bank .acc{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px}.bank .acc b{font:900 22px var(--mono);letter-spacing:.04em}.bank .btn{min-height:0;padding:6px 12px;font-size:12px}
+.cardpay{margin:16px 0;border:1px solid var(--line);background:#fff;padding:14px 16px}.cardpay h3{font:800 14px var(--sans);margin:0 0 6px}.cardpay .cbtn{display:block;width:100%;border:0;border-radius:12px;background:#2bac1a;color:#fff;font:800 16px var(--sans);padding:14px 20px;cursor:pointer;margin-top:10px}.cardpay .cbtn:hover,.cardpay .cbtn:focus{background:#279b17}.cardpay .cbtn:disabled{opacity:.6;cursor:default}
 .invalid{max-width:520px;margin:90px auto;padding:34px;background:#fff;border:1px solid var(--line);text-align:center}.invalid h1{font:900 26px var(--serif);margin:0 0 10px}
 @media(max-width:900px){.hero-in{grid-template-columns:1fr}.hero-note{max-width:360px}.layout{grid-template-columns:1fr}.summary{position:relative;top:auto;order:-1}.packages{grid-template-columns:1fr 1fr}}
 @media(max-width:700px){.pay-card{grid-template-columns:1fr;padding:20px;box-shadow:6px 6px 0 var(--yellow)}.qr{max-width:300px;margin:auto}}
@@ -109,7 +110,12 @@ export function invalidPaymentPage() {
   return head('Aligor 付款', '<meta name="robots" content="noindex,nofollow">') + `<body>${topBar}<div class="invalid"><h1>这个付款链接无效</h1><p>链接可能不完整或已经失效。请回到报名页面重新报名，或联络 Adrian。</p><a class="btn gold" href="/classregister">回到报名页面</a></div></body></html>`;
 }
 
-export function paymentPage(view, token, waNumber = '60167871902') {
+// Shopify variant for each course package (store ukunili2u.myshopify.com, product 9401971310815).
+// The card button is locked to the variant that matches the customer's own order; other variants cannot be picked.
+export const SHOPIFY_PRODUCT = '9401971310815';
+export const SHOPIFY_VARIANTS = { solo_1pc: '67936821674207', pair_1pc: '67936821706975', pair_2pc: '67936821739743' };
+
+export function paymentPage(view, token, waNumber = '60167871902', shop = {}) {
   const s = view.status;
   const done = s === 'payment_confirmed';
   const waMsg = `你好 Adrian，我已完成付款。\n订单编号：${view.order_id}\n配套：${view.package_title}\n金额：RM${view.amount}`;
@@ -117,6 +123,9 @@ export function paymentPage(view, token, waNumber = '60167871902') {
   const banner = s === 'payment_confirmed' ? '<div class="notice ok">付款已由 Aligor 核对确认。谢谢你！上课日期与地点，会在报名后第二天或第三天通知。</div>'
     : s === 'payment_submitted' ? '<div class="notice">已收到你的付款通知。请记得 WhatsApp 把付款收据发给我们，核对到账后会再通知你。</div>'
     : s === 'payment_rejected' ? '<div class="notice bad">你提交的付款资料我们暂时对不上。请检查后重新付款，再按“我已完成付款”，并 WhatsApp 我们。</div>' : '';
+  const variant = SHOPIFY_VARIANTS[view.package_code];
+  const cardOn = !done && !!(shop.domain && shop.token && variant);
+  const cardBlock = cardOn ? `<div class="cardpay" id="cardpay" hidden><h3>或使用信用卡付款</h3><p class="hint" style="margin:0">按下后会去 Shopify 的安全付款页，只需要填信用卡资料，不用重新填报名资料。金额：<b>RM${view.amount}</b>。</p><button class="cbtn" type="button" id="cardbtn">用信用卡付款 RM${view.amount} →</button><p class="err" id="cerr" role="alert"></p></div>` : '';
   const form = done ? '' : `<div class="err" id="err" role="alert"></div><button class="btn gold" style="width:100%;margin-top:14px" id="go" type="button">我已完成付款</button><p class="hint">付款后按这个按钮，会打开 WhatsApp：请把付款收据发给我们，我们核对后确认。</p><a class="btn" style="width:100%;margin-top:10px" id="wa" href="${h(waUrl)}">WhatsApp 发付款收据给 Adrian</a>`;
   return head('Aligor 付款', '<meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">') + `<body>${topBar}
 <div class="pay-wrap"><div class="pay-card">
@@ -126,7 +135,7 @@ export function paymentPage(view, token, waNumber = '60167871902') {
 <div class="amount">RM${view.amount}</div>${view.discount ? `<p class="meta">原价 RM${view.original}，已优惠 RM${view.discount}</p>` : ''}
 <p class="meta">收款名称：<b>NILI RESOURCES</b>（DuitNow）</p>
 <p class="meta">请用银行 App 扫描二维码，付款金额必须是 <b>RM${view.amount}</b>。</p>
-<div class="bank"><h3>或使用银行转账（Maybank）</h3><div class="row"><span>户口名称</span><b>NILI RESOURCES</b></div><div class="row"><span>银行</span><b>Maybank</b></div><div class="acc"><b id="acc">5512 0352 7689</b><button class="btn" type="button" id="copy">复制户口号码</button></div><p class="hint" style="margin:8px 0 0">转账金额必须是 RM${view.amount}，并保留转账收据。</p></div>
+<div class="bank"><h3>或使用银行转账（Maybank）</h3><div class="row"><span>户口名称</span><b>NILI RESOURCES</b></div><div class="row"><span>银行</span><b>Maybank</b></div><div class="acc"><b id="acc">5512 0352 7689</b><button class="btn" type="button" id="copy">复制户口号码</button></div><p class="hint" style="margin:8px 0 0">转账金额必须是 RM${view.amount}，并保留转账收据。</p></div>${cardBlock}
 ${banner}${form}
 <p class="hint">提交付款资料不代表付款已经确认。我们核对到账后会再通知你。</p></div></div></div>
 <script>(()=>{const cp=document.querySelector('#copy');if(cp)cp.addEventListener('click',async()=>{try{await navigator.clipboard.writeText('551203527689');cp.textContent='已复制'}catch(e){cp.textContent='请手动复制'}setTimeout(()=>cp.textContent='复制户口号码',2000)});const go=document.querySelector('#go');if(!go)return;const T=${jsonForScript(token)},WA=${jsonForScript(waUrl)},err=document.querySelector('#err');
@@ -134,7 +143,17 @@ go.addEventListener('click',async()=>{err.classList.remove('show');go.disabled=t
 try{const r=await fetch('/api/payment/submit',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({t:T})});const out=await r.json().catch(()=>({}));
 if(!r.ok||!out.ok){err.textContent=out.error||'提交失败，请稍后重试';err.classList.add('show');go.disabled=false;go.textContent=label;return}
 go.textContent='正在打开 WhatsApp…';location.href=WA;setTimeout(()=>{go.disabled=false;go.textContent='我已完成付款'},3000)}
-catch(x){err.textContent='网络出现问题，请再按一次';err.classList.add('show');go.disabled=false;go.textContent=label}});})();</script></body></html>`;
+catch(x){err.textContent='网络出现问题，请再按一次';err.classList.add('show');go.disabled=false;go.textContent=label}});})();</script>${cardOn ? `<script>(()=>{const box=document.querySelector('#cardpay'),btn=document.querySelector('#cardbtn'),err=document.querySelector('#cerr');if(!box)return;
+const CFG=${jsonForScript({ domain: shop.domain, token: shop.token, product: SHOPIFY_PRODUCT, variant, order: view.order_id, amount: view.amount, title: view.package_title })};
+const gid=(k,i)=>'gid://shopify/'+k+'/'+i;let client=null;
+const sc=document.createElement('script');sc.async=true;sc.src='https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';
+sc.onload=async()=>{try{client=ShopifyBuy.buildClient({domain:CFG.domain,storefrontAccessToken:CFG.token});
+const p=await client.product.fetch(gid('Product',CFG.product));const v=p.variants.find(x=>x.id===gid('ProductVariant',CFG.variant));
+if(v&&v.availableForSale!==false&&Number(v.price.amount||v.price)===Number(CFG.amount))box.hidden=false}catch(e){}};
+document.head.appendChild(sc);
+btn.addEventListener('click',async()=>{if(!client)return;err.classList.remove('show');btn.disabled=true;const label=btn.textContent;btn.textContent='正在打开付款页…';
+try{const co=await client.checkout.create({lineItems:[{variantId:gid('ProductVariant',CFG.variant),quantity:1}],customAttributes:[{key:'aligor_order_id',value:CFG.order},{key:'package',value:CFG.title}],note:'Aligor 订单 '+CFG.order});location.href=co.webUrl}
+catch(x){err.textContent='暂时无法打开信用卡付款页，请改用上面的转账，或稍后再试。';err.classList.add('show');btn.disabled=false;btn.textContent=label}});})();</script>` : ''}</body></html>`;
 }
 
 export const classAdminTabHtml = `

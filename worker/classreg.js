@@ -242,7 +242,7 @@ export async function findByToken(env, token) {
   if (!row || row.registration_status === 'cancelled' || row.payment_status === 'cancelled') return null;
   return row;
 }
-export const publicPaymentView = row => ({ order_id: row.public_order_id, package_title: PACKAGES[row.package_code]?.title || '', participants: row.participant_count, computers: row.computer_count, original: row.original_amount, discount: row.discount_amount, amount: row.final_amount, status: row.payment_status, reference: row.payment_reference || '' });
+export const publicPaymentView = row => ({ order_id: row.public_order_id, package_code: row.package_code, package_title: PACKAGES[row.package_code]?.title || '', participants: row.participant_count, computers: row.computer_count, original: row.original_amount, discount: row.discount_amount, amount: row.final_amount, status: row.payment_status, reference: row.payment_reference || '' });
 
 export async function recordPaymentPageOpened(env, row) {
   const seen = await env.DB.prepare("SELECT 1 x FROM class_registration_events WHERE registration_id=? AND event_type='payment_page_opened' LIMIT 1").bind(row.id).first();

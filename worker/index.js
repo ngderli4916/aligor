@@ -6,7 +6,7 @@ import { PACKAGES, promoState, currentPackages, ClassError, createRegistration, 
 import { classRegisterPage, paymentPage, invalidPaymentPage } from './classui.js';
 
 const json = (data, status=200, headers={}) => new Response(JSON.stringify(data), {status, headers:{'content-type':'application/json; charset=utf-8',...headers}});
-const html = (body,extra={}) => new Response(body,{headers:{...extra,'content-type':'text/html; charset=utf-8','content-security-policy':"default-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; form-action 'self'; frame-ancestors 'none'",'x-frame-options':'DENY','referrer-policy':'same-origin'}});
+const html = (body,extra={},csp="default-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; form-action 'self'; frame-ancestors 'none'") => new Response(body,{headers:{...extra,'content-type':'text/html; charset=utf-8','content-security-policy':csp,'x-frame-options':'DENY','referrer-policy':'same-origin'}});
 const now = () => new Date().toISOString();
 
 export default { async fetch(request, env, ctx) {
@@ -64,7 +64,9 @@ async function paymentRoute(url,env) {
   const token=url.searchParams.get('t')||'', row=await findByToken(env,token);
   if(!row){const res=html(invalidPaymentPage(),noindex);return new Response(res.body,{status:404,headers:res.headers})}
   await recordPaymentPageOpened(env,row);
-  return html(paymentPage(publicPaymentView(row),token,env.WHATSAPP_NUMBER||'60167871902'),noindex);
+  const shop=env.SHOPIFY_DOMAIN&&env.SHOPIFY_STOREFRONT_TOKEN?{domain:env.SHOPIFY_DOMAIN,token:env.SHOPIFY_STOREFRONT_TOKEN}:{};
+  const csp=shop.domain?"default-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'unsafe-inline' https://sdks.shopifycdn.com; connect-src 'self' https://"+shop.domain+"; img-src 'self' data:; form-action 'self'; frame-ancestors 'none'":undefined;
+  return html(paymentPage(publicPaymentView(row),token,env.WHATSAPP_NUMBER||'60167871902',shop),noindex,csp);
 }
 async function classPaymentSubmit(request,env) {
   const data=await smallJson(request), view=await submitPayment(env,String(data.t||''),data.reference);

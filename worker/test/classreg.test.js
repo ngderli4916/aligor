@@ -311,3 +311,34 @@ test('22. registration page shows the class date and place', async () => {
   const page = await (await call(makeEnv(), 'GET', '/classregister', undefined)).text();
   assert.ok(page.includes('10 月 18 日') && page.includes('Skudai, Johor') && !page.includes('第二天或第三天'));
 });
+
+test('card payment: Shopify button is locked to the order\'s own package, and only when configured', async () => {
+  const VAR = { solo_1pc: '67936821674207', pair_1pc: '67936821706975', pair_2pc: '67936821739743' };
+  const SHOP = { SHOPIFY_DOMAIN: 'shop.test.myshopify.com', SHOPIFY_STOREFRONT_TOKEN: 'sf-public-token' };
+  // not configured: no card block, default strict CSP
+  const off = makeEnv(); const a = await register(off, { package: 'pair_1pc', second_name: 'Ah Two', second_phone: '0123456789' });
+  const offRes = await call(off, 'GET', `/payment?t=${tokenOf(a.json)}`, undefined); const offHtml = await offRes.text();
+  assert.ok(!offHtml.includes('id="cardpay"') && !offHtml.includes('shopifycdn'));
+  assert.ok(!offRes.headers.get('content-security-policy').includes('shopifycdn'));
+  // configured: each package only ever carries its own variant
+  for (const [code, id] of Object.entries(VAR)) {
+    const env = makeEnv(SHOP); const r = await register(env, { package: code, ...(code === 'solo_1pc' ? {} : { second_name: 'Ah Two', second_phone: '0123456789' }) });
+    const res = await call(env, 'GET', `/payment?t=${tokenOf(r.json)}`, undefined); const page = await res.text();
+    assert.ok(page.includes('id="cardbtn"') && page.includes(`"variant":"${id}"`), code);
+    for (const other of Object.values(VAR).filter(x => x !== id)) assert.ok(!page.includes(other), `${code} must not mention ${other}`);
+    assert.ok(page.includes(`"order":"${r.json.order_id}"`) && page.includes(`"amount":${r.json.amount}`));
+    const csp = res.headers.get('content-security-policy');
+    assert.ok(csp.includes('https://sdks.shopifycdn.com') && csp.includes('https://shop.test.myshopify.com') && csp.includes("frame-ancestors 'none'"));
+    assert.ok(page.includes('id="copy"'), 'bank transfer / QR stay available');
+  }
+  // other pages keep the strict CSP
+  const reg = await call(makeEnv(SHOP), 'GET', '/classregister', undefined);
+  assert.ok(!reg.headers.get('content-security-policy').includes('shopifycdn'));
+});
+
+test('card payment: no card button once the order is confirmed', async () => {
+  const env = makeEnv({ SHOPIFY_DOMAIN: 'shop.test.myshopify.com', SHOPIFY_STOREFRONT_TOKEN: 'sf-public-token' });
+  const r = await register(env, { package: 'solo_1pc' }); const t = tokenOf(r.json);
+  env.DB.raw.prepare("UPDATE class_registrations SET payment_status='payment_confirmed' WHERE id=1").run();
+  assert.ok(!(await (await call(env, 'GET', `/payment?t=${t}`, undefined)).text()).includes('cardbtn'));
+});
