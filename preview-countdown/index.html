@@ -1,0 +1,177 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Preview 倒计时</title>
+<style>
+/* Layout: one centred full-screen stage; countdown is the single focal point, music controls sit at the bottom */
+:root{--bg:#0F1B2D;--bg2:#1F3350;--ink:#FFFFFF;--mute:#B9C6D6;--amber:#F5A524;--line:rgba(255,255,255,.18);color-scheme:dark}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;overflow:hidden}
+.stage{position:relative;min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 16px;box-sizing:border-box;
+  background:radial-gradient(ellipse at 50% 40%,var(--bg2) 0%,var(--bg) 70%)}
+.glow{position:absolute;inset:auto;width:60vmin;height:60vmin;border-radius:50%;background:radial-gradient(circle,rgba(245,165,36,.18),transparent 65%);animation:breathe 9s ease-in-out infinite;pointer-events:none}
+@keyframes breathe{0%,100%{transform:scale(.9);opacity:.6}50%{transform:scale(1.12);opacity:1}}
+.tag{position:relative;font-size:clamp(14px,2.2vw,20px);letter-spacing:.18em;color:var(--amber);font-weight:700;margin:0 0 12px}
+h1{position:relative;font-size:clamp(26px,5vw,56px);line-height:1.25;margin:0 0 6px;font-weight:900;text-wrap:balance}
+.sub{position:relative;font-size:clamp(15px,2.4vw,24px);color:var(--mute);margin:0 0 clamp(24px,5vh,56px)}
+.clock{position:relative;display:flex;gap:clamp(8px,2vw,28px);align-items:flex-start;justify-content:center;font-variant-numeric:tabular-nums}
+.unit{display:flex;flex-direction:column;align-items:center;min-width:clamp(70px,16vw,200px)}
+.num{font-size:clamp(56px,16vw,200px);font-weight:900;line-height:1;letter-spacing:.02em}
+.lab{font-size:clamp(12px,1.6vw,18px);color:var(--mute);margin-top:8px;letter-spacing:.2em}
+.colon{font-size:clamp(48px,13vw,160px);line-height:1;font-weight:900;color:var(--amber);padding-top:.02em;animation:blink 2s steps(2,start) infinite}
+@keyframes blink{50%{opacity:.35}}
+.note{position:relative;margin-top:clamp(20px,4vh,44px);font-size:clamp(14px,2vw,20px);color:var(--mute);min-height:1.6em}
+.go{position:relative;font-size:clamp(34px,8vw,96px);font-weight:900;color:var(--amber)}
+.bar{position:fixed;left:0;right:0;bottom:0;display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,rgba(0,0,0,.45))}
+button{font:inherit;cursor:pointer;border-radius:999px;border:2px solid var(--amber);background:var(--amber);color:#0F1B2D;font-weight:700;padding:10px 22px;font-size:16px}
+button.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button:focus-visible,input:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.vol{display:flex;gap:10px;align-items:center;color:var(--mute);font-size:14px}
+input[type=range]{width:130px;accent-color:var(--amber)}
+.hint{width:100%;text-align:center;font-size:13px;color:var(--mute)}
+#video{position:fixed;inset:0;z-index:50;background:#000}
+#video iframe{display:block;width:100%;height:100%;border:0}
+#back{position:absolute;top:10px;right:10px;padding:6px 14px;font-size:14px;opacity:.25;background:rgba(0,0,0,.6);color:#fff;border-color:rgba(255,255,255,.4)}
+#back:hover,#back:focus-visible{opacity:1}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){.glow,.colon{animation:none}}
+</style>
+<main class="stage" id="stage">
+  <div class="glow" aria-hidden="true"></div>
+  <p class="tag">1 小时免费 PREVIEW</p>
+  <h1>从 0 开始建立<br>你的 AI 个人助理</h1>
+  <p class="sub" id="sub">今晚 8:00 PM 开始（马来西亚时间）</p>
+  <div class="clock" id="clock" role="timer" aria-live="off">
+    <div class="unit"><span class="num" id="hh">00</span><span class="lab">小时</span></div>
+    <span class="colon">:</span>
+    <div class="unit"><span class="num" id="mm">00</span><span class="lab">分钟</span></div>
+    <span class="colon">:</span>
+    <div class="unit"><span class="num" id="ss">00</span><span class="lab">秒</span></div>
+  </div>
+  <p class="go" id="go" hidden>Preview 开始了！</p>
+  <p class="note" id="note">请先把麦克风静音，我们很快开始。</p>
+  <div class="bar">
+    <button id="play" type="button">▶ 开始轻音乐</button>
+    <span class="vol" id="volbox" hidden>音量 <input id="vol" type="range" min="0" max="100" value="35" aria-label="音量"></span>
+    <button class="ghost" id="stop" type="button" hidden>⏸ 暂停音乐</button>
+    <button class="ghost" id="full" type="button">全屏</button>
+    <button class="ghost" id="test" type="button">▶ 测试视频</button>
+    <span class="hint" id="hint">8:00 一到，会自动全屏播放视频。请先点一下「全屏」或「开始轻音乐」（浏览器规定要先点一次，视频才能自动有声音和全屏）。分享画面给学员时，请勾选“分享声音／Share sound”。</span>
+  </div>
+</main>
+<div id="video" hidden><iframe id="yt" title="课程视频" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><button id="back" type="button" aria-label="关闭视频，回到倒计时页">✕ 关闭</button></div>
+<script>
+(function () {
+  // Target: 14 Oct 2026, 8:00 PM Malaysia time (UTC+8). It stays fixed, so after 8:00 it never rolls over to tomorrow.
+  // For another session or a rehearsal, add ?at=2026-10-21T20:00:00%2B08:00 to the address.
+  var params = new URLSearchParams(location.search);
+  var DEFAULT_AT = "2026-10-14T20:00:00+08:00", VIDEO_ID = "1QNsdr-Qx_I";
+  var at = params.get("at");
+  var target = Date.parse(at && !isNaN(Date.parse(at)) ? at : DEFAULT_AT);
+  var videoOn = false, dismissed = false;
+  var $ = function (id) { return document.getElementById(id); };
+  var p2 = function (n) { return String(n).padStart(2, "0"); };
+  var fadeGain = 1;
+
+  function tick() {
+    var left = Math.max(0, Math.round((target - Date.now()) / 1000));
+    $("hh").textContent = p2(Math.floor(left / 3600));
+    $("mm").textContent = p2(Math.floor(left % 3600 / 60));
+    $("ss").textContent = p2(left % 60);
+    fadeGain = left <= 10 ? left / 10 : 1;
+    applyVolume();
+    var done = left === 0;
+    $("clock").hidden = done; $("go").hidden = !done;
+    if (done && !videoOn && !dismissed) playVideo();
+    $("note").textContent = done ? "欢迎大家！" : left <= 60 ? "马上开始，请把麦克风静音。" : "请先把麦克风静音，我们很快开始。";
+  }
+  setInterval(tick, 250); tick();
+
+  // ---- soft generated music (Web Audio, nothing to download, no copyright) ----
+  var ctx, master, reverb, timer, playing = false, nextChordAt = 0, step = 0;
+  var chords = [[130.81,196.00,246.94,329.63],[110.00,164.81,196.00,261.63],[87.31,174.61,220.00,329.63],[98.00,196.00,246.94,329.63]];
+  var penta = [392.00,440.00,523.25,587.33,659.25,783.99,880.00];
+
+  function applyVolume() {
+    if (!master) return;
+    var v = Number($("vol").value) / 100;
+    master.gain.setTargetAtTime(playing ? v * v * fadeGain : 0, ctx.currentTime, 0.4);
+  }
+  function impulse(seconds) {
+    var rate = ctx.sampleRate, len = rate * seconds, buf = ctx.createBuffer(2, len, rate);
+    for (var c = 0; c < 2; c++) { var d = buf.getChannelData(c); for (var i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.6); }
+    return buf;
+  }
+  function pad(freq, t0, dur) {
+    [ -4, 4 ].forEach(function (cents) {
+      var o = ctx.createOscillator(), g = ctx.createGain(), f = ctx.createBiquadFilter();
+      o.type = "triangle"; o.frequency.value = freq; o.detune.value = cents;
+      f.type = "lowpass"; f.frequency.value = 1100;
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.linearRampToValueAtTime(0.05, t0 + 3);
+      g.gain.setValueAtTime(0.05, t0 + dur - 3);
+      g.gain.linearRampToValueAtTime(0.0001, t0 + dur + 2);
+      o.connect(f); f.connect(g); g.connect(master); g.connect(reverb);
+      o.start(t0); o.stop(t0 + dur + 2.2);
+    });
+  }
+  function pluck(freq, t0) {
+    var o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = "sine"; o.frequency.value = freq;
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(0.07, t0 + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 2.4);
+    o.connect(g); g.connect(master); g.connect(reverb);
+    o.start(t0); o.stop(t0 + 2.5);
+  }
+  function schedule() {
+    while (nextChordAt < ctx.currentTime + 3) {
+      var chord = chords[step % chords.length], t0 = Math.max(nextChordAt, ctx.currentTime);
+      chord.forEach(function (f) { pad(f, t0, 8); });
+      for (var i = 0; i < 4; i++) if (Math.random() < 0.75) pluck(penta[Math.floor(Math.random() * penta.length)], t0 + 1 + i * 1.9 + Math.random() * 0.5);
+      nextChordAt = t0 + 8; step++;
+    }
+  }
+  function start() {
+    if (!ctx) {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) { $("hint").textContent = "这个浏览器不支持播放音乐。"; return; }
+      ctx = new AC(); master = ctx.createGain(); master.gain.value = 0; master.connect(ctx.destination);
+      reverb = ctx.createConvolver(); reverb.buffer = impulse(3.2);
+      var wet = ctx.createGain(); wet.gain.value = 0.55; reverb.connect(wet); wet.connect(master);
+    }
+    ctx.resume(); playing = true; nextChordAt = ctx.currentTime + 0.1;
+    schedule(); clearInterval(timer); timer = setInterval(schedule, 1000);
+    $("play").hidden = true; $("volbox").hidden = false; $("stop").hidden = false; applyVolume();
+  }
+  function stop() {
+    playing = false; applyVolume(); clearInterval(timer);
+    $("play").textContent = "▶ 继续轻音乐"; $("play").hidden = false; $("stop").hidden = true;
+  }
+  function playVideo() {
+    videoOn = true;
+    playing = false; applyVolume(); clearInterval(timer);
+    $("yt").src = "https://www.youtube-nocookie.com/embed/" + VIDEO_ID + "?autoplay=1&rel=0&playsinline=1&modestbranding=1";
+    $("video").hidden = false;
+    try { if (!document.fullscreenElement && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(function () {}); } catch (e) {}
+  }
+  function closeVideo() {
+    videoOn = false; dismissed = true;
+    $("yt").src = "about:blank"; $("video").hidden = true;
+  }
+  function armed() { $("hint").textContent = "✓ 已准备好：8:00 一到，会自动全屏播放视频。"; }
+  $("test").addEventListener("click", function () { dismissed = false; playVideo(); });
+  $("back").addEventListener("click", closeVideo);
+  $("play").addEventListener("click", start);
+  $("play").addEventListener("click", armed);
+  $("stop").addEventListener("click", stop);
+  $("vol").addEventListener("input", applyVolume);
+  $("full").addEventListener("click", function () {
+    try {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().then(armed).catch(function () { $("hint").textContent = "这里不能全屏，请直接最大化窗口。"; });
+    } catch (e) {}
+  });
+})();
+</script>
