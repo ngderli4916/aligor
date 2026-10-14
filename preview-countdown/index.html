@@ -5,19 +5,21 @@
 <title>Preview 倒计时</title>
 <style>
 /* Layout: one centred full-screen stage; countdown is the single focal point, music controls sit at the bottom */
-:root{--bg:#0F1B2D;--bg2:#1F3350;--ink:#FFFFFF;--mute:#B9C6D6;--amber:#F5A524;--line:rgba(255,255,255,.18);color-scheme:dark}
+:root{--bg:#050B16;--bg2:#0B1A2E;--cy:#00E5FF;--ink:#FFFFFF;--mute:#B9C6D6;--amber:#F5A524;--line:rgba(255,255,255,.18);color-scheme:dark}
 html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;overflow:hidden}
 .stage{position:relative;min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 16px;box-sizing:border-box;
-  background:radial-gradient(ellipse at 50% 40%,var(--bg2) 0%,var(--bg) 70%)}
-.glow{position:absolute;inset:auto;width:60vmin;height:60vmin;border-radius:50%;background:radial-gradient(circle,rgba(245,165,36,.18),transparent 65%);animation:breathe 9s ease-in-out infinite;pointer-events:none}
+  z-index:2}
+#rain{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block}
+.veil{position:fixed;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse 70% 62% at 50% 46%,rgba(5,11,22,.88) 0%,rgba(5,11,22,.62) 48%,rgba(5,11,22,0) 100%),linear-gradient(rgba(5,11,22,.55),rgba(5,11,22,0) 22%,rgba(5,11,22,0) 78%,rgba(5,11,22,.7))}
+.glow{position:absolute;inset:auto;width:60vmin;height:60vmin;border-radius:50%;background:radial-gradient(circle,rgba(0,229,255,.16),transparent 65%);animation:breathe 9s ease-in-out infinite;pointer-events:none}
 @keyframes breathe{0%,100%{transform:scale(.9);opacity:.6}50%{transform:scale(1.12);opacity:1}}
 .tag{position:relative;font-size:clamp(14px,2.2vw,20px);letter-spacing:.18em;color:var(--amber);font-weight:700;margin:0 0 12px}
 h1{position:relative;font-size:clamp(26px,5vw,56px);line-height:1.25;margin:0 0 6px;font-weight:900;text-wrap:balance}
 .sub{position:relative;font-size:clamp(15px,2.4vw,24px);color:var(--mute);margin:0 0 clamp(24px,5vh,56px)}
 .clock{position:relative;display:flex;gap:clamp(8px,2vw,28px);align-items:flex-start;justify-content:center;font-variant-numeric:tabular-nums}
 .unit{display:flex;flex-direction:column;align-items:center;min-width:clamp(70px,16vw,200px)}
-.num{font-size:clamp(56px,16vw,200px);font-weight:900;line-height:1;letter-spacing:.02em}
+.num{font-size:clamp(56px,16vw,200px);font-weight:900;line-height:1;letter-spacing:.02em;text-shadow:0 0 28px rgba(0,229,255,.35)}
 .lab{font-size:clamp(12px,1.6vw,18px);color:var(--mute);margin-top:8px;letter-spacing:.2em}
 .colon{font-size:clamp(48px,13vw,160px);line-height:1;font-weight:900;color:var(--amber);padding-top:.02em;animation:blink 2s steps(2,start) infinite}
 @keyframes blink{50%{opacity:.35}}
@@ -37,6 +39,8 @@ input[type=range]{width:130px;accent-color:var(--amber)}
 [hidden]{display:none!important}
 @media (prefers-reduced-motion:reduce){.glow,.colon{animation:none}}
 </style>
+<canvas id="rain" aria-hidden="true"></canvas>
+<div class="veil" aria-hidden="true"></div>
 <main class="stage" id="stage">
   <div class="glow" aria-hidden="true"></div>
   <p class="tag">1 小时免费 PREVIEW</p>
@@ -173,5 +177,57 @@ input[type=range]{width:130px;accent-color:var(--amber)}
       else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().then(armed).catch(function () { $("hint").textContent = "这里不能全屏，请直接最大化窗口。"; });
     } catch (e) {}
   });
+})();
+</script>
+<script>
+// Data-stream background: columns of falling 0/1 with a bright glowing head, plus a few horizontal light streaks.
+(function () {
+  var cv = document.getElementById("rain"), g = cv && cv.getContext("2d");
+  if (!g) return;
+  var dpr = Math.min(window.devicePixelRatio || 1, 2), SIZE = 18, W = 0, H = 0, cols = [], streaks = [];
+  var still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var rnd = function (a, b) { return a + Math.random() * (b - a); };
+  function reset(d, first) { d.y = first ? rnd(-H / SIZE, H / SIZE) : rnd(-24, -2); d.v = rnd(0.18, 0.7); d.a = rnd(0.35, 0.85); d.acc = 0; d.wait = first ? 0 : Math.floor(rnd(0, 90)); d.off = Math.random() < 0.4; }
+  function resize() {
+    W = window.innerWidth; H = window.innerHeight;
+    cv.width = W * dpr; cv.height = H * dpr; g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.fillStyle = "#050B16"; g.fillRect(0, 0, W, H);
+    cols = []; for (var i = 0; i < Math.ceil(W / SIZE); i++) { var d = {}; reset(d, true); cols.push(d); }
+    streaks = []; for (var k = 0; k < 4; k++) streaks.push({ x: rnd(0, W), y: rnd(0.1, 0.9) * H, v: rnd(5, 12), len: rnd(70, 190) });
+  }
+  function frame() {
+    g.fillStyle = "rgba(5,11,22,0.11)"; g.fillRect(0, 0, W, H);
+    g.font = SIZE + "px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"; g.textBaseline = "top";
+    for (var i = 0; i < cols.length; i++) {
+      var d = cols[i]; if (d.off) { if (Math.random() < 0.004) d.off = false; continue; }
+      if (d.wait > 0) { d.wait--; continue; }
+      d.acc += d.v;
+      while (d.acc >= 1) {
+        d.acc -= 1; d.y += 1;
+        var x = i * SIZE, y = d.y * SIZE;
+        g.shadowBlur = 0; g.fillStyle = "rgba(0,229,255," + d.a + ")";
+        g.fillText(Math.random() < 0.5 ? "0" : "1", x, y - SIZE);
+        g.shadowColor = "#00E5FF"; g.shadowBlur = 12; g.fillStyle = "#D9FBFF";
+        g.fillText(Math.random() < 0.5 ? "0" : "1", x, y);
+      }
+      if (d.y * SIZE > H + 40) reset(d, false);
+    }
+    g.shadowBlur = 0;
+    for (var s = 0; s < streaks.length; s++) {
+      var t = streaks[s], grad = g.createLinearGradient(t.x - t.len, 0, t.x, 0);
+      grad.addColorStop(0, "rgba(0,229,255,0)"); grad.addColorStop(1, "rgba(150,245,255,.9)");
+      g.strokeStyle = grad; g.lineWidth = 1.5; g.beginPath(); g.moveTo(t.x - t.len, t.y); g.lineTo(t.x, t.y); g.stroke();
+      t.x += t.v; if (t.x - t.len > W) { t.x = -20; t.y = rnd(0.08, 0.92) * H; t.v = rnd(5, 12); t.len = rnd(70, 190); }
+    }
+  }
+  var last = 0;
+  function loop(now) {
+    requestAnimationFrame(loop);
+    if (document.getElementById("video") && !document.getElementById("video").hidden) return;   // covered by the video: save CPU
+    if (now - last < 33) return; last = now; frame();
+  }
+  resize(); for (var n = 0; n < 160; n++) frame();
+  window.addEventListener("resize", function () { resize(); for (var n = 0; n < 120; n++) frame(); });
+  if (!still) requestAnimationFrame(loop);
 })();
 </script>
