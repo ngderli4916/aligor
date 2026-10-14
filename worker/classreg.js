@@ -111,7 +111,7 @@ export function validateRegistration(data, env = {}, now = Date.now()) {
   if (name.length < 2) throw new ClassError('请输入姓名');
   let phone;
   try { phone = normalizeClassPhone(data.phone); } catch (e) { throw new ClassError(e.message); }
-  const region = String(data.region || '').trim().toUpperCase();
+  const region = String(data.region || 'JOHOR').trim().toUpperCase(); // region is no longer asked on the form; classes are Johor only for now
   if (!REGIONS.includes(region)) throw new ClassError('请选择上课地区');
   const pkgCode = String(data.package || data.package_code || '').trim();
   if (!Object.prototype.hasOwnProperty.call(PACKAGES, pkgCode)) throw new ClassError('请选择上课方式');

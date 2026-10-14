@@ -52,7 +52,7 @@ test('1. phone formats normalise to 60167871902; invalid numbers are rejected', 
 test('2. only JOHOR, SELANGOR, PENANG', async () => {
   const env = makeEnv();
   for (const region of ['JOHOR', 'SELANGOR', 'PENANG', 'penang']) assert.equal((await register(env, { region, phone: `01${Math.floor(10000000 + Math.random() * 89999999)}` })).res.status, 201);
-  for (const region of ['KL', '', 'SABAH', 'JOHOR; DROP']) assert.equal((await register(env, { region })).res.status, 400);
+  for (const region of ['KL', 'SABAH', 'JOHOR; DROP']) assert.equal((await register(env, { region })).res.status, 400);
 });
 
 test('3 & 4. packages: server amounts; tampered amounts are ignored; unknown package rejected', async () => {
@@ -263,7 +263,7 @@ test('16. the QR asset is a real, sizeable JPEG and the payment page references 
 test('18. registration page, old /register, admin, health still work; migrations are idempotent', async () => {
   const env = makeEnv();
   const reg = await call(env, 'GET', '/classregister', undefined); const h = await reg.text();
-  assert.equal(reg.status, 200); assert.ok(h.includes('RM399') && h.includes('RM499') && h.includes('RM699') && h.includes('JOHOR') && h.includes('SELANGOR') && h.includes('PENANG'));
+  assert.equal(reg.status, 200); assert.ok(h.includes('RM399') && h.includes('RM499') && h.includes('RM699'));
   assert.ok(!/SpiderMan|Hermes|Demo|DEMO/.test(h)); assert.ok(!h.includes('qr') || !h.includes('duitnow-nili'), 'no QR before submit');
   assert.equal((await call(env, 'GET', '/register', undefined)).status, 200);
   assert.equal((await call(env, 'GET', '/4916', undefined)).status, 200);
@@ -341,4 +341,12 @@ test('card payment: no card button once the order is confirmed', async () => {
   const r = await register(env, { package: 'solo_1pc' }); const t = tokenOf(r.json);
   env.DB.raw.prepare("UPDATE class_registrations SET payment_status='payment_confirmed' WHERE id=1").run();
   assert.ok(!(await (await call(env, 'GET', `/payment?t=${t}`, undefined)).text()).includes('cardbtn'));
+});
+
+test('region is no longer asked: a registration without it is saved as JOHOR', async () => {
+  const env = makeEnv(); const { region, ...noRegion } = base();
+  const res = await call(env, 'POST', '/api/classregister', noRegion);
+  assert.equal(res.status, 201); assert.equal(row(env).region, 'JOHOR');
+  const page = await (await call(env, 'GET', '/classregister', undefined)).text();
+  assert.ok(!page.includes('id="region"') && !page.includes('上课地区') && !page.includes('请选择上课地区') && !page.includes('电话、地区'));
 });
