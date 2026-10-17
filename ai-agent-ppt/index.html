@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>一句话做出专业 PPT｜AI Agent 完整流程 · 阿理哥 Aligor</title>
+  <meta name="description" content="把想法、资料和细节持续交给 AI Agent 整理成 Project，完成后用一句话生成专业、视觉化的 PPT。">
+  <meta name="theme-color" content="#11100e">
+  <link rel="icon" type="image/png" href="../assets/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+SC:wght@600;700;900&family=Newsreader:opsz,wght@6..72,500;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --paper:#fbf7ed;
+      --paper-2:#f2ecdf;
+      --ink:#11100e;
+      --muted:#696258;
+      --line:#d9d0c1;
+      --card:#fffdf8;
+      --yellow:#ffcf3f;
+      --yellow-deep:#e9a900;
+      --green:#0f766e;
+      --green-soft:#d9f1ec;
+      --coral:#e55738;
+      --navy:#14213d;
+      --purple:#7257c7;
+      --white:#fff;
+      --shadow:0 24px 70px rgba(17,16,14,.12);
+      --serif:"Noto Serif SC","Songti SC",serif;
+      --sans:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+      --en:"Newsreader",Georgia,serif;
+      --max:1180px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+    body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+    a{color:inherit;text-decoration:none} img{max-width:100%;display:block} button{font:inherit}
+    ::selection{background:var(--yellow);color:var(--ink)}
+    .wrap{width:min(var(--max),calc(100% - 40px));margin:auto}
+    .topbar{position:sticky;top:0;z-index:60;background:rgba(17,16,14,.95);color:#fff;border-bottom:1px solid rgba(255,255,255,.14);backdrop-filter:blur(16px)}
+    .nav{min-height:76px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .brand{display:flex;align-items:center;gap:12px;min-width:0}.brand img{width:62px;height:62px;object-fit:contain}.brand-copy{font-size:13px;letter-spacing:.08em;color:rgba(255,255,255,.75);white-space:nowrap}
+    .nav-links{display:flex;align-items:center;gap:22px;font-size:14px;font-weight:700}.nav-links a:hover{color:var(--yellow)}
+    .nav-cta{padding:10px 16px;background:var(--yellow);color:var(--ink);border:2px solid var(--yellow);border-radius:999px}
+    .hero{position:relative;padding:88px 0 74px;overflow:hidden;border-bottom:2px solid var(--ink);background-image:linear-gradient(rgba(17,16,14,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(17,16,14,.045) 1px,transparent 1px);background-size:54px 54px}
+    .hero:after{content:"PPT";position:absolute;right:-1vw;bottom:-10vw;font-family:var(--en);font-weight:700;font-size:clamp(170px,31vw,470px);line-height:.75;color:rgba(17,16,14,.032);pointer-events:none}
+    .hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.04fr .96fr;gap:58px;align-items:center}
+    .eyebrow{display:inline-flex;align-items:center;gap:9px;padding:8px 14px;border:2px solid var(--ink);border-radius:999px;background:var(--yellow);font-size:13px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}.eyebrow i{width:8px;height:8px;background:var(--green);border-radius:50%}
+    h1,h2,h3{font-family:var(--serif);line-height:1.18;letter-spacing:-.035em}
+    h1{font-size:clamp(45px,7vw,82px);margin:24px 0 22px;font-weight:900}h1 mark{padding:0 5px;background:linear-gradient(transparent 60%,var(--yellow) 60%);color:inherit}
+    .lead{font-size:clamp(18px,2vw,23px);line-height:1.65;max-width:700px;color:#312d27}.lead strong{color:var(--green)}
+    .hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:12px 22px;border:2px solid var(--ink);border-radius:999px;background:transparent;font-weight:900;cursor:pointer;transition:.16s ease}.btn:hover{transform:translateY(-2px);box-shadow:0 6px 0 var(--ink)}.btn.primary{background:var(--ink);color:#fff}.btn.yellow{background:var(--yellow)}
+    .time-card{background:var(--ink);color:#fff;border:2px solid var(--ink);border-radius:28px;padding:28px;box-shadow:18px 18px 0 var(--yellow);position:relative;overflow:hidden}.time-card:after{content:"↓";position:absolute;right:18px;top:4px;color:rgba(255,255,255,.08);font-size:180px;font-weight:900;line-height:1}
+    .time-card h2{font-size:27px;margin:0 0 8px}.time-card>p{margin:0;color:#cec8bd}.bars{margin-top:32px;display:grid;gap:19px}.bar-row{display:grid;grid-template-columns:106px 1fr 54px;gap:12px;align-items:center;font-size:14px}.bar-track{height:22px;background:rgba(255,255,255,.12);border-radius:999px;overflow:hidden}.bar-fill{height:100%;border-radius:999px;background:var(--coral)}.bar-fill.ai{width:8%;min-width:22px;background:var(--yellow)}.bar-fill.manual{width:100%}.bar-val{text-align:right;font-family:var(--en);font-size:18px;color:var(--yellow)}.time-note{margin-top:25px!important;padding:15px;border:1px solid rgba(255,255,255,.18);border-radius:14px;color:#fff!important;font-size:14px}
+    section{padding:92px 0}.section-head{display:flex;align-items:end;justify-content:space-between;gap:30px;margin-bottom:42px}.kicker{font-size:13px;font-weight:900;letter-spacing:.13em;text-transform:uppercase;color:var(--green);margin-bottom:10px}.section-head h2{font-size:clamp(31px,5vw,52px);margin:0}.section-head p{max-width:510px;margin:0;color:var(--muted);font-size:17px}
+    .dark{background:var(--ink);color:#fff}.dark .kicker{color:var(--yellow)}.dark .section-head p{color:#c7c0b5}
+    .flow{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;position:relative}.flow:before{content:"";position:absolute;left:7%;right:7%;top:39px;height:3px;background:linear-gradient(90deg,var(--yellow),var(--green),var(--purple));opacity:.7}.step{position:relative;z-index:1;background:#211f1b;border:1px solid #423e37;border-radius:20px;padding:22px 18px;min-height:238px}.step-no{width:38px;height:38px;display:grid;place-items:center;border-radius:50%;background:var(--yellow);color:var(--ink);font-weight:900;border:4px solid var(--ink);margin-bottom:24px}.step h3{font-size:19px;margin:0 0 9px;color:#fff}.step p{font-size:14px;color:#c7c0b5;margin:0}.step .mini{display:inline-flex;margin-top:16px;padding:5px 9px;border-radius:999px;background:rgba(255,207,63,.12);color:var(--yellow);font-size:11px;font-weight:900}
+    .principle{margin-top:28px;display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:center;padding:24px 26px;border:1px solid #4a453d;border-radius:20px;background:#191713}.principle .big{font-family:var(--en);font-size:54px;color:var(--yellow);line-height:1}.principle strong{display:block;font-family:var(--serif);font-size:21px;margin-bottom:4px}.principle p{margin:0;color:#c7c0b5}
+    .project-map{display:grid;grid-template-columns:1fr 1.1fr;gap:24px}.project-card,.map-card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:30px;box-shadow:0 12px 36px rgba(17,16,14,.06)}.project-card h3,.map-card h3{font-size:25px;margin:0 0 12px}.project-card>p,.map-card>p{color:var(--muted);margin:0 0 22px}
+    .stack{display:grid;gap:10px}.stack-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 15px;border:1px solid var(--line);border-radius:13px;background:#fff}.stack-row b{font-size:14px}.stack-row span{font-size:12px;color:var(--muted)}.stack-row:before{content:"";width:10px;height:10px;border-radius:50%;background:var(--coral);flex:none}.stack-row:nth-child(2):before{background:var(--yellow-deep)}.stack-row:nth-child(3):before{background:var(--green)}.stack-row:nth-child(4):before{background:var(--purple)}.stack-row:nth-child(5):before{background:var(--navy)}
+    .orbit{position:relative;min-height:340px;display:grid;place-items:center}.core{width:142px;height:142px;display:grid;place-items:center;text-align:center;border-radius:50%;background:var(--ink);color:#fff;border:10px solid var(--yellow);font-family:var(--serif);font-size:22px;font-weight:900;z-index:2;box-shadow:var(--shadow)}.orbit-item{position:absolute;padding:9px 13px;background:#fff;border:2px solid var(--ink);border-radius:999px;font-size:13px;font-weight:900}.o1{top:3%;left:9%}.o2{top:7%;right:4%}.o3{top:45%;right:0}.o4{bottom:3%;right:12%}.o5{bottom:1%;left:12%}.o6{top:45%;left:0}.orbit-line{position:absolute;width:64%;height:64%;border:2px dashed var(--line);border-radius:50%}
+    .choice{background:var(--paper-2)}.choice-grid{display:grid;grid-template-columns:1fr 110px 1fr;gap:22px;align-items:stretch}.path{background:var(--card);border:2px solid var(--ink);border-radius:26px;padding:30px;position:relative}.path.recommended{box-shadow:10px 10px 0 var(--yellow)}.path-tag{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--green-soft);color:var(--green);font-size:12px;font-weight:900}.path.recommended .path-tag{background:var(--yellow);color:var(--ink)}.path h3{font-size:28px;margin:18px 0 9px}.path>p{color:var(--muted);margin:0}.path ul{list-style:none;padding:0;margin:22px 0 0;display:grid;gap:10px}.path li{padding-left:25px;position:relative;font-size:15px}.path li:before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:900}.or{display:grid;place-items:center;font-family:var(--en);font-size:42px;font-weight:700;color:var(--coral)}
+    .prompt-area{display:grid;grid-template-columns:.82fr 1.18fr;gap:28px;align-items:start}.prompt-intro h2{font-size:clamp(34px,5vw,54px);margin:8px 0 18px}.prompt-intro p{color:#cac4b9;font-size:17px}.prompt-box{background:#fff;color:var(--ink);border-radius:24px;padding:28px;box-shadow:0 18px 50px rgba(0,0,0,.24)}.prompt-label{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px}.prompt-label span{font-size:13px;font-weight:900;color:var(--green);letter-spacing:.08em;text-transform:uppercase}.copy{border:0;border-radius:999px;background:var(--yellow);padding:9px 14px;font-weight:900;cursor:pointer}.copy:hover{background:#ffe07b}.prompt{margin:0;padding:22px;border:1px solid var(--line);border-radius:16px;background:#f7f3ea;font-size:16px;line-height:1.9;white-space:pre-wrap}.prompt-hint{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:15px}.hint{padding:12px;border-radius:12px;background:var(--green-soft);font-size:12px;color:#164a45}.hint b{display:block;color:var(--green);font-size:13px}
+    .check-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.check{background:var(--card);border:1px solid var(--line);border-top:5px solid var(--green);border-radius:18px;padding:22px}.check:nth-child(2){border-top-color:var(--yellow-deep)}.check:nth-child(3){border-top-color:var(--purple)}.check:nth-child(4){border-top-color:var(--coral)}.check .ico{font-size:29px}.check h3{font-size:19px;margin:10px 0 7px}.check p{font-size:14px;color:var(--muted);margin:0}
+    .final{padding:96px 0;background:var(--yellow);border-top:2px solid var(--ink);text-align:center}.final h2{font-size:clamp(37px,6vw,68px);max-width:900px;margin:0 auto 20px}.final p{max-width:720px;margin:0 auto 30px;font-size:18px}.final .btn{background:var(--ink);color:#fff}
+    footer{padding:38px 0;background:#0b0a09;color:#bdb6aa}.foot{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:13px}.foot a:hover{color:#fff}
+    @media(max-width:980px){.hero-grid,.project-map,.prompt-area{grid-template-columns:1fr}.flow{grid-template-columns:repeat(2,1fr)}.flow:before{display:none}.step:last-child{grid-column:1/-1}.choice-grid{grid-template-columns:1fr}.or{height:40px}.check-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:700px){.wrap{width:calc(100% - 28px)}.nav{min-height:66px}.brand img{width:52px;height:52px}.brand-copy,.nav-links{display:none}.hero{padding:58px 0 55px}.hero-grid{gap:38px}.hero-grid>*{min-width:0}.hero h1{font-size:clamp(39px,12vw,52px);overflow-wrap:anywhere}.lead{font-size:17px}.time-card{width:100%;max-width:100%;min-width:0;padding:26px 20px;box-shadow:7px 7px 0 var(--yellow)}section{padding:68px 0}.section-head{display:block}.section-head p{margin-top:15px}.flow,.check-grid{grid-template-columns:1fr}.step:last-child{grid-column:auto}.project-card,.map-card,.path,.prompt-box{padding:22px}.choice-grid{gap:15px}.prompt-hint{grid-template-columns:1fr}.orbit{min-height:310px}.o1{left:1%}.o2{right:0}.o4{right:1%}.o5{left:1%}.bar-row{grid-template-columns:76px minmax(0,1fr) 45px;gap:8px}.bar-row>span{font-size:12px;overflow-wrap:anywhere}.bar-val{font-size:14px!important}.bar-track{min-width:0}.time-note{overflow-wrap:anywhere}.final{padding:70px 0}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap nav">
+      <a class="brand" href="../" aria-label="返回 Aligor 首页">
+        <img src="../assets/logos/aligor-logo-transparent.png" alt="Aligor logo">
+        <span class="brand-copy">阿理哥 · Aligor · AI Agent 实战</span>
+      </a>
+      <nav class="nav-links" aria-label="页面导航">
+        <a href="#method">完整流程</a>
+        <a href="#choice">两种做法</a>
+        <a href="#prompt" class="nav-cta">复制一句话</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <span class="eyebrow"><i></i> AI Agent × PPT Workflow</span>
+          <h1>把几个小时的 PPT，变成<mark>一句话</mark></h1>
+          <p class="lead">重点不是最后才叫 AI 帮你做 PPT，而是从一开始，就让 <strong>AI Agent 跟着整个 Project 一起工作</strong>。</p>
+          <div class="hero-actions">
+            <a class="btn primary" href="#method">看完整方法 ↓</a>
+            <a class="btn yellow" href="#prompt">直接复制 Prompt</a>
+          </div>
+        </div>
+        <aside class="time-card" aria-label="传统方法与 AI Agent 方法的时间对比">
+          <h2>同一份专业 PPT</h2>
+          <p>传统方式与 Project 工作法的差别</p>
+          <div class="bars">
+            <div class="bar-row"><span>传统整理制作</span><div class="bar-track"><div class="bar-fill manual"></div></div><span class="bar-val">4h+</span></div>
+            <div class="bar-row"><span>AI Agent 输出</span><div class="bar-track"><div class="bar-fill ai"></div></div><span class="bar-val">一句话</span></div>
+          </div>
+          <p class="time-note">真正省下来的，不只是排版时间，而是重新找资料、重新解释和重新整理逻辑的时间。</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="dark" id="method">
+      <div class="wrap">
+        <div class="section-head">
+          <div><div class="kicker">The Method</div><h2>完整流程，其实只有 5 步</h2></div>
+          <p>AI Agent 不是在最后一刻才出现。它从讨论、记录、确认到输出，一直都在同一个 Project 里面。</p>
+        </div>
+        <div class="flow">
+          <article class="step"><div class="step-no">1</div><h3>建立 Project</h3><p>先告诉 AI Agent：这个 Project 的目标、对象、用途和最后要完成什么。</p><span class="mini">SET THE GOAL</span></article>
+          <article class="step"><div class="step-no">2</div><h3>持续讨论</h3><p>把你的想法、案例、数据、照片、做法和所有细节，持续跟 AI Agent 讨论。</p><span class="mini">DISCUSS</span></article>
+          <article class="step"><div class="step-no">3</div><h3>边做边记录</h3><p>让 AI Agent 把确认过的内容整理回 Project，而不是散落在不同聊天里面。</p><span class="mini">RECORD</span></article>
+          <article class="step"><div class="step-no">4</div><h3>完成后检查</h3><p>确认资料、逻辑和重点都完整，再决定 PPT 的听众、场景与视觉风格。</p><span class="mini">VERIFY</span></article>
+          <article class="step"><div class="step-no">5</div><h3>一句话输出</h3><p>让 AI Agent 直接制作 PPT，或先整理成专业结构，再放去你喜欢的 PPT 工具。</p><span class="mini">CREATE</span></article>
+        </div>
+        <div class="principle">
+          <div class="big">01</div>
+          <div><strong>一句话能够完成，是因为前面的 Project 已经完整。</strong><p>如果资料从来没有整理过，再厉害的 AI 也只能猜。真正高效的方法，是让 AI Agent 从第一天就参与。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <div><div class="kicker">Project Memory</div><h2>Project 里面要记录什么？</h2></div>
+          <p>不是把所有资料乱丢进去，而是把每次讨论后已经确认的内容，整理成 AI 随时可以使用的项目记忆。</p>
+        </div>
+        <div class="project-map">
+          <article class="project-card">
+            <h3>5 类核心内容</h3>
+            <p>一个可直接变成 PPT 的 Project，至少要有这些资料。</p>
+            <div class="stack">
+              <div class="stack-row"><b>目标与对象</b><span>讲给谁听、想达到什么结果</span></div>
+              <div class="stack-row"><b>重点内容</b><span>观点、步骤、案例、故事</span></div>
+              <div class="stack-row"><b>事实与数据</b><span>价格、数字、日期、证明</span></div>
+              <div class="stack-row"><b>视觉素材</b><span>照片、Logo、截图、参考风格</span></div>
+              <div class="stack-row"><b>最终决定</b><span>已经确认与不要再使用的内容</span></div>
+            </div>
+          </article>
+          <article class="map-card">
+            <h3>所有资料，围绕同一个 Project</h3>
+            <p>AI Agent 才能在最后输出时，理解完整上下文，而不是从零开始猜。</p>
+            <div class="orbit" aria-label="Project 内容关系图">
+              <div class="orbit-line"></div>
+              <div class="core">Project<br>项目记忆</div>
+              <span class="orbit-item o1">想法</span><span class="orbit-item o2">资料</span><span class="orbit-item o3">数据</span><span class="orbit-item o4">案例</span><span class="orbit-item o5">图片</span><span class="orbit-item o6">决定</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="choice" id="choice">
+      <div class="wrap">
+        <div class="section-head">
+          <div><div class="kicker">Choose Your Style</div><h2>最后有两种做法</h2></div>
+          <p>没有规定一定要用哪一种。看你喜欢哪个工具、哪个设计风格，以及你要不要自己继续调整。</p>
+        </div>
+        <div class="choice-grid">
+          <article class="path recommended"><span class="path-tag">最直接</span><h3>A. AI Agent 直接制作 PPT</h3><p>适合想从内容到设计一次完成的人。</p><ul><li>直接读取 Project 已确认内容</li><li>自动安排页数、结构与视觉节奏</li><li>加入流程图、对比图、重点数字</li><li>输出后再由你检查和修改</li></ul></article>
+          <div class="or">OR</div>
+          <article class="path"><span class="path-tag">风格自由</span><h3>B. 先整理，再放去做 PPT</h3><p>适合已经有自己喜欢的 PPT 工具或模板的人。</p><ul><li>AI Agent 先整理标题与每页重点</li><li>生成图表建议和视觉说明</li><li>再放进你喜欢的 PPT 工具</li><li>保留你原本的品牌与设计风格</li></ul></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="dark" id="prompt">
+      <div class="wrap prompt-area">
+        <div class="prompt-intro">
+          <div class="kicker">One-Sentence Prompt</div>
+          <h2>Project 完成后，就说这一句话</h2>
+          <p>把方括号内的内容换成你的实际用途。因为所有资料之前已经整理好，所以这句话不是叫 AI 猜，而是叫它把完整 Project 转成清楚的视觉表达。</p>
+        </div>
+        <div class="prompt-box">
+          <div class="prompt-label"><span>可直接复制</span><button class="copy" type="button" data-copy="main-prompt">复制 Prompt</button></div>
+          <p class="prompt" id="main-prompt">请根据这个 Project 里已经确认的全部内容，为［目标听众］制作一份专业、视觉化、可以直接讲解的 PPT；减少大段文字，多使用流程图、对比图、时间线、重点数字和清楚的图像层级，每一页只表达一个重点，并保持［你喜欢的风格］。</p>
+          <div class="prompt-hint">
+            <div class="hint"><b>目标听众</b>顾客、老板、员工、学生</div>
+            <div class="hint"><b>使用场景</b>课程、提案、报告、销售</div>
+            <div class="hint"><b>喜欢的风格</b>专业、简洁、活泼、高级</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <div><div class="kicker">Final Check</div><h2>生成后，不要马上交出去</h2></div>
+          <p>AI Agent 帮你节省制作时间，但最后的事实、判断和对外内容，仍然要由你确认。</p>
+        </div>
+        <div class="check-grid">
+          <article class="check"><div class="ico">✓</div><h3>检查事实</h3><p>数字、价格、日期、名字和案例有没有错误。</p></article>
+          <article class="check"><div class="ico">◎</div><h3>检查逻辑</h3><p>每一页是否只讲一个重点，前后是否讲得通。</p></article>
+          <article class="check"><div class="ico">◫</div><h3>检查视觉</h3><p>文字会不会太多，图表是否真的帮助理解。</p></article>
+          <article class="check"><div class="ico">→</div><h3>检查行动</h3><p>观众看完以后，是否知道下一步要做什么。</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="final">
+      <div class="wrap">
+        <h2>不要从空白 PPT 开始。<br>从一个完整的 Project 开始。</h2>
+        <p>当 AI Agent 已经理解你的想法、资料和决定，几个小时的整理工作，就能变成最后的一句话。</p>
+        <a class="btn" href="#prompt">回去复制 Prompt ↑</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap foot"><span>© 2026 阿理哥 · Aligor</span><span>AI Agent 实战方法 · Malaysia</span><a href="../">返回 Aligor 首页</a></div>
+  </footer>
+
+  <script>
+    document.querySelectorAll('[data-copy]').forEach(function(button){
+      button.addEventListener('click',async function(){
+        var target=document.getElementById(button.dataset.copy);
+        var original=button.textContent;
+        try{
+          await navigator.clipboard.writeText(target.innerText.trim());
+          button.textContent='已复制 ✓';
+        }catch(error){
+          var range=document.createRange();range.selectNodeContents(target);var selection=window.getSelection();selection.removeAllRanges();selection.addRange(range);document.execCommand('copy');selection.removeAllRanges();button.textContent='已复制 ✓';
+        }
+        setTimeout(function(){button.textContent=original},1800);
+      });
+    });
+  </script>
+</body>
+</html>
