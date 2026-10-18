@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { DatabaseSync } from 'node:sqlite';
+import { createHash } from 'node:crypto';
 import worker from '../index.js';
 
 const BASE = 'https://aligor.test';
@@ -32,11 +33,26 @@ CREATE TABLE course_survey_responses (
   testimonial TEXT NOT NULL DEFAULT '',
   publicity_consent TEXT NOT NULL,
   created_at TEXT NOT NULL
+);
+CREATE TABLE course_survey_invites (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  token_hash TEXT NOT NULL UNIQUE,
+  student_name TEXT NOT NULL,
+  phone_normalized TEXT NOT NULL,
+  course_date TEXT NOT NULL,
+  cohort TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  sent_at TEXT,
+  whatsapp_message_id TEXT
 );`;
+
+const TOKEN = 'A'.repeat(43);
+const TOKEN_HASH = createHash('sha256').update(TOKEN).digest('hex');
 
 function makeDb() {
   const db = new DatabaseSync(':memory:');
   db.exec(SURVEY_SCHEMA);
+  db.prepare('INSERT INTO course_survey_invites(token_hash,student_name,phone_normalized,course_date,cohort,created_at) VALUES(?,?,?,?,?,?)').run(TOKEN_HASH, '测试学生', '60123456789', '2026-10-18', 'Aligor AI Agent – Cohort 01', '2026-10-18T00:00:00.000Z');
   return {
     raw: db,
     prepare(sql) {
@@ -62,8 +78,7 @@ async function call(env, method, path, body) {
 }
 
 const valid = (overrides = {}) => ({
-  idempotency_key: 'survey-key-1234567890',
-  student_name: '测试学生',
+  t: TOKEN,
   practical_learning: 5,
   overall_satisfaction: 4,
   ai_agent_confidence: 4,
@@ -85,8 +100,8 @@ const valid = (overrides = {}) => ({
   ...overrides
 });
 
-test('survey page is mobile friendly and contains the agreed questions', async () => {
-  const response = await call(makeEnv(), 'GET', '/survey');
+test('personal survey link shows the student name without a name field', async () => {
+  const response = await call(makeEnv(), 'GET', `/survey?t=${TOKEN}`);
   const page = await response.text();
   assert.equal(response.status, 200);
   assert.match(response.headers.get('content-type'), /text\/html/);
@@ -94,11 +109,21 @@ test('survey page is mobile friendly and contains the agreed questions', async (
   for (const text of ['大约需要2分钟完成', '课程时间怎么样', '不必要的内容', '例子数量', '实际操作的时间', '用于宣传']) assert.ok(page.includes(text), text);
   assert.ok(page.includes('name="viewport"'));
   assert.ok(page.includes('action="/api/survey"'));
+  assert.ok(page.includes('测试学生，你好'));
+  assert.ok(!page.includes('name="student_name"'));
 });
 
-test('valid survey response is saved with fixed course metadata and structured answers', async () => {
+test('survey page rejects missing or invalid personal links', async () => {
+  for (const path of ['/survey', '/survey?t=invalid']) {
+    const response = await call(makeEnv(), 'GET', path);
+    assert.equal(response.status, 404);
+    assert.ok((await response.text()).includes('链接无效'));
+  }
+});
+
+test('valid response uses identity from the personal link, not submitted identity', async () => {
   const env = makeEnv();
-  const response = await call(env, 'POST', '/api/survey', valid());
+  const response = await call(env, 'POST', '/api/survey', valid({ student_name: '冒充名字' }));
   const data = await response.json();
   assert.equal(response.status, 201);
   assert.equal(data.ok, true);
@@ -107,6 +132,7 @@ test('valid survey response is saved with fixed course metadata and structured a
   assert.equal(row.submission_id, data.submission_id);
   assert.equal(row.course_date, '2026-10-18');
   assert.equal(row.cohort, 'Aligor AI Agent – Cohort 01');
+  assert.equal(row.student_name, '测试学生');
   assert.deepEqual(JSON.parse(row.helpful_parts), ['telegram', 'whatsapp']);
   assert.equal(row.publicity_consent, 'anonymous_only');
 });
@@ -118,7 +144,7 @@ test('survey validates required answers, ranges and allowed options', async () =
     valid({ course_length: 'forever' }),
     valid({ helpful_parts: [] }),
     valid({ publicity_consent: 'yes_to_everything' }),
-    valid({ idempotency_key: 'short' })
+    valid({ t: 'invalid' })
   ]) {
     const response = await call(env, 'POST', '/api/survey', payload);
     assert.equal(response.status, 400);

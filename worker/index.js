@@ -4,7 +4,7 @@ import { buildCustomerMessage, buildLeadNotification, leadCode, parseLeadCode, r
 import { registerPage, loginPage, adminPage } from './ui.js';
 import { PACKAGES, promoState, currentPackages, ClassError, createRegistration, notifyClassRegistration, paymentUrl, findByToken, publicPaymentView, recordPaymentPageOpened, submitPayment, listClassRegistrations, classEvents, classCsv, adminAction, setClassNotes } from './classreg.js';
 import { classRegisterPage, paymentPage, invalidPaymentPage } from './classui.js';
-import { surveyPage, saveSurvey } from './survey.js';
+import { surveyPage, invalidSurveyPage, findSurveyInvite, saveSurvey } from './survey.js';
 
 const json = (data, status=200, headers={}) => new Response(JSON.stringify(data), {status, headers:{'content-type':'application/json; charset=utf-8',...headers}});
 const html = (body,extra={},csp="default-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; form-action 'self'; frame-ancestors 'none'") => new Response(body,{headers:{...extra,'content-type':'text/html; charset=utf-8','content-security-policy':csp,'x-frame-options':'DENY','referrer-policy':'same-origin'}});
@@ -25,7 +25,11 @@ async function route(request, env, ctx) {
     return html(registerPage(cleanText(url.searchParams.get('batch'),50),await registrationStats(env)));
   }
   if (request.method==='GET' && path==='/classregister') return html(classRegisterPage(currentPackages(env),promoState(env)),{'cache-control':'no-store'});
-  if (request.method==='GET' && path==='/survey') return html(surveyPage(),{'cache-control':'no-store','x-robots-tag':'noindex, nofollow'});
+  if (request.method==='GET' && path==='/survey') {
+    const invite=await findSurveyInvite(env,url.searchParams.get('t'));
+    const response=html(invite?surveyPage(invite):invalidSurveyPage(),{'cache-control':'no-store','x-robots-tag':'noindex, nofollow'});
+    return invite?response:new Response(response.body,{status:404,headers:response.headers});
+  }
   if (request.method==='GET' && path==='/payment') return paymentRoute(url,env);
   if (request.method==='POST' && path==='/api/classregister') return classRegister(request,env,ctx,url);
   if (request.method==='POST' && path==='/api/survey') {
