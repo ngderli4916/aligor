@@ -6,7 +6,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 LIST_FILE = ROOT / "list" / "index.html"
-EXCLUDED_DIRS = {".git", "node_modules", "test-results"}
+EXCLUDED_DIRS = {".git", "node_modules", "test-results", "public"}
 
 
 def public_path(path: Path) -> str:

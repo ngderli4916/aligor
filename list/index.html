@@ -112,8 +112,9 @@
 
     .link-card {
       display: block;
-      min-height: 118px;
-      padding: 18px;
+      position: relative;
+      min-height: 150px;
+      padding: 18px 18px 62px;
       border: 2px solid var(--ink);
       border-radius: 14px;
       background: #fff;
@@ -146,6 +147,25 @@
       font-size: 13px !important;
       font-weight: 800;
     }
+
+    .copy-link {
+      position: absolute;
+      left: 18px;
+      bottom: 16px;
+      min-height: 34px;
+      padding: 7px 12px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: var(--gold);
+      color: var(--ink);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .copy-link:hover { background: #f5c84f; }
+    .copy-link.copied { background: #d9f1ec; color: var(--teal); }
 
     footer {
       padding: 28px 0;
@@ -195,6 +215,7 @@
       <a class="link-card" href="/whatsapp-agent-flow/"><strong>WhatsApp AI Agent Setup 完整教学</strong><span>认识 AI Agent、安装 Hermes 或 OpenClaw、连接 WhatsApp、知识库、SOP、测试与上线。</span><span class="path">/whatsapp-agent-flow/</span></a>
       <a class="link-card" href="/hotmail-ai-agent/"><strong>Hotmail 邮箱连接 AI Agent</strong><span>小白流程：如何把 Hotmail / Outlook 邮箱连接到 AI Agent。</span><span class="path">/hotmail-ai-agent/</span></a>
       <a class="link-card" href="/facebook-ai-agent/"><strong>Facebook 连接 AI Agent</strong><span>小白教学：Meta App、token、webhook 与安全注意事项。</span><span class="path">/facebook-ai-agent/</span></a>
+      <a class="link-card" href="/ai-agent-ppt/"><strong>AI Agent 做 PPT 完整流程</strong><span>我怎样用 AI Agent 整理 Markdown Project，再交给 Claude Code 制作专业 PPT。</span><span class="path">/ai-agent-ppt/</span></a>
     </div></section>
     <section class="section"><h2>工具 / 资源页面</h2><div class="grid">
       <a class="link-card" href="/image-prompt-copy/"><strong>AI 图片 Prompt 收藏页</strong><span>可以直接复制的图片生成与图片修复 Prompt。</span><span class="path">/image-prompt-copy/</span></a>
@@ -214,8 +235,39 @@
   <footer>
     <div class="wrap">
       <span class="footer-logo"><img src="../assets/logos/aligor-logo-transparent.png" alt="Aligor logo"></span>
-      <span>Last updated: 2026-10-08. 新页面必须在同一次更新加入此清单。This page is marked noindex.</span>
+      <span>Last updated: 2026-10-19. 新页面必须在同一次更新加入此清单。This page is marked noindex.</span>
     </div>
   </footer>
+
+  <script>
+    document.querySelectorAll("a.link-card").forEach(function(card){
+      var button=document.createElement("button");
+      button.type="button";
+      button.className="copy-link";
+      button.textContent="复制链接";
+      button.setAttribute("aria-label","复制 "+card.querySelector("strong").textContent+" 的链接");
+      button.addEventListener("click",async function(event){
+        event.preventDefault();
+        event.stopPropagation();
+        var url=new URL(card.getAttribute("href"),window.location.origin).href;
+        try{
+          await navigator.clipboard.writeText(url);
+        }catch(error){
+          var input=document.createElement("textarea");
+          input.value=url;
+          input.style.position="fixed";
+          input.style.opacity="0";
+          document.body.appendChild(input);
+          input.select();
+          document.execCommand("copy");
+          input.remove();
+        }
+        button.textContent="已复制 ✓";
+        button.classList.add("copied");
+        setTimeout(function(){button.textContent="复制链接";button.classList.remove("copied")},1600);
+      });
+      card.appendChild(button);
+    });
+  </script>
 </body>
 </html>
