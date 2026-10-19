@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>AI Agent + Markdown + Claude Code 做 PPT｜完整流程 · 阿理哥 Aligor</title>
-  <meta name="description" content="把想法、资料和细节持续交给 AI Agent 整理成 Markdown Project，完成后用一句话让 Claude Code 制作专业、视觉化的 PPT。">
+  <meta name="description" content="随时用 Telegram 或 WhatsApp 跟 Hermes AI Agent 讨论想法并整理成 Markdown Project，最后用一句话交给 Claude Code AI Agent，约 20 分钟制作专业 PPT。">
   <meta name="theme-color" content="#11100e">
   <link rel="icon" type="image/png" href="../assets/favicon.png">
   <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
@@ -53,7 +53,7 @@
     .lead{font-size:clamp(18px,2vw,23px);line-height:1.65;max-width:700px;color:#312d27}.lead strong{color:var(--green)}
     .hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:12px 22px;border:2px solid var(--ink);border-radius:999px;background:transparent;font-weight:900;cursor:pointer;transition:.16s ease}.btn:hover{transform:translateY(-2px);box-shadow:0 6px 0 var(--ink)}.btn.primary{background:var(--ink);color:#fff}.btn.yellow{background:var(--yellow)}
     .time-card{background:var(--ink);color:#fff;border:2px solid var(--ink);border-radius:28px;padding:28px;box-shadow:18px 18px 0 var(--yellow);position:relative;overflow:hidden}.time-card:after{content:"↓";position:absolute;right:18px;top:4px;color:rgba(255,255,255,.08);font-size:180px;font-weight:900;line-height:1}
-    .time-card h2{font-size:27px;margin:0 0 8px}.time-card>p{margin:0;color:#cec8bd}.bars{margin-top:32px;display:grid;gap:19px}.bar-row{display:grid;grid-template-columns:106px 1fr 54px;gap:12px;align-items:center;font-size:14px}.bar-track{height:22px;background:rgba(255,255,255,.12);border-radius:999px;overflow:hidden}.bar-fill{height:100%;border-radius:999px;background:var(--coral)}.bar-fill.ai{width:8%;min-width:22px;background:var(--yellow)}.bar-fill.manual{width:100%}.bar-val{text-align:right;font-family:var(--en);font-size:18px;color:var(--yellow)}.time-note{margin-top:25px!important;padding:15px;border:1px solid rgba(255,255,255,.18);border-radius:14px;color:#fff!important;font-size:14px}
+    .time-card h2{font-size:27px;margin:0 0 8px}.time-card>p{margin:0;color:#cec8bd}.bars{margin-top:32px;display:grid;gap:19px}.bar-row{display:grid;grid-template-columns:132px minmax(0,1fr) 96px;gap:12px;align-items:center;font-size:14px}.bar-track{height:22px;background:rgba(255,255,255,.12);border-radius:999px;overflow:hidden}.bar-fill{height:100%;border-radius:999px;background:var(--coral)}.bar-fill.ai{width:8%;min-width:22px;background:var(--yellow)}.bar-fill.manual{width:100%}.bar-val{text-align:right;font-family:var(--en);font-size:18px;color:var(--yellow)}.time-note{margin-top:25px!important;padding:15px;border:1px solid rgba(255,255,255,.18);border-radius:14px;color:#fff!important;font-size:14px}
     section{padding:92px 0}.section-head{display:flex;align-items:end;justify-content:space-between;gap:30px;margin-bottom:42px}.kicker{font-size:13px;font-weight:900;letter-spacing:.13em;text-transform:uppercase;color:var(--green);margin-bottom:10px}.section-head h2{font-size:clamp(31px,5vw,52px);margin:0}.section-head p{max-width:510px;margin:0;color:var(--muted);font-size:17px}
     .dark{background:var(--ink);color:#fff}.dark .kicker{color:var(--yellow)}.dark .section-head p{color:#c7c0b5}
     .flow{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;position:relative}.flow:before{content:"";position:absolute;left:7%;right:7%;top:39px;height:3px;background:linear-gradient(90deg,var(--yellow),var(--green),var(--purple));opacity:.7}.step{position:relative;z-index:1;background:#211f1b;border:1px solid #423e37;border-radius:20px;padding:22px 18px;min-height:238px}.step-no{width:38px;height:38px;display:grid;place-items:center;border-radius:50%;background:var(--yellow);color:var(--ink);font-weight:900;border:4px solid var(--ink);margin-bottom:24px}.step h3{font-size:19px;margin:0 0 9px;color:#fff}.step p{font-size:14px;color:#c7c0b5;margin:0}.step .mini{display:inline-flex;margin-top:16px;padding:5px 9px;border-radius:999px;background:rgba(255,207,63,.12);color:var(--yellow);font-size:11px;font-weight:900}
@@ -61,13 +61,14 @@
     .project-map{display:grid;grid-template-columns:1fr 1.1fr;gap:24px}.project-card,.map-card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:30px;box-shadow:0 12px 36px rgba(17,16,14,.06)}.project-card h3,.map-card h3{font-size:25px;margin:0 0 12px}.project-card>p,.map-card>p{color:var(--muted);margin:0 0 22px}
     .stack{display:grid;gap:10px}.stack-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 15px;border:1px solid var(--line);border-radius:13px;background:#fff}.stack-row b{font-size:14px}.stack-row span{font-size:12px;color:var(--muted)}.stack-row:before{content:"";width:10px;height:10px;border-radius:50%;background:var(--coral);flex:none}.stack-row:nth-child(2):before{background:var(--yellow-deep)}.stack-row:nth-child(3):before{background:var(--green)}.stack-row:nth-child(4):before{background:var(--purple)}.stack-row:nth-child(5):before{background:var(--navy)}
     .orbit{position:relative;min-height:340px;display:grid;place-items:center}.core{width:142px;height:142px;display:grid;place-items:center;text-align:center;border-radius:50%;background:var(--ink);color:#fff;border:10px solid var(--yellow);font-family:var(--serif);font-size:22px;font-weight:900;z-index:2;box-shadow:var(--shadow)}.orbit-item{position:absolute;padding:9px 13px;background:#fff;border:2px solid var(--ink);border-radius:999px;font-size:13px;font-weight:900}.o1{top:3%;left:9%}.o2{top:7%;right:4%}.o3{top:45%;right:0}.o4{bottom:3%;right:12%}.o5{bottom:1%;left:12%}.o6{top:45%;left:0}.orbit-line{position:absolute;width:64%;height:64%;border:2px dashed var(--line);border-radius:50%}
+    .mobile-story{background:var(--navy);color:#fff}.mobile-story .kicker{color:var(--yellow)}.mobile-story .section-head p{color:#d3d8e5}.story-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:24px}.story-card{border:1px solid rgba(255,255,255,.18);border-radius:24px;padding:30px;background:rgba(255,255,255,.07)}.story-card h3{margin:0 0 14px;font-size:27px}.story-card p{margin:0;color:#d9dce5}.moment-list{display:grid;gap:12px;margin-top:22px}.moment{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:14px;background:rgba(255,255,255,.08)}.moment b{color:var(--yellow);white-space:nowrap}.result-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.result{min-height:138px;padding:18px;border-radius:18px;background:#fff;color:var(--ink)}.result strong{display:block;font-family:var(--en);font-size:39px;line-height:1;color:var(--coral)}.result span{display:block;margin-top:10px;font-size:14px;font-weight:700}.assistant-band{margin-top:24px;padding:24px;border:2px solid var(--yellow);border-radius:20px;background:rgba(255,207,63,.1)}.assistant-band h3{margin:0 0 8px;color:var(--yellow);font-size:24px}.assistant-band p{margin:0;color:#fff}
     .choice{background:var(--paper-2)}.choice-grid{display:grid;grid-template-columns:1fr 110px 1fr;gap:22px;align-items:stretch}.path{background:var(--card);border:2px solid var(--ink);border-radius:26px;padding:30px;position:relative}.path.recommended{box-shadow:10px 10px 0 var(--yellow)}.path-tag{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--green-soft);color:var(--green);font-size:12px;font-weight:900}.path.recommended .path-tag{background:var(--yellow);color:var(--ink)}.path h3{font-size:28px;margin:18px 0 9px}.path>p{color:var(--muted);margin:0}.path ul{list-style:none;padding:0;margin:22px 0 0;display:grid;gap:10px}.path li{padding-left:25px;position:relative;font-size:15px}.path li:before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:900}.or{display:grid;place-items:center;font-family:var(--en);font-size:42px;font-weight:700;color:var(--coral)}
     .prompt-area{display:grid;grid-template-columns:.82fr 1.18fr;gap:28px;align-items:start}.prompt-intro h2{font-size:clamp(34px,5vw,54px);margin:8px 0 18px}.prompt-intro p{color:#cac4b9;font-size:17px}.prompt-box{background:#fff;color:var(--ink);border-radius:24px;padding:28px;box-shadow:0 18px 50px rgba(0,0,0,.24)}.prompt-label{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px}.prompt-label span{font-size:13px;font-weight:900;color:var(--green);letter-spacing:.08em;text-transform:uppercase}.copy{border:0;border-radius:999px;background:var(--yellow);padding:9px 14px;font-weight:900;cursor:pointer}.copy:hover{background:#ffe07b}.prompt{margin:0;padding:22px;border:1px solid var(--line);border-radius:16px;background:#f7f3ea;font-size:16px;line-height:1.9;white-space:pre-wrap}.prompt-hint{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:15px}.hint{padding:12px;border-radius:12px;background:var(--green-soft);font-size:12px;color:#164a45}.hint b{display:block;color:var(--green);font-size:13px}
     .check-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.check{background:var(--card);border:1px solid var(--line);border-top:5px solid var(--green);border-radius:18px;padding:22px}.check:nth-child(2){border-top-color:var(--yellow-deep)}.check:nth-child(3){border-top-color:var(--purple)}.check:nth-child(4){border-top-color:var(--coral)}.check .ico{font-size:29px}.check h3{font-size:19px;margin:10px 0 7px}.check p{font-size:14px;color:var(--muted);margin:0}
     .final{padding:96px 0;background:var(--yellow);border-top:2px solid var(--ink);text-align:center}.final h2{font-size:clamp(37px,6vw,68px);max-width:900px;margin:0 auto 20px}.final p{max-width:720px;margin:0 auto 30px;font-size:18px}.final .btn{background:var(--ink);color:#fff}
     footer{padding:38px 0;background:#0b0a09;color:#bdb6aa}.foot{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:13px}.foot a:hover{color:#fff}
-    @media(max-width:980px){.hero-grid,.project-map,.prompt-area{grid-template-columns:1fr}.flow{grid-template-columns:repeat(2,1fr)}.flow:before{display:none}.step:last-child{grid-column:1/-1}.choice-grid{grid-template-columns:1fr}.or{height:40px}.check-grid{grid-template-columns:repeat(2,1fr)}}
-    @media(max-width:700px){.wrap{width:calc(100% - 28px)}.nav{min-height:66px}.brand img{width:52px;height:52px}.brand-copy,.nav-links{display:none}.hero{padding:58px 0 55px}.hero-grid{gap:38px}.hero-grid>*{min-width:0}.hero h1{font-size:clamp(39px,12vw,52px);overflow-wrap:anywhere}.lead{font-size:17px}.time-card{width:100%;max-width:100%;min-width:0;padding:26px 20px;box-shadow:7px 7px 0 var(--yellow)}section{padding:68px 0}.section-head{display:block}.section-head p{margin-top:15px}.flow,.check-grid{grid-template-columns:1fr}.step:last-child{grid-column:auto}.project-card,.map-card,.path,.prompt-box{padding:22px}.choice-grid{gap:15px}.prompt-hint{grid-template-columns:1fr}.orbit{min-height:310px}.o1{left:1%}.o2{right:0}.o4{right:1%}.o5{left:1%}.bar-row{grid-template-columns:76px minmax(0,1fr) 45px;gap:8px}.bar-row>span{font-size:12px;overflow-wrap:anywhere}.bar-val{font-size:14px!important}.bar-track{min-width:0}.time-note{overflow-wrap:anywhere}.final{padding:70px 0}}
+    @media(max-width:980px){.hero-grid,.project-map,.prompt-area,.story-grid{grid-template-columns:1fr}.flow{grid-template-columns:repeat(2,1fr)}.flow:before{display:none}.step:last-child{grid-column:1/-1}.choice-grid{grid-template-columns:1fr}.or{height:40px}.check-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:700px){.result-grid{grid-template-columns:1fr 1fr}.story-card{padding:22px}.result{min-height:126px;padding:15px}.result strong{font-size:32px}.wrap{width:calc(100% - 28px)}.nav{min-height:66px}.brand img{width:52px;height:52px}.brand-copy,.nav-links{display:none}.hero{padding:58px 0 55px}.hero-grid{gap:38px}.hero-grid>*{min-width:0}.hero h1{font-size:clamp(39px,12vw,52px);overflow-wrap:anywhere}.lead{font-size:17px}.time-card{width:100%;max-width:100%;min-width:0;padding:26px 20px;box-shadow:7px 7px 0 var(--yellow)}section{padding:68px 0}.section-head{display:block}.section-head p{margin-top:15px}.flow,.check-grid{grid-template-columns:1fr}.step:last-child{grid-column:auto}.project-card,.map-card,.path,.prompt-box{padding:22px}.choice-grid{gap:15px}.prompt-hint{grid-template-columns:1fr}.orbit{min-height:310px}.o1{left:1%}.o2{right:0}.o4{right:1%}.o5{left:1%}.bar-row{grid-template-columns:106px minmax(0,1fr) 82px;gap:8px}.bar-row>span{font-size:12px;overflow-wrap:anywhere}.bar-val{font-size:14px!important}.bar-track{min-width:0}.time-note{overflow-wrap:anywhere}.final{padding:70px 0}}
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
   </style>
 </head>
@@ -81,7 +82,7 @@
       <nav class="nav-links" aria-label="页面导航">
         <a href="#method">完整流程</a>
         <a href="#choice">两种做法</a>
-        <a href="#prompt" class="nav-cta">复制一句话</a>
+        <a href="#assistant" class="nav-cta">了解 AI 助理</a>
       </nav>
     </div>
   </header>
@@ -92,7 +93,7 @@
         <div>
           <span class="eyebrow"><i></i> AI Agent × Markdown × Claude Code</span>
           <h1>把几个小时的 PPT，变成<mark>一句话</mark></h1>
-          <p class="lead">我先跟 AI Agent 讨论全部内容，再把确认过的资料记录成 <strong>Markdown Project</strong>。完成后，只要一句话，就交给 Claude Code 做成 PPT。</p>
+          <p class="lead">我通过 Telegram 或 WhatsApp，随时跟 <strong>Hermes AI Agent</strong> 讨论想法并整理成 Markdown Project。内容完成后，只要一句话，就交给 Claude Code AI Agent 做成 PPT。</p>
           <div class="hero-actions">
             <a class="btn primary" href="#method">看完整方法 ↓</a>
             <a class="btn yellow" href="#prompt">直接复制 Prompt</a>
@@ -102,10 +103,10 @@
           <h2>同一份专业 PPT</h2>
           <p>传统方式与 Project 工作法的差别</p>
           <div class="bars">
-            <div class="bar-row"><span>传统整理制作</span><div class="bar-track"><div class="bar-fill manual"></div></div><span class="bar-val">4h+</span></div>
-            <div class="bar-row"><span>Claude Code 输出</span><div class="bar-track"><div class="bar-fill ai"></div></div><span class="bar-val">一句话</span></div>
+            <div class="bar-row"><span>传统制作 PPT</span><div class="bar-track"><div class="bar-fill manual"></div></div><span class="bar-val">4小时–2天</span></div>
+            <div class="bar-row"><span>一句话交给 AI Agent</span><div class="bar-track"><div class="bar-fill ai"></div></div><span class="bar-val">约20分钟</span></div>
           </div>
-          <p class="time-note">真正省下来的，不只是排版时间，而是重新找资料、重新解释和重新整理逻辑的时间。</p>
+          <p class="time-note">一句话启动，约 20 分钟完成。省下的不只是排版时间，也省下重新找资料、找照片和整理逻辑的时间。</p>
         </aside>
       </div>
     </section>
@@ -114,14 +115,14 @@
       <div class="wrap">
         <div class="section-head">
           <div><div class="kicker">The Method</div><h2>完整流程，其实只有 5 步</h2></div>
-          <p>AI Agent 负责讨论和整理；Markdown 保存完整 Project；Claude Code 最后把内容做成 PPT。</p>
+          <p>Hermes AI Agent 负责随时讨论和整理；Markdown 保存完整 Project；Claude Code AI Agent 最后把内容做成 PPT。</p>
         </div>
         <div class="flow">
           <article class="step"><div class="step-no">1</div><h3>建立 Project</h3><p>先告诉 AI Agent：这个 Project 的目标、对象、用途和最后要完成什么。</p><span class="mini">SET THE GOAL</span></article>
-          <article class="step"><div class="step-no">2</div><h3>持续讨论</h3><p>把你的想法、案例、数据、照片、做法和所有细节，持续跟 AI Agent 讨论。</p><span class="mini">DISCUSS</span></article>
+          <article class="step"><div class="step-no">2</div><h3>随时和 Hermes 讨论</h3><p>通过 Telegram 或 WhatsApp，想到什么就告诉 Hermes AI Agent，不必坐在电脑前。</p><span class="mini">DISCUSS ANYWHERE</span></article>
           <article class="step"><div class="step-no">3</div><h3>记录成 Markdown</h3><p>让 AI Agent 把确认过的内容整理进 .md 文件，而不是散落在不同聊天里面。</p><span class="mini">MARKDOWN</span></article>
           <article class="step"><div class="step-no">4</div><h3>完成后检查</h3><p>确认资料、逻辑和重点都完整，再决定 PPT 的听众、场景与视觉风格。</p><span class="mini">VERIFY</span></article>
-          <article class="step"><div class="step-no">5</div><h3>交给 Claude Code</h3><p>用一句话让 Claude Code 读取整个 Markdown Project，再制作专业 PPT。</p><span class="mini">CREATE</span></article>
+          <article class="step"><div class="step-no">5</div><h3>交给 Claude Code AI Agent</h3><p>用一句话让它读取整个 Markdown Project，约 20 分钟制作专业 PPT。</p><span class="mini">CREATE</span></article>
         </div>
         <div class="principle">
           <div class="big">01</div>
@@ -157,6 +158,40 @@
               <span class="orbit-item o1">想法</span><span class="orbit-item o2">资料</span><span class="orbit-item o3">数据</span><span class="orbit-item o4">案例</span><span class="orbit-item o5">图片</span><span class="orbit-item o6">决定</span>
             </div>
           </article>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="mobile-story" id="assistant">
+      <div class="wrap">
+        <div class="section-head">
+          <div><div class="kicker">My Real Workflow</div><h2>整个讨论，不是在电脑前完成</h2></div>
+          <p>就像用手机聊天一样，有想法时马上告诉 Hermes AI Agent。它会持续帮我记录、整理和保留每一个决定。</p>
+        </div>
+        <div class="story-grid">
+          <article class="story-card">
+            <h3>点子出现的当下，就马上说出来</h3>
+            <p>我不用特地坐回电脑前才开始工作。只要手机在身边，就可以继续推进同一个 Project。</p>
+            <div class="moment-list">
+              <div class="moment"><b>购物时</b><span>突然想到一个内容或例子，马上通过 Telegram 或 WhatsApp 告诉 AI Agent。</span></div>
+              <div class="moment"><b>陪孩子时</b><span>点子一出现，先用对话记录下来，不让灵感因为忙其他事情而消失。</span></div>
+              <div class="moment"><b>任何地方</b><span>Hermes AI Agent 持续整理讨论；最后再由 Claude Code AI Agent 读取完整 Project。</span></div>
+            </div>
+          </article>
+          <article class="story-card">
+            <h3>这一次 PPT 的真实结果</h3>
+            <div class="result-grid">
+              <div class="result"><strong>52 → 100</strong><span>从最初 52 页，扩充成完整的 100 页 PPT</span></div>
+              <div class="result"><strong>0 次</strong><span>从头到尾没有打开 PowerPoint 修改</span></div>
+              <div class="result"><strong>0 张</strong><span>没有自己上网找照片再放进 PPT</span></div>
+              <div class="result"><strong>100%</strong><span>通过对话，由 AI Agent 完成内容与制作</span></div>
+            </div>
+          </article>
+        </div>
+        <div class="assistant-band">
+          <h3>AI Agent 可以连接 Telegram 和 WhatsApp</h3>
+          <p>无论你在哪里，都可以随时联系自己的 AI Agent，拥有一个 24 小时帮你记录想法、整理资料和推进工作的 AI 助理。</p>
         </div>
       </div>
     </section>
@@ -212,8 +247,8 @@
     <section class="final">
       <div class="wrap">
         <h2>不要从空白 PPT 开始。<br>从一个完整的 Project 开始。</h2>
-        <p>AI Agent 负责把想法整理进 Markdown Project，Claude Code 负责把完整内容变成专业 PPT。</p>
-        <a class="btn" href="#prompt">回去复制 Prompt ↑</a>
+        <p>想了解 AI Agent 怎样连接 Telegram 和 WhatsApp，成为一个 24 小时帮你工作的 AI 助理，可以先到阿理哥主页了解并报名免费 Preview 课。</p>
+        <a class="btn" href="/">前往阿理哥主页 · 报名 Preview →</a>
       </div>
     </section>
   </main>
