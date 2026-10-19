@@ -1,4 +1,5 @@
 import { classAdminTabHtml, classAdminScript } from './classui.js';
+import { invoiceAdminTabHtml, invoiceAdminScript } from './invoiceui.js';
 const css = `
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+SC:wght@700;900&display=swap");
 :root{--ink:#14110F;--ink2:#3B3731;--muted:#6F6A60;--paper:#FBF8EE;--card:#fff;--yellow:#FFC93C;--green:#0F766E;--line:#E7E1D0;--field:#D9D2BF;--red:#B42318;--serif:"Noto Serif SC","Songti SC","Source Han Serif SC",serif;--sans:"Noto Sans SC","PingFang SC","Microsoft YaHei",-apple-system,system-ui,sans-serif}
@@ -185,6 +186,7 @@ export function adminPage() {
       <button class="nav on" id="nav-overview" type="button"><i>▦</i>总览</button>
       <button class="nav" id="btn-class" type="button"><i>✓</i>一天课程报名</button>
       <button class="nav" id="btn-preview" type="button"><i>☰</i>免费 Preview 报名</button>
+      <button class="nav" id="btn-invoices" type="button"><i>▤</i>开单 / 单据</button>
       <div class="sp"></div><button id="logout" class="out" type="button">登出</button></aside>
     <div class="content">
       <section class="view on" id="tab-overview"><div class="page-head"><div><h1>总览</h1><p class="sub">访客、报名与付款一览</p></div></div>
@@ -195,6 +197,7 @@ export function adminPage() {
         <div id="message"></div><div class="table-wrap"><table><thead><tr><th>ID</th><th>顾客</th><th>课程 / 批次</th><th>状态</th><th>报名时间</th><th>操作</th></tr></thead><tbody id="rows"></tbody></table></div>
       </section>
       ${classAdminTabHtml}
+      ${invoiceAdminTabHtml}
     </div>
   `, `
     const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -213,6 +216,7 @@ export function adminPage() {
         +'<div class="table-wrap"><table style="min-width:520px"><thead><tr><th>日期</th><th>首页访客</th><th>点击报名</th><th>报名页访客</th><th>报名</th></tr></thead><tbody>'+days+'</tbody></table></div>'
         +'<p style="margin:14px 0 0"><b>来源（近 14 天）</b>　'+sources+'</p><p style="margin:6px 0 26px"><b>设备（近 14 天）</b>　'+devices+'</p>';}catch(e){}}
     search.onclick=load;logout.onclick=async()=>{await fetch('/api/admin/logout',{method:'POST'});location='/4916'};load();loadTraffic();
+    ${invoiceAdminScript}
     ${classAdminScript}
   `);
 }

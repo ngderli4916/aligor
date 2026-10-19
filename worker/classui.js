@@ -166,8 +166,8 @@ export const classAdminTabHtml = `
 
 export const classAdminScript = `
 const STATUS_LABELS=${jsonForScript(STATUS_LABELS)};
-const TABS={overview:['#tab-overview','#nav-overview'],class:['#tab-class','#btn-class'],preview:['#tab-preview','#btn-preview']};
-function openTab(w){if(!TABS[w])w='overview';for(const k in TABS){const on=k===w;document.querySelector(TABS[k][0]).classList.toggle('on',on);document.querySelector(TABS[k][1]).classList.toggle('on',on)}if(w==='class'||w==='overview')loadClass();try{history.replaceState(null,'','#'+w)}catch(e){}}
+const TABS={overview:['#tab-overview','#nav-overview'],class:['#tab-class','#btn-class'],preview:['#tab-preview','#btn-preview'],invoices:['#tab-invoices','#btn-invoices']};
+function openTab(w){if(!TABS[w])w='overview';for(const k in TABS){const on=k===w;document.querySelector(TABS[k][0]).classList.toggle('on',on);document.querySelector(TABS[k][1]).classList.toggle('on',on)}if(w==='class'||w==='overview')loadClass();if(w==='invoices')loadInvoices();try{history.replaceState(null,'','#'+w)}catch(e){}}
 for(const k in TABS)document.querySelector(TABS[k][1]).onclick=()=>openTab(k);
 async function loadClass(){const p=new URLSearchParams({q:document.querySelector('#cq').value,region:document.querySelector('#cregion').value,package:document.querySelector('#cpkg').value,status:document.querySelector('#cstatus').value});
 const r=await fetch('/api/admin/class?'+p);if(r.status===401){location='/4916';return}const out=await r.json(),s=out.stats;
