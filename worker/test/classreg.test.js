@@ -309,7 +309,7 @@ test('21. promo: no PROMO_ENDS_AT means no countdown and the discount stays', as
 
 test('22. registration page shows the class date and place', async () => {
   const page = await (await call(makeEnv(), 'GET', '/classregister', undefined)).text();
-  assert.ok(page.includes('10 月 18 日') && page.includes('Skudai, Johor') && !page.includes('第二天或第三天'));
+  assert.ok(page.includes('11 月 1 日') && page.includes('Skudai, Johor') && !page.includes('10 月 18 日') && !page.includes('第二天或第三天'));
 });
 
 test('card payment: Shopify button is locked to the order\'s own package, and only when configured', async () => {
