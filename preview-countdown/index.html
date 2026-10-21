@@ -67,10 +67,10 @@ input[type=range]{width:130px;accent-color:var(--amber)}
 <div id="video" hidden><iframe id="yt" title="课程视频" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><button id="back" type="button" aria-label="关闭视频，回到倒计时页">✕ 关闭</button></div>
 <script>
 (function () {
-  // Target: 14 Oct 2026, 8:00 PM Malaysia time (UTC+8). It stays fixed, so after 8:00 it never rolls over to tomorrow.
+  // Target: 21 Oct 2026, 8:00 PM Malaysia time (UTC+8). It stays fixed, so after 8:00 it never rolls over to tomorrow.
   // For another session or a rehearsal, add ?at=2026-10-21T20:00:00%2B08:00 to the address.
   var params = new URLSearchParams(location.search);
-  var DEFAULT_AT = "2026-10-14T20:00:00+08:00", VIDEO_ID = "1QNsdr-Qx_I";
+  var DEFAULT_AT = "2026-10-21T20:00:00+08:00", VIDEO_ID = "1QNsdr-Qx_I";
   var at = params.get("at");
   var target = Date.parse(at && !isNaN(Date.parse(at)) ? at : DEFAULT_AT);
   var videoOn = false, dismissed = false;
