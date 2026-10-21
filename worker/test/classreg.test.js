@@ -280,27 +280,27 @@ test('18. registration page, old /register, admin, health still work; migrations
   assert.equal(lead.status, 201); assert.match((await lead.json()).lead_id, /^AIPR\d{5}$/);
 });
 
-test('19. promo: before the deadline the discount applies and the page shows a real countdown', async () => {
+test('19. countdown: before the deadline the discount applies and the page shows a real countdown', async () => {
   const env = makeEnv({ PROMO_ENDS_AT: new Date(Date.now() + 3600e3).toISOString() });
   const page = await (await call(env, 'GET', '/classregister', undefined)).text();
-  assert.ok(page.includes('id="promo"') && page.includes('限时折扣，只到今天 23:59') && page.includes('<del>RM699</del>'));
+  assert.ok(page.includes('id="promo"') && page.includes('今晚报名倒计时 · 至 12AM') && page.includes('<del>RM699</del>'));
   assert.ok(page.includes('class="deal"') && !page.includes('今天省') && !page.includes('省 RM') && !page.includes('过了今天，要付') && page.includes('平均每人 RM349.5') && page.includes('id="submit2"') && page.includes('锁定今天的折扣价'));
   assert.ok(page.indexOf('class="deal"') > page.indexOf('选择上课方式') && page.indexOf('class="deal"') < page.indexOf('class="packages"'), 'deal sits inside step 2, above the packages');
   const { json } = await register(env, { package: 'pair_2pc', second_name: 'Siti', second_phone: '0123456789' });
   assert.equal(json.amount, 699); assert.equal(row(env).original_amount, 1398); assert.equal(row(env).discount_amount, 699);
 });
 
-test('20. promo: after the deadline the server charges the full price, whatever the browser sends', async () => {
+test('20. countdown: after the deadline it disappears but discounted pricing stays unchanged', async () => {
   const env = makeEnv({ PROMO_ENDS_AT: new Date(Date.now() - 1000).toISOString() });
   const page = await (await call(env, 'GET', '/classregister', undefined)).text();
-  assert.ok(!page.includes('id="promo"') && !page.includes('class="deal"') && page.includes('今天的折扣价已经结束') && !page.includes('<del>') && !page.includes('锁定今天'));
-  const a = await register(env, { amount: 399, final_amount: 399 }); assert.equal(a.json.amount, 699);
-  const b = await register(env, { phone: '0162000001', package: 'pair_1pc', second_name: 'Siti', second_phone: '0123456789' }); assert.equal(b.json.amount, 1098);
-  const r = row(env, 2); assert.deepEqual([r.original_amount, r.discount_amount, r.final_amount], [1098, 0, 1098]);
-  assert.ok((await (await call(env, 'GET', `/payment?t=${tokenOf(a.json)}`, undefined)).text()).includes('RM699'));
+  assert.ok(!page.includes('id="promo"') && !page.includes('class="deal"') && !page.includes('已经结束') && page.includes('<del>RM699</del>'));
+  const a = await register(env, { amount: 699, final_amount: 699 }); assert.equal(a.json.amount, 399);
+  const b = await register(env, { phone: '0162000001', package: 'pair_1pc', second_name: 'Siti', second_phone: '0123456789' }); assert.equal(b.json.amount, 499);
+  const r = row(env, 2); assert.deepEqual([r.original_amount, r.discount_amount, r.final_amount], [1098, 599, 499]);
+  assert.ok((await (await call(env, 'GET', `/payment?t=${tokenOf(a.json)}`, undefined)).text()).includes('RM399'));
 });
 
-test('21. promo: no PROMO_ENDS_AT means no countdown and the discount stays', async () => {
+test('21. countdown: no PROMO_ENDS_AT means no countdown and the discount stays', async () => {
   const env = makeEnv();
   const page = await (await call(env, 'GET', '/classregister', undefined)).text();
   assert.ok(!page.includes('id="promo"') && !page.includes('已经结束'));

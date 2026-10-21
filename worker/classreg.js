@@ -3,14 +3,14 @@ import { redactSecrets } from './notify.js';
 
 export const REGIONS = ['JOHOR', 'SELANGOR', 'PENANG'];
 // Server-side source of truth. Amounts are whole RM integers; the browser never supplies them.
-// original/discount/final are the promo prices. After PROMO_ENDS_AT the server charges `original` (see priceFor).
+// original/discount/final are the advertised prices. PROMO_ENDS_AT controls only the on-page urgency countdown; pricing stays unchanged after it ends.
 export const PACKAGES = {
   solo_1pc: { title: '一个人 · 一台电脑', participants: 1, computers: 1, original: 699, discount: 300, final: 399 },
   pair_1pc: { title: '两个人 · 共用一台电脑', participants: 2, computers: 1, original: 1098, discount: 599, final: 499 },
   pair_2pc: { title: '两个人 · 各带一台电脑', participants: 2, computers: 2, original: 1398, discount: 699, final: 699 },
 };
 
-// PROMO_ENDS_AT (ISO time, set in wrangler.jsonc). Unset = the discount never expires and no countdown is shown.
+// PROMO_ENDS_AT (ISO time, set in wrangler.jsonc). It controls only the countdown display, never the amount charged.
 export function promoState(env, now = Date.now()) {
   const raw = String(env?.PROMO_ENDS_AT || '').trim();
   const endsAt = raw ? Date.parse(raw) : NaN;
@@ -18,8 +18,8 @@ export function promoState(env, now = Date.now()) {
   return { enabled: true, active: now < endsAt, endsAt, now };
 }
 export function priceFor(env, code, now = Date.now()) {
-  const p = PACKAGES[code], promo = promoState(env, now);
-  return promo.active ? { original: p.original, discount: p.discount, final: p.final } : { original: p.original, discount: 0, final: p.original };
+  const p = PACKAGES[code];
+  return { original: p.original, discount: p.discount, final: p.final };
 }
 export function currentPackages(env, now = Date.now()) {
   return Object.fromEntries(Object.entries(PACKAGES).map(([code, p]) => [code, { ...p, ...priceFor(env, code, now) }]));

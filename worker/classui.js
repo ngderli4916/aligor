@@ -97,13 +97,13 @@ $('#rOrder').textContent=out.order_id;$('#rAmount').textContent='RM'+out.amount;
 
 function dealBox(promo, prices) {
   if (!promo?.enabled || !promo.active) return '';
-  return `<div class="deal"><span class="tagline">限时折扣　·　只有今天</span><div class="deal-cd"><span>折扣倒数</span><b class="cd">--:--:--</b></div><p>今天 23:59（马来西亚时间）一过，<b>价格马上恢复原价。</b></p></div>`;
+  return `<div class="deal"><span class="tagline">今晚报名　·　倒数中</span><div class="deal-cd"><span>今晚报名倒计时</span><b class="cd">--:--:--</b></div><p>今晚 12AM 前完成报名，<b>优先保留上课名额。</b></p></div>`;
 }
 
 function promoBar(promo) {
   if (!promo?.enabled) return '';
-  if (!promo.active) return '<div class="promo ended">今天的折扣价已经结束，现在是原价。</div>';
-  return `<div class="promo" id="promo" data-end="${promo.endsAt}" data-now="${promo.now}"><span>限时折扣，只到今天 23:59（马来西亚时间）</span><b class="cd">--:--:--</b></div>`;
+  if (!promo.active) return '';
+  return `<div class="promo" id="promo" data-end="${promo.endsAt}" data-now="${promo.now}"><span>今晚报名倒计时 · 至 12AM（马来西亚时间）</span><b class="cd">--:--:--</b></div>`;
 }
 
 export function invalidPaymentPage() {
