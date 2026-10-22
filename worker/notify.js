@@ -62,7 +62,7 @@ export function buildLeadNotification(lead, env, { resubmitted = false } = {}) {
 
 export function redactSecrets(text, env) {
   let out = String(text ?? '');
-  for (const secret of [env?.TELEGRAM_BOT_TOKEN, env?.TELEGRAM_WEBHOOK_SECRET, env?.ADMIN_PASSWORD, env?.SESSION_SECRET]) {
+  for (const secret of [env?.TELEGRAM_BOT_TOKEN, env?.TELEGRAM_WEBHOOK_SECRET, env?.ADMIN_PASSWORD, env?.SESSION_SECRET, env?.META_CAPI_TOKEN]) {
     if (secret) out = out.split(String(secret)).join('[redacted]');
   }
   return out;

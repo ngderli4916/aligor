@@ -1,5 +1,6 @@
 import { classAdminTabHtml, classAdminScript } from './classui.js';
 import { invoiceAdminTabHtml, invoiceAdminScript } from './invoiceui.js';
+import { pixelHead } from './meta.js';
 const css = `
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+SC:wght@700;900&display=swap");
 :root{--ink:#14110F;--ink2:#3B3731;--muted:#6F6A60;--paper:#FBF8EE;--card:#fff;--yellow:#FFC93C;--green:#0F766E;--line:#E7E1D0;--field:#D9D2BF;--red:#B42318;--serif:"Noto Serif SC","Songti SC","Source Han Serif SC",serif;--sans:"Noto Sans SC","PingFang SC","Microsoft YaHei",-apple-system,system-ui,sans-serif}
@@ -64,8 +65,8 @@ td small{color:var(--muted)}
 @media(max-width:700px){main{width:calc(100% - 28px)}.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.top{align-items:flex-start;flex-direction:column}.tools>*{width:100%!important}.card{padding:20px;border-radius:20px}.hero{margin-top:32px}}
 `;
 
-function shell(title, body, script = '') {
-  return `<!doctype html><html lang="zh-Hans"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title><style>${css}</style></head><body><main>${body}</main>${script ? `<script>${script}</script>` : ''}</body></html>`;
+function shell(title, body, script = '', head = '') {
+  return `<!doctype html><html lang="zh-Hans"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title><style>${css}</style>${head}</head><body><main>${body}</main>${script ? `<script>${script}</script>` : ''}</body></html>`;
 }
 
 
@@ -127,7 +128,7 @@ function adminShell(title, body, script = '') {
 
 const jsonForScript = value => JSON.stringify(value).replace(/</g, '\\u003c');
 
-export function registerPage(defaultBatch = '', stats = null) {
+export function registerPage(defaultBatch = '', stats = null, pixelId = '') {
   const total = Number(stats?.total) || 0;
   const proof = total > 0 ? `<p class="proof"><span class="dot"></span>已有 <b>${total}</b> 人报名免费 AI Preview</p>` : '';
   return shell('Aligor Preview 报名', `
@@ -172,8 +173,8 @@ export function registerPage(defaultBatch = '', stats = null) {
     const counts=${jsonForScript(stats?.byBatch||{})},hint=document.querySelector('#sessionCount');
     function syncBatch(){const b=sel.selectedOptions[0].dataset.batch;if(!qb)bt.value=b;const n=Number(counts[b])||0;hint.textContent=n>0?'这一场已有 '+n+' 人报名':''}
     sel.addEventListener('change',syncBatch);syncBatch();
-    form.addEventListener('submit',async e=>{e.preventDefault();msg.textContent='提交中…';const button=form.querySelector('button');button.disabled=true;try{const fd=new FormData(form),data=Object.fromEntries(fd);data.ai_tools=fd.getAll('ai_tools');data.consent=form.consent.checked;const r=await fetch('/api/leads',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(data)});const out=await r.json();if(!r.ok)throw new Error(out.error||'提交失败');form.classList.add('hidden');document.querySelector('#success').classList.remove('hidden');document.querySelector('#wa').href=out.whatsapp_url;document.querySelector('#successNote').textContent='你报名的是：'+data.course+'。我会通过 WhatsApp 联络你，也可以现在直接 WhatsApp 我，获得更快回复。';}catch(err){msg.textContent=err.message;msg.className='full error';button.disabled=false;}});
-  `);
+    form.addEventListener('submit',async e=>{e.preventDefault();msg.textContent='提交中…';const button=form.querySelector('button');button.disabled=true;try{const fd=new FormData(form),data=Object.fromEntries(fd);data.ai_tools=fd.getAll('ai_tools');data.consent=form.consent.checked;const qs=new URLSearchParams(location.search);['utm_source','utm_medium','utm_campaign','utm_content','fbclid'].forEach(k=>{if(qs.get(k))data[k]=qs.get(k)});data.page_url=location.href;const r=await fetch('/api/leads',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(data)});const out=await r.json();if(!r.ok)throw new Error(out.error||'提交失败');if(window.fbq)fbq('track','Lead',{content_name:data.course},{eventID:out.lead_id});form.classList.add('hidden');document.querySelector('#success').classList.remove('hidden');document.querySelector('#wa').href=out.whatsapp_url;document.querySelector('#successNote').textContent='你报名的是：'+data.course+'。我会通过 WhatsApp 联络你，也可以现在直接 WhatsApp 我，获得更快回复。';}catch(err){msg.textContent=err.message;msg.className='full error';button.disabled=false;}});
+  `, pixelHead(pixelId));
 }
 
 export function loginPage(error = '') {

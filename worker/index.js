@@ -7,9 +7,10 @@ import { classRegisterPage, paymentPage, invalidPaymentPage } from './classui.js
 import { surveyPage, invalidSurveyPage, findSurveyInvite, saveSurvey } from './survey.js';
 import { InvoiceError, createInvoice, updateInvoice, invoiceAction, deleteInvoice, listInvoices, getInvoice, findPublicInvoice, invoiceCsv } from './invoice.js';
 import { invoicePage, invalidInvoicePage } from './invoiceui.js';
+import { META_CSP_SCRIPT, META_CSP_CONNECT, META_CSP_IMG, adSource, sendLeadToMeta } from './meta.js';
 
 const json = (data, status=200, headers={}) => new Response(JSON.stringify(data), {status, headers:{'content-type':'application/json; charset=utf-8',...headers}});
-const html = (body,extra={},csp="default-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; form-action 'self'; frame-ancestors 'none'") => new Response(body,{headers:{...extra,'content-type':'text/html; charset=utf-8','content-security-policy':csp,'x-frame-options':'DENY','referrer-policy':'same-origin'}});
+const html = (body,extra={},csp=`default-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'unsafe-inline' ${META_CSP_SCRIPT}; connect-src 'self' ${META_CSP_CONNECT}; img-src 'self' data: ${META_CSP_IMG}; form-action 'self'; frame-ancestors 'none'`) => new Response(body,{headers:{...extra,'content-type':'text/html; charset=utf-8','content-security-policy':csp,'x-frame-options':'DENY','referrer-policy':'same-origin'}});
 const now = () => new Date().toISOString();
 
 export default { async fetch(request, env, ctx) {
@@ -24,7 +25,7 @@ async function route(request, env, ctx) {
   if (request.method==='GET' && path==='/register') {
     const tracking=isAdmin(request,env).then(skip=>recordView(env,request,{path:'/register',ref:request.headers.get('referer'),source:'server',skip})).catch(error=>console.error('track_failed',redactSecrets(error?.message,env)));
     if(ctx&&typeof ctx.waitUntil==='function')ctx.waitUntil(tracking); else await tracking;
-    return html(registerPage(cleanText(url.searchParams.get('batch'),50),await registrationStats(env)));
+    return html(registerPage(cleanText(url.searchParams.get('batch'),50),await registrationStats(env),env.META_PIXEL_ID));
   }
   if (request.method==='GET' && path==='/classregister') return html(classRegisterPage(currentPackages(env),promoState(env)),{'cache-control':'no-store'});
   if (request.method==='GET' && path==='/survey') {
@@ -125,16 +126,18 @@ async function createLead(request,env,ctx) {
   if (!(data.consent===true || data.consent==='true' || data.consent==='on')) return json({error:'请确认 WhatsApp 联络同意'},400);
   const timestamp=now(), publicId=crypto.randomUUID().slice(0,8).toUpperCase();
   const tools=Array.isArray(data.ai_tools)?data.ai_tools:[data.ai_tools].filter(Boolean);
-  const values={company:cleanText(data.company,100),industry:cleanText(data.industry,80),usedAiAgent:cleanText(data.used_ai_agent,40),aiTools:tools.map(x=>cleanText(x,50)).filter(Boolean).slice(0,12).join(', '),aiToolsOther:cleanText(data.ai_tools_other,100),goal:cleanText(data.goal,800),source:cleanText(data.source||'aligor',80)};
+  const values={company:cleanText(data.company,100),industry:cleanText(data.industry,80),usedAiAgent:cleanText(data.used_ai_agent,40),aiTools:tools.map(x=>cleanText(x,50)).filter(Boolean).slice(0,12).join(', '),aiToolsOther:cleanText(data.ai_tools_other,100),goal:cleanText(data.goal,800),source:cleanText(adSource(data)||data.source||'aligor',80)};
   if(!values.usedAiAgent) return json({error:'请选择是否使用过 AI Agent'},400);
   const existing=await env.DB.prepare('SELECT id FROM leads WHERE phone_e164=? AND batch=?').bind(phone,batch).first();
   await env.DB.prepare(`INSERT INTO leads(public_id,name,phone_e164,batch,course,company,industry,used_ai_agent,ai_tools,ai_tools_other,goal,source,status,consent_whatsapp,consent_at,created_at,updated_at)
-    VALUES(?,?,?,?,?,?,?,?,?,?,?,?,'new',1,?,?,?) ON CONFLICT(phone_e164,batch) DO UPDATE SET name=excluded.name,course=excluded.course,company=excluded.company,industry=excluded.industry,used_ai_agent=excluded.used_ai_agent,ai_tools=excluded.ai_tools,ai_tools_other=excluded.ai_tools_other,goal=excluded.goal,source=excluded.source,consent_whatsapp=1,consent_at=excluded.consent_at,updated_at=excluded.updated_at`)
+    VALUES(?,?,?,?,?,?,?,?,?,?,?,?,'new',1,?,?,?) ON CONFLICT(phone_e164,batch) DO UPDATE SET name=excluded.name,course=excluded.course,company=excluded.company,industry=excluded.industry,used_ai_agent=excluded.used_ai_agent,ai_tools=excluded.ai_tools,ai_tools_other=excluded.ai_tools_other,goal=excluded.goal,source=CASE WHEN excluded.source='aligor' THEN leads.source ELSE excluded.source END,consent_whatsapp=1,consent_at=excluded.consent_at,updated_at=excluded.updated_at`)
     .bind(publicId,name,phone,batch,course,values.company,values.industry,values.usedAiAgent,values.aiTools,values.aiToolsOther,values.goal,values.source,timestamp,timestamp,timestamp).run();
   const lead=await env.DB.prepare('SELECT * FROM leads WHERE phone_e164=? AND batch=?').bind(phone,batch).first();
   await addEvent(env,lead.id,existing?'resubmitted':'submitted','customer',`source=${values.source}`);
   const notification=notifyNewLead(env,lead,{resubmitted:Boolean(existing)});
   if(ctx&&typeof ctx.waitUntil==='function')ctx.waitUntil(notification); else await notification;
+  const meta=sendLeadToMeta(env,request,lead,{eventId:leadCode(lead.id),fbclid:cleanText(data.fbclid,500),eventSourceUrl:cleanText(data.page_url,500)}).catch(error=>console.error('meta_capi_failed',redactSecrets(error?.message,env)));
+  if(ctx&&typeof ctx.waitUntil==='function')ctx.waitUntil(meta); else await meta;
   return json({ok:true,lead_id:leadCode(lead.id),whatsapp_url:waUrl(env.WHATSAPP_NUMBER||'60167871902',`你好 Adrian，我是 ${name}。我刚报名了 ${course}，报名编号 ${leadCode(lead.id)}。`)},201);
 }
 
