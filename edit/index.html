@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI 剪辑全流程 · 阿理哥 Adrian</title>
+<meta name="description" content="我用 AI Agent 剪 Instagram 短视频的完整做法：工具、步骤、Prompt，复制就能用。" />
+<link rel="icon" type="image/png" href="/assets/favicon.png" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="阿理哥 Aligor" />
+<meta property="og:url" content="https://aligor.aligor.workers.dev/edit/" />
+<meta property="og:title" content="AI 剪辑全流程 · 阿理哥 Adrian" />
+<meta property="og:description" content="我用 AI Agent 剪 Instagram 短视频的完整做法：工具、步骤、Prompt，复制就能用。" />
+<meta property="og:image" content="https://aligor.aligor.workers.dev/assets/og-edit.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<style>
+  :root {
+    --bg: #fff8f1; --card: #ffffff; --ink: #2b1d1a; --muted: #7d6b63; --line: #f0e2d6;
+    --coral: #ff6b4a; --peach: #ffb48a; --rose: #dd2a7b; --plum: #8134af; --sage: #3f9c6d;
+    --code: #1f1714; --codeink: #ffe9dc;
+    --ig: linear-gradient(120deg, #f58529, #dd2a7b 55%, #8134af);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", sans-serif; line-height: 1.7; font-size: 17px; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 0 16px 80px; }
+  header { padding: 48px 0 28px; }
+  .pill { display: inline-block; background: var(--ig); color: #fff; font-weight: 700; font-size: 13px; letter-spacing: .12em; padding: 6px 14px; border-radius: 999px; }
+  h1 { font-size: clamp(32px, 8vw, 48px); line-height: 1.15; margin: 16px 0 12px; letter-spacing: -.01em; }
+  h1 .g { background: var(--ig); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lead { color: var(--muted); font-size: 18px; }
+  .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 26px 0 8px; }
+  .stat { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 14px 16px; }
+  .stat b { display: block; font-size: 26px; line-height: 1.2; }
+  .stat span { color: var(--muted); font-size: 14px; }
+  .stat.big { grid-column: span 2; }
+  .stat.big b { font-size: 40px; background: var(--ig); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .note { font-size: 13px; color: var(--muted); }
+  nav.toc { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 18px 20px; margin: 24px 0; }
+  nav.toc b { display: block; margin-bottom: 6px; }
+  nav.toc a { display: block; color: var(--ink); text-decoration: none; padding: 4px 0; }
+  nav.toc a span { color: var(--coral); font-weight: 700; margin-right: 8px; }
+  section { margin-top: 40px; }
+  h2 { font-size: 26px; line-height: 1.3; display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  h2 .n { flex: none; width: 40px; height: 40px; border-radius: 12px; background: var(--coral); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 18px; }
+  h3 { font-size: 19px; margin: 18px 0 6px; }
+  p { margin: 8px 0; }
+  ul.check { list-style: none; margin: 10px 0; }
+  ul.check li { position: relative; padding-left: 30px; margin: 8px 0; }
+  ul.check li::before { content: "✓"; position: absolute; left: 0; top: 0; width: 22px; height: 22px; border-radius: 50%; background: var(--sage); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 3px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 18px 20px; margin: 14px 0; }
+  .tool { display: flex; gap: 14px; align-items: flex-start; }
+  .tool .ic { flex: none; width: 44px; height: 44px; border-radius: 14px; background: #fff; border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .tool .ic svg { width: 26px; height: 26px; display: block; }
+  .tool .ic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .tool b { display: block; }
+  .tool small { color: var(--muted); font-size: 14px; display: block; }
+  .tip { background: #fff1e8; border-left: 5px solid var(--coral); border-radius: 12px; padding: 12px 16px; margin: 14px 0; font-size: 15px; }
+  .warn { background: #fdecef; border-left-color: var(--rose); }
+  pre { background: var(--code); color: var(--codeink); border-radius: 16px; padding: 16px 18px; overflow-x: auto; font-size: 14px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  .prompt { position: relative; }
+  .prompt .lbl { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .1em; color: #fff; background: var(--plum); padding: 3px 10px; border-radius: 8px; margin-bottom: 8px; }
+  button.copy { position: absolute; right: 10px; top: 36px; border: 0; background: var(--coral); color: #fff; font-weight: 700; font-size: 13px; padding: 6px 12px; border-radius: 10px; cursor: pointer; }
+  code { background: #f6e8dd; padding: 1px 6px; border-radius: 6px; font-size: 14px; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; word-break: break-all; }
+  ol.steps { margin: 10px 0 10px 22px; }
+  ol.steps li { margin: 8px 0; }
+  .cta { margin-top: 48px; background: var(--ig); color: #fff; border-radius: 24px; padding: 26px 22px; text-align: center; }
+  .cta h2 { justify-content: center; color: #fff; }
+  .cta a { display: inline-block; margin-top: 12px; background: #fff; color: var(--rose); font-weight: 800; text-decoration: none; padding: 12px 22px; border-radius: 999px; }
+  footer { margin-top: 30px; text-align: center; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <span class="pill">AI AGENT · 剪辑全流程</span>
+  <h1>我一刀都没剪，<br>这条视频 <span class="g">6 万多播放</span></h1>
+  <p class="lead">这是我用 AI Agent 剪 Instagram 短视频的完整做法：用什么工具、一步一步怎么做、我在用的 Prompt。照着做，你也可以让 AI 帮你剪。</p>
+  <div class="stats">
+    <div class="stat big"><b>61,887</b><span>次播放（@ukunili「RM50 吉他带回家」Reel 后台数据）</span></div>
+    <div class="stat"><b>1,730</b><span>次分享</span></div>
+    <div class="stat"><b>1,361</b><span>个赞</span></div>
+    <div class="stat"><b>218</b><span>次收藏</span></div>
+    <div class="stat"><b>+139</b><span>个新粉丝</span></div>
+  </div>
+  <p class="note">人工剪一条这样的视频，可能要花一整天；交给 AI，大概 20 分钟。</p>
+</header>
+
+<nav class="toc">
+  <b>目录</b>
+  <a href="#tools"><span>01</span>需要准备的工具</a>
+  <a href="#setup"><span>02</span>第一次设置（只做一次）</a>
+  <a href="#shoot"><span>03</span>录视频的小技巧</a>
+  <a href="#prompt"><span>04</span>丢给 AI：我的 Prompt</a>
+  <a href="#review"><span>05</span>检查、修改、导出</a>
+  <a href="#cover"><span>06</span>封面和文案</a>
+  <a href="#faq"><span>07</span>常见问题</a>
+</nav>
+
+<section id="tools">
+  <h2><span class="n">01</span>需要准备的工具</h2>
+  <div class="card tool"><div class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#D97757" d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z"/></svg></div><div><b>Claude Code</b><small>负责“剪辑”的 AI Agent。我用的是 Claude 桌面版里的 Code。它会读你的视频、写剪辑方案、做动画、导出成品。</small></div></div>
+  <div class="card tool"><div class="ic"><svg viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M10.1851 57.8021L33.1145 73.8313C36.2202 75.9978 41.5173 73.5433 42.4816 69.4984L51.7611 30.4271C52.7253 26.3822 48.5802 23.9277 44.4602 26.0942L13.917 42.1235C6.96677 45.7676 4.97564 54.1579 10.1851 57.8021Z" fill="url(#paint0_linear_2204_3074)"/><path d="M87.5129 57.5141L56.9696 73.5433C52.8371 75.7098 48.7046 73.2553 49.6688 69.2104L58.9483 30.1391C59.9125 26.0942 65.2097 23.6397 68.3154 25.8062L91.2447 41.8354C96.4668 45.4796 94.4631 53.8699 87.5129 57.5141Z" fill="url(#paint1_linear_2204_3074)"/><defs><linearGradient id="paint0_linear_2204_3074" x1="48.5676" y1="25" x2="44.7804" y2="71.9384" gradientUnits="userSpaceOnUse"><stop stop-color="#06E3FA"/><stop offset="1" stop-color="#4FDB5E"/></linearGradient><linearGradient id="paint1_linear_2204_3074" x1="54.8282" y1="73.8392" x2="72.0989" y2="32.8932" gradientUnits="userSpaceOnUse"><stop stop-color="#06E3FA"/><stop offset="1" stop-color="#4FDB5E"/></linearGradient></defs></svg></div><div><b>HyperFrames（Skill）</b><small>给 AI 用的视频制作工具。字幕、动画、Logo、封面，都是它做出来的。</small></div></div>
+  <div class="card tool"><div class="ic"><img src="data:image/png;base64,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" alt="" width="44" height="44"></div><div><b>video-use（Skill）</b><small>帮 AI 处理“剪片”的工具：转写语音、剪掉卡顿和停顿。</small></div></div>
+  <div class="card tool"><div class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#000000" d="M4.6035 0v24h4.9317V0zm9.8613 0v24h4.9317V0z"/></svg></div><div><b>ElevenLabs API Key</b><small>用来把你讲的话转成文字（逐字时间轴）。字幕准、卡顿也剪得准，中英夹杂也听得懂。</small></div></div>
+  <div class="card tool"><div class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#000000" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg></div><div><b>一台电脑（我用 Mac）</b><small>视频在你自己的电脑上做，素材不用上传到别人的平台。</small></div></div>
+</section>
+
+<section id="setup">
+  <h2><span class="n">02</span>第一次设置（只做一次）</h2>
+  <ol class="steps">
+    <li>安装 Claude Code（Claude 桌面版或终端版都可以），登录你的账号。</li>
+    <li>在 Claude Code 里直接跟它说：<code>帮我安装 HyperFrames 和 video-use 这两个 skill</code>。它会自己处理安装。</li>
+    <li>去 <b>elevenlabs.io → API Keys</b> 建一个 key（<code>sk_</code> 开头）。</li>
+    <li>把 key 设成电脑的环境变量，名字一定要是 <code>ELEVENLABS_API_KEY</code>：</li>
+  </ol>
+<pre># Mac 用 zsh 的话写进 ~/.zshrc；用 bash 的话写进 ~/.bash_profile
+export ELEVENLABS_API_KEY="sk_你的key"</pre>
+  <div class="tip warn"><b>注意：</b>变量名字少一个下划线，AI 就读不到 key（我自己就踩过这个坑）。key 不要贴到群组或公开的地方。</div>
+</section>
+
+<section id="shoot">
+  <h2><span class="n">03</span>录视频的小技巧</h2>
+  <ul class="check">
+    <li>竖屏 9:16 录，脸放在画面中间偏上，头顶留一点空间给动画。</li>
+    <li>光线对着脸，收音尽量靠近嘴巴。剪辑救不回拍得不好的画面。</li>
+    <li>讲错没关系，停一下重讲。卡顿、重复，AI 会帮你剪掉。</li>
+    <li>有“证据”就一起录：后台数据截图、手机录屏、聊天记录，比什么动画都有说服力。</li>
+  </ul>
+  <div class="tip"><b>iPhone 用户必看：</b>iPhone 默认用 HDR 录影。剪出来如果颜色变淡、灰灰的，就是 HDR 没转好。跟 AI 说一句：<code>这是 iPhone HDR 视频，先用 avconvert 转成 SDR 再剪，颜色要跟原片一样</code>。</div>
+</section>
+
+<section id="prompt">
+  <h2><span class="n">04</span>丢给 AI：我的 Prompt</h2>
+  <p>把视频（和录屏、截图）的路径丢给 Claude Code，然后贴下面这段。<b>[ ]</b> 里的内容换成你的。</p>
+
+  <div class="card prompt"><span class="lbl">PROMPT ① 剪辑 + 动画</span><button class="copy" data-for="p1">复制</button>
+<pre id="p1">帮我用 HyperFrames 剪辑这个视频，我要发在 Instagram。
+
+视频：[视频文件路径]
+其他素材：[录屏 / 截图路径，没有就删掉这行]
+
+要求：
+1. 开头一定要有 Hook，前 3 秒让人不想划走。可以用视频里最有冲击力的一句话或数据放在最前面。
+2. 我讲话卡顿、停顿、重复的地方全部剪掉，内容要顺。剪接点用推近镜头盖过去。
+3. 转写用 ElevenLabs（ELEVENLABS_API_KEY），字幕要准确，关键词标色。
+4. 讲到品牌、工具的时候，放出正确的官方 logo。
+5. 讲到流程、数据、对比的地方都要做动画，整条视频动画不要停。
+6. 所有动画和字都不能挡到我的脸，动画放在头顶的空白处。
+7. 颜色要跟原片一样，不要加滤镜或暗角。iPhone HDR 视频先转成 SDR。
+8. 结尾做清楚的引导：[例如：留言 edit / 去主页报名]。
+9. 渲染前先截图给我看，检查没问题再导出 1080×1920 的成片。</pre></div>
+
+  <div class="card prompt"><span class="lbl">PROMPT ② 封面</span><button class="copy" data-for="p2">复制</button>
+<pre id="p2">用 HyperFrames 帮这条视频做一张 1080×1920 的封面（单独的图片，不要放进视频）。
+把我从视频里最有表情的一帧抠出来，标题写：[你的标题]
+要很吸引人点进来，重要的字放在中间 3:4 的范围里，不要挡到我的脸。
+每次的设计风格都要不一样。</pre></div>
+
+  <div class="card prompt"><span class="lbl">PROMPT ③ 文案</span><button class="copy" data-for="p3">复制</button>
+<pre id="p3">帮我写这条视频的 Instagram 文案，要会让人看完、会想留言的那种。
+第一行就是 Hook，数字只用真实数据，最后引导大家：[留言 edit / 去主页报名]。
+最后加 5 个 hashtag。</pre></div>
+</section>
+
+<section id="review">
+  <h2><span class="n">05</span>检查、修改、导出</h2>
+  <ol class="steps">
+    <li>AI 会先给你几张截图，看看动画有没有挡到脸、字幕有没有错字。</li>
+    <li>想改就直接讲秒数和要怎么改，例如：<code>36 秒那里换成我的 Instagram 主页截图，加点击报名的动画</code>。</li>
+    <li>不在电脑前面也可以：叫它<code>压缩一个 720p 给我手机看</code>。</li>
+    <li>满意了，用 1080×1920 的原画质版上传，不要用压缩版。</li>
+  </ol>
+  <p>颜色不对的话（变淡、发灰或偏色），把这段贴给 AI：</p>
+  <div class="card prompt"><span class="lbl">PROMPT ④ 颜色调对</span><button class="copy" data-for="p4">复制</button>
+<pre id="p4">这条视频剪出来颜色不对（变淡、发灰或偏色），帮我调回跟原片一样。
+
+原片：[原始视频文件路径]
+成片：[剪好的视频文件路径]
+
+要求：
+1. 先检查原片是不是 iPhone HDR，是的话先用 avconvert 转成 SDR，再重新剪。
+2. 成片的颜色、亮度、饱和度都要跟原片一样，不要加滤镜或暗角。
+3. 从原片和成片各截同一秒的画面，左右并排给我看，确认颜色一样了再导出 1080×1920。</pre></div>
+</section>
+
+<section id="cover">
+  <h2><span class="n">06</span>封面和文案</h2>
+  <ul class="check">
+    <li>封面标题用“结果”说话：例如“冲到 6 万播放 · 我一刀都没剪”。</li>
+    <li>文案第一行就是 Hook，中间放真实数据，结尾只给一个清楚的动作（留言或报名）。</li>
+    <li>叫人留言关键字的话，记得设好自动回复或亲自私讯，不然留言的人会失望。</li>
+  </ul>
+</section>
+
+<section id="faq">
+  <h2><span class="n">07</span>常见问题</h2>
+  <h3>Q：我不会写代码，可以用吗？</h3>
+  <p>可以。我也没有自己写代码，全部是用讲的，代码都是 AI 写的。</p>
+  <h3>Q：剪出来颜色变淡？</h3>
+  <p>九成是 iPhone HDR 的问题，看第 03 步的提醒。</p>
+  <h3>Q：字幕错字很多？</h3>
+  <p>确认 <code>ELEVENLABS_API_KEY</code> 有设好。没有 key 时，AI 会改用本地的 Whisper，免费但错字比较多。</p>
+  <h3>Q：要另外装 Remotion 吗？</h3>
+  <p>做 Instagram 短视频不用。HyperFrames 已经可以做数字跳动、图表、动画。</p>
+</section>
+
+<div class="cta">
+  <h2>想知道 AI Agent 还能帮你做什么？</h2>
+  <p>剪视频只是其中一件事。回客户、做 Excel、写文案、做网站……我开了一堂 1 小时的免费 Preview 课，现场分享给你看。</p>
+  <a href="/register?utm_source=instagram&amp;utm_medium=dm&amp;utm_campaign=ai-edit">报名 1 小时免费 Preview →</a>
+</div>
+
+<footer>© 阿理哥 Adrian · @aligor4916</footer>
+</div>
+
+<script>
+  document.querySelectorAll("button.copy").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var t = document.getElementById(b.dataset.for).innerText;
+      try { navigator.clipboard.writeText(t).then(function () { b.textContent = "已复制 ✓"; setTimeout(function () { b.textContent = "复制"; }, 1600); }, function () { b.textContent = "请长按复制"; }); }
+      catch (e) { b.textContent = "请长按复制"; }
+    });
+  });
+</script>
+</body>
+</html>
