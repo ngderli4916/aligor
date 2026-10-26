@@ -71,6 +71,98 @@
   .cta h2 { justify-content: center; color: #fff; }
   .cta a { display: inline-block; margin-top: 12px; background: #fff; color: var(--rose); font-weight: 800; text-decoration: none; padding: 12px 22px; border-radius: 999px; }
   footer { margin-top: 30px; text-align: center; color: var(--muted); font-size: 13px; }
+
+  /* ---- motion demo ---- */
+  .demo { margin: 26px 0 10px; background: var(--code); color: var(--codeink); border-radius: 22px; overflow: hidden; box-shadow: 0 18px 40px -22px rgba(43,29,26,.55); }
+  .demo-bar { display: flex; align-items: center; gap: 7px; padding: 11px 14px; background: #2a201c; }
+  .demo-bar i { width: 10px; height: 10px; border-radius: 50%; background: #4a3a33; }
+  .demo-app { margin-left: 8px; display: inline-flex; align-items: center; gap: 7px; font-size: 13px; color: #f3d9cb; font-weight: 600; }
+  .demo-app svg { width: 16px; height: 16px; }
+  .demo-body { padding: 16px; display: grid; gap: 12px; min-height: 278px; align-content: start; }
+  .drop { position: relative; height: 64px; border: 1.5px dashed #6a544b; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
+  .drop-hint { font-size: 13px; color: #a8928a; transition: opacity .3s; }
+  .file { position: absolute; left: 10px; right: 10px; top: 9px; height: 44px; display: flex; align-items: center; gap: 10px; padding: 0 12px; border-radius: 11px; background: #3a2b25; border: 1px solid #5c463d; transition: transform .9s cubic-bezier(.2,.75,.25,1), opacity .5s; }
+  .file-thumb { flex: none; width: 30px; height: 30px; border-radius: 8px; background: var(--ig); color: #fff; display: grid; place-items: center; }
+  .file-thumb svg { width: 16px; height: 16px; }
+  .file-name { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 14px; color: #fff; }
+  .file-size { margin-left: auto; font-size: 12px; color: #a8928a; }
+  .pointer { position: absolute; width: 22px; height: 22px; right: 22px; top: 30px; transition: transform .9s cubic-bezier(.2,.75,.25,1), opacity .4s; }
+  .ask { display: flex; align-items: flex-end; gap: 8px; min-height: 46px; padding: 10px 12px; border-radius: 12px; background: #2a201c; border: 1px solid #4a3a33; font-size: 15px; transition: border-color .3s; }
+  .caret { color: var(--peach); font-weight: 700; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  .txt { flex: 1; display: grid; }
+  .txt::after { content: attr(data-text); visibility: hidden; grid-area: 1 / 1; }
+  .typed { grid-area: 1 / 1; color: #fff; }
+  .cursor { width: 2px; height: 18px; background: var(--peach); animation: blink 1s steps(2) infinite; }
+  .work { display: grid; gap: 8px; }
+  .log { list-style: none; display: grid; gap: 6px; font-size: 14px; }
+  .log li { display: flex; align-items: center; gap: 8px; color: #e9d2c6; opacity: 0; transform: translateY(6px); transition: opacity .4s, transform .4s; }
+  .log li::before { content: "✓"; flex: none; width: 18px; height: 18px; border-radius: 50%; background: var(--sage); color: #fff; font-size: 11px; font-weight: 700; display: grid; place-items: center; }
+  .log li:nth-child(2) { transition-delay: .7s; } .log li:nth-child(3) { transition-delay: 1.4s; }
+  .bar { height: 6px; border-radius: 99px; background: #3a2b25; overflow: hidden; opacity: 0; transition: opacity .3s; }
+  .bar i { display: block; height: 100%; width: 100%; background: var(--ig); transform: scaleX(0); transform-origin: left; transition: transform 2.4s linear; }
+  .done { justify-self: start; font-weight: 700; font-size: 14px; color: #1f1714; background: var(--peach); padding: 5px 12px; border-radius: 999px; opacity: 0; transform: scale(.92); transition: opacity .35s, transform .35s; }
+  .demo-steps { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid #3a2b25; }
+  .demo-steps li { display: flex; align-items: center; justify-content: center; gap: 7px; padding: 12px 6px; font-size: 14px; color: #a8928a; transition: color .3s, background .3s; }
+  .demo-steps li + li { border-left: 1px solid #3a2b25; }
+  .demo-steps b { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; background: #3a2b25; color: #e9d2c6; transition: background .3s; }
+  /* stages: 0 empty · 1 video dropped · 2 typing · 3 editing · 4 done */
+  .demo[data-stage="0"] .file { opacity: 0; transform: translate(60px, -46px) scale(.9); }
+  .demo[data-stage="0"] .pointer { opacity: 0; transform: translate(40px, -40px); }
+  .demo:not([data-stage="0"]) .drop-hint { opacity: 0; }
+  .demo:not([data-stage="0"]):not([data-stage="1"]) .pointer { opacity: 0; }
+  .demo[data-stage="0"] .ask .cursor, .demo[data-stage="1"] .ask .cursor { opacity: 0; }
+  .demo[data-stage="2"] .ask { border-color: var(--peach); }
+  .demo[data-stage="3"] .log li, .demo[data-stage="4"] .log li { opacity: 1; transform: none; }
+  .demo[data-stage="3"] .bar, .demo[data-stage="4"] .bar { opacity: 1; }
+  .demo[data-stage="3"] .bar i, .demo[data-stage="4"] .bar i { transform: scaleX(1); }
+  .demo[data-stage="4"] .done { opacity: 1; transform: none; }
+  .demo[data-stage="4"] .ask .cursor { opacity: 0; }
+  .demo[data-stage="1"] .demo-steps [data-s="1"], .demo[data-stage="2"] .demo-steps [data-s="2"], .demo[data-stage="3"] .demo-steps [data-s="3"], .demo[data-stage="4"] .demo-steps [data-s="3"] { color: #fff; background: #2a201c; }
+  .demo[data-stage="1"] .demo-steps [data-s="1"] b, .demo[data-stage="2"] .demo-steps [data-s="2"] b, .demo[data-stage="3"] .demo-steps [data-s="3"] b, .demo[data-stage="4"] .demo-steps [data-s="3"] b { background: var(--coral); color: #fff; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* ---- flow chart ---- */
+  .flow-n { background: var(--plum); }
+  .flow-n svg { width: 22px; height: 22px; color: #fff; }
+  .hf { margin: 6px 0 4px; background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 16px 14px 14px; }
+  .hf-tags { display: grid; grid-template-columns: 2fr 1fr; gap: 10px; margin-bottom: 10px; font-size: 12px; font-weight: 700; letter-spacing: .1em; color: var(--muted); text-align: center; }
+  .hf-tags span { border-bottom: 2px solid var(--line); padding-bottom: 4px; }
+  .hf-tags .t-each { border-color: #f6c8b6; color: var(--coral); }
+  .hf-row { display: grid; grid-template-columns: 1fr 22px 1fr 22px 1fr; align-items: center; }
+  .hf-node { align-self: stretch; position: relative; display: grid; justify-items: center; text-align: center; gap: 4px; padding: 12px 6px 10px; border-radius: 16px; border: 1.5px solid var(--line); background: #fffaf6; align-content: start; }
+  .hf-ic { width: 42px; height: 42px; border-radius: 13px; background: #fff; border: 1px solid var(--line); display: grid; place-items: center; margin-bottom: 4px; }
+  .hf-ic svg { width: 24px; height: 24px; }
+  .hf-ic.clock { color: var(--coral); }
+  .hf-node b { font-size: 15px; line-height: 1.3; }
+  .hf-node small { font-size: 12px; line-height: 1.45; color: var(--muted); }
+  .hf-prog { width: 80%; height: 5px; border-radius: 99px; background: #f3e3d8; overflow: hidden; margin-top: 4px; }
+  .hf-prog i { display: block; height: 100%; width: 100%; background: var(--ig); transform: scaleX(1); transform-origin: left; }
+  .hf-ok { font-size: 12px; font-weight: 700; color: var(--sage); }
+  .hf-link { position: relative; height: 2px; background: #ead2c4; }
+  .hf-link::after { content: ""; position: absolute; right: -1px; top: -4px; border: 5px solid transparent; border-left: 6px solid #ead2c4; border-right: 0; }
+  .hf-link i { position: absolute; left: 0; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: var(--coral); box-shadow: 0 0 0 3px rgba(255,107,74,.25); opacity: 0; }
+  .hf-loop { display: flex; justify-content: flex-end; margin-top: 12px; }
+  .hf-loop-in { position: relative; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--plum); background: #f6eefc; border: 1.5px dashed #c9a6e6; border-radius: 12px; padding: 7px 11px; }
+  .hf-loop-in::before { content: ""; position: absolute; right: 16%; top: -14px; height: 12px; border-left: 2px dashed #c9a6e6; }
+  .hf-loop-in svg { width: 15px; height: 15px; flex: none; }
+  /* 7s loop: step 1 lights → dot runs → step 2 → dot runs → step 3 fills (the 20 minutes) → done → the "fix again" hint pulses */
+  .hf .n1 { animation: hfN1 7s infinite; } .hf .n2 { animation: hfN2 7s infinite; } .hf .n3 { animation: hfN3 7s infinite; }
+  .hf .l1 i { animation: hfD1 7s infinite; } .hf .l2 i { animation: hfD2 7s infinite; }
+  .hf .hf-prog i { animation: hfP 7s infinite; } .hf .hf-ok { animation: hfOk 7s infinite; } .hf .hf-loop-in { animation: hfLoop 7s infinite; }
+  @keyframes hfN1 { 0%, 92% { border-color: var(--coral); box-shadow: 0 0 0 4px rgba(255,107,74,.12); } 96%, 100% { border-color: var(--line); box-shadow: none; } }
+  @keyframes hfN2 { 0%, 22% { border-color: var(--line); box-shadow: none; } 25%, 92% { border-color: var(--coral); box-shadow: 0 0 0 4px rgba(255,107,74,.12); } 96%, 100% { border-color: var(--line); box-shadow: none; } }
+  @keyframes hfN3 { 0%, 45% { border-color: var(--line); box-shadow: none; } 48%, 92% { border-color: var(--coral); box-shadow: 0 0 0 4px rgba(255,107,74,.12); } 96%, 100% { border-color: var(--line); box-shadow: none; } }
+  @keyframes hfD1 { 0%, 8% { left: 0; opacity: 0; } 10% { opacity: 1; } 21% { left: calc(100% - 8px); opacity: 1; } 24%, 100% { left: calc(100% - 8px); opacity: 0; } }
+  @keyframes hfD2 { 0%, 31% { left: 0; opacity: 0; } 33% { opacity: 1; } 44% { left: calc(100% - 8px); opacity: 1; } 47%, 100% { left: calc(100% - 8px); opacity: 0; } }
+  @keyframes hfP { 0%, 48% { transform: scaleX(0); } 78%, 94% { transform: scaleX(1); } 98%, 100% { transform: scaleX(0); } }
+  @keyframes hfOk { 0%, 78% { opacity: 0; } 81%, 93% { opacity: 1; } 97%, 100% { opacity: 0; } }
+  @keyframes hfLoop { 0%, 82% { transform: none; } 85% { transform: translateY(-3px); } 88% { transform: none; } 91% { transform: translateY(-3px); } 94%, 100% { transform: none; } }
+  @media (max-width: 420px) { .hf { padding: 14px 10px 12px; } .hf-row { grid-template-columns: 1fr 14px 1fr 14px 1fr; } .hf-node { padding: 10px 4px 9px; } .hf-node b { font-size: 14px; } .hf-node small { font-size: 11.5px; } .hf-loop-in { font-size: 12px; } }
+  @media (prefers-reduced-motion: reduce) { .hf * , .hf .hf-node { animation: none !important; } .hf-ok { opacity: 1; } }
+  .pro { display: block; margin-top: 6px; font-size: 14px; background: #f1e6fa; color: var(--plum); border-radius: 10px; padding: 6px 10px; font-weight: 600; }
+  @media (prefers-reduced-motion: reduce) {
+    .demo *, .demo *::before { transition: none !important; animation: none !important; }
+  }
 </style>
 </head>
 <body>
@@ -78,14 +170,32 @@
 
 <header>
   <span class="pill">AI AGENT · 剪辑全流程</span>
-  <h1>我一刀都没剪，<br>这条视频 <span class="g">6 万多播放</span></h1>
+  <h1>用 Claude Code<br><span class="g">自动剪视频</span></h1>
   <p class="lead">这是我用 AI Agent 剪 Instagram 短视频的完整做法：用什么工具、一步一步怎么做、我在用的 Prompt。照着做，你也可以让 AI 帮你剪。</p>
-  <div class="stats">
-    <div class="stat big"><b>61,887</b><span>次播放（@ukunili「RM50 吉他带回家」Reel 后台数据）</span></div>
-    <div class="stat"><b>1,730</b><span>次分享</span></div>
-    <div class="stat"><b>1,361</b><span>个赞</span></div>
-    <div class="stat"><b>218</b><span>次收藏</span></div>
-    <div class="stat"><b>+139</b><span>个新粉丝</span></div>
+  <div class="demo" id="demo" data-stage="4" role="img" aria-label="动画示意：把视频丢进 Claude Code，写一句话说明怎么剪，它就自动剪好">
+    <div class="demo-bar"><i></i><i></i><i></i><span class="demo-app"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#D97757" d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z"/></svg>Claude Code</span></div>
+    <div class="demo-body">
+      <div class="drop">
+        <span class="drop-hint">把视频拖进来</span>
+        <div class="file"><span class="file-thumb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7.5v9l7.5-4.5z" fill="currentColor"/></svg></span><span class="file-name">IMG_2041.MOV</span><span class="file-size">竖屏 · 1:42</span></div>
+        <svg class="pointer" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3l14 8.5-6.2 1.3L9.6 19z" fill="#fff" stroke="#1f1714" stroke-width="1.4" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="ask"><span class="caret">&gt;</span><span class="txt" data-text="帮我剪成 IG 短视频：剪掉卡顿，加字幕和动画"><span class="typed" data-text="帮我剪成 IG 短视频：剪掉卡顿，加字幕和动画">帮我剪成 IG 短视频：剪掉卡顿，加字幕和动画</span></span><span class="cursor"></span></div>
+      <div class="work">
+        <ul class="log">
+          <li>转写语音、对好字幕时间</li>
+          <li>剪掉卡顿和停顿</li>
+          <li>加上字幕、logo 和动画</li>
+        </ul>
+        <div class="bar"><i></i></div>
+        <div class="done">✓ 已剪好，导出 1080×1920</div>
+      </div>
+    </div>
+    <ol class="demo-steps">
+      <li data-s="1"><b>1</b>丢视频进去</li>
+      <li data-s="2"><b>2</b>写一句话</li>
+      <li data-s="3"><b>3</b>自动剪好</li>
+    </ol>
   </div>
   <p class="note">人工剪一条这样的视频，可能要花一整天；交给 AI，大概 20 分钟。</p>
 </header>
@@ -93,6 +203,7 @@
 <nav class="toc">
   <b>目录</b>
   <a href="#tools"><span>01</span>需要准备的工具</a>
+  <a href="#flow"><span>↓</span>一张图看懂整个流程</a>
   <a href="#setup"><span>02</span>第一次设置（只做一次）</a>
   <a href="#shoot"><span>03</span>录视频的小技巧</a>
   <a href="#prompt"><span>04</span>丢给 AI：我的 Prompt</a>
@@ -110,10 +221,25 @@
   <div class="card tool"><div class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#000000" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg></div><div><b>一台电脑（我用 Mac）</b><small>视频在你自己的电脑上做，素材不用上传到别人的平台。</small></div></div>
 </section>
 
+<section id="flow">
+  <h2><span class="n flow-n" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 4v6a4 4 0 0 0 4 4h8M14 10l4 4-4 4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>一张图看懂整个流程</h2>
+  <div class="hf" role="img" aria-label="流程：1 在 Claude Code 下载两个 skill，2 输入 ElevenLabs API Key，3 丢视频给它剪，等大约 20 分钟。有问题就跟它讲，回到第 3 步再改。">
+    <div class="hf-tags"><span class="t-once">只做一次</span><span class="t-each">每条视频</span></div>
+    <div class="hf-row">
+      <div class="hf-node n1"><span class="hf-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#D97757" d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z"/></svg></span><b>下载 2 个 Skill</b><small>HyperFrames + video-use</small></div>
+      <div class="hf-link l1"><i></i></div>
+      <div class="hf-node n2"><span class="hf-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#000000" d="M4.6035 0v24h4.9317V0zm9.8613 0v24h4.9317V0z"/></svg></span><b>输入 API Key</b><small>ElevenLabs，用来转写字幕</small></div>
+      <div class="hf-link l2"><i></i></div>
+      <div class="hf-node n3"><span class="hf-ic clock"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span><b>丢视频，等 20 分钟</b><small>它自己剪好</small><span class="hf-prog"><i></i></span><span class="hf-ok">✓ 剪好了</span></div>
+    </div>
+    <div class="hf-loop"><span class="hf-loop-in"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>有问题？跟它讲哪里要改，回到第 3 步再改</span></div>
+  </div>
+</section>
+
 <section id="setup">
   <h2><span class="n">02</span>第一次设置（只做一次）</h2>
   <ol class="steps">
-    <li>安装 Claude Code（Claude 桌面版或终端版都可以），登录你的账号。</li>
+    <li>安装 Claude Code（Claude 桌面版或终端版都可以），登录你的账号。<span class="pro">需要 Claude Pro 或以上的付费方案，免费版不能用 Claude Code。</span></li>
     <li>在 Claude Code 里直接跟它说：<code>帮我安装 HyperFrames 和 video-use 这两个 skill</code>。它会自己处理安装。</li>
     <li>去 <b>elevenlabs.io → API Keys</b> 建一个 key（<code>sk_</code> 开头）。</li>
     <li>把 key 设成电脑的环境变量，名字一定要是 <code>ELEVENLABS_API_KEY</code>：</li>
@@ -226,6 +352,29 @@ export ELEVENLABS_API_KEY="sk_你的key"</pre>
       catch (e) { b.textContent = "请长按复制"; }
     });
   });
+</script>
+<script>
+  // Motion demo: drop a video in → type one line → auto edit → done, then loop. Reduced-motion visitors see the finished frame.
+  (function () {
+    var demo = document.getElementById("demo"); if (!demo) return;
+    if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var typed = demo.querySelector(".typed"), text = typed.getAttribute("data-text"), timers = [];
+    function at(ms, fn) { timers.push(setTimeout(fn, ms)); }
+    function stage(n) { demo.setAttribute("data-stage", n); }
+    function run() {
+      timers.forEach(clearTimeout); timers = [];
+      typed.textContent = ""; stage(0);
+      at(500, function () { stage(1); });
+      at(2100, function () { stage(2); });
+      var chars = Array.from(text);
+      chars.forEach(function (c, i) { at(2400 + i * 85, function () { typed.textContent += c; }); });
+      var typedAt = 2400 + chars.length * 85;
+      at(typedAt + 450, function () { stage(3); });
+      at(typedAt + 3500, function () { stage(4); });
+      at(typedAt + 6500, run);
+    }
+    run();
+  })();
 </script>
 </body>
 </html>
