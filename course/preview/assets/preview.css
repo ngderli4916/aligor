@@ -30,3 +30,59 @@ body.scroll .deck{height:auto}
 body.scroll .slide{position:relative;display:block;height:calc(var(--h)*var(--k,1)*1px);margin:0 0 10px}
 body.scroll .stage{transform-origin:top left;margin:0}
 body.scroll .ui{display:none}
+
+/* ── 点一下出现一个步骤（data-step）：没点到之前看不到 ── */
+.pop[data-step]{opacity:0;transform:translateY(16px) scale(.98)}
+.slide.show .pop[data-step]{animation:none}
+.slide .pop[data-step].r{animation:pop .6s cubic-bezier(.2,.85,.3,1.1) forwards;animation-delay:calc(var(--j,0)*.06s)}
+.slide.instant .pop[data-step].r{animation:none;opacity:1;transform:none}
+.el{z-index:1}
+
+/* ── 第 12 页：卡片可以点，在新分页打开 ── */
+a.cardlink{position:absolute;z-index:5;display:block;border-radius:12px;text-decoration:none;color:transparent;cursor:pointer;transition:box-shadow .2s,background .2s}
+a.cardlink span{position:absolute;right:14px;bottom:12px;padding:6px 14px;border-radius:999px;background:#0F1B2D;color:#fff;font:700 15px var(--font);opacity:0;transform:translateY(6px);transition:all .2s}
+a.cardlink:hover,a.cardlink:focus-visible{background:rgba(32,214,231,.08);box-shadow:0 0 0 3px #20D6E7,0 14px 34px -10px rgba(15,27,45,.4);outline:none}
+a.cardlink:hover span,a.cardlink:focus-visible span{opacity:1;transform:none}
+
+/* ── 第 10 页：WhatsApp 对话界面（有动画）── */
+.wa{border-radius:26px;overflow:hidden;background:#ECE5DD;box-shadow:0 22px 50px -18px rgba(15,27,45,.5);display:flex;flex-direction:column;font-family:"PingFang SC","Microsoft YaHei",sans-serif;color:#111}
+.wa-top{display:flex;align-items:center;gap:12px;padding:12px 18px;background:#075E54;color:#fff}
+.wa-av{width:42px;height:42px;border-radius:50%;background:#25D366;display:grid;place-items:center;font-weight:800;font-size:17px;color:#073b30}
+.wa-who{flex:1;line-height:1.2}.wa-who b{display:block;font-size:19px}.wa-who small{font-size:13px;color:#b7e4d8}
+.wa-ex{font-size:12px;font-weight:700;background:#FFB45C;color:#3a2200;padding:2px 10px;border-radius:999px}
+.wa-chat{flex:1;padding:16px 18px;display:flex;flex-direction:column;gap:10px;background:#ECE5DD radial-gradient(rgba(0,0,0,.035) 1px,transparent 1.2px) 0 0/16px 16px;overflow:hidden}
+.wa-msg{max-width:82%;padding:9px 12px 7px;border-radius:12px;font-size:19px;line-height:1.4;box-shadow:0 1px 1px rgba(0,0,0,.14);opacity:0;transform:translateY(12px) scale(.96)}
+.wa-msg.in{align-self:flex-start;background:#fff;border-top-left-radius:3px}
+.wa-msg.out{align-self:flex-end;background:#DCF8C6;border-top-right-radius:3px}
+.wa-msg .tm{display:block;text-align:right;font-size:11.5px;color:#7b8a80;margin-top:2px}.wa-msg .tm u{text-decoration:none;color:#34B7F1}
+.slide.show .wa-msg{animation:wamsg .45s cubic-bezier(.2,.9,.3,1.2) forwards;animation-delay:var(--t)}
+@keyframes wamsg{to{opacity:1;transform:none}}
+.wa-slot{position:relative;align-self:flex-end;max-width:82%;display:flex;justify-content:flex-end;width:100%}
+.wa-slot .wa-msg{align-self:flex-end}
+.wa-typing{position:absolute;right:0;top:0;display:flex;gap:5px;padding:13px 16px;background:#DCF8C6;border-radius:12px;border-top-right-radius:3px;box-shadow:0 1px 1px rgba(0,0,0,.14);opacity:0}
+.wa-typing i{width:8px;height:8px;border-radius:50%;background:#7a8f82;animation:dot 1s infinite ease-in-out}
+.wa-typing i:nth-child(2){animation-delay:.15s}.wa-typing i:nth-child(3){animation-delay:.3s}
+@keyframes dot{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-6px);opacity:1}}
+.slide.show .wa-typing{animation:typ var(--d) steps(1,end) forwards;animation-delay:var(--t1)}
+@keyframes typ{0%{opacity:1}99%{opacity:1}100%{opacity:0}}
+.wa-sys{align-self:center;margin-top:2px;padding:5px 16px;border-radius:999px;background:#FFF3CD;color:#7a5a00;font-weight:800;font-size:16px;opacity:0;box-shadow:0 1px 1px rgba(0,0,0,.12)}
+.slide.show .wa-sys{animation:wamsg .45s ease forwards;animation-delay:var(--t)}
+.wa-input{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#F0F0F0;color:#8a8a8a;font-size:16px}
+.wa-input i{font-style:normal;background:#25D366;border-radius:50%;width:38px;height:38px;display:grid;place-items:center;color:#fff}
+
+/* ── 第 20 页：价格（原价 → 折扣 → 现价）── */
+.pricebox{font-family:"Microsoft YaHei","PingFang SC",sans-serif;color:#fff}
+.pb-lab{display:table;font-weight:800;font-size:18px;letter-spacing:.06em;color:#20D6E7;border:1px solid rgba(32,214,231,.5);padding:4px 16px;border-radius:999px;opacity:0}
+.pb-orig{position:relative;display:table;margin-top:18px;font-size:40px;font-weight:700;color:#8CA4BA;opacity:0}
+.pb-orig s{position:absolute;left:-6px;right:-6px;top:54%;height:4px;border-radius:3px;background:#FF6B6B;transform:scaleX(0);transform-origin:left;text-decoration:none}
+.pb-disc{margin-top:6px;font-size:24px;font-weight:800;color:#FFB45C;opacity:0}
+.pb-now{margin-top:2px;font-size:150px;line-height:1;font-weight:900;color:#F5A524;opacity:0;transform:scale(.7);transform-origin:left center;letter-spacing:-.02em}
+.pb-now small{font-size:56px;font-weight:800;margin-right:10px;color:#F5A524}
+.pb-per{margin-top:4px;font-size:30px;font-weight:700;color:#fff;opacity:0}
+.r .pb-lab{animation:fade .5s .1s forwards}.r .pb-orig{animation:fade .5s .5s forwards}.r .pb-orig s{animation:strike .5s 1.2s forwards cubic-bezier(.6,0,.2,1)}
+.r .pb-disc{animation:fade .5s 1.7s forwards}.r .pb-now{animation:nowpop .7s 2.1s forwards cubic-bezier(.2,.9,.3,1.3)}.r .pb-per{animation:fade .5s 2.7s forwards}
+.slide.instant .pricebox .pb-lab,.slide.instant .pricebox .pb-orig,.slide.instant .pricebox .pb-disc,.slide.instant .pricebox .pb-now,.slide.instant .pricebox .pb-per{animation-duration:.01s;animation-delay:0s}
+@keyframes strike{to{transform:scaleX(1)}}
+@keyframes nowpop{to{opacity:1;transform:none}}
+@keyframes fade{to{opacity:1}}
+.slide.dark .pb-orig{color:#9fb3c8}
