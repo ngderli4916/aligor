@@ -1,0 +1,32 @@
+/* 一小时 Preview 网页版：版面由 PPT 转出（每页一个 .stage，1 英寸＝100px），这里只管缩放和动画。 */
+:root{--font:"PingFang SC","Heiti SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#05080f;color:#fff;font-family:var(--font);-webkit-font-smoothing:antialiased}
+.deck{position:relative;width:100%;height:100%}
+.slide{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:var(--bg)}
+.slide.active{display:flex}
+.stage{position:relative;width:calc(var(--w)*1px);height:calc(var(--h)*1px);transform:scale(var(--k,1));transform-origin:center center;flex:none;background:var(--bg);overflow:hidden;font-family:"Microsoft YaHei","PingFang SC","Heiti SC",sans-serif}
+.el{position:absolute}
+img.el{display:block;object-fit:fill}
+.tx{position:absolute;inset:0;display:flex;flex-direction:column;overflow:visible;line-height:1.3;word-break:break-word}
+.tx p{margin:0;white-space:normal;position:relative}
+.tx p.bl::before{content:var(--bc);position:absolute;left:var(--bi);top:0}
+/* 动画：每页出现时，元素按顺序浮出（越前面的越先出现）*/
+.pop{opacity:0;transform:translateY(14px)}
+.slide.show .pop{animation:pop .55s cubic-bezier(.2,.8,.3,1) forwards;animation-delay:calc(var(--i)*var(--step,.06s))}
+@keyframes pop{to{opacity:1;transform:none}}
+.slide.noanim .pop{opacity:1;transform:none;animation:none}
+@media (prefers-reduced-motion:reduce){.pop{opacity:1;transform:none;animation:none!important}}
+/* 控制条 */
+.ui{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:20;display:flex;align-items:center;gap:8px;padding:6px;border-radius:999px;background:rgba(5,8,15,.72);backdrop-filter:blur(8px);opacity:.0;transition:opacity .25s}
+body:hover .ui,.ui:focus-within{opacity:1}
+.ui button{border:0;cursor:pointer;color:#fff;background:rgba(255,255,255,.16);font:700 15px var(--font);height:38px;min-width:38px;border-radius:999px}
+.ui button:hover{background:#20D6E7;color:#04111f}
+.ui .pos{font:700 13px ui-monospace,Menlo,monospace;color:#9fb3c8;min-width:60px;text-align:center}
+.bar{position:fixed;left:0;top:0;height:3px;width:0;background:#20D6E7;z-index:30;transition:width .3s}
+/* 手机／加 ?scroll：一页接一页往下滚 */
+body.scroll{height:auto;overflow-y:auto}
+body.scroll .deck{height:auto}
+body.scroll .slide{position:relative;display:block;height:calc(var(--h)*var(--k,1)*1px);margin:0 0 10px}
+body.scroll .stage{transform-origin:top left;margin:0}
+body.scroll .ui{display:none}
