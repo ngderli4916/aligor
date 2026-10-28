@@ -1,0 +1,835 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>把 PPT 变成会动的网页 · 阿理哥 Aligor</title>
+  <meta name="description" content="不用设计师，不用会写代码。用 AI 把课堂 PPT 变成可以点、可以动、可以上网的网页：6 个步骤、8 段可复制 Prompt、效率和表达的小技巧。">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="阿理哥 Aligor">
+  <meta property="og:url" content="https://aligor.aligor.workers.dev/presentation-method/">
+  <meta property="og:title" content="把 PPT 变成会动的网页｜阿理哥 Aligor">
+  <meta property="og:description" content="用 AI 把 PPT 做好、转成网页、加上动画：6 个步骤 + 可复制 Prompt。">
+  <meta property="og:image" content="https://aligor.aligor.workers.dev/assets/og-card.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="zh_CN">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#FAF6EE">
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700;900&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:#FBF8EE}
+.v2{
+  --paper:#FBF8EE; --card:#FFFFFF; --ink:#14110F; --ink2:#3B3731; --mute:#6F6A60;
+  --line:#E7E1D0; --yellow:#FFC93C; --yellow-d:#E5A800; --teal:#0F766E; --teal-l:#D9F1EC;
+  --coral:#D9482B; --coral-l:#FFE4DC; --night:#14110F; --wa:#0B5F57;
+  --serif:"Noto Serif SC","Songti SC","Source Han Serif SC",serif;
+  --sans:"Noto Sans SC","PingFang SC","Microsoft YaHei",-apple-system,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --r:20px; --max:1120px;
+}
+.v2 *{box-sizing:border-box;margin:0;padding:0}
+.v2 *::before,.v2 *::after{box-sizing:border-box}
+.v2{font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.75;font-size:17px;-webkit-font-smoothing:antialiased;overflow-x:clip}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+.v2 img{max-width:100%;display:block}
+.v2 a{color:inherit}
+.v2 .wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+.v2 h1,.v2 h2,.v2 h3{font-family:var(--serif);line-height:1.25;letter-spacing:-.01em;text-wrap:balance}
+.v2 h2{font-size:clamp(28px,4.2vw,42px);font-weight:900;margin-bottom:14px}
+.v2 h3{font-size:21px;font-weight:900;margin-bottom:8px}
+.v2 mark{background:linear-gradient(transparent 62%,var(--yellow) 62%);color:inherit;padding:0 4px}
+.v2 .eyebrow{font-size:13px;font-weight:700;letter-spacing:.14em;color:var(--teal);margin-bottom:12px}
+.v2 .lead{font-size:19px;color:var(--ink2);max-width:680px}
+.v2 section{padding:88px 0}
+.v2 .alt{background:var(--card);border-block:1px solid var(--line)}
+.v2 .btn{display:inline-flex;align-items:center;gap:8px;padding:15px 26px;border-radius:999px;font-weight:700;font-size:16px;text-decoration:none;border:2px solid var(--ink);transition:transform .15s,box-shadow .15s;cursor:pointer;font-family:var(--sans);background:var(--yellow);color:var(--ink)}
+.v2 .btn:hover{transform:translateY(-2px);box-shadow:0 6px 0 var(--ink)}
+.v2 .ghost{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);background:var(--card);color:var(--ink2);border-radius:999px;padding:6px 14px;font:600 13px var(--sans);cursor:pointer}
+.v2 .ghost:hover{border-color:var(--ink);color:var(--ink)}
+.v2 .demo-tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.06em;padding:2px 9px;border-radius:99px;background:var(--coral-l);color:var(--coral)}
+
+/* nav */
+.v2 nav{position:sticky;top:0;z-index:50;background:rgba(251,248,238,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.v2 .nav-in{display:flex;align-items:center;justify-content:space-between;height:68px}
+.v2 .n-brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:900;font-size:18px}
+.v2 .n-brand img{height:34px;width:auto}
+.v2 .menu{display:flex;gap:26px;align-items:center}
+.v2 .menu a{text-decoration:none;font-size:15px;font-weight:500;color:var(--ink2)}
+.v2 .menu a:hover{color:var(--ink)}
+
+/* reveal */
+.v2 .rv{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease;transition-delay:calc(var(--i,0) * 110ms)}
+.v2 .rv.in{opacity:1;transform:none}
+
+/* hero */
+.v2 .hero{padding:64px 0 80px}
+.v2 .pill{display:inline-flex;gap:8px;align-items:center;background:var(--ink);color:#fff;padding:7px 16px;border-radius:999px;font-size:13px;font-weight:700;margin-bottom:22px}
+.v2 .pill i{width:8px;height:8px;border-radius:50%;background:var(--yellow);display:block}
+.v2 .hero h1{font-size:clamp(38px,6.4vw,68px);font-weight:900;margin-bottom:20px}
+.v2 .compare{margin-top:48px;display:grid;grid-template-columns:1fr 64px 1fr;gap:16px;align-items:center}
+.v2 .cmp-lab{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;color:var(--mute);margin-bottom:8px;letter-spacing:.06em}
+.v2 .frame{border-radius:14px;border:1px solid var(--line);overflow:hidden;background:#fff;box-shadow:0 18px 40px -22px rgba(20,17,15,.35);aspect-ratio:16/9}
+.v2 .frame img{width:100%;height:100%;object-fit:cover}
+.v2 .arrow{height:6px;position:relative;border-radius:3px;background:var(--line);overflow:visible}
+.v2 .arrow::before{content:"";position:absolute;left:0;top:0;bottom:0;width:0;background:var(--ink);border-radius:3px;animation:draw 1.6s .4s ease-out infinite}
+.v2 .arrow::after{content:"";position:absolute;right:-6px;top:-8px;border:11px solid transparent;border-left:14px solid var(--ink);border-right:0}
+@keyframes draw{0%{width:0}60%,100%{width:100%}}
+
+/* mini web slide (container-scaled) */
+.v2 .frame:has(.mini){container-type:inline-size}
+.v2 .mini{background:#F4F6FA;position:relative;height:100%;padding:4.5cqw 5cqw;font-family:"PingFang SC",var(--sans);color:#14213D}
+.v2 .mini .k{font-size:1.8cqw;font-weight:700;letter-spacing:.2em;color:#16A34A}
+.v2 .mini .t{font-size:4.4cqw;font-weight:900;margin:.6cqw 0 3cqw;line-height:1.2}
+.v2 .mini .cols{display:grid;grid-template-columns:1fr 1fr;gap:3cqw}
+.v2 .mini .c{background:#fff;border-radius:1.4cqw;padding:2.8cqw;box-shadow:0 .4cqw 1.4cqw rgba(0,0,0,.06)}
+.v2 .mini .c.d{background:#16233F;color:#fff}
+.v2 .mini .c b{display:block;font-size:2.9cqw;margin-bottom:1.4cqw}
+.v2 .mini .c p{font-size:2.15cqw;line-height:1.5;margin:.9cqw 0;padding-left:1.8cqw;position:relative}
+.v2 .mini .c p::before{content:"";position:absolute;left:0;top:.75cqw;width:.7cqw;height:.7cqw;border-radius:50%;background:currentColor;opacity:.6}
+.v2 .pop{opacity:0;transform:translateY(1.6cqw) scale(.98)}
+.v2 .play .pop{animation:popin .5s forwards;animation-delay:calc(var(--o) * 180ms + 200ms)}
+@keyframes popin{to{opacity:1;transform:none}}
+
+/* why cards */
+.v2 .why{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:40px}
+.v2 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:26px}
+.v2 .alt .card{background:var(--paper)}
+.v2 .card em{font-style:normal;font-family:var(--serif);font-weight:900;font-size:34px;color:var(--yellow-d);display:block;line-height:1;margin-bottom:12px}
+.v2 .card p{font-size:15.5px;color:var(--ink2)}
+
+/* 6-step flow */
+.v2 .flow{margin-top:44px;display:grid;grid-template-columns:repeat(6,1fr);gap:0;position:relative;list-style:none}
+.v2 .flow li{position:relative;padding:0 8px;text-align:center}
+.v2 .flow li::after{content:"";position:absolute;top:27px;left:calc(50% + 30px);right:calc(-50% + 30px);height:3px;background:var(--line)}
+.v2 .flow li:last-child::after{display:none}
+.v2 .flow li::before{content:"";position:absolute;top:27px;left:calc(50% + 30px);width:0;height:3px;background:var(--ink);z-index:1}
+.v2 .flow li:last-child::before{display:none}
+.v2 .flow .dot{position:relative;z-index:2;margin:0 auto 14px;width:56px;height:56px;border-radius:50%;border:2px solid var(--line);background:var(--card);display:grid;place-items:center;font-family:var(--serif);font-weight:900;font-size:22px;color:var(--mute);transition:all .35s}
+.v2 .flow b{display:block;font-family:var(--serif);font-size:17px;line-height:1.35;margin-bottom:6px}
+.v2 .flow small{display:block;font-size:13.5px;color:var(--mute);line-height:1.55}
+.v2 .flow.go li .dot{animation:lit .4s forwards;animation-delay:calc(var(--i) * 600ms)}
+.v2 .flow.go li::before{animation:line .45s forwards;animation-delay:calc(var(--i) * 600ms + 300ms)}
+@keyframes lit{to{background:var(--yellow);border-color:var(--ink);color:var(--ink);box-shadow:4px 4px 0 var(--ink)}}
+@keyframes line{to{width:calc(100% - 60px)}}
+.v2 .flow-foot{margin-top:28px;display:flex;justify-content:center}
+
+/* step detail */
+.v2 .step{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;padding:56px 0;border-top:1px solid var(--line)}
+.v2 .step:first-of-type{border-top:0}
+.v2 .step .no{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:12px;background:var(--ink);color:var(--yellow);font-family:var(--serif);font-weight:900;font-size:20px;margin-bottom:14px}
+.v2 .step h3{font-size:clamp(24px,3vw,30px);margin-bottom:12px}
+.v2 .step ul{list-style:none;display:grid;gap:10px}
+.v2 .step li{position:relative;padding-left:22px;color:var(--ink2)}
+.v2 .step li::before{content:"";position:absolute;left:2px;top:.72em;width:8px;height:8px;border-radius:50%;background:var(--yellow-d)}
+.v2 .step li b{color:var(--ink)}
+.v2 .habit-note{margin-top:16px;background:var(--teal-l);color:var(--teal);border-radius:14px;padding:12px 16px;font-size:15px}
+.v2 .vis{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:24px;min-width:0}
+
+/* step 1 visual: one source */
+.v2 .src{display:grid;grid-template-columns:1fr;gap:12px;justify-items:center}
+.v2 .src .file{background:var(--night);color:#fff;border-radius:14px;padding:14px 18px;font-family:var(--mono);font-size:14px;width:100%;max-width:340px}
+.v2 .src .file small{display:block;color:#A89F90;font-family:var(--sans);font-size:12px;margin-bottom:6px}
+.v2 .src .file span{color:var(--yellow)}
+.v2 .src .fan{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%}
+.v2 .src .fan div{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 8px;text-align:center;font-size:13px;color:var(--mute)}
+.v2 .src .fan b{display:block;font-size:18px;color:var(--ink)}
+.v2 .src .down{width:2px;height:22px;background:var(--ink);position:relative}
+.v2 .src .down::after{content:"";position:absolute;left:-6px;bottom:-4px;border:7px solid transparent;border-top:9px solid var(--ink);border-bottom:0}
+
+/* step 2 visual: backup log */
+.v2 .log{font-size:14.5px;display:grid;gap:10px}
+.v2 .log .row{display:flex;gap:12px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.v2 .log .row i{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-style:normal;font-size:15px}
+.v2 .log code{font-family:var(--mono);font-size:13px;background:transparent;word-break:break-all}
+.v2 .log .ok i{background:var(--teal-l);color:var(--teal)}
+.v2 .log .bk i{background:#FFF4D6;color:var(--yellow-d)}
+.v2 .log .ask i{background:var(--coral-l);color:var(--coral)}
+
+/* step 3 visual: render grid */
+.v2 .thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.v2 .thumbs i{aspect-ratio:16/9;border-radius:6px;background:var(--paper);border:1px solid var(--line);position:relative;display:block}
+.v2 .thumbs i::before{content:"";position:absolute;left:12%;top:20%;width:60%;height:12%;background:var(--line);border-radius:2px}
+.v2 .thumbs i::after{content:"";position:absolute;left:12%;top:45%;width:76%;height:34%;background:#F1ECDF;border-radius:3px}
+.v2 .thumbs i.bad{border:2px solid var(--coral)}
+.v2 .thumbs i.bad::before{width:96%;background:#F6B8A8}
+.v2 .loop3{display:flex;justify-content:center;gap:10px;margin-top:18px;flex-wrap:wrap}
+.v2 .loop3 span{background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:700;font-size:14px}
+.v2 .loop3 span.on{background:var(--yellow);border-color:var(--ink)}
+.v2 .flag{margin-top:14px;font-size:14px;color:var(--coral);font-weight:700;text-align:center}
+
+/* code */
+.v2 pre.code{background:var(--night);color:#F5EFE3;border-radius:14px;padding:16px 18px;font-family:var(--mono);font-size:13px;line-height:1.7;overflow-x:auto;white-space:pre}
+.v2 pre.code .cm{color:#9C9384}
+.v2 pre.code .k{color:var(--yellow)}
+.v2 .stage-dia{margin-top:14px;border:2px dashed var(--ink2);border-radius:10px;aspect-ratio:1333/750;position:relative;font-size:12px;color:var(--mute)}
+.v2 .stage-dia span{position:absolute;background:#fff;border:1px solid var(--line);border-radius:6px;padding:2px 6px;font-family:var(--mono);font-size:11.5px;color:var(--ink2);white-space:nowrap}
+.v2 .stage-dia .b1{left:5%;top:9%;width:62%;height:14%;background:var(--teal-l);border-color:var(--teal)}
+.v2 .stage-dia .b2{left:5%;top:30%;width:42%;height:56%;background:#FFF4D6;border-color:var(--yellow-d)}
+.v2 .stage-dia .b3{left:52%;top:30%;width:43%;height:56%;background:var(--coral-l);border-color:var(--coral)}
+.v2 .stage-dia .sz{right:6px;bottom:-12px;background:var(--ink);color:#fff;border-color:var(--ink)}
+.v2 figure.ppt{margin-top:14px}
+.v2 figure.ppt figcaption{font-size:13px;color:var(--mute);margin-top:6px}
+
+/* demos */
+.v2 .demos{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:36px}
+.v2 .demo{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.v2 .demo-h{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.v2 .demo-h b{font-family:var(--serif);font-size:18px}
+.v2 .demo-h b span{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:8px;background:var(--ink);color:var(--yellow);font-size:14px;margin-right:8px;vertical-align:2px}
+.v2 .demo .frame{box-shadow:none}
+.v2 .demo p.cap{font-size:14px;color:var(--mute)}
+
+/* click reveal */
+.v2 .clk{cursor:pointer;outline:none}
+.v2 .clk:focus-visible{box-shadow:0 0 0 3px var(--yellow)}
+.v2 .mini .three{display:grid;grid-template-columns:repeat(3,1fr);gap:2.2cqw}
+.v2 .mini .three div{background:#fff;border-radius:1.4cqw;padding:2.4cqw 2cqw;box-shadow:0 .4cqw 1.4cqw rgba(0,0,0,.06);opacity:0;transform:translateY(2cqw);transition:opacity .4s,transform .4s}
+.v2 .mini .three div.r{opacity:1;transform:none}
+.v2 .mini .three i{display:block;font-style:normal;font-size:4cqw;line-height:1}
+.v2 .mini .three b{display:block;font-size:2.9cqw;margin:1.4cqw 0 .6cqw}
+.v2 .mini .three small{font-size:2cqw;color:#55607A;line-height:1.45;display:block}
+.v2 .mini .hint{position:absolute;right:3cqw;bottom:2.6cqw;font-size:1.9cqw;color:#55607A;background:#fff;border-radius:99px;padding:.6cqw 1.6cqw}
+.v2 .ctl{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+/* whatsapp */
+.v2 .wa{border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#EFEAE0}
+.v2 .wa-top{background:var(--wa);color:#fff;padding:10px 14px;display:flex;gap:10px;align-items:center;font-size:14px}
+.v2 .wa-top i{width:30px;height:30px;border-radius:50%;background:var(--yellow);display:grid;place-items:center;font-style:normal;font-weight:900;color:var(--ink);font-size:13px}
+.v2 .wa-top small{display:block;font-size:11px;opacity:.8;line-height:1.2}
+.v2 .wa-body{padding:14px 12px;min-height:258px;display:flex;flex-direction:column;gap:8px}
+.v2 .bub{max-width:82%;padding:8px 12px;border-radius:12px;font-size:14px;line-height:1.55;opacity:0;transform:translateY(6px)}
+.v2 .bub.cu{align-self:flex-start;background:#fff;border-bottom-left-radius:3px}
+.v2 .bub.ai{align-self:flex-end;background:#DCF8C6;border-bottom-right-radius:3px}
+.v2 .bub.typ{display:flex;gap:4px;padding:12px 14px}
+.v2 .bub.typ i{width:7px;height:7px;border-radius:50%;background:#7a8a7f;animation:bl 1s infinite}
+.v2 .bub.typ i:nth-child(2){animation-delay:.15s}.v2 .bub.typ i:nth-child(3){animation-delay:.3s}
+@keyframes bl{0%,60%,100%{opacity:.25;transform:none}30%{opacity:1;transform:translateY(-3px)}}
+.v2 .handoff{align-self:center;font-size:12px;font-weight:700;color:var(--coral);background:var(--coral-l);border-radius:99px;padding:3px 12px;opacity:0}
+.v2 .wa.play .w1{animation:wpop .35s .3s forwards}
+.v2 .wa.play .w2{animation:wpop .35s 1.1s forwards,wout .2s 2.4s forwards}
+.v2 .wa.play .w3{animation:wpop .35s 2.6s forwards}
+.v2 .wa.play .w4{animation:wpop .35s 3.8s forwards}
+.v2 .wa.play .w5{animation:wpop .35s 4.6s forwards,wout .2s 5.8s forwards}
+.v2 .wa.play .w6{animation:wpop .35s 6s forwards}
+.v2 .wa.play .w7{animation:wpop .4s 6.8s forwards}
+.v2 .w2,.v2 .w5{height:auto}
+@keyframes wpop{to{opacity:1;transform:none}}
+@keyframes wout{to{opacity:0;height:0;padding:0;margin:-4px 0}}
+
+/* video timeline */
+.v2 .vid{display:grid;gap:12px}
+.v2 .vid .chips{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13.5px}
+.v2 .vid .chip{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-family:var(--mono);font-size:12.5px;opacity:0}
+.v2 .vid .say{background:var(--night);color:#fff;border-radius:12px 12px 12px 3px;padding:8px 12px;font-size:14px;opacity:0;justify-self:start}
+.v2 .tl{display:flex;height:46px;border-radius:10px;overflow:hidden;border:2px solid var(--ink);background:#fff}
+.v2 .tl i{display:block;height:100%;flex:var(--w) 1 0;background:#B9E4D9;border-right:1px solid #fff;transition:flex-grow .7s ease,background .3s}
+.v2 .tl i.x{background:#B9E4D9}
+.v2 .tl i:nth-child(even){background:#9ED6C7}
+.v2 .vid .meta{display:flex;justify-content:space-between;align-items:center;font-size:14px}
+.v2 .vid .dur{font-family:var(--mono);font-weight:700;font-size:22px}
+.v2 .vid .lg{display:flex;gap:12px;font-size:12.5px;color:var(--mute)}
+.v2 .vid .lg span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;background:#9ED6C7;margin-right:5px;vertical-align:-1px}
+.v2 .vid .lg span.c::before{background:var(--coral)}
+.v2 .vid.play .chip{animation:wpop .35s .2s forwards}
+.v2 .vid.play .say{animation:wpop .35s .9s forwards}
+.v2 .vid.mark .tl i.x{background:var(--coral)}
+.v2 .vid.cut .tl i.x{flex-grow:0;border:0}
+.v2 .vid.cut .tl i:not(.x){flex-grow:calc(var(--w) * 1)}
+
+/* price */
+.v2 .price{display:grid;place-items:center;gap:6px;padding:26px 10px;background:var(--night);color:#fff;border-radius:16px;min-height:220px;text-align:center}
+.v2 .price small{font-size:13px;color:#A89F90;letter-spacing:.1em}
+.v2 .price .old{position:relative;font-family:var(--serif);font-weight:900;font-size:44px;color:#fff;opacity:0;line-height:1.1}
+.v2 .price .old::after{content:"";position:absolute;left:-6%;top:52%;height:5px;width:0;background:#FF4D3D;border-radius:3px;transform:rotate(-8deg)}
+.v2 .price .new{font-family:var(--serif);font-weight:900;font-size:64px;color:var(--yellow);line-height:1.05;opacity:0;transform:scale(.6)}
+.v2 .price.play .old{animation:wpop .4s .3s forwards}
+.v2 .price.play .old::after{animation:strike .45s 1.3s forwards}
+.v2 .price.play .old{transition:color .3s}
+.v2 .price.play .new{animation:bounce .55s 2s cubic-bezier(.2,1.6,.4,1) forwards}
+@keyframes strike{to{width:112%}}
+@keyframes bounce{to{opacity:1;transform:none}}
+
+/* keys */
+.v2 .keys{margin-top:28px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.v2 .keys div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:14.5px;color:var(--ink2)}
+.v2 kbd{display:inline-block;font-family:var(--mono);font-size:12.5px;background:var(--paper);border:1px solid var(--line);border-bottom-width:3px;border-radius:6px;padding:0 7px;margin-right:4px;color:var(--ink)}
+
+/* step 6 visual */
+.v2 .ship{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;gap:8px;text-align:center}
+.v2 .ship div{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px 6px;font-size:13px;color:var(--mute)}
+.v2 .ship div b{display:block;font-size:16px;color:var(--ink);font-family:var(--serif)}
+.v2 .ship div.say{background:var(--yellow);border-color:var(--ink)}
+.v2 .ship span{font-weight:900}
+.v2 .nolist{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px}
+.v2 .nolist span{font-size:13px;background:var(--coral-l);color:var(--coral);border-radius:99px;padding:4px 12px;font-weight:700}
+.v2 .nolist span::before{content:"✕ "}
+
+/* prompts */
+.v2 .prompts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:36px}
+.v2 .pr{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px 20px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.v2 .pr-h{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.v2 .pr-h b{font-family:var(--serif);font-size:18px}
+.v2 .pr-h b span{color:var(--yellow-d);margin-right:6px}
+.v2 .pr pre{white-space:pre-wrap;word-break:break-word;font-family:var(--sans);font-size:15px;line-height:1.7;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--ink2);flex:1}
+.v2 .copy{flex:none;display:inline-flex;align-items:center;gap:6px;border:2px solid var(--ink);background:var(--yellow);color:var(--ink);border-radius:999px;padding:5px 14px;font:700 13.5px var(--sans);cursor:pointer}
+.v2 .copy.ok{background:var(--teal);border-color:var(--teal);color:#fff}
+.v2 .pnote{margin-top:14px;font-size:14.5px;color:var(--mute)}
+
+/* habits & tips */
+.v2 .habits{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:36px}
+.v2 .habit{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+.v2 .alt .habit{background:var(--paper)}
+.v2 .habit i{font-style:normal;font-family:var(--serif);font-weight:900;font-size:26px;color:var(--yellow-d);display:block;line-height:1;margin-bottom:8px}
+.v2 .habit p{font-size:15.5px;font-weight:500}
+.v2 .tips{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:36px}
+.v2 .tip{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.v2 .tip b{display:block;font-family:var(--serif);font-size:19px;line-height:1.4;margin-bottom:6px}
+.v2 .tip p{font-size:14.5px;color:var(--mute)}
+
+/* safety */
+.v2 .safe{border:2px solid var(--coral);background:#FFF6F2;border-radius:var(--r);padding:30px 32px}
+.v2 .safe h2{color:var(--coral);font-size:clamp(24px,3.4vw,32px);display:flex;align-items:center;gap:10px}
+.v2 .safe ul{list-style:none;display:grid;gap:12px;margin-top:10px}
+.v2 .safe li{position:relative;padding-left:30px;color:var(--ink2)}
+.v2 .safe li::before{content:"!";position:absolute;left:0;top:.3em;width:20px;height:20px;border-radius:50%;background:var(--coral);color:#fff;font-weight:900;font-size:13px;display:grid;place-items:center;line-height:1}
+.v2 .safe li b{color:var(--ink)}
+
+/* final */
+.v2 .final{background:var(--yellow);text-align:center;padding:88px 0}
+.v2 .final h2{font-size:clamp(30px,5vw,52px);margin:0 auto 26px;max-width:760px;text-wrap:balance}
+.v2 .final .btn{background:var(--ink);color:#fff}
+.v2 .final .btn:hover{box-shadow:0 6px 0 rgba(20,17,15,.35)}
+.v2 .final small{display:block;margin-top:22px;font-size:13.5px;color:var(--ink2)}
+
+/* footer */
+.v2 .site-foot{background:var(--night);color:#CFC8BB;padding:36px 0 40px}
+.v2 .foot-in{display:flex;align-items:center;justify-content:space-between;gap:20px 32px;flex-wrap:wrap}
+.v2 .foot-brand{display:flex;align-items:center;gap:12px}
+.v2 .foot-brand img{width:36px;height:36px;object-fit:contain;filter:brightness(0) invert(1)}
+.v2 .foot-brand b{display:block;color:#fff;font-size:15px;line-height:1.3}
+.v2 .foot-brand span{font-size:12.5px;opacity:.8}
+.v2 .foot-links{display:flex;gap:6px 22px;flex-wrap:wrap;font-size:14px}
+.v2 .foot-links a{text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(255,255,255,.3)}
+.v2 .foot-links a:hover{color:#fff}
+.v2 .foot-copy{font-size:12.5px;opacity:.7;width:100%}
+
+@media(max-width:900px){
+  .v2 section{padding:64px 0}
+  .v2 .menu a:not(.keep){display:none}
+  .v2 .why,.v2 .tips{grid-template-columns:1fr}
+  .v2 .habits{grid-template-columns:1fr 1fr}
+  .v2 .step{grid-template-columns:1fr;gap:28px;padding:44px 0}
+  .v2 .demos,.v2 .prompts{grid-template-columns:1fr}
+  .v2 .flow{grid-template-columns:1fr;gap:0;max-width:460px;margin-inline:auto}
+  .v2 .flow li{text-align:left;display:grid;grid-template-columns:56px 1fr;column-gap:16px;padding:0 0 22px}
+  .v2 .flow li .dot{grid-row:span 2;margin:0}
+  .v2 .flow li b{margin-top:4px}
+  .v2 .flow li::after{top:60px;bottom:2px;left:27px;right:auto;width:3px;height:auto}
+  .v2 .flow li::before{top:60px;left:27px;width:3px;height:0}
+  @keyframes line{to{height:calc(100% - 62px);width:3px}}
+}
+@media(max-width:600px){
+  .v2{font-size:16px}
+  .v2 .wrap{padding:0 16px}
+  .v2 .lead{font-size:17px}
+  .v2 .compare{grid-template-columns:1fr;gap:12px}
+  .v2 .arrow{width:6px;height:40px;margin:0 auto}
+  .v2 .arrow::before{width:100%;height:0;animation-name:drawv}
+  .v2 .arrow::after{right:auto;left:-8px;top:auto;bottom:-10px;border:11px solid transparent;border-top:14px solid var(--ink);border-bottom:0}
+  .v2 .habits{grid-template-columns:1fr}
+  .v2 .vis,.v2 .demo{padding:16px}
+  .v2 .safe{padding:24px 20px}
+  .v2 .ship{grid-template-columns:1fr;gap:6px}
+  .v2 .ship span{transform:rotate(90deg)}
+  .v2 .n-brand span{font-size:16px}
+}
+@keyframes drawv{0%{height:0}60%,100%{height:100%}}
+@media(prefers-reduced-motion:reduce){
+  .v2 .rv{opacity:1;transform:none;transition:none}
+  .v2 .arrow::before{animation:none;width:100%}
+}
+</style>
+</head>
+<body>
+<div class="v2" id="top">
+<nav>
+  <div class="wrap nav-in">
+    <a class="n-brand" href="/"><img src="/assets/logos/aligor-logo-transparent.png" alt="阿理哥 Aligor 标志"><span>阿理哥 · Aligor</span></a>
+    <div class="menu">
+      <a href="#steps">6 个步骤</a>
+      <a href="#demos">动画示范</a>
+      <a href="#prompts">复制 Prompt</a>
+      <a class="keep" href="/">回首页</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <div class="pill"><i></i>方法分享 · Adrian 的真实做法</div>
+    <h1>把 PPT 变成<br><mark>会动的网页</mark></h1>
+    <p class="lead">不用设计师，不用会写代码。用 AI，一天内把课堂 PPT 变成可以点、可以动、可以上网的页面。</p>
+    <div class="compare">
+      <div>
+        <div class="cmp-lab"><span>PPT 原页</span></div>
+        <div class="frame"><img src="img/ppt-004.jpg" alt="Preview 课 PPT 第 4 页：聊天助手，还是 AI Agent 个人助理？" width="960" height="540"></div>
+      </div>
+      <div class="arrow" aria-hidden="true"></div>
+      <div>
+        <div class="cmp-lab"><span>同一页，网页版</span><button class="ghost" type="button" data-replay="hero">↻ 再播</button></div>
+        <div class="frame"><div class="mini" id="hero" data-play>
+          <div class="k pop" style="--o:0">0–10 分钟 ｜ 核心概念</div>
+          <div class="t pop" style="--o:1">聊天助手，还是 AI Agent 个人助理？</div>
+          <div class="cols">
+            <div class="c pop" style="--o:2"><b>💬 普通聊天助手</b><p>你问，它答</p><p>聊完就忘</p><p>只给文字，要你自己去做</p></div>
+            <div class="c d pop" style="--o:3"><b>🤖 AI Agent 个人助理</b><p>记得公司资料和习惯</p><p>会用工具、执行任务</p><p>做完留下记录并汇报</p></div>
+          </div>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- WHY -->
+<section class="alt" id="why">
+  <div class="wrap">
+    <div class="eyebrow">为什么要这样做</div>
+    <h2>PPT 只能放，<mark>网页可以点</mark></h2>
+    <div class="why">
+      <div class="card rv" style="--i:0"><em>01</em><h3>PPT 适合投影，网页适合"被点"</h3><p>讲课时点一下出一张卡片，可以点开链接，可以播放示范。</p></div>
+      <div class="card rv" style="--i:1"><em>02</em><h3>改一页，不用重做整份</h3><p>每一页是独立的一段，AI 只改你指定的那一页。</p></div>
+      <div class="card rv" style="--i:2"><em>03</em><h3>学员回家还能看</h3><p>同一份内容，手机也能打开。要不要公开，你自己决定。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- FLOW -->
+<section id="steps">
+  <div class="wrap">
+    <div class="eyebrow">整套方法</div>
+    <h2>6 个步骤，<mark>从 PPT 到上线</mark></h2>
+    <ol class="flow" id="flow">
+      <li style="--i:0"><span class="dot">1</span><div><b>先把内容定好</b><small>只有一份"真源"</small></div></li>
+      <li style="--i:1"><span class="dot">2</span><div><b>原地修改</b><small>先备份，只改指定页</small></div></li>
+      <li style="--i:2"><span class="dot">3</span><div><b>渲染、看、再改</b><small>每页转成图片检查</small></div></li>
+      <li style="--i:3"><span class="dot">4</span><div><b>PPT 转 HTML</b><small>位置、颜色、字体照搬</small></div></li>
+      <li style="--i:4"><span class="dot">5</span><div><b>加动画和互动</b><small>浮出、点击、示范</small></div></li>
+      <li style="--i:5"><span class="dot">6</span><div><b>本机看，满意才上线</b><small>你说"推"才推</small></div></li>
+    </ol>
+    <div class="flow-foot"><button class="ghost" type="button" data-replay="flow">↻ 再走一次</button></div>
+
+    <div style="margin-top:40px">
+      <!-- STEP 1 -->
+      <div class="step">
+        <div class="rv">
+          <span class="no">1</span>
+          <h3>内容先于设计</h3>
+          <ul>
+            <li>每一页写成<b>一个重点 + 最多 3 样东西</b>。字太多就删，细节放讲者备注，不放画面。</li>
+            <li>价格、日期、地点这类会变的数字，<b>只在一个地方改</b>，其他页面引用它。不然 PPT、网站、报名页很容易出现三个版本。</li>
+          </ul>
+          <p class="habit-note"><b>效率习惯：</b>把已确认的事实写进一份"当前最新状态"文件，AI 每次开工先读它。</p>
+        </div>
+        <div class="vis rv" style="--i:1">
+          <div class="src">
+            <div class="file"><small>当前最新状态.md（唯一真源）</small>价格 = <span>RM 〔价格〕</span><br>日期 = <span>〔日期〕</span></div>
+            <i class="down"></i>
+            <div class="fan"><div><b>PPT</b>引用</div><div><b>网站</b>引用</div><div><b>报名页</b>引用</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="step">
+        <div class="rv">
+          <span class="no">2</span>
+          <h3>原地修改 + 先备份</h3>
+          <ul>
+            <li>跟 AI 讲清楚：<b>只改这一份文件，改之前先备份，不要重新生成整份。</b></li>
+            <li>为什么？你有时会在 PowerPoint 里自己手动改。重新生成会把你的修改盖掉。</li>
+            <li>你先保存，再叫 AI 改。AI 改之前先看你动过的地方。</li>
+            <li>每次改完 AI 要记录：改了哪几页、备份在哪里、哪些是它猜的（要你确认）。</li>
+          </ul>
+        </div>
+        <div class="vis rv" style="--i:1">
+          <div class="log">
+            <div class="row bk"><i>⧉</i><div>已备份 <code>_versions/preview_1405.pptx</code></div></div>
+            <div class="row ok"><i>✓</i><div>只改了第 4、10 页，其他页原样</div></div>
+            <div class="row ask"><i>?</i><div>第 10 页的时间是我猜的，请你确认</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="step">
+        <div class="rv">
+          <span class="no">3</span>
+          <h3>渲染 → 看 → 改（品质关键）</h3>
+          <ul>
+            <li>每改一轮，把 PPT 每一页转成图片，AI 和你一起看。</li>
+            <li>要抓的问题：<b>文字重叠、字超出方框、图标位置不对、两页数字不一致。</b></li>
+            <li>看起来慢，其实最省时间：问题在投影之前被发现，而不是在学员面前。</li>
+          </ul>
+        </div>
+        <div class="vis rv" style="--i:1">
+          <div class="thumbs" aria-hidden="true"><i></i><i></i><i></i><i class="bad"></i><i></i><i></i><i></i><i></i></div>
+          <p class="flag">第 4 页：标题超出方框 → 先修，再给你看</p>
+          <div class="loop3" id="loop3"><span class="on">渲染</span><span>看</span><span>改</span></div>
+        </div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div class="step">
+        <div class="rv">
+          <span class="no">4</span>
+          <h3>PPT → HTML，最白话的原理</h3>
+          <ul>
+            <li>一份 .pptx 其实是一包 XML：每个方块、文字、图片都记着<b>位置和大小</b>（单位叫 EMU）。</li>
+            <li>程序把它们读出来，用"绝对定位"画进网页：<b>1 英寸 = 100 像素</b>，整页放在 1333 × 750 的舞台里，再按屏幕大小缩放。</li>
+            <li>所以版面、颜色、字体、图片都和 PPT 一样，不用重新设计。背景大图、圆形头像、阴影、圆角都照搬。</li>
+            <li><b>不输出讲者备注</b>：话术和"待确认"只留在本机。</li>
+          </ul>
+        </div>
+        <div class="vis rv" style="--i:1">
+<pre class="code"><span class="cm"># 1 英寸 = 914400 EMU = 100 px</span>
+<span class="k">EMU_PX</span> = 9144.0
+<span class="k">def</span> px(v): <span class="k">return</span> round(float(v) / EMU_PX, 2)
+
+<span class="cm"># 每个元素照原来的位置放进网页</span>
+st = 'left:%spx;top:%spx;width:%spx;height:%spx' % (
+    px(off.x), px(off.y), px(ext.cx), px(ext.cy))</pre>
+          <div class="stage-dia" aria-hidden="true">
+            <span class="b1">left:67 top:68</span>
+            <span class="b2">文字方块</span>
+            <span class="b3">图片</span>
+            <span class="sz">舞台 1333 × 750</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 5 -->
+      <div class="step">
+        <div class="rv">
+          <span class="no">5</span>
+          <h3>加动画和互动</h3>
+          <ul>
+            <li><b>依序浮出：</b>每一页出现时，标题先、卡片后，一个一个浮出来。</li>
+            <li><b>点一下出一张：</b>给元素加 <code>data-step</code>，按一次 Enter 或点画面，出现下一组。</li>
+            <li><b>特别动画：</b>WhatsApp 对话、剪视频时间线、价格划掉，每页可以单独做。</li>
+            <li>手机宽度自动改成"往下滑"，滑到那一页动画才开始。</li>
+          </ul>
+          <p class="habit-note">下面每一种都有会动的小示范 ↓</p>
+        </div>
+        <div class="vis rv" style="--i:1">
+          <figure class="ppt">
+            <div class="frame"><img src="img/ppt-012.jpg" alt="Preview 课 PPT 第 12 页：我自己用 AI 做的 Landing Page 和专业网站" width="960" height="540" loading="lazy"></div>
+            <figcaption>转成网页后，这一页的每张网站卡片都能点开。</figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <!-- STEP 6 -->
+      <div class="step">
+        <div class="rv">
+          <span class="no">6</span>
+          <h3>先在本机看，满意才上线</h3>
+          <ul>
+            <li>先在自己电脑预览，手机和电脑都看。满意了说<b>"推"</b>，才推到网上，Cloudflare 自动部署。</li>
+            <li>不想所有人看的页面：用密码页保护。<b>密码放 Cloudflare Secret，不写进代码、不写进网页、不贴给 AI。</b></li>
+            <li>讲者备注、内部价格、顾客资料、电话、二维码：不要放上网。</li>
+          </ul>
+        </div>
+        <div class="vis rv" style="--i:1">
+          <div class="ship">
+            <div><b>本机预览</b>电脑 + 手机</div><span>→</span>
+            <div class="say"><b>你说"推"</b>才可以</div><span>→</span>
+            <div><b>上线</b>自动部署</div>
+          </div>
+          <div class="nolist"><span>密码</span><span>Token</span><span>讲者备注</span><span>顾客资料</span><span>电话</span><span>二维码</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DEMOS -->
+<section class="alt" id="demos">
+  <div class="wrap">
+    <div class="eyebrow">3 种动画 · 会动的示范</div>
+    <h2>看一次，<mark>就知道要叫 AI 做什么</mark></h2>
+    <p class="lead">下面全部用 CSS 做，没有用外部素材。对话和价格都是示意，不是真实顾客资料。</p>
+    <div class="demos">
+      <!-- A sequential -->
+      <div class="demo">
+        <div class="demo-h"><b><span>1</span>依序浮出</b><button class="ghost" type="button" data-replay="seq">↻ 再播</button></div>
+        <div class="frame"><div class="mini" id="seq" data-play>
+          <div class="k pop" style="--o:0">一天课程</div>
+          <div class="t pop" style="--o:1">你会做出 3 个成果</div>
+          <div class="cols" style="grid-template-columns:repeat(3,1fr);gap:2cqw">
+            <div class="c pop" style="--o:2"><b>💬 自动回复</b><p>先回答再转人工</p></div>
+            <div class="c pop" style="--o:3"><b>🌐 一个网页</b><p>可以上网</p></div>
+            <div class="c d pop" style="--o:4"><b>🎬 剪好视频</b><p>字幕 + 动画</p></div>
+          </div>
+        </div></div>
+        <p class="cap">标题先出，卡片一张接一张。观众先知道你要讲什么。</p>
+      </div>
+      <!-- B click -->
+      <div class="demo">
+        <div class="demo-h"><b><span>2</span>点一下出一张</b><div class="ctl"><button class="ghost" type="button" id="clkPrev">← 上一步</button><button class="ghost" type="button" id="clkNext">下一步 →</button></div></div>
+        <div class="frame"><div class="mini clk" id="clk" tabindex="0" role="button" aria-label="点一下出现下一张卡片">
+          <div class="k">讲到哪里，出到哪里</div>
+          <div class="t">学会之后，你可以…</div>
+          <div class="three">
+            <div data-step="1"><i>①</i><b>回顾客</b><small>AI 先回答常见问题</small></div>
+            <div data-step="2"><i>②</i><b>做网页</b><small>讲一句，它帮你改</small></div>
+            <div data-step="3"><i>③</i><b>剪视频</b><small>丢进去，20 分钟剪好</small></div>
+          </div>
+          <span class="hint" id="clkHint">点画面 / Enter · 0 / 3</span>
+        </div></div>
+        <p class="cap">每按一次出现一张。讲完了再点，从头开始。</p>
+      </div>
+      <!-- C1 WhatsApp -->
+      <div class="demo">
+        <div class="demo-h"><b><span>3</span>特别动画：WhatsApp 对话</b><span><span class="demo-tag">示意</span> <button class="ghost" type="button" data-replay="wa">↻ 再播</button></span></div>
+        <div class="wa" id="wa" data-play>
+          <div class="wa-top"><i>AI</i><div>公司客服助理<small>在线</small></div></div>
+          <div class="wa-body">
+            <div class="bub cu w1">请问价格和营业时间？</div>
+            <div class="bub ai typ w2"><i></i><i></i><i></i></div>
+            <div class="bub ai w3">您好！价格和营业时间如下（按公司资料回答）。方便说一下您的需求吗？</div>
+            <div class="bub cu w4">我要退款！</div>
+            <div class="bub ai typ w5"><i></i><i></i><i></i></div>
+            <div class="bub ai w6">这个问题需要同事跟进，我已通知负责同事。</div>
+            <div class="handoff w7">→ 已转人工</div>
+          </div>
+        </div>
+      </div>
+      <!-- C2 video -->
+      <div class="demo">
+        <div class="demo-h"><b><span>3</span>特别动画：剪视频</b><button class="ghost" type="button" data-replay="vid">↻ 再播</button></div>
+        <div class="vid" id="vid" data-play>
+          <div class="chips"><span class="chip">🎞 原视频.mov · 03:42</span><span>→ 丢给 AI Agent</span></div>
+          <div class="say">"剪成 30 秒，卡顿剪掉"</div>
+          <div class="tl" aria-hidden="true">
+            <i style="--w:3"></i><i class="x" style="--w:5"></i><i style="--w:2"></i><i class="x" style="--w:7"></i><i style="--w:2"></i><i class="x" style="--w:4"></i><i style="--w:3"></i><i class="x" style="--w:6"></i><i style="--w:2"></i><i class="x" style="--w:5"></i>
+          </div>
+          <div class="meta"><div class="lg"><span>保留</span><span class="c">卡顿 / 停顿</span></div><span class="dur" id="dur">03:42</span></div>
+        </div>
+      </div>
+      <!-- C3 price -->
+      <div class="demo">
+        <div class="demo-h"><b><span>3</span>特别动画：价格划掉</b><span><span class="demo-tag">示意价格</span> <button class="ghost" type="button" data-replay="price">↻ 再播</button></span></div>
+        <div class="price" id="price" data-play>
+          <small>原价</small>
+          <div class="old">RM 699</div>
+          <div class="new">RM 399</div>
+        </div>
+        <p class="cap">先出原价，红线划掉，现价弹出来。一页讲完，不用多说。</p>
+      </div>
+      <!-- keys -->
+      <div class="demo">
+        <div class="demo-h"><b>网页版的操作方式</b></div>
+        <div class="keys" style="margin-top:0">
+          <div><kbd>Enter</kbd><kbd>→</kbd><kbd>空格</kbd>下一步</div>
+          <div><kbd>←</kbd>上一步，或点画面左边</div>
+          <div><kbd>F</kbd>全屏</div>
+          <div>页码框直接输入页码，跳到那一页</div>
+          <div>手机：往下滑，滑到才播动画</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROMPTS -->
+<section id="prompts">
+  <div class="wrap">
+    <div class="eyebrow">复制就能用</div>
+    <h2>8 段 Prompt，<mark>直接贴给 AI</mark></h2>
+    <p class="lead">把 〔 〕 里面的东西换成你自己的。</p>
+    <div class="prompts">
+      <div class="pr rv" style="--i:0"><div class="pr-h"><b><span>1</span>整理内容</b><button class="copy" type="button">复制</button></div><pre>我有一份 PPT〔路径〕。请先把每一页的内容读一遍，告诉我：哪几页字太多、哪几页数字前后不一致、哪些是你不确定要问我的。先不要改。</pre></div>
+      <div class="pr rv" style="--i:1"><div class="pr-h"><b><span>2</span>原地修改</b><button class="copy" type="button">复制</button></div><pre>只改这一份文件〔路径〕。每次改之前先备份到 _versions/。我下面会给你页码和要改的内容，其他页原样保留，不要重新生成整份。</pre></div>
+      <div class="pr rv" style="--i:0"><div class="pr-h"><b><span>3</span>渲染检查</b><button class="copy" type="button">复制</button></div><pre>把这份 PPT 每一页转成图片，一页一页检查有没有文字重叠或超出，发现问题先修，再给我看。</pre></div>
+      <div class="pr rv" style="--i:1"><div class="pr-h"><b><span>4</span>转网页</b><button class="copy" type="button">复制</button></div><pre>请写一个程序，读这份 PPT，把每一页转成一个网页段落，位置、颜色、字体、图片都和 PPT 一样，加上每一页出现时的依序浮出动画。输出一个 index.html。不要输出讲者备注。</pre></div>
+      <div class="pr rv" style="--i:0"><div class="pr-h"><b><span>5</span>点一下出现</b><button class="copy" type="button">复制</button></div><pre>第〔3、4、5〕页，我要标题一开始就出现，卡片点一下出现一张。</pre></div>
+      <div class="pr rv" style="--i:1"><div class="pr-h"><b><span>6</span>特别动画</b><button class="copy" type="button">复制</button></div><pre>第〔10〕页左边做成 WhatsApp 对话界面：顾客一句、"打字中"、AI 回一句，最后显示"已转人工"，有动画。</pre></div>
+      <div class="pr rv" style="--i:0"><div class="pr-h"><b><span>7</span>链接</b><button class="copy" type="button">复制</button></div><pre>第〔12〕页的每个网站卡片都能点，按下去在新分页打开我的网站。</pre></div>
+      <div class="pr rv" style="--i:1"><div class="pr-h"><b><span>8</span>上线前检查</b><button class="copy" type="button">复制</button></div><pre>先在本机预览。检查：手机和电脑都正常、没有密码／Token／顾客资料／电话、没有我没有授权的图片。我说"推"才可以推。</pre></div>
+    </div>
+    <p class="pnote">建议一次贴一段，等 AI 做完、你看过，再贴下一段。</p>
+  </div>
+</section>
+
+<!-- HABITS -->
+<section class="alt" id="habits">
+  <div class="wrap">
+    <div class="eyebrow">提高效率</div>
+    <h2>8 个习惯，<mark>越做越快</mark></h2>
+    <div class="habits">
+      <div class="habit rv" style="--i:0"><i>1</i><p>只有一个"当前版"文件，不另存 v1、v2、v3。</p></div>
+      <div class="habit rv" style="--i:1"><i>2</i><p>改之前先备份。</p></div>
+      <div class="habit rv" style="--i:2"><i>3</i><p>一次只改一页、一件事。</p></div>
+      <div class="habit rv" style="--i:3"><i>4</i><p>改完马上渲染，自己看。</p></div>
+      <div class="habit rv" style="--i:4"><i>5</i><p>不确定的事让 AI 先问，不要让它猜。</p></div>
+      <div class="habit rv" style="--i:5"><i>6</i><p>不要的字，直接删。</p></div>
+      <div class="habit rv" style="--i:6"><i>7</i><p>在本机看，满意才上线。</p></div>
+      <div class="habit rv" style="--i:7"><i>8</i><p>每次做完写一条记录：改了什么、备份在哪、还有什么没确认。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- TIPS -->
+<section id="tips">
+  <div class="wrap">
+    <div class="eyebrow">提高展现能力</div>
+    <h2>6 个小技巧，<mark>讲得更清楚</mark></h2>
+    <div class="tips">
+      <div class="tip rv" style="--i:0"><b>一页只讲一件事</b><p>观众一眼就知道这页的重点。</p></div>
+      <div class="tip rv" style="--i:1"><b>大数字比长句子好记</b><p>例如 80–90%、RM 399。</p></div>
+      <div class="tip rv" style="--i:2"><b>用真实画面</b><p>真实网站截图、真实对话，不要空洞的图库照片。</p></div>
+      <div class="tip rv" style="--i:0"><b>先出标题，再出内容</b><p>让观众先知道你要讲什么。</p></div>
+      <div class="tip rv" style="--i:1"><b>点一下出现一张</b><p>你讲到哪里，画面才出现到哪里。</p></div>
+      <div class="tip rv" style="--i:2"><b>示范用会动的画面</b><p>对话、剪辑、价格动起来，比一段文字更好懂。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- SAFETY -->
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="safe rv">
+      <h2>⚠ 安全和版权提醒</h2>
+      <ul>
+        <li><b>密码、Token、验证码、二维码、顾客资料、私人电话：</b>不要放上网，也不要贴进聊天。</li>
+        <li><b>电影剧照、别人的图片：</b>只在自己的课堂展示。要公开到网站、广告或视频前，先确认有没有使用权。</li>
+        <li><b>品牌 logo：</b>只用来识别产品，不要暗示合作或认证。</li>
+        <li><b>示意聊天和示意数字要标明"示意"</b>，不要冒充真实顾客资料或真实销售数字。</li>
+        <li><b>没确认的内容</b>（价格、日期、名额）不要写成已确认。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL -->
+<section class="final">
+  <div class="wrap">
+    <h2>想一起学怎样用 AI Agent 做这些事？</h2>
+    <a class="btn" href="/register?utm_source=site&amp;utm_medium=guide&amp;utm_campaign=presentation-method">先报名免费 Preview →</a>
+    <small>方法来自 Adrian 的真实做法；页面里的示意画面不是真实顾客资料。</small>
+  </div>
+</section>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap foot-in">
+    <div class="foot-brand"><img src="/assets/logos/aligor-logo-transparent.png" alt="阿理哥 Aligor 标志"><div><b>阿理哥 · Aligor</b><span>Malaysia · AI Agent · SME Automation</span></div></div>
+    <div class="foot-links">
+      <a href="https://www.instagram.com/aligor4916/">Instagram</a>
+      <a href="https://www.facebook.com/aligor4916/">Facebook</a>
+      <a href="https://www.threads.com/@aligor4916">Threads</a>
+    </div>
+    <div class="foot-copy">© 2026 阿理哥 Aligor</div>
+  </div>
+</footer>
+</div>
+
+<script>
+(function () {
+  var timers = {};
+  function later(key, fn, ms) { (timers[key] = timers[key] || []).push(setTimeout(fn, ms)); }
+  function clear(key) { (timers[key] || []).forEach(clearTimeout); timers[key] = []; }
+
+  // video timeline: mark the pauses, then cut them and count 03:42 → 00:30
+  function runVid(el) {
+    clear('vid');
+    var dur = document.getElementById('dur');
+    el.classList.remove('mark', 'cut'); dur.textContent = '03:42';
+    later('vid', function () { el.classList.add('mark'); }, 1800);
+    later('vid', function () {
+      el.classList.add('cut');
+      var from = 222, to = 30, t0 = performance.now();
+      (function tick(now) {
+        var p = Math.max(0, Math.min(1, (now - t0) / 900)), s = Math.round(from + (to - from) * p);
+        dur.textContent = ('0' + Math.floor(s / 60)).slice(-2) + ':' + ('0' + s % 60).slice(-2);
+        if (p < 1) requestAnimationFrame(tick);
+      })(t0);
+    }, 3000);
+  }
+  // render → look → fix loop highlight
+  function runLoop() {
+    var s = document.querySelectorAll('#loop3 span'), k = 0;
+    setInterval(function () { s[k].classList.remove('on'); k = (k + 1) % s.length; s[k].classList.add('on'); }, 1100);
+  }
+
+  function play(el) {
+    if (el.id === 'flow') { el.classList.add('go'); return; }
+    el.classList.add('play');
+    if (el.id === 'vid') runVid(el);
+  }
+  function replay(el) {
+    el.classList.remove('play', 'go');
+    void el.offsetWidth;
+    play(el);
+  }
+
+  var targets = [].slice.call(document.querySelectorAll('.rv, [data-play], #flow'));
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        var el = e.target;
+        if (el.classList.contains('rv')) el.classList.add('in'); else play(el);
+        io.unobserve(el);
+      });
+    }, { threshold: 0.25 });
+    targets.forEach(function (el) { io.observe(el); });
+  } else {
+    targets.forEach(function (el) { el.classList.contains('rv') ? el.classList.add('in') : play(el); });
+  }
+  runLoop();
+
+  [].forEach.call(document.querySelectorAll('[data-replay]'), function (b) {
+    b.addEventListener('click', function () { replay(document.getElementById(b.dataset.replay)); });
+  });
+
+  // click-to-reveal demo (same idea as data-step in the real deck)
+  var clk = document.getElementById('clk'), hint = document.getElementById('clkHint');
+  var items = clk.querySelectorAll('[data-step]'), cur = 0, max = items.length;
+  function show(k) {
+    cur = (k + max + 1) % (max + 1);
+    [].forEach.call(items, function (e) { e.classList.toggle('r', +e.dataset.step <= cur); });
+    hint.textContent = '点画面 / Enter · ' + cur + ' / ' + max;
+  }
+  clk.addEventListener('click', function () { show(cur + 1); });
+  clk.addEventListener('keydown', function (e) {
+    if (['Enter', ' ', 'ArrowRight'].indexOf(e.key) > -1) { e.preventDefault(); show(cur + 1); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); show(Math.max(0, cur - 1)); }
+  });
+  document.getElementById('clkNext').addEventListener('click', function () { show(cur + 1); });
+  document.getElementById('clkPrev').addEventListener('click', function () { show(Math.max(0, cur - 1)); });
+
+  // copy buttons
+  [].forEach.call(document.querySelectorAll('.copy'), function (b) {
+    b.addEventListener('click', function () {
+      var text = b.closest('.pr').querySelector('pre').textContent;
+      function done() { b.textContent = '已复制 ✓'; b.classList.add('ok'); setTimeout(function () { b.textContent = '复制'; b.classList.remove('ok'); }, 1600); }
+      function fallback() {
+        var t = document.createElement('textarea'); t.value = text; t.setAttribute('readonly', ''); t.style.position = 'fixed'; t.style.opacity = '0';
+        document.body.appendChild(t); t.select(); try { document.execCommand('copy'); } catch (e) {} document.body.removeChild(t); done();
+      }
+      if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
+    });
+  });
+})();
+</script>
+</body>
+</html>
