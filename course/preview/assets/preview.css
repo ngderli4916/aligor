@@ -145,3 +145,7 @@ a.cardlink:hover span,a.cardlink:focus-visible span{opacity:1;transform:none}
 .ui .pos{display:inline-flex;align-items:center;gap:4px;font:700 13px ui-monospace,Menlo,monospace;color:#9fb3c8;min-width:0}
 .ui .pn{width:40px;height:30px;text-align:center;border:1px solid rgba(255,255,255,.25);border-radius:8px;background:rgba(255,255,255,.1);color:#fff;font:800 14px ui-monospace,Menlo,monospace;outline:none}
 .ui .pn:focus{border-color:#20D6E7;background:rgba(32,214,231,.15)}
+
+/* 自我介绍页：网站按钮 */
+a.chip{position:absolute;z-index:5;display:flex;align-items:center;justify-content:center;border-radius:999px;background:rgba(255,255,255,.08);border:1.5px solid rgba(245,165,36,.7);color:#fff;text-decoration:none;font:700 21px var(--font);transition:background .2s,transform .2s}
+a.chip:hover,a.chip:focus-visible{background:#F5A524;color:#0F1B2D;transform:translateY(-2px);outline:none}
