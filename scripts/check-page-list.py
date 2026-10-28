@@ -23,6 +23,9 @@ for path in ROOT.rglob("*.html"):
     parts = path.relative_to(ROOT).parts
     if any(part in EXCLUDED_DIRS or part.startswith(".") for part in parts):
         continue
+    # 密码保护的课程章节：只列 /course/ 入口，章节页面不逐个列出
+    if parts[0] == "course" and path.relative_to(ROOT).as_posix() != "course/index.html":
+        continue
     html_files.append(path)
 
 list_html = LIST_FILE.read_text(encoding="utf-8")

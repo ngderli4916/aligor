@@ -7,6 +7,7 @@ import { classRegisterPage, paymentPage, invalidPaymentPage } from './classui.js
 import { surveyPage, invalidSurveyPage, findSurveyInvite, saveSurvey } from './survey.js';
 import { InvoiceError, createInvoice, updateInvoice, invoiceAction, deleteInvoice, listInvoices, getInvoice, findPublicInvoice, invoiceCsv } from './invoice.js';
 import { invoicePage, invalidInvoicePage } from './invoiceui.js';
+import { handleCourse } from './course.js';
 import { META_CSP_SCRIPT, META_CSP_CONNECT, META_CSP_IMG, adSource, sendLeadToMeta } from './meta.js';
 
 const json = (data, status=200, headers={}) => new Response(JSON.stringify(data), {status, headers:{'content-type':'application/json; charset=utf-8',...headers}});
@@ -21,6 +22,7 @@ export default { async fetch(request, env, ctx) {
 
 async function route(request, env, ctx) {
   const url = new URL(request.url), path=url.pathname;
+  if (path==='/course' || path.startsWith('/course/') || path==='/api/course/login' || path==='/api/course/logout') return handleCourse(request,env);
   if (request.method==='GET' && path==='/') return Response.redirect(`${url.origin}/register`,302);
   if (request.method==='GET' && path==='/register') {
     const tracking=isAdmin(request,env).then(skip=>recordView(env,request,{path:'/register',ref:request.headers.get('referer'),source:'server',skip})).catch(error=>console.error('track_failed',redactSecrets(error?.message,env)));
