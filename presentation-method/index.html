@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>不用做 PPT，直接做会动的网页 PPT · 阿理哥 Aligor</title>
-  <meta name="description" content="不用做 PPT。把内容写成 MD 包交给 AI，直接做成会动的网页 PPT：可以放视频、音乐、动画、链接。6 个步骤、8 段可复制 Prompt。">
+  <title>不会做网站？AI 会做。直接做会动的网页 PPT · 阿理哥 Aligor</title>
+  <meta name="description" content="你不会做网站也没关系，AI 会做。不用做 PPT，把内容写成 MD 包交给 AI，直接做成会动的网页 PPT：可以放视频、音乐、动画、链接。6 个步骤、8 段可复制 Prompt。">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="阿理哥 Aligor">
   <meta property="og:url" content="https://aligor.aligor.workers.dev/presentation-method/">
-  <meta property="og:title" content="不用做 PPT，直接做会动的网页 PPT｜阿理哥 Aligor">
-  <meta property="og:description" content="不用做 PPT，AI 直接做成会动的网页 PPT：6 个步骤 + 可复制 Prompt。">
+  <meta property="og:title" content="不会做网站？AI 会做。直接做会动的网页 PPT｜阿理哥 Aligor">
+  <meta property="og:description" content="你不会做网站，AI 会做。不用做 PPT，AI 直接做成会动的网页 PPT：6 个步骤 + 可复制 Prompt。">
   <meta property="og:image" content="https://aligor.aligor.workers.dev/assets/og-card.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -71,7 +71,14 @@ html{scroll-behavior:smooth;scroll-padding-top:80px}
 .v2 .hero{padding:64px 0 80px}
 .v2 .pill{display:inline-flex;gap:8px;align-items:center;background:var(--ink);color:#fff;padding:7px 16px;border-radius:999px;font-size:13px;font-weight:700;margin-bottom:22px}
 .v2 .pill i{width:8px;height:8px;border-radius:50%;background:var(--yellow);display:block}
-.v2 .hero h1{font-size:clamp(38px,6.4vw,68px);font-weight:900;margin-bottom:20px}
+.v2 .hero h1{font-size:clamp(38px,6.4vw,68px);font-weight:900;margin-bottom:16px}
+.v2 .hero .sub{font-family:"Noto Serif SC",serif;font-size:clamp(20px,2.6vw,28px);font-weight:700;margin-bottom:14px}
+.v2 .hero .sub b{color:var(--teal)}
+.v2 .hero .lead{margin-bottom:20px}
+.v2 .hero .you{list-style:none;display:flex;flex-wrap:wrap;gap:10px;margin:0 0 30px;padding:0}
+.v2 .hero .you li{display:inline-flex;align-items:center;gap:8px;background:#fff;border:2px solid var(--ink);border-radius:999px;padding:7px 15px;font-weight:700;font-size:15px}
+.v2 .hero .you i{font-style:normal;width:22px;height:22px;border-radius:50%;background:var(--teal);color:#fff;display:grid;place-items:center;font-size:13px}
+.v2 .hero .you .no i{background:var(--coral)}
 .v2 .compare{margin-top:48px;display:grid;grid-template-columns:1fr 64px 1fr;gap:16px;align-items:center}
 .v2 .cmp-lab{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;color:var(--mute);margin-bottom:8px;letter-spacing:.06em}
 .v2 .frame{border-radius:14px;border:1px solid var(--line);overflow:hidden;background:#fff;box-shadow:0 18px 40px -22px rgba(20,17,15,.35);aspect-ratio:16/9}
@@ -404,8 +411,14 @@ html{scroll-behavior:smooth;scroll-padding-top:80px}
 <header class="hero">
   <div class="wrap">
     <div class="pill"><i></i>方法分享 · Adrian 的真实做法</div>
-    <h1>不用做 PPT，<br>直接做<mark>会动的网页 PPT</mark></h1>
-    <p class="lead">把内容写好交给 AI，它直接做成网页版的 PPT。视频、音乐、动画、链接，想放什么都可以，看的人一看就明白。</p>
+    <h1>你不会做网站？<br><mark>不用会，AI 会做。</mark></h1>
+    <p class="sub">不用做 PPT，直接做<b>会动的网页 PPT</b></p>
+    <p class="lead">不用学写代码，也不用懂设计。你只要把内容写好、跟 AI 说你要什么，它就帮你做成网页版的 PPT。视频、音乐、动画、链接，想放什么都可以，看的人一看就明白。</p>
+    <ul class="you">
+      <li><i>✓</i>你只要会写内容</li>
+      <li><i>✓</i>你只要会说要改哪里</li>
+      <li class="no"><i>✕</i>不用会写代码</li>
+    </ul>
     <div class="compare">
       <div>
         <div class="cmp-lab"><span>你写的内容包 slides.md</span></div>
