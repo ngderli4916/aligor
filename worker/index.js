@@ -8,6 +8,7 @@ import { surveyPage, invalidSurveyPage, findSurveyInvite, saveSurvey } from './s
 import { InvoiceError, createInvoice, updateInvoice, invoiceAction, deleteInvoice, listInvoices, getInvoice, findPublicInvoice, invoiceCsv } from './invoice.js';
 import { invoicePage, invalidInvoicePage } from './invoiceui.js';
 import { META_CSP_SCRIPT, META_CSP_CONNECT, META_CSP_IMG, adSource, sendLeadToMeta } from './meta.js';
+import { previewAccessPage, verifyPreviewAccess } from './previewaccess.js';
 
 const json = (data, status=200, headers={}) => new Response(JSON.stringify(data), {status, headers:{'content-type':'application/json; charset=utf-8',...headers}});
 const html = (body,extra={},csp=`default-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'unsafe-inline' ${META_CSP_SCRIPT}; connect-src 'self' ${META_CSP_CONNECT}; img-src 'self' data: ${META_CSP_IMG}; form-action 'self'; frame-ancestors 'none'`) => new Response(body,{headers:{...extra,'content-type':'text/html; charset=utf-8','content-security-policy':csp,'x-frame-options':'DENY','referrer-policy':'same-origin'}});
@@ -28,6 +29,7 @@ async function route(request, env, ctx) {
     return html(registerPage(cleanText(url.searchParams.get('batch'),50),await registrationStats(env),env.META_PIXEL_ID));
   }
   if (request.method==='GET' && path==='/classregister') return html(classRegisterPage(currentPackages(env),promoState(env)),{'cache-control':'no-store'});
+  if (request.method==='GET' && path==='/preview-live') return html(previewAccessPage(),{'cache-control':'no-store','x-robots-tag':'noindex, nofollow','referrer-policy':'no-referrer'});
   if (request.method==='GET' && path==='/survey') {
     const invite=await findSurveyInvite(env,url.searchParams.get('t'));
     const response=html(invite?surveyPage(invite):invalidSurveyPage(),{'cache-control':'no-store','x-robots-tag':'noindex, nofollow'});
@@ -40,6 +42,10 @@ async function route(request, env, ctx) {
     return row?response:new Response(response.body,{status:404,headers:response.headers});
   }
   if (request.method==='POST' && path==='/api/classregister') return classRegister(request,env,ctx,url);
+  if (request.method==='POST' && path==='/api/preview-access') {
+    const result=await verifyPreviewAccess(env,await smallJson(request));
+    return json(result.body,result.status,{'cache-control':'no-store'});
+  }
   if (request.method==='POST' && path==='/api/survey') {
     const result=await saveSurvey(env,await smallJson(request));
     return json(result.body,result.status,{'cache-control':'no-store'});
