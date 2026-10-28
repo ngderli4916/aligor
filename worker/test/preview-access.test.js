@@ -34,17 +34,17 @@ const makeEnv = (extra = {}) => ({
 });
 const makeCtx = () => ({ promises: [], waitUntil(p) { this.promises.push(p); } });
 
-function addLead(env, { phone = '60167871902', batch = 'PREVIEW-1028', status = 'new' } = {}) {
+function addLead(env, { phone = '60167871902', batch = 'PREVIEW-1028', status = 'new', name = 'Test Student' } = {}) {
   const now = new Date().toISOString();
   env.DB.raw.prepare("INSERT INTO leads(public_id,name,phone_e164,batch,course,status,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?)")
-    .run(crypto.randomUUID().slice(0, 8), 'Test Student', phone, batch, '免费 AI Preview', status, now, now);
+    .run(crypto.randomUUID().slice(0, 8), name, phone, batch, '免费 AI Preview', status, now, now);
 }
 
-async function call(env, method, path, body) {
+async function call(env, method, path, body, headers = {}) {
   const ctx = makeCtx();
   const res = await worker.fetch(new Request(`https://aligor.test${path}`, {
     method,
-    headers: body === undefined ? {} : { 'content-type': 'application/json' },
+    headers: body === undefined ? headers : { 'content-type': 'application/json', ...headers },
     body: body === undefined ? undefined : JSON.stringify(body),
   }), env, ctx);
   await Promise.all(ctx.promises);
@@ -99,4 +99,36 @@ test('invalid phone input is rejected and a missing join-link setting never gran
   const missing = await call(env, 'POST', '/api/preview-access', { phone: '0167871902' });
   assert.equal(missing.status, 503);
   assert.ok(!(await missing.text()).includes(JOIN_URL));
+});
+
+test('admin can identify students who obtained the link and see first, last, and total access', async () => {
+  const env = makeEnv();
+  addLead(env, { phone: '60167871902', name: 'Came Student' });
+  addLead(env, { phone: '60111111111', name: 'Absent Student' });
+  await call(env, 'POST', '/api/preview-access', { phone: '0167871902' });
+  await call(env, 'POST', '/api/preview-access', { phone: '0167871902' });
+
+  const login = await call(env, 'POST', '/api/admin/login', { password: 'x' });
+  const cookie = login.headers.get('set-cookie').split(';')[0];
+
+  const granted = await call(env, 'GET', '/api/admin/leads?batch=PREVIEW-1028&access=granted', undefined, { cookie });
+  assert.equal(granted.status, 200);
+  const grantedRows = (await granted.json()).leads;
+  assert.equal(grantedRows.length, 1);
+  assert.equal(grantedRows[0].name, 'Came Student');
+  assert.equal(grantedRows[0].preview_access_count, 2);
+  assert.ok(grantedRows[0].preview_first_access_at);
+  assert.ok(grantedRows[0].preview_last_access_at);
+
+  const missing = await call(env, 'GET', '/api/admin/leads?batch=PREVIEW-1028&access=missing', undefined, { cookie });
+  assert.equal(missing.status, 200);
+  const missingRows = (await missing.json()).leads;
+  assert.equal(missingRows.length, 1);
+  assert.equal(missingRows[0].name, 'Absent Student');
+  assert.equal(missingRows[0].preview_access_count, 0);
+
+  const page = await call(env, 'GET', '/4916', undefined, { cookie });
+  const html = await page.text();
+  assert.ok(html.includes('已领取链接'));
+  assert.ok(html.includes('首次领取时间'));
 });

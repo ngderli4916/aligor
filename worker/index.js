@@ -165,10 +165,16 @@ async function track(request,env,ctx) {
 
 async function listLeads(url,env) {
   const filters=[], binds=[];
-  const status=cleanText(url.searchParams.get('status'),20),batch=cleanText(url.searchParams.get('batch'),50),q=cleanText(url.searchParams.get('q'),80);
+  const status=cleanText(url.searchParams.get('status'),20),batch=cleanText(url.searchParams.get('batch'),50),q=cleanText(url.searchParams.get('q'),80),access=cleanText(url.searchParams.get('access'),20);
   if(status){filters.push('status=?');binds.push(status)} if(batch){filters.push('batch LIKE ?');binds.push(`%${batch}%`)} if(q){const byCode=/^#?AIPR\d+$/i.test(q)?parseLeadCode(q):null;if(byCode){filters.push('id=?');binds.push(byCode)}else{filters.push('(name LIKE ? OR phone_e164 LIKE ?)');binds.push(`%${q}%`,`%${q.replace(/\D/g,'')}%`)}}
+  if(access==='granted') filters.push("EXISTS (SELECT 1 FROM lead_events pe WHERE pe.lead_id=leads.id AND pe.event_type='preview_access_granted')");
+  if(access==='missing') filters.push("NOT EXISTS (SELECT 1 FROM lead_events pe WHERE pe.lead_id=leads.id AND pe.event_type='preview_access_granted')");
   const where=filters.length?`WHERE ${filters.join(' AND ')}`:'';
-  const result=await env.DB.prepare(`SELECT * FROM leads ${where} ORDER BY created_at DESC LIMIT 300`).bind(...binds).all();
+  const result=await env.DB.prepare(`SELECT leads.*,
+    (SELECT MIN(pe.created_at) FROM lead_events pe WHERE pe.lead_id=leads.id AND pe.event_type='preview_access_granted') preview_first_access_at,
+    (SELECT MAX(pe.created_at) FROM lead_events pe WHERE pe.lead_id=leads.id AND pe.event_type='preview_access_granted') preview_last_access_at,
+    (SELECT COUNT(*) FROM lead_events pe WHERE pe.lead_id=leads.id AND pe.event_type='preview_access_granted') preview_access_count
+    FROM leads ${where} ORDER BY created_at DESC LIMIT 300`).bind(...binds).all();
   const counts=await env.DB.prepare('SELECT status,COUNT(*) count FROM leads GROUP BY status').all();
   const stats={total:0,new:0,contacted:0,paid:0}; counts.results.forEach(x=>{stats[x.status]=x.count;stats.total+=x.count});
   return json({leads:result.results.map(x=>({...x,code:leadCode(x.id),whatsapp_url:waUrl(x.phone_e164,buildCustomerMessage(x,env))})),stats});
