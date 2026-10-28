@@ -30,6 +30,9 @@ export async function verifyPreviewAccess(env, data) {
   const batch = String(env.PREVIEW_ACCESS_BATCH || '').trim();
   const joinUrl = String(env.PREVIEW_JOIN_URL || '').trim();
   if (!batch || !/^https:\/\//i.test(joinUrl)) return { status: 503, body: { ok: false, error: '课程链接暂时还没开放，请稍后再试。' } };
+  let ownerPhone = '';
+  try { ownerPhone = normalizePhone(env.PREVIEW_OWNER_PHONE); } catch {}
+  if (ownerPhone && phone === ownerPhone) return { status: 200, body: { ok: true, join_url: joinUrl } };
   const lead = await env.DB.prepare("SELECT id FROM leads WHERE phone_e164=? AND batch=? AND status!='cancelled' LIMIT 1").bind(phone, batch).first();
   if (!lead) return noAccess();
   await env.DB.prepare('INSERT INTO lead_events(lead_id,event_type,actor,details,created_at) VALUES(?,?,?,?,?)').bind(lead.id, 'preview_access_granted', 'customer', `batch=${batch}`, nowIso()).run();

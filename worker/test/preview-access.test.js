@@ -30,6 +30,7 @@ const makeEnv = (extra = {}) => ({
   ADMIN_PASSWORD: 'x',
   PREVIEW_ACCESS_BATCH: 'PREVIEW-1028',
   PREVIEW_JOIN_URL: JOIN_URL,
+  PREVIEW_OWNER_PHONE: '60123456789',
   ...extra,
 });
 const makeCtx = () => ({ promises: [], waitUntil(p) { this.promises.push(p); } });
@@ -72,6 +73,15 @@ test('a phone registered for the current Preview receives the configured join li
   assert.deepEqual(out, { ok: true, join_url: JOIN_URL });
   const events = env.DB.raw.prepare("SELECT event_type,actor,details FROM lead_events ORDER BY id").all().map(row => ({ ...row }));
   assert.deepEqual(events, [{ event_type: 'preview_access_granted', actor: 'customer', details: 'batch=PREVIEW-1028' }]);
+});
+
+test('the configured owner phone can always inspect the link without creating student attendance', async () => {
+  const env = makeEnv();
+  const res = await call(env, 'POST', '/api/preview-access', { phone: '012-345 6789' });
+  assert.equal(res.status, 200);
+  assert.deepEqual(await res.json(), { ok: true, join_url: JOIN_URL });
+  const events = env.DB.raw.prepare("SELECT * FROM lead_events WHERE event_type='preview_access_granted'").all();
+  assert.equal(events.length, 0);
 });
 
 test('wrong phone, another batch, and cancelled registrations are denied without revealing which check failed', async () => {
