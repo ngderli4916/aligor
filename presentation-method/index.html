@@ -76,8 +76,20 @@ html{scroll-behavior:smooth;scroll-padding-top:80px}
 .v2 .hero .sub b{color:var(--teal)}
 .v2 .hero .lead{margin-bottom:20px}
 .v2 .hero-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 24px}
-.v2 .hero-actions .demo-btn{background:var(--ink);color:#fff}
-.v2 .hero-actions .demo-btn:hover{box-shadow:0 6px 0 var(--yellow-d)}
+.v2 .hero-actions{gap:18px 22px}
+.v2 .demo-cta{position:relative;display:inline-block;padding:0 26px 30px 0}
+.v2 .demo-btn{position:relative;z-index:1;background:var(--yellow);color:var(--ink);font-size:clamp(18px,2.2vw,22px);font-weight:900;padding:18px 30px 18px 22px;border:3px solid var(--ink);box-shadow:6px 6px 0 var(--ink);animation:demoBreathe 2.4s ease-in-out infinite}
+.v2 .demo-btn:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 var(--ink);animation-play-state:paused}
+.v2 .demo-btn:active{transform:translate(4px,4px);box-shadow:2px 2px 0 var(--ink)}
+.v2 .demo-btn .play{width:34px;height:34px;flex:none;border-radius:50%;background:var(--ink);color:var(--yellow);display:grid;place-items:center;font-size:13px;padding-left:3px}
+.v2 .demo-btn small{display:block;font-size:13px;font-weight:700;color:#5b4a12;margin-top:2px;letter-spacing:.02em}
+.v2 .demo-btn::before{content:"";position:absolute;inset:-3px;border-radius:999px;border:3px solid var(--yellow);z-index:-1;animation:demoRing 1.6s ease-out infinite}
+@keyframes demoBreathe{50%{transform:scale(1.04)}}
+@keyframes demoRing{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(1.18,1.5)}}
+.v2 .demo-cta .finger{position:absolute;z-index:2;right:-6px;bottom:-14px;font-size:64px;line-height:1;transform-origin:30% 10%;filter:drop-shadow(2px 3px 0 rgba(20,17,15,.25));pointer-events:none;animation:tap 1.2s ease-in-out infinite}
+.v2 .demo-cta .tapfx{position:absolute;z-index:2;right:34px;bottom:30px;width:30px;height:30px;border-radius:50%;border:3px solid var(--coral);opacity:0;pointer-events:none;animation:tapfx 1.2s ease-out infinite}
+@keyframes tap{0%,100%{transform:translate(0,0) rotate(-12deg)}35%{transform:translate(-10px,-12px) rotate(-18deg) scale(.92)}50%{transform:translate(-10px,-12px) rotate(-18deg) scale(.86)}}
+@keyframes tapfx{0%,40%{opacity:0;transform:scale(.3)}48%{opacity:1}100%{opacity:0;transform:scale(2.2)}}
 .v2 .hero .you{list-style:none;display:flex;flex-wrap:wrap;gap:10px;margin:0 0 30px;padding:0}
 .v2 .hero .you li{display:inline-flex;align-items:center;gap:8px;background:#fff;border:2px solid var(--ink);border-radius:999px;padding:7px 15px;font-weight:700;font-size:15px}
 .v2 .hero .you i{font-style:normal;width:22px;height:22px;border-radius:50%;background:var(--teal);color:#fff;display:grid;place-items:center;font-size:13px}
@@ -366,6 +378,9 @@ html{scroll-behavior:smooth;scroll-padding-top:80px}
   @keyframes line{to{height:calc(100% - 62px);width:3px}}
 }
 @media(max-width:600px){
+  .v2 .demo-btn{font-size:16.5px;padding:15px 20px 15px 16px;gap:10px;white-space:nowrap}
+  .v2 .demo-btn .play{width:30px;height:30px}
+  .v2 .demo-cta .finger{font-size:54px}
   .v2{font-size:16px}
   .v2 .wrap{padding:0 16px}
   .v2 .lead{font-size:17px}
@@ -410,7 +425,10 @@ html{scroll-behavior:smooth;scroll-padding-top:80px}
     <p class="sub">你不会做网站？<b>AI 帮你做。</b></p>
     <p class="lead">不用学写代码，也不用懂设计。你只要把内容写好、跟 AI 说你要什么，它就帮你做成网页版的 PPT。视频、音乐、动画、链接，想放什么都可以，看的人一看就明白。</p>
     <div class="hero-actions">
-      <a class="btn demo-btn" href="/presentation-method/demo/">先看 7 页网页 PPT Demo →</a>
+      <div class="demo-cta">
+        <a class="btn demo-btn" href="/presentation-method/demo/"><span class="play" aria-hidden="true">▶</span><span>先看 9 页网页 PPT Demo →<small>点这里，全屏看会动的 PPT</small></span></a>
+        <span class="tapfx" aria-hidden="true"></span><span class="finger" aria-hidden="true">👆</span>
+      </div>
       <a class="ghost" href="#steps" style="text-decoration:none">再看完整制作方法</a>
     </div>
     <ul class="you">
