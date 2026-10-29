@@ -91,18 +91,18 @@ h1{font-size:var(--h1)}h2{font-size:var(--h2)}
 .vcard h3{font-size:calc(var(--u)*1.9);display:flex;align-items:center;gap:.5em;margin-bottom:calc(var(--u)*1.4)}
 .vcard h3 i{font-style:normal;width:1.8em;height:1.8em;border-radius:.5em;display:grid;place-items:center;background:#EEF1F5;font-size:.8em}
 .vcard ul{list-style:none;display:grid;gap:calc(var(--u)*.9)}
-.vcard li{font-size:var(--b);display:flex;align-items:center;gap:.7em;opacity:0;transform:translateX(calc(var(--u)*-1.5));transition:all .5s var(--ease);transition-delay:calc(var(--d) * 160ms + 900ms)}
+.vcard li{font-size:var(--b);display:flex;align-items:center;gap:.7em;opacity:0;transform:translateX(calc(var(--u)*-1.5));transition:all .5s var(--ease);transition-delay:calc(var(--d) * 140ms + 450ms)}
 .cur .vcard li{opacity:1;transform:none}
 .vcard.vo li{color:var(--mute)}
 .vcard.vo li::before{content:"–";color:#B8B0A4;font-weight:900}
 .vcard.vn{background:linear-gradient(160deg,#17233D,#0E1424);color:#fff;border:0;box-shadow:0 calc(var(--u)*2) calc(var(--u)*5) #17233D66;position:relative;overflow:hidden}
 .vcard.vn h3 i{background:var(--yellow)}
 .vcard.vn li::before{content:"✓";width:1.4em;height:1.4em;flex:none;border-radius:50%;background:#22C55E;color:#fff;display:grid;place-items:center;font-size:.75em;font-weight:900}
-.vcard.vn li{transition-delay:calc(var(--d) * 160ms + 1500ms)}
+.vcard.vn li{transition-delay:calc(var(--d) * 140ms + 900ms)}
 .vcard.vn::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,#ffffff22,transparent);transform:skewX(-20deg)}
-.cur .vcard.vn::after{animation:shine 1.2s 2.6s var(--ease)}
+.cur .vcard.vn::after{animation:shine 1.2s 1.8s var(--ease)}
 @keyframes shine{to{left:130%}}
-.vsdot{align-self:center;width:calc(var(--u)*5);height:calc(var(--u)*5);border-radius:50%;background:var(--yellow);border:3px solid var(--ink);display:grid;place-items:center;font:900 calc(var(--u)*1.6) var(--serif);transform:scale(0) rotate(-90deg);transition:transform .6s var(--spring) 1.2s}
+.vsdot{align-self:center;width:calc(var(--u)*5);height:calc(var(--u)*5);border-radius:50%;background:var(--yellow);border:3px solid var(--ink);display:grid;place-items:center;font:900 calc(var(--u)*1.6) var(--serif);transform:scale(0) rotate(-90deg);transition:transform .6s var(--spring) .45s}
 .cur .vsdot{transform:none}
 
 /* ---------- 3 daily report flow ---------- */
@@ -122,7 +122,7 @@ h1{font-size:var(--h1)}h2{font-size:var(--h2)}
 .flowfoot{display:grid;grid-template-columns:1.2fr 1fr;gap:calc(var(--u)*2.4);align-items:center;margin-top:calc(var(--u)*3.4)}
 .keybar{background:var(--navy2);color:#fff;border-radius:calc(var(--u)*1.2);padding:calc(var(--u)*1.6) calc(var(--u)*2);font-size:var(--b);line-height:1.6}
 .keybar b{color:var(--yellow)}
-.notif{background:#ffffffee;border-radius:calc(var(--u)*1.4);padding:calc(var(--u)*1.3) calc(var(--u)*1.6);box-shadow:0 calc(var(--u)*1.4) calc(var(--u)*3.6) #0E142433;display:grid;grid-template-columns:auto 1fr;gap:calc(var(--u)*1.1);align-items:center;border:1px solid var(--line);transform:translateY(calc(var(--u)*-4)) scale(.9);opacity:0;transition:all .7s var(--spring) 2.6s}
+.notif{background:#ffffffee;border-radius:calc(var(--u)*1.4);padding:calc(var(--u)*1.3) calc(var(--u)*1.6);box-shadow:0 calc(var(--u)*1.4) calc(var(--u)*3.6) #0E142433;display:grid;grid-template-columns:auto 1fr;gap:calc(var(--u)*1.1);align-items:center;border:1px solid var(--line);transform:translateY(calc(var(--u)*-4)) scale(.9);opacity:0;transition:all .7s var(--spring) 1.9s}
 .cur .notif{transform:none;opacity:1}
 .notif .app{width:calc(var(--u)*3.4);height:calc(var(--u)*3.4);border-radius:calc(var(--u)*.9);background:#22C55E;display:grid;place-items:center;font-size:calc(var(--u)*1.7)}
 .notif b{font-size:var(--b)}
@@ -164,13 +164,13 @@ h1{font-size:var(--h1)}h2{font-size:var(--h2)}
 .chart::before{content:"";position:absolute;inset:0 0 0 0;background-image:linear-gradient(#ffffff12 1px,transparent 1px);background-size:100% 25%;pointer-events:none}
 .grp{position:relative;height:100%;display:flex;gap:calc(var(--u)*.6);align-items:flex-end;justify-content:center}
 .bar{position:relative;width:42%;height:0;border-radius:calc(var(--u)*.6) calc(var(--u)*.6) 0 0;transition:height 1.2s var(--ease)}
-.bar.y1{background:#5B6B8C;transition-delay:calc(var(--d) * 180ms + 600ms)}
-.bar.y2{background:linear-gradient(180deg,var(--yellow),#F59E0B);transition-delay:calc(var(--d) * 180ms + 1700ms)}
+.bar.y1{background:#5B6B8C;transition-delay:calc(var(--d) * 180ms + 100ms)}
+.bar.y2{background:linear-gradient(180deg,var(--yellow),#F59E0B);transition-delay:calc(var(--d) * 180ms + 100ms)}
 .bar.y2.down{background:linear-gradient(180deg,#FF7A5C,var(--coral))}
 .cur .bar{height:var(--h)}
 .bar em{position:absolute;bottom:calc(100% + calc(var(--u)*.4));left:50%;transform:translateX(-50%);font:700 calc(var(--u)*.85) ui-monospace,monospace;font-style:normal;color:#C9D2E3;white-space:nowrap;opacity:0;transition:opacity .4s;transition-delay:inherit}
 .cur .bar em{opacity:1}
-.chg{position:absolute;bottom:calc(var(--top) + var(--u)*2.2);top:auto;left:50%;transform:translate(-50%,calc(var(--u)*1)) scale(.6);font-size:calc(var(--u)*1);font-weight:900;padding:.2em .7em;border-radius:99px;background:#22C55E;color:#04210F;opacity:0;transition:all .55s var(--spring);transition-delay:calc(var(--d) * 180ms + 3000ms);white-space:nowrap}
+.chg{position:absolute;bottom:calc(var(--top) + var(--u)*2.2);top:auto;left:50%;transform:translate(-50%,calc(var(--u)*1)) scale(.6);font-size:calc(var(--u)*1);font-weight:900;padding:.2em .7em;border-radius:99px;background:#22C55E;color:#04210F;opacity:0;transition:all .55s var(--spring);transition-delay:calc(var(--d) * 180ms + 1300ms);white-space:nowrap}
 .chg.neg{background:#FF7A5C;color:#2A0A03}
 .cur .chg{opacity:1;transform:translate(-50%,0)}
 .grp label{position:absolute;top:calc(100% + calc(var(--u)*.8));left:50%;transform:translateX(-50%);font-size:var(--s);color:#9FB0CC;font-weight:700}
@@ -184,12 +184,18 @@ h1{font-size:var(--h1)}h2{font-size:var(--h2)}
 .tot b{display:block;font:900 calc(var(--u)*3.4) var(--serif);line-height:1.15;margin-top:.15em;font-variant-numeric:tabular-nums}
 .tot.n{background:#FFC93C14;border-color:#FFC93C66}
 .tot.n b{color:var(--yellow)}
-.growth{display:flex;align-items:center;gap:calc(var(--u)*1.2);border-radius:calc(var(--u)*1.4);padding:calc(var(--u)*1.4) calc(var(--u)*2);background:#22C55E;color:#04210F;transform:scale(.6);opacity:0;transition:all .7s var(--spring) 3.6s}
-.cur .growth{transform:none;opacity:1}
-.growth b{font:900 calc(var(--u)*4.4) var(--serif);line-height:1}
+.growth{position:relative;display:flex;align-items:center;gap:calc(var(--u)*1.2);border-radius:calc(var(--u)*1.4);padding:calc(var(--u)*1.4) calc(var(--u)*2);background:#22C55E;color:#04210F}
+.cur .growth.on{animation:boom 1.1s var(--ease) .15s both,glow 2s 1.4s ease-in-out infinite}
+@keyframes boom{0%{transform:scale(.2) rotate(-6deg);opacity:0}45%{transform:scale(1.35) rotate(2deg);opacity:1}62%{transform:scale(.94) rotate(-1deg)}78%{transform:scale(1.06)}100%{transform:none;opacity:1}}
+@keyframes glow{50%{box-shadow:0 0 0 calc(var(--u)*.6) #22C55E44,0 0 calc(var(--u)*5) #22C55E99}}
+.growth i{position:absolute;inset:0;border-radius:inherit;border:3px solid #22C55E;opacity:0;pointer-events:none}
+.cur .growth.on .ring1{animation:wave 1.2s .55s ease-out}
+.cur .growth.on .ring2{animation:wave 1.2s .8s ease-out}
+@keyframes wave{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(1.5,2.2)}}
+.growth b{font:900 calc(var(--u)*5.4) var(--serif);line-height:1}
 .growth>span{font-size:var(--b);font-weight:700;line-height:1.4}
 .growth .arr{font-size:calc(var(--u)*3.2);font-weight:900}
-.cur .growth .arr{animation:up 1.2s 4.3s ease-in-out infinite}
+.cur .growth.on .arr{animation:up 1.2s 1.2s ease-in-out infinite}
 @keyframes up{50%{transform:translateY(-20%)}}
 
 /* ---------- 6 video ---------- */
@@ -237,19 +243,20 @@ h1{font-size:var(--h1)}h2{font-size:var(--h2)}
 .pbox{background:var(--ink);color:#fff;border-radius:calc(var(--u)*2);padding:calc(var(--u)*3.4) calc(var(--u)*3);text-align:center;position:relative;overflow:hidden}
 .pbox small{font-size:var(--b);color:#B7AFA3;letter-spacing:.2em}
 .old{white-space:nowrap;position:relative;display:inline-block;font:900 calc(var(--u)*4.6) var(--serif);color:#D7D0C4;margin-top:calc(var(--u)*.6)}
-.old::after{content:"";position:absolute;left:-6%;top:52%;height:calc(var(--u)*.55);width:0;background:#FF4B3E;border-radius:99px;transform:rotate(-7deg);transition:width .5s var(--ease) 1.1s}
-.cur .old::after{width:112%}
-.cur .old{animation:dim .4s 1.6s forwards}
-@keyframes dim{to{opacity:.45}}
-.new{white-space:nowrap;font:900 calc(var(--u)*6.6) var(--serif);color:var(--yellow);line-height:1.1;opacity:0;transform:scale(.4) translateY(30%);transition:all .7s var(--spring) 1.8s}
+.old .strike{position:absolute;left:-6%;top:52%;height:calc(var(--u)*.55);width:0;background:#FF4B3E;border-radius:99px;transform:rotate(-7deg);transition:width .5s var(--ease) .1s}
+.cur .old .strike.on{width:112%}
+.old{transition:opacity .4s .5s}
+.cur .old:has(.strike.on){opacity:.45}
+.new{white-space:nowrap;font:900 calc(var(--u)*6.6) var(--serif);color:var(--yellow);line-height:1.1;opacity:0;transform:scale(.4) translateY(30%);transition:all .7s var(--spring) .55s}
 .cur .new{opacity:1;transform:none}
-.save{display:inline-block;margin-top:calc(var(--u)*1);background:var(--coral);color:#fff;font-weight:900;font-size:var(--b);padding:.3em 1em;border-radius:99px;opacity:0;transform:rotate(-8deg) scale(.4);transition:all .5s var(--spring) 2.5s}
+.save{display:inline-block;margin-top:calc(var(--u)*1);background:var(--coral);color:#fff;font-weight:900;font-size:var(--b);padding:.3em 1em;border-radius:99px;opacity:0;transform:rotate(-8deg) scale(.4);transition:all .5s var(--spring) 1.2s}
 .cur .save{opacity:1;transform:rotate(-4deg)}
 .burst{position:absolute;left:50%;top:60%;width:8px;height:8px;border-radius:2px;opacity:0}
-.cur .burst{animation:burst 1.1s 1.9s ease-out forwards}
+.bursts{position:absolute;inset:0;pointer-events:none}
+.cur .bursts.on .burst{animation:burst 1.1s .65s ease-out forwards}
 @keyframes burst{0%{opacity:1;transform:translate(0,0) rotate(0)}100%{opacity:0;transform:translate(var(--x),var(--y)) rotate(540deg)}}
 .bonus{display:grid;gap:calc(var(--u)*1.2)}
-.bcard{display:flex;align-items:center;gap:calc(var(--u)*1.4);background:#fff;border:2px solid var(--ink);border-radius:calc(var(--u)*1.2);padding:calc(var(--u)*1.3) calc(var(--u)*1.6);box-shadow:calc(var(--u)*.35) calc(var(--u)*.35) 0 var(--ink);opacity:0;transform:translateX(calc(var(--u)*6)) rotate(4deg);transition:all .7s var(--spring);transition-delay:calc(var(--d) * 220ms + 2.9s)}
+.bcard{display:flex;align-items:center;gap:calc(var(--u)*1.4);background:#fff;border:2px solid var(--ink);border-radius:calc(var(--u)*1.2);padding:calc(var(--u)*1.3) calc(var(--u)*1.6);box-shadow:calc(var(--u)*.35) calc(var(--u)*.35) 0 var(--ink);opacity:0;transform:translateX(calc(var(--u)*6)) rotate(4deg);transition:all .7s var(--spring);transition-delay:.1s}
 .cur .bcard{opacity:1;transform:none}
 .bcard em{font-style:normal;font:900 var(--s) var(--sans);background:var(--yellow);border:1.5px solid var(--ink);border-radius:99px;padding:.15em .7em;white-space:nowrap}
 .bcard b{font-size:calc(var(--u)*1.35);display:block}
@@ -266,6 +273,29 @@ h1{font-size:var(--h1)}h2{font-size:var(--h2)}
 .cta:hover{transform:translateY(-3px)}
 .cur .cta{animation:pulse 2.2s 2.8s infinite}
 @keyframes pulse{0%,100%{box-shadow:calc(var(--u)*.4) calc(var(--u)*.4) 0 #fff,0 0 0 0 #14110F55}50%{box-shadow:calc(var(--u)*.4) calc(var(--u)*.4) 0 #fff,0 0 0 calc(var(--u)*1.4) #14110F00}}
+
+
+/* ---------- click-to-reveal steps ---------- */
+.cur [data-step]:not(.on) .b,.cur .b[data-step]:not(.on){opacity:0;transform:translateY(calc(var(--u)*2));filter:blur(6px);transition-delay:0s}
+.cur [data-step].on .b,.cur .b[data-step].on{transition-delay:calc(var(--d,0) * 140ms + 60ms)}
+.cur [data-step]:not(.on) .vcard li{opacity:0;transform:translateX(calc(var(--u)*-1.5));transition-delay:0s}
+.cur [data-step]:not(.on) .vsdot{transform:scale(0) rotate(-90deg);transition-delay:0s}
+.cur [data-step]:not(.on) .vcard.vn::after,.cur [data-step]:not(.on) .run,.cur [data-step]:not(.on) .node .ic{animation:none}
+.cur [data-step]:not(.on) .node .ic{transform:scale(0);transition-delay:0s}
+.node b,.node small,.flow svg{transition:opacity .5s .35s}
+.cur [data-step]:not(.on) :is(.node b,.node small,.flow svg){opacity:0;transition-delay:0s}
+.cur [data-step]:not(.on) .notif{transform:translateY(calc(var(--u)*-4)) scale(.9);opacity:0;transition-delay:0s}
+.cur .bar[data-step]:not(.on){height:0;transition-delay:0s}
+.cur .bar[data-step]:not(.on) em{opacity:0}
+.cur .chg[data-step]:not(.on){opacity:0;transform:translate(-50%,calc(var(--u)*1)) scale(.6);transition-delay:0s}
+.growth[data-step]:not(.on){opacity:0;transform:scale(.2)}
+.cur .bcard[data-step]:not(.on){opacity:0;transform:translateX(calc(var(--u)*6)) rotate(4deg);transition-delay:0s}
+.cur .new[data-step]:not(.on){opacity:0;transform:scale(.4) translateY(30%);transition-delay:0s}
+.cur .save[data-step]:not(.on){opacity:0;transform:rotate(-8deg) scale(.4);transition-delay:0s}
+.more{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:50;display:flex;align-items:center;gap:8px;font:700 12px var(--sans);color:#fff;background:#0E1424d9;border:1px solid #ffffff30;border-radius:99px;padding:8px 14px;opacity:0;transform:translateY(8px);transition:all .35s var(--ease);pointer-events:none}
+.more kbd{font:700 11px ui-monospace,monospace;background:var(--yellow);color:var(--ink);border-radius:5px;padding:2px 6px}
+.more.show{opacity:1;transform:none;animation:nudge 1.6s 1s ease-in-out infinite}
+@keyframes nudge{50%{transform:translateX(4px)}}
 
 /* ---------- chrome ---------- */
 .deck-progress{position:fixed;left:0;top:0;height:4px;width:0;background:var(--yellow);z-index:50;transition:width .6s var(--ease);box-shadow:0 0 12px #FFC93C99}
@@ -306,6 +336,7 @@ h1{font-size:var(--h1)}h2{font-size:var(--h2)}
   .zero{font-size:84px}.chips{max-width:100%}
   .brand{left:20px;top:20px}.brand img{width:24px;height:24px}
   .controls .tip,.controls #auto{display:none}
+  .more{bottom:74px;right:16px}
 }
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;transition-delay:0s!important}}
 </style>
@@ -333,7 +364,7 @@ h1{font-size:var(--h1)}h2{font-size:var(--h2)}
   <div class="stage">
     <div class="kick b">核心概念</div>
     <h2 class="b" style="--d:1">聊天助手 vs <span class="hl">AI 个人助理</span></h2>
-    <div class="vs">
+    <div class="vs" data-step="1">
       <div class="vcard vo b l" style="--d:2">
         <h3><i>💬</i>普通聊天助手</h3>
         <ul><li style="--d:0">你问，它答</li><li style="--d:1">聊完就忘</li><li style="--d:2">不会主动做事</li><li style="--d:3">等你开口才有反应</li></ul>
@@ -353,6 +384,7 @@ h1{font-size:var(--h1)}h2{font-size:var(--h2)}
   <div class="stage">
     <div class="kick b">流程动画</div>
     <h2 class="b" style="--d:1">让 AI 每天自动给你<span class="hl">昨天的报告</span></h2>
+    <div data-step="1">
     <div class="flow">
       <svg viewBox="0 0 100 4" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="2" x2="100" y2="2"/></svg>
       <span class="run" aria-hidden="true"></span>
@@ -368,6 +400,7 @@ h1{font-size:var(--h1)}h2{font-size:var(--h2)}
         <div><b>昨日报告 · 早上 8:00</b> <span class="tag">示意</span><p>销售 RM 12,480 <span class="up">↑18%</span> · 订单 86 张 · 待跟进顾客 3 位</p></div>
       </div>
     </div>
+    </div>
   </div>
 </section>
 
@@ -379,13 +412,13 @@ h1{font-size:var(--h1)}h2{font-size:var(--h2)}
       <div>
         <div class="kick b">对话动画 <span class="tag">示意内容</span></div>
         <h2 class="b" style="--d:1">先回答，再收资料，<br>必要时<span style="color:var(--yellow)">转人工</span></h2>
-        <div class="rules">
-          <div class="rule b" data-rule="0" style="--d:2"><i>💬</i><div><b>常见问题自动回答</b><small>价格、营业时间、地址</small></div></div>
-          <div class="rule b" data-rule="1" style="--d:3"><i>📋</i><div><b>收集顾客需求</b><small>人数、日期、预算</small></div></div>
-          <div class="rule hot b" data-rule="2" style="--d:4"><i>🙋</i><div><b>不确定就转人工</b><small>退款、投诉、特别要求</small></div></div>
+        <div class="rules" data-step="1">
+          <div class="rule b" data-rule="0" style="--d:0"><i>💬</i><div><b>常见问题自动回答</b><small>价格、营业时间、地址</small></div></div>
+          <div class="rule b" data-rule="1" style="--d:1"><i>📋</i><div><b>收集顾客需求</b><small>人数、日期、预算</small></div></div>
+          <div class="rule hot b" data-rule="2" style="--d:2"><i>🙋</i><div><b>不确定就转人工</b><small>退款、投诉、特别要求</small></div></div>
         </div>
       </div>
-      <div class="phone b r" style="--d:2">
+      <div class="phone b r" data-step="1" style="--d:1">
         <div class="top"><i>AI</i><div><b>公司客服助理</b><small id="wa-st">在线</small></div></div>
         <div class="chat" id="chat"></div>
       </div>
@@ -402,17 +435,17 @@ h1{font-size:var(--h1)}h2{font-size:var(--h2)}
     <div class="data">
       <div>
         <div class="chart">
-          <div class="grp" style="--top:45%"><div class="bar y1" style="--h:45%;--d:0"><em>96K</em></div><div class="bar y2 down" style="--h:41%;--d:0"><em>88K</em></div><span class="chg neg" style="--d:0">↓ 8%</span><label>Q1</label></div>
-          <div class="grp" style="--top:61%"><div class="bar y1" style="--h:44%;--d:1"><em>95K</em></div><div class="bar y2" style="--h:61%;--d:1"><em>131K</em></div><span class="chg" style="--d:1">↑ 38%</span><label>Q2</label></div>
-          <div class="grp" style="--top:66%"><div class="bar y1" style="--h:41%;--d:2"><em>88K</em></div><div class="bar y2" style="--h:66%;--d:2"><em>142K</em></div><span class="chg" style="--d:2">↑ 61%</span><label>Q3</label></div>
-          <div class="grp" style="--top:82%"><div class="bar y1" style="--h:56%;--d:3"><em>120K</em></div><div class="bar y2" style="--h:82%;--d:3"><em>176K</em></div><span class="chg" style="--d:3">↑ 47%</span><label>Q4</label></div>
+          <div class="grp" style="--top:45%"><div class="bar y1" data-step="1" style="--h:45%;--d:0"><em>96K</em></div><div class="bar y2 down" data-step="2" style="--h:41%;--d:0"><em>88K</em></div><span class="chg neg" data-step="2" style="--d:0">↓ 8%</span><label>Q1</label></div>
+          <div class="grp" style="--top:61%"><div class="bar y1" data-step="1" style="--h:44%;--d:1"><em>95K</em></div><div class="bar y2" data-step="2" style="--h:61%;--d:1"><em>131K</em></div><span class="chg" data-step="2" style="--d:1">↑ 38%</span><label>Q2</label></div>
+          <div class="grp" style="--top:66%"><div class="bar y1" data-step="1" style="--h:41%;--d:2"><em>88K</em></div><div class="bar y2" data-step="2" style="--h:66%;--d:2"><em>142K</em></div><span class="chg" data-step="2" style="--d:2">↑ 61%</span><label>Q3</label></div>
+          <div class="grp" style="--top:82%"><div class="bar y1" data-step="1" style="--h:56%;--d:3"><em>120K</em></div><div class="bar y2" data-step="2" style="--h:82%;--d:3"><em>176K</em></div><span class="chg" data-step="2" style="--d:3">↑ 47%</span><label>Q4</label></div>
         </div>
         <div class="legend b" style="--d:3"><span><i></i>2025 年</span><span><i class="y"></i>2026 年</span></div>
       </div>
       <div class="totals">
-        <div class="tot b r" style="--d:3"><small>2025 全年业绩</small><b>RM <span data-count="399" data-at="900" data-suf="K">0</span></b></div>
-        <div class="tot n b r" style="--d:4"><small>2026 全年业绩</small><b>RM <span data-count="537" data-at="2000" data-suf="K">0</span></b></div>
-        <div class="growth"><span class="arr">↑</span><b>+<span data-count="35" data-at="3700">0</span>%</b><span>全年增长<br>只有 Q1 下降</span></div>
+        <div class="tot b r" data-step="1" style="--d:1"><small>2025 全年业绩</small><b>RM <span data-count="399" data-at="300" data-suf="K">0</span></b></div>
+        <div class="tot n b r" data-step="2" style="--d:1"><small>2026 全年业绩</small><b>RM <span data-count="537" data-at="300" data-suf="K">0</span></b></div>
+        <div class="growth" data-step="3"><span class="arr">↑</span><b>+<span data-count="35" data-at="250" data-dur="1100">0</span>%</b><span>全年增长率<br>只有 Q1 下降</span><i class="ring1"></i><i class="ring2"></i></div>
       </div>
     </div>
   </div>
@@ -461,20 +494,20 @@ h1{font-size:var(--h1)}h2{font-size:var(--h2)}
 <section class="slide yel" data-title="价格动画">
   <div class="brand"><img src="/assets/logos/aligor-logo-transparent.png" alt=""><span>PRICE · 价格动画</span></div>
   <div class="stage">
-    <div class="kick b">价格划掉 <span class="tag">示意价格</span></div>
+    <div class="kick b">优惠 + 价格 <span class="tag">示意价格</span></div>
     <h2 class="b" style="--d:1">一页讲完优惠，不用多说</h2>
     <div class="price">
-      <div class="pbox b l" style="--d:2">
+      <div class="pbox b l" data-step="4" style="--d:0">
         <small>原价</small><br>
-        <div class="old">RM 3,999</div>
-        <div class="new">RM 2,999</div>
-        <div class="save">省 RM 1,000</div>
-        <i class="burst" style="background:#FFC93C;--x:-160px;--y:-120px"></i><i class="burst" style="background:#FF7A5C;--x:150px;--y:-140px"></i><i class="burst" style="background:#22C55E;--x:-120px;--y:90px"></i><i class="burst" style="background:#93C5FD;--x:170px;--y:70px"></i><i class="burst" style="background:#FFC93C;--x:20px;--y:-170px"></i><i class="burst" style="background:#fff;--x:-200px;--y:-20px"></i><i class="burst" style="background:#FF7A5C;--x:210px;--y:-10px"></i><i class="burst" style="background:#22C55E;--x:60px;--y:130px"></i>
+        <div class="old">RM 3,999<i class="strike" data-step="5"></i></div>
+        <div class="new" data-step="5">RM 2,999</div>
+        <div class="save" data-step="5">省 RM 1,000</div>
+        <div class="bursts" data-step="5"><i class="burst" style="background:#FFC93C;--x:-160px;--y:-120px"></i><i class="burst" style="background:#FF7A5C;--x:150px;--y:-140px"></i><i class="burst" style="background:#22C55E;--x:-120px;--y:90px"></i><i class="burst" style="background:#93C5FD;--x:170px;--y:70px"></i><i class="burst" style="background:#FFC93C;--x:20px;--y:-170px"></i><i class="burst" style="background:#fff;--x:-200px;--y:-20px"></i><i class="burst" style="background:#FF7A5C;--x:210px;--y:-10px"></i><i class="burst" style="background:#22C55E;--x:60px;--y:130px"></i></div>
       </div>
       <div class="bonus">
-        <div class="bcard" style="--d:0"><em>BONUS 1</em><div><b>课后跟进</b><small>做不出来，可以回来问</small></div></div>
-        <div class="bcard" style="--d:1"><em>BONUS 2</em><div><b>私人 AI 群</b><small>一起学、一起进步</small></div></div>
-        <div class="bcard" style="--d:2"><em>BONUS 3</em><div><b>Prompt 模板</b><small>拿回去直接用</small></div></div>
+        <div class="bcard" data-step="1"><em>BONUS 1</em><div><b>课后跟进</b><small>做不出来，可以回来问</small></div></div>
+        <div class="bcard" data-step="2"><em>BONUS 2</em><div><b>私人 AI 群</b><small>一起学、一起进步</small></div></div>
+        <div class="bcard" data-step="3"><em>BONUS 3</em><div><b>Prompt 模板</b><small>拿回去直接用</small></div></div>
       </div>
     </div>
   </div>
@@ -494,6 +527,7 @@ h1{font-size:var(--h1)}h2{font-size:var(--h2)}
 </section>
 </main>
 
+<div class="more" id="more"><span>还有下一步</span><kbd>Enter</kbd></div>
 <div class="controls" id="controls" aria-label="PPT 控制">
   <button id="prev" type="button" aria-label="上一页">←</button>
   <span class="deck-counter">01 / 09</span>
@@ -511,7 +545,8 @@ h1{font-size:var(--h1)}h2{font-size:var(--h2)}
       dots = document.getElementById('dots'),
       controls = document.getElementById('controls'),
       autoBtn = document.getElementById('auto'),
-      total = slides.length, cur = -1, timers = [], autoT = null, lock = false;
+      total = slides.length, cur = -1, step = 0, timers = [], autoT = null, lock = false,
+      more = document.getElementById('more');
   var pad = function (n) { return String(n).padStart(2, '0'); };
 
   // split cover title into letters
@@ -638,7 +673,29 @@ h1{font-size:var(--h1)}h2{font-size:var(--h2)}
   }
   addEventListener('resize', fit);
 
-  var runners = { 's-wa': runChat, 's-vid': runVid, 's-web': runWeb };
+  // runners keyed by slide id, then by step (0 = when the slide opens)
+  var runners = { 's-wa': { 1: runChat }, 's-vid': { 0: runVid }, 's-web': { 0: runWeb } };
+
+  function maxStep(s) {
+    return [].reduce.call(s.querySelectorAll('[data-step]'), function (m, el) { return Math.max(m, +el.dataset.step); }, 0);
+  }
+  function hiddenByStep(el, k) {
+    var h = el.closest('[data-step]');
+    return h && +h.dataset.step > k;
+  }
+  function setStep(k) {
+    var s = slides[cur], prevStep = step;
+    step = k;
+    [].forEach.call(s.querySelectorAll('[data-step]'), function (el) { el.classList.toggle('on', +el.dataset.step <= k); });
+    if (k > prevStep) {
+      [].forEach.call(s.querySelectorAll('[data-count]'), function (el) {
+        var h = el.closest('[data-step]');
+        if (h && +h.dataset.step > prevStep && +h.dataset.step <= k) countUp(el);
+      });
+      for (var j = prevStep + 1; j <= k; j++) { var run = runners[s.id] && runners[s.id][j]; if (run) run(); }
+    }
+    more.classList.toggle('show', step < maxStep(s));
+  }
 
   function show(n) {
     n = Math.max(0, Math.min(total - 1, n));
@@ -654,22 +711,40 @@ h1{font-size:var(--h1)}h2{font-size:var(--h2)}
     progress.style.width = ((n + 1) / total * 100) + '%';
     [].forEach.call(dots.children, function (d, i) { d.classList.toggle('on', i === n); });
     var s = slides[n];
-    [].forEach.call(s.querySelectorAll('[data-count]'), countUp);
-    if (runners[s.id]) runners[s.id]();
+    step = 0;
+    [].forEach.call(s.querySelectorAll('[data-step]'), function (el) { el.classList.remove('on'); });
+    [].forEach.call(s.querySelectorAll('[data-count]'), function (el) { if (!hiddenByStep(el, 0)) countUp(el); });
+    if (runners[s.id] && runners[s.id][0]) runners[s.id][0]();
+    more.classList.toggle('show', maxStep(s) > 0);
     try { history.replaceState(null, '', '#' + (n + 1)); } catch (e) {}
   }
   function go(n) {
     if (n >= total) { location.href = '/presentation-method/'; return; }
     show(n); poke();
   }
-  var next = function () { go(cur + 1); }, prev = function () { go(cur - 1); };
+  // Enter / → reveals the next step first, then moves to the next slide
+  var next = function () {
+    if (step < maxStep(slides[cur])) { setStep(step + 1); poke(); } else go(cur + 1);
+  };
+  var prev = function () {
+    if (step > 0) { setStep(step - 1); poke(); return; }
+    if (cur === 0) return;
+    go(cur - 1);
+    setStep(maxStep(slides[cur]));
+  };
 
   // auto play
   function setAuto(on) {
-    clearInterval(autoT); autoT = null;
+    clearTimeout(autoT); autoT = null;
     autoBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
     autoBtn.textContent = on ? '❚❚ 自动' : '▶ 自动';
-    if (on) autoT = setInterval(function () { if (cur < total - 1) show(cur + 1); else setAuto(false); }, 8000);
+    if (on) (function tick() {
+      var stepping = step < maxStep(slides[cur]);
+      autoT = setTimeout(function () {
+        if (!stepping && cur >= total - 1) { setAuto(false); return; }
+        next(); tick();
+      }, stepping ? 3000 : (step === 0 ? 7000 : 5000));
+    })();
   }
   autoBtn.addEventListener('click', function () { setAuto(!autoT); });
 
