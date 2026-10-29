@@ -25,7 +25,7 @@
   --h1:calc(var(--u)*5.6);--h2:calc(var(--u)*3.5);--lead:calc(var(--u)*1.45);--b:calc(var(--u)*1.1);--s:calc(var(--u)*.85);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden;background:var(--navy);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+html,body{touch-action:manipulation;height:100%;overflow:hidden;background:var(--navy);font-family:var(--sans);-webkit-font-smoothing:antialiased}
 h1,h2,h3{font-family:var(--serif);line-height:1.12;text-wrap:balance;letter-spacing:-.02em}
 button{font:inherit;cursor:pointer}
 
@@ -294,6 +294,7 @@ h1{font-size:var(--h1)}h2{font-size:var(--h2)}
 .cur .save[data-step]:not(.on){opacity:0;transform:rotate(-8deg) scale(.4);transition-delay:0s}
 .more{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:50;display:flex;align-items:center;gap:8px;font:700 12px var(--sans);color:#fff;background:#0E1424d9;border:1px solid #ffffff30;border-radius:99px;padding:8px 14px;opacity:0;transform:translateY(8px);transition:all .35s var(--ease);pointer-events:none}
 .more kbd{font:700 11px ui-monospace,monospace;background:var(--yellow);color:var(--ink);border-radius:5px;padding:2px 6px}
+.more .k-tap{display:none}
 .more.show{opacity:1;transform:none;animation:nudge 1.6s 1s ease-in-out infinite}
 @keyframes nudge{50%{transform:translateX(4px)}}
 
@@ -337,6 +338,7 @@ h1{font-size:var(--h1)}h2{font-size:var(--h2)}
   .brand{left:20px;top:20px}.brand img{width:24px;height:24px}
   .controls .tip,.controls #auto{display:none}
   .more{bottom:74px;right:16px}
+  .more .k-desk{display:none}.more .k-tap{display:inline}
 }
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;transition-delay:0s!important}}
 </style>
@@ -354,7 +356,7 @@ h1{font-size:var(--h1)}h2{font-size:var(--h2)}
     <div class="kick b" style="--d:0">这不是 PowerPoint，是网页</div>
     <h1 data-split>不用做 PPT，<br>直接做<span class="y">会动的网页 PPT</span></h1>
     <p class="lead b" style="--d:6">接下来 9 页，全部用 HTML 做。动画、数据、对话、视频、网页，都在同一份里。</p>
-    <div class="keys b" style="--d:8"><span><kbd>→</kbd> / <kbd>Enter</kbd> 下一页</span><span><kbd>←</kbd> 上一页</span><span><kbd>F</kbd> 全屏</span><span><kbd>A</kbd> 自动播放</span></div>
+    <div class="keys b" style="--d:8"><span><kbd>→</kbd> / <kbd>Enter</kbd> / 点一下 下一页</span><span><kbd>←</kbd> 上一页</span><span><kbd>F</kbd> 全屏</span><span><kbd>A</kbd> 自动播放</span></div>
   </div>
 </section>
 
@@ -527,7 +529,7 @@ h1{font-size:var(--h1)}h2{font-size:var(--h2)}
 </section>
 </main>
 
-<div class="more" id="more"><span>还有下一步</span><kbd>Enter</kbd></div>
+<div class="more" id="more"><span>还有下一步</span><kbd class="k-desk">Enter</kbd><kbd class="k-tap">点一下</kbd></div>
 <div class="controls" id="controls" aria-label="PPT 控制">
   <button id="prev" type="button" aria-label="上一页">←</button>
   <span class="deck-counter">01 / 09</span>
@@ -695,6 +697,11 @@ h1{font-size:var(--h1)}h2{font-size:var(--h2)}
       for (var j = prevStep + 1; j <= k; j++) { var run = runners[s.id] && runners[s.id][j]; if (run) run(); }
     }
     more.classList.toggle('show', step < maxStep(s));
+    // phones: bring what just appeared into view
+    if (k > prevStep && innerWidth / innerHeight <= 1) {
+      var el = s.querySelector('[data-step="' + k + '"]');
+      if (el) later(function () { el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 250);
+    }
   }
 
   function show(n) {
@@ -768,11 +775,10 @@ h1{font-size:var(--h1)}h2{font-size:var(--h2)}
     else if (k.toLowerCase() === 'a') setAuto(!autoT);
   });
 
-  // click empty area = next page (desktop)
+  // tap / click = Enter (desktop: left quarter goes back)
   document.getElementById('deck').addEventListener('click', function (e) {
-    if (innerWidth / innerHeight <= 1) return;
     if (e.target.closest('a,button,.dots')) return;
-    if (e.clientX < innerWidth * 0.25) prev(); else next();
+    if (innerWidth / innerHeight > 1 && e.clientX < innerWidth * 0.25) prev(); else next();
   });
 
   // wheel (desktop) and swipe (phone)
