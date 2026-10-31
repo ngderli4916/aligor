@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>不会做网站？AI 帮你做。直接做会动的网页 PPT · 阿理哥 Aligor</title>
-  <meta name="description" content="你不会做网站？AI 帮你做。不用做 PPT，把内容写成 MD 包交给 AI，直接做成会动的网页 PPT：可以放视频、音乐、动画、链接。6 个步骤、8 段可复制 Prompt。">
+  <meta name="description" content="你不会做网站？AI 帮你做。不用做 PPT，叫 AI Agent 把内容写成 MD 包，再直接做成会动的网页 PPT：可以放视频、音乐、动画、链接。6 个步骤、8 段可复制 Prompt。">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="阿理哥 Aligor">
   <meta property="og:url" content="https://aligor.aligor.workers.dev/presentation-method/">
@@ -438,7 +438,7 @@ html{scroll-behavior:smooth;scroll-padding-top:80px}
     </ul>
     <div class="compare">
       <div>
-        <div class="cmp-lab"><span>你写的内容包 slides.md</span></div>
+        <div class="cmp-lab"><span>你叫 AI Agent 写的内容包 slides.md</span></div>
         <div class="frame"><pre class="md"><span class="h"># 第 4 页</span>
 <span class="h">## 聊天助手，还是 AI Agent？</span>
 - 左：普通聊天助手
@@ -483,12 +483,12 @@ html{scroll-behavior:smooth;scroll-padding-top:80px}
     <div class="eyebrow">整套方法</div>
     <h2>6 个步骤，<mark>从内容到分享</mark></h2>
     <ol class="flow" id="flow">
-      <li style="--i:0"><span class="dot">1</span><div><b>内容写成 MD 包</b><small>一页一个重点</small></div></li>
+      <li style="--i:0"><span class="dot">1</span><div><b>叫 AI 写成 MD 包</b><small>你说要什么，它整理</small></div></li>
       <li style="--i:1"><span class="dot">2</span><div><b>叫 AI 做成网页 PPT</b><small>一页一屏，可以翻页</small></div></li>
       <li style="--i:2"><span class="dot">3</span><div><b>渲染出来看</b><small>每页截图检查</small></div></li>
       <li style="--i:3"><span class="dot">4</span><div><b>只改那一页</b><small>不用整份重来</small></div></li>
       <li style="--i:4"><span class="dot">5</span><div><b>加视频、音乐、动画</b><small>想放什么都可以</small></div></li>
-      <li style="--i:5"><span class="dot">6</span><div><b>发链接或本机打开</b><small>公开或不公开</small></div></li>
+      <li style="--i:5"><span class="dot">6</span><div><b>放上网或存成文件</b><small>公开或不公开</small></div></li>
     </ol>
 
     <div style="margin-top:40px">
@@ -496,11 +496,11 @@ html{scroll-behavior:smooth;scroll-padding-top:80px}
       <div class="step">
         <div class="rv">
           <span class="no">1</span>
-          <h3>先把内容写成 MD 包</h3>
+          <h3>叫 AI Agent 写内容包</h3>
           <ul>
-            <li>不用先开 PowerPoint。把每一页写进一个 <b>slides.md</b>：一页一个重点，最多 3 样东西。</li>
+            <li>不用自己写。<b>你只要告诉 AI 你要什么</b>：讲什么主题、给谁听、大概几页。</li>
+            <li>它会帮你整理好，叫它做成一个 <b>MD 文件</b>（Markdown 文件，例如 <b>slides.md</b>）：一页一个重点。</li>
             <li>要用的图片、视频、音乐放在同一个文件夹，AI 一次拿得到。</li>
-            <li>价格、日期、地点这类会变的数字，<b>只写在一个地方</b>，不然很容易前后不一致。</li>
           </ul>
           <p class="habit-note"><b>效率习惯：</b>把已确认的事实写进一份"当前最新状态"文件，AI 每次开工先读它。</p>
         </div>
@@ -560,10 +560,8 @@ html{scroll-behavior:smooth;scroll-padding-top:80px}
           <span class="no">4</span>
           <h3>哪里不对，只改那一页</h3>
           <ul>
-            <li>直接讲页码：<b>"第 5 页标题改成……，其他不要动。"</b></li>
-            <li>每一页是独立的一段，AI <b>只改那一段</b>，不需要把整份重看、重改。</li>
-            <li>所以改得快，也<b>省下很多 token</b>。</li>
-            <li>改之前先备份；改完它要告诉你改了哪里、哪些是它猜的。</li>
+            <li>直接讲第几页要改什么就好：<b>"第 5 页标题改成……"</b></li>
+            <li>其他不用讲，AI 自己会明白，只改那一页，<b>省下很多 token</b>。</li>
           </ul>
         </div>
         <div class="vis rv" style="--i:1">
@@ -607,18 +605,17 @@ html{scroll-behavior:smooth;scroll-padding-top:80px}
       <div class="step">
         <div class="rv">
           <span class="no">6</span>
-          <h3>分享：公开发链接，不公开就本机打开</h3>
+          <h3>分享：公开就放上网，不公开就存成文件</h3>
           <ul>
-            <li><b>公开场合：</b>放上网，直接把链接发给顾客，手机也能看。</li>
-            <li><b>不公开：</b>不用上网，在自己电脑开 local server，用浏览器打开就能讲。</li>
-            <li>上网之前先在本机看过，满意了才推上线。</li>
+            <li><b>公开：</b>直接放上网，把链接发给顾客，手机也能看。</li>
+            <li><b>不公开：</b>叫 AI 把它 save 成一个文件，<b>谁的电脑都可以开</b>，双击就用浏览器打开，不用上网。</li>
             <li>讲者备注、内部价格、顾客资料、电话、二维码：不要放上网。</li>
           </ul>
         </div>
         <div class="vis rv" style="--i:1">
           <div class="routes">
-            <div class="route"><i>🌐</i><div><b>公开：发链接</b><small>推上线 → 把网址发给顾客</small></div></div>
-            <div class="route"><i>💻</i><div><b>不公开：本机打开</b><small>电脑开 local server → 浏览器打开 <code>localhost</code></small></div></div>
+            <div class="route"><i>🌐</i><div><b>公开：放上网</b><small>推上线 → 把网址发给顾客</small></div></div>
+            <div class="route"><i>💾</i><div><b>不公开：存成文件</b><small>传给别人 → 谁的电脑双击都能开</small></div></div>
           </div>
           <div class="nolist"><span>密码</span><span>Token</span><span>讲者备注</span><span>顾客资料</span><span>电话</span><span>二维码</span></div>
         </div>
@@ -737,10 +734,10 @@ html{scroll-behavior:smooth;scroll-padding-top:80px}
     <h2>8 段 Prompt，<mark>直接贴给 AI</mark></h2>
     <p class="lead">把 〔 〕 里面的东西换成你自己的。</p>
     <div class="prompts">
-      <div class="pr rv" style="--i:0"><div class="pr-h"><b><span>1</span>整理成 MD 包</b><button class="copy" type="button">复制</button></div><pre>我要做一份〔主题〕的演讲，大概〔15〕页，对象是〔谁〕。请帮我把内容整理成一个 slides.md：每一页一个重点、最多 3 样东西，细节写在讲者备注。先给我看大纲，先不要做网页。</pre></div>
+      <div class="pr rv" style="--i:0"><div class="pr-h"><b><span>1</span>叫 AI 写 MD 包</b><button class="copy" type="button">复制</button></div><pre>我要做一份〔主题〕的演讲，大概〔15〕页，对象是〔谁〕。请帮我把内容整理好，做成一个 MD 文件（Markdown）slides.md：每一页一个重点、最多 3 样东西，细节写在讲者备注。先给我看大纲，先不要做网页。</pre></div>
       <div class="pr rv" style="--i:1"><div class="pr-h"><b><span>2</span>做成网页 PPT</b><button class="copy" type="button">复制</button></div><pre>照 slides.md 做一个网页 PPT 模式的 index.html：一页一屏 16:9，Enter／→ 下一页，← 上一页，F 全屏，手机自动改成往下滑。每一页出现时元素依序浮出。讲者备注不要放进网页。</pre></div>
       <div class="pr rv" style="--i:0"><div class="pr-h"><b><span>3</span>渲染检查</b><button class="copy" type="button">复制</button></div><pre>把每一页截图，一页一页检查有没有文字重叠、超出、手机看不清楚，发现问题先修，再给我看。</pre></div>
-      <div class="pr rv" style="--i:1"><div class="pr-h"><b><span>4</span>只改一页</b><button class="copy" type="button">复制</button></div><pre>只改第〔5〕页：〔要改的内容〕。其他页不要动，也不用重看整份。改之前先备份，改完告诉我改了哪里。</pre></div>
+      <div class="pr rv" style="--i:1"><div class="pr-h"><b><span>4</span>只改一页</b><button class="copy" type="button">复制</button></div><pre>第〔5〕页：〔要改的内容〕。</pre></div>
       <div class="pr rv" style="--i:0"><div class="pr-h"><b><span>5</span>点一下出现</b><button class="copy" type="button">复制</button></div><pre>第〔3〕页，标题一开始就出现，卡片点一下出现一张。</pre></div>
       <div class="pr rv" style="--i:1"><div class="pr-h"><b><span>6</span>视频、音乐、链接</b><button class="copy" type="button">复制</button></div><pre>第〔8〕页放这段视频〔路径〕，点一下播放。整份加一段很轻的背景音乐，可以开关。第〔12〕页每张卡片都能点，在新分页打开网站。</pre></div>
       <div class="pr rv" style="--i:0"><div class="pr-h"><b><span>7</span>数据动效</b><button class="copy" type="button">复制</button></div><pre>第〔6〕页这组数字〔数据〕做成长条图：翻到这页时长条慢慢长出来，数字跟着跳，最重要的那一条用不同颜色。</pre></div>
