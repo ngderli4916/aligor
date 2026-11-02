@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>关于阿理哥 Adrian · 老板、老师、AI Agent 实战者 · Aligor</title>
-<meta name="description" content="阿理哥 Adrian：软件工程出身，2014 年创办 Ukunili Music，2026 年把 AI Agent 放进自己每天的生意，现在教老板们怎样做。认识我、我做过的项目和自动化，也欢迎老师和老板找我合作。">
+<meta name="description" content="阿理哥 Adrian：软件工程出身，电商起家，2014 年创办 Ukunili Music，2026 年把 AI Agent 放进自己每天的生意，现在教老板们怎样做。认识我、我做过的项目和每天在跑的 AI 自动化。">
 <meta property="og:type" content="profile">
 <meta property="og:site_name" content="阿理哥 Aligor">
 <meta property="og:url" content="https://aligor.aligor.workers.dev/about/">
 <meta property="og:title" content="关于阿理哥 Adrian｜真的在用 AI Agent 做生意的老板">
-<meta property="og:description" content="我是谁、我做过的项目、我每天在跑的自动化，以及可以怎样一起合作。">
+<meta property="og:description" content="我是谁、电商起家的经历、我做过的项目和每天在跑的 AI 自动化。">
 <meta property="og:image" content="https://aligor.aligor.workers.dev/assets/og-card.jpg">
 <meta name="theme-color" content="#FBF8EE">
 <link rel="icon" type="image/png" href="/assets/favicon.png">
@@ -41,7 +41,6 @@ section.alt{background:#F4EFE2}
 .btn{display:inline-flex;align-items:center;gap:8px;padding:14px 24px;border-radius:999px;font-weight:700;font-size:16px;text-decoration:none;border:2px solid var(--ink);transition:transform .15s,box-shadow .15s;font-family:var(--sans);white-space:nowrap}
 .btn:hover{transform:translateY(-2px);box-shadow:0 6px 0 var(--ink)}
 .btn-y{background:var(--yellow)}.btn-k{background:var(--ink);color:#fff}.btn-o{background:transparent}
-.btn-wa{background:#25D366;color:#06260f;border-color:#0b3d1d}
 
 /* reveal */
 .rv{opacity:0;transform:translateY(22px);transition:opacity .7s var(--ease),transform .7s var(--ease);transition-delay:calc(var(--i,0)*90ms)}
@@ -145,23 +144,6 @@ nav{position:sticky;top:0;z-index:50;background:rgba(251,248,238,.92);backdrop-f
 .quote p{flex:1;min-width:240px;font-size:16px}
 .quote p b{display:block;font-size:19px;margin-bottom:2px}
 
-/* collab */
-.collab{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:40px}
-.who{border-radius:24px;padding:30px;border:2px solid var(--ink)}
-.who.t{background:var(--teal-l)}.who.b{background:#FFF1C9}
-.who .ic{font-size:34px}
-.who h3{font-size:24px;margin:8px 0 12px}
-.who ul{list-style:none;display:grid;gap:10px}
-.who li{display:flex;gap:10px;font-size:16px;color:var(--ink2)}
-.who li::before{content:"→";font-weight:900;color:var(--ink)}
-.cta{margin-top:40px;background:var(--night);color:#fff;border-radius:28px;padding:44px 40px;display:flex;align-items:center;justify-content:space-between;gap:28px;flex-wrap:wrap;position:relative;overflow:hidden}
-.cta::before{content:"";position:absolute;left:-80px;bottom:-120px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(255,201,60,.35),transparent 70%)}
-.cta h3{font-size:clamp(24px,3vw,32px);position:relative}
-.cta p{color:#CFC8BB;position:relative;margin-top:6px}
-.cta .btns{display:flex;gap:10px;flex-wrap:wrap;position:relative}
-.cta .btn-o{color:#fff;border-color:#fff}
-.cta .btn-o:hover{box-shadow:0 6px 0 #fff}
-
 /* footer */
 footer{background:var(--night);color:#CFC8BB;padding:36px 0 40px;border-top:1px solid #2a2622}
 .foot-in{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
@@ -186,13 +168,12 @@ footer{background:var(--night);color:#CFC8BB;padding:36px 0 40px;border-top:1px 
   .wrap{padding:0 18px}
   .hero{padding:44px 0 56px}
   .lead{font-size:17px}
-  .projects,.autos,.classes,.collab{grid-template-columns:1fr}
+  .projects,.autos,.classes
   .stats{margin-top:48px;gap:10px}
   .stat{padding:14px 16px}.stat b{font-size:30px}
   .tag{font-size:12.5px;padding:6px 10px}
   .tag.t1{left:-14px}.tag.t2{right:-14px}.tag.t3{left:-8px}
   .proj{padding:22px}
-  .cta{padding:32px 24px}
   .brand span{display:none}
 }
 </style>
@@ -207,7 +188,6 @@ footer{background:var(--night);color:#CFC8BB;padding:36px 0 40px;border-top:1px 
       <a href="#projects">做过的事</a>
       <a href="#automation">自动化</a>
       <a href="#classes">课堂</a>
-      <a class="btn btn-y" href="#collab">找我合作</a>
     </div>
   </div>
 </nav>
@@ -217,17 +197,17 @@ footer{background:var(--night);color:#CFC8BB;padding:36px 0 40px;border-top:1px 
     <div>
       <div class="pill rv"><i></i>ABOUT · 关于阿理哥</div>
       <h1 class="rv" style="--i:1"><span class="nw">我是阿理哥 Adrian，</span><br><span class="y">真的在用 AI Agent</span><br>做生意的老板。</h1>
-      <p class="lead rv" style="--i:2">软件工程出身，自己开公司 12 年。2026 年开始把 AI Agent 放进每天的生意里：回顾客、做报表、做网页、剪视频。现在，我把这套做法教给其他老板。</p>
+      <p class="lead rv" style="--i:2">软件工程出身，电商起家，自己开公司 12 年，对电商营销有很深的了解。2026 年开始把 AI Agent 放进每天的生意里：回顾客、做报表、做网页、剪视频。现在，我把这套做法教给其他老板。</p>
       <div class="hero-btns rv" style="--i:3">
-        <a class="btn btn-y" href="#collab">找我合作 →</a>
-        <a class="btn btn-o" href="#automation">看我每天在跑的自动化</a>
+        <a class="btn btn-y" href="#automation">看我每天在跑的自动化 →</a>
+        <a class="btn btn-o" href="#projects">我做过的事</a>
       </div>
     </div>
     <div class="portrait rv" style="--i:2">
       <div class="ph"><img src="/assets/adrian-profile.jpg" alt="阿理哥 Adrian Ng" width="1120" height="1400"></div>
       <div class="tag t1">📍 Johor Bahru<small>马来西亚新山</small></div>
       <div class="tag t2">🎓 UTM<small>Software Engineering</small></div>
-      <div class="tag t3">🏢 2014 年创业<small>Ukunili Music Sdn Bhd</small></div>
+      <div class="tag t3">🛒 电商起家<small>2014 · Ukunili Music Sdn Bhd</small></div>
     </div>
   </div>
   <div class="wrap">
@@ -247,7 +227,7 @@ footer{background:var(--night);color:#CFC8BB;padding:36px 0 40px;border-top:1px 
     <h2 class="rv">从写程序，到开公司，<br>再回到<mark>用 AI 做系统</mark>。</h2>
     <ol class="tl" id="tl">
       <li class="rv"><div class="when">大学</div><h3>UTM Software Engineering 毕业</h3><p>软件工程出身，懂系统怎样搭，也知道一般老板为什么怕技术。</p></li>
-      <li class="rv"><div class="when">2014</div><h3>创办 Ukunili Music Sdn Bhd</h3><p>自己当老板：订货、库存、网店、客服、员工、会计，每一样都自己经历过。</p></li>
+      <li class="rv"><div class="when">2014</div><h3>电商起家，创办 Ukunili Music Sdn Bhd</h3><p>一开始就是做电商：网店、广告、内容营销、订单和客服都自己做，所以对电商营销有很深的了解。后来订货、库存、员工、会计，每一样都自己经历过。</p></li>
       <li class="rv"><div class="when">2026 年 1 月</div><h3>开始研究 AI Agent</h3><p>从 OpenClaw 开始，把 AI 从“聊天”变成“帮我做事”，先在自己公司试。</p></li>
       <li class="rv"><div class="when">2026 年 5 月</div><h3>一人公司 ALIGOR（AI Agent）</h3><p>把自己用得起来的做法整理成课程和免费教学页，教 SME 老板自己做。</p></li>
       <li class="rv"><div class="when">2026 年 6 月</div><h3>JOMBUY 新山社区团购</h3><p>用 AI Agent 帮忙处理订单、付款确认和积分回馈。</p></li>
@@ -266,8 +246,8 @@ footer{background:var(--night);color:#CFC8BB;padding:36px 0 40px;border-top:1px 
     <div class="projects">
       <article class="proj rv">
         <div class="top"><div class="ic" style="background:var(--teal-l)">🏢</div><div><h3>Ukunili Music Sdn Bhd</h3><div class="yr">2014 年至今 · 老板</div></div></div>
-        <p>经营超过 12 年的 SME。网店、库存、销售报表、员工薪水和客服，现在很多重复的工作已经交给 AI Agent。</p>
-        <ul><li>真实经营 12 年</li><li>网店</li><li>每日销售报表自动化</li></ul>
+        <p>电商起家，经营超过 12 年的 SME。网店、电商营销、库存、销售报表、员工薪水和客服，现在很多重复的工作已经交给 AI Agent。</p>
+        <ul><li>电商起家</li><li>电商营销</li><li>真实经营 12 年</li><li>每日销售报表自动化</li></ul>
       </article>
       <article class="proj rv" style="--i:1">
         <div class="top"><div class="ic" style="background:#FFF1C9">🤖</div><div><h3>Aligor AI Agent 实战课</h3><div class="yr">2026 年 5 月至今 · 创办人 / 老师</div></div></div>
@@ -338,46 +318,6 @@ footer{background:var(--night);color:#CFC8BB;padding:36px 0 40px;border-top:1px 
     <div class="quote rv">
       <div class="score">5<small>/5</small></div>
       <p><b>第一堂课，第一份交回的学员问卷</b>实用度、满意度、信心、讲解清晰度、推荐意愿，五项都是满分。（匿名）</p>
-    </div>
-  </div>
-</section>
-
-<!-- COLLAB -->
-<section class="alt" id="collab">
-  <div class="wrap">
-    <div class="eyebrow rv">一起合作</div>
-    <h2 class="rv">老师、老板，<mark>我们可以一起做</mark>。</h2>
-    <p class="lead rv">如果你也在教课，或者你的生意想开始用 AI Agent，欢迎来聊。下面是我们可以一起做的方向。</p>
-    <div class="collab">
-      <div class="who t rv">
-        <div class="ic">🎤</div>
-        <h3>如果你是老师 / 讲师</h3>
-        <ul>
-          <li>一起开课或办 workshop，我负责 AI Agent 实战的部分</li>
-          <li>帮你把课程内容做成会动的网页 PPT 和课程页</li>
-          <li>交流怎样用 AI 准备教材、剪课程视频、跟进学员</li>
-        </ul>
-      </div>
-      <div class="who b rv" style="--i:1">
-        <div class="ic">💼</div>
-        <h3>如果你是生意老板</h3>
-        <ul>
-          <li>一起看你公司哪一段工作，可以先交给 AI Agent</li>
-          <li>为你的团队安排 AI Agent 实战培训</li>
-          <li>跨行业合作：你有客户和场景，我有 AI 的做法</li>
-        </ul>
-      </div>
-    </div>
-    <div class="cta rv">
-      <div>
-        <h3>想合作？直接 WhatsApp 我。</h3>
-        <p>说一下你是谁、做什么，想一起做什么就好。</p>
-      </div>
-      <div class="btns">
-        <a class="btn btn-wa" href="https://wa.me/60167871902?text=%E4%BD%A0%E5%A5%BD%E9%98%BF%E7%90%86%E5%93%A5%EF%BC%8C%E6%88%91%E6%83%B3%E8%81%8A%E5%90%88%E4%BD%9C%EF%BC%9A" target="_blank" rel="noopener">WhatsApp 聊合作 →</a>
-        <a class="btn btn-o" href="https://www.instagram.com/aligor4916/" target="_blank" rel="noopener">Instagram</a>
-        <a class="btn btn-o" href="https://www.facebook.com/aligor4916/" target="_blank" rel="noopener">Facebook</a>
-      </div>
     </div>
   </div>
 </section>
