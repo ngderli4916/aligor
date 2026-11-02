@@ -89,9 +89,9 @@ nav{position:sticky;top:0;z-index:50;background:rgba(251,248,238,.92);backdrop-f
 .tl li{list-style:none;position:relative;padding:0 0 32px}
 .tl li:last-child{padding-bottom:0}
 /* dot: 18px circle centred on x = -28px (relative to the text column) */
-.tl li::before{content:"";position:absolute;left:-37px;top:6px;width:18px;height:18px;border-radius:50%;background:var(--paper);border:3px solid var(--line);z-index:1;transition:border-color .4s,background .4s,box-shadow .4s;transition-delay:.25s}
+.tl li::before{content:"";box-sizing:border-box;position:absolute;left:-37px;top:6px;width:18px;height:18px;border-radius:50%;background:var(--paper);border:3px solid var(--line);z-index:1;transition:border-color .4s,background .4s,box-shadow .4s;transition-delay:.25s}
 .tl li.in::before{border-color:var(--teal);background:#fff}
-.tl li.now.in::before{background:var(--yellow);border-color:var(--ink);box-shadow:0 0 0 6px rgba(255,201,60,.35)}
+.tl li.now.in::before{background:var(--yellow);border-color:var(--ink);box-shadow:0 0 0 6px #F8E2A6}
 /* segment: from this dot's centre down to the next dot's centre, grows when revealed */
 .tl li:not(:last-child)::after{content:"";position:absolute;left:-29.5px;top:15px;width:3px;height:100%;border-radius:3px;
   background:linear-gradient(var(--teal),var(--teal)) no-repeat top/100% 0%,var(--line);transition:background-size .9s var(--ease);transition-delay:.45s}
