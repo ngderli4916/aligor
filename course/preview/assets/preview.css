@@ -149,3 +149,7 @@ a.cardlink:hover span,a.cardlink:focus-visible span{opacity:1;transform:none}
 /* 自我介绍页：网站按钮 */
 a.chip{position:absolute;z-index:5;display:flex;align-items:center;justify-content:center;border-radius:999px;background:rgba(255,255,255,.08);border:1.5px solid rgba(245,165,36,.7);color:#fff;text-decoration:none;font:700 21px var(--font);transition:background .2s,transform .2s}
 a.chip:hover,a.chip:focus-visible{background:#F5A524;color:#0F1B2D;transform:translateY(-2px);outline:none}
+
+/* 学员视频：手机框 */
+.phone{border-radius:34px;padding:8px;background:#0b1422;border:2px solid rgba(255,255,255,.18);box-shadow:0 24px 50px -18px rgba(0,0,0,.8);box-sizing:border-box}
+.phone video{width:100%;height:100%;display:block;border-radius:26px;background:#000;object-fit:contain}

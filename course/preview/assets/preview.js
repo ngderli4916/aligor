@@ -21,6 +21,7 @@
   }
   function show(i, toEnd) {
     cur = Math.max(0, Math.min(slides.length - 1, i));
+    [].forEach.call(document.querySelectorAll('video'), function (v) { v.pause(); });
     slides.forEach(function (s, k) { s.classList.toggle('active', k === cur); s.classList.remove('show', 'instant'); [].forEach.call(s.querySelectorAll('.r'), function (e) { e.classList.remove('r'); }); });
     var s = slides[cur]; void s.offsetWidth; s.classList.add('show');
     var n = s.querySelectorAll('.pop:not([data-step])').length; s.style.setProperty('--step', (n > 30 ? 1.2 / n : 0.06) + 's');
@@ -41,6 +42,7 @@
     window.addEventListener('hashchange', function () { var h = parseInt((location.hash || '').slice(1), 10); if (!isNaN(h) && h - 1 !== cur) show(h - 1); });
     document.addEventListener('keydown', function (e) {
       if (e.target && e.target.tagName === 'INPUT') return;
+      if (e.target && e.target.tagName === 'VIDEO' && e.key === ' ') return;   // 视频上按空格＝播放／暂停
       if (['ArrowRight', 'PageDown', ' ', 'Enter', 'ArrowDown'].indexOf(e.key) > -1) { e.preventDefault(); next(); }
       else if (['ArrowLeft', 'PageUp', 'Backspace', 'ArrowUp'].indexOf(e.key) > -1) { e.preventDefault(); prev(); }
       else if (e.key === 'Home') show(0); else if (e.key === 'End') show(slides.length - 1);
@@ -53,7 +55,7 @@
     }
     document.querySelector('[data-prev]').onclick = function (e) { e.stopPropagation(); prev(); };
     document.querySelector('[data-next]').onclick = function (e) { e.stopPropagation(); next(); };
-    deck.addEventListener('click', function (e) { if (e.target.closest('a')) return; if (e.clientX < window.innerWidth * 0.2) prev(); else next(); });
+    deck.addEventListener('click', function (e) { if (e.target.closest('a,video')) return; if (e.clientX < window.innerWidth * 0.2) prev(); else next(); });
     var sx = null; document.addEventListener('touchstart', function (e) { sx = e.touches[0].clientX; }, { passive: true });
     document.addEventListener('touchend', function (e) { if (sx === null) return; var dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 60) { if (dx < 0) next(); else prev(); } sx = null; });
   }
