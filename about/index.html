@@ -128,9 +128,10 @@ nav{position:sticky;top:0;z-index:50;background:rgba(251,248,238,.92);backdrop-f
 /* classes */
 .classes{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:40px}
 .cls{background:#fff;border:1.5px solid var(--line);border-radius:22px;overflow:hidden;display:flex;flex-direction:column}
-.cls .pics{display:grid;grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr;gap:4px;aspect-ratio:16/10;background:var(--paper)}
+.cls .pics{display:grid;grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr;gap:4px;aspect-ratio:4/3;background:var(--paper)}
 .cls .pics img{width:100%;height:100%;object-fit:cover}
 .cls .pics img:first-child{grid-row:1/3}
+.cls .pics.one{grid-template-columns:1fr;grid-template-rows:1fr}
 .cls .pics.empty{display:grid;place-items:center;grid-template-columns:1fr;grid-template-rows:1fr;background:repeating-linear-gradient(-45deg,#F4EFE2 0 14px,#EFE8D8 14px 28px);color:var(--mute);font-weight:700;text-align:center;padding:20px}
 .cls .pics.empty i{display:block;font-style:normal;font-size:40px;margin-bottom:6px}
 .cls .body{padding:22px 24px 26px}
@@ -371,11 +372,14 @@ footer{background:var(--night);color:#CFC8BB;padding:36px 0 40px;border-top:1px 
   addEventListener('scroll', fill, { passive: true }); fill();
 
   // class photos: fill a card only when its photos exist
-  var photos = { 1: [], 2: [] };
+  var photos = {
+    1: [{ src: '/assets/about/class1.jpg', alt: '第一堂 AI Agent 实战课：阿理哥在白板前讲解，学员用自己的电脑跟着做' }],
+    2: []
+  };
   Object.keys(photos).forEach(function (k) {
     var list = photos[k], box = document.getElementById('pics-' + k);
     if (!list.length) return;
-    box.classList.remove('empty'); box.innerHTML = '';
+    box.classList.remove('empty'); box.classList.toggle('one', list.length === 1); box.innerHTML = '';
     list.slice(0, 3).forEach(function (p) {
       var img = new Image(); img.src = p.src; img.alt = p.alt; img.loading = 'lazy'; box.appendChild(img);
     });
