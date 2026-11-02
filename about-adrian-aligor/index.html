@@ -85,13 +85,17 @@ nav{position:sticky;top:0;z-index:50;background:rgba(251,248,238,.92);backdrop-f
 .stat span{font-size:14px;color:var(--mute)}
 
 /* timeline */
-.tl{position:relative;margin-top:44px;padding-left:34px}
-.tl::before{content:"";position:absolute;left:9px;top:8px;bottom:8px;width:3px;background:var(--line);border-radius:3px}
-.tl::after{content:"";position:absolute;left:9px;top:8px;width:3px;height:var(--fill,0%);background:var(--teal);border-radius:3px;transition:height 1.6s var(--ease)}
-.tl li{list-style:none;position:relative;padding:0 0 30px}
+.tl{margin-top:44px;padding-left:40px}
+.tl li{list-style:none;position:relative;padding:0 0 32px}
 .tl li:last-child{padding-bottom:0}
-.tl li::before{content:"";position:absolute;left:-31px;top:7px;width:17px;height:17px;border-radius:50%;background:var(--paper);border:3px solid var(--teal)}
-.tl li.now::before{background:var(--yellow);border-color:var(--ink);box-shadow:0 0 0 6px rgba(255,201,60,.35)}
+/* dot: 18px circle centred on x = -28px (relative to the text column) */
+.tl li::before{content:"";position:absolute;left:-37px;top:6px;width:18px;height:18px;border-radius:50%;background:var(--paper);border:3px solid var(--line);z-index:1;transition:border-color .4s,background .4s,box-shadow .4s;transition-delay:.25s}
+.tl li.in::before{border-color:var(--teal);background:#fff}
+.tl li.now.in::before{background:var(--yellow);border-color:var(--ink);box-shadow:0 0 0 6px rgba(255,201,60,.35)}
+/* segment: from this dot's centre down to the next dot's centre, grows when revealed */
+.tl li:not(:last-child)::after{content:"";position:absolute;left:-29.5px;top:15px;width:3px;height:100%;border-radius:3px;
+  background:linear-gradient(var(--teal),var(--teal)) no-repeat top/100% 0%,var(--line);transition:background-size .9s var(--ease);transition-delay:.45s}
+.tl li.in:not(:last-child)::after{background-size:100% 100%}
 .tl .when{font-size:13px;font-weight:700;letter-spacing:.06em;color:var(--teal)}
 .tl h3{margin:2px 0 4px}
 .tl p{color:var(--ink2);font-size:16px;max-width:640px}
@@ -308,7 +312,7 @@ footer{background:var(--night);color:#CFC8BB;padding:36px 0 40px;border-top:1px 
         </div>
       </article>
       <article class="cls rv" style="--i:1">
-        <div class="pics empty" id="pics-2"><div><i>📷</i>第二堂课照片<br><small style="font-weight:500">很快更新</small></div></div>
+        <div class="pics empty" id="pics-2"><div><i>📷</i>第二堂课照片</div></div>
         <div class="body">
           <div class="no">第二堂 · 2026 年 11 月 1 日</div>
           <h3>从 0 开始建立你的 AI 个人助理</h3>
@@ -362,19 +366,10 @@ footer{background:var(--night);color:#CFC8BB;padding:36px 0 40px;border-top:1px 
   }, { threshold: .15 });
   document.querySelectorAll('.rv').forEach(function (el) { io.observe(el); });
 
-  // timeline line grows as you scroll through it
-  var tl = document.getElementById('tl');
-  function fill() {
-    var r = tl.getBoundingClientRect(), h = innerHeight * .7;
-    var p = Math.max(0, Math.min(1, (h - r.top) / r.height));
-    tl.style.setProperty('--fill', (p * 100).toFixed(1) + '%');
-  }
-  addEventListener('scroll', fill, { passive: true }); fill();
-
   // class photos: fill a card only when its photos exist
   var photos = {
     1: [{ src: '/assets/about/class1.jpg', alt: '第一堂 AI Agent 实战课：阿理哥在白板前讲解，学员用自己的电脑跟着做' }],
-    2: []
+    2: [{ src: '/assets/about/class2.jpg', alt: '第二堂 AI Agent 实战课：阿理哥和学员在课堂合照' }]
   };
   Object.keys(photos).forEach(function (k) {
     var list = photos[k], box = document.getElementById('pics-' + k);
