@@ -31,7 +31,6 @@ button.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
 button:focus-visible,input:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .vol{display:flex;gap:10px;align-items:center;color:var(--mute);font-size:14px}
 input[type=range]{width:130px;accent-color:var(--amber)}
-.now{color:var(--mute);font-size:13px;white-space:nowrap}
 .hint{width:100%;text-align:center;font-size:13px;color:var(--mute)}
 #video{position:fixed;inset:0;z-index:50;background:#000}
 #video iframe{display:block;width:100%;height:100%;border:0}
@@ -60,9 +59,8 @@ input[type=range]{width:130px;accent-color:var(--amber)}
     <button id="play" type="button">▶ 开始轻音乐</button>
     <span class="vol" id="volbox" hidden>音量 <input id="vol" type="range" min="0" max="100" value="35" aria-label="音量"></span>
     <button class="ghost" id="stop" type="button" hidden>⏸ 暂停音乐</button>
-    <span class="now" id="now" hidden></span>
     <button class="ghost" id="full" type="button">全屏</button>
-    <button class="ghost" id="test" type="button">▶ 测试视频</button>
+    <button class="ghost" id="test" type="button">▶ 播放视频</button>
     <span class="hint" id="hint">8:00 一到，会自动全屏播放视频。请先点一下「全屏」或「开始轻音乐」（浏览器规定要先点一次，视频才能自动有声音和全屏）。分享画面给学员时，请勾选“分享声音／Share sound”。</span>
   </div>
 </main>
@@ -97,16 +95,16 @@ input[type=range]{width:130px;accent-color:var(--amber)}
   // ---- background music: 10 Pixabay wedding tracks (Pixabay Content License), shuffled, the list repeats ----
   var MUSIC = "/assets/music/preview-countdown/";
   var tracks = [
-    ["01-paulyudin-574002.mp3", "Wedding Music", "PaulYudin"],
-    ["02-andriig-604061.mp3", "Wedding Music", "andriig"],
-    ["03-atlasaudio-625735.mp3", "Romantic Wedding", "AtlasAudio"],
-    ["04-leberch-594956.mp3", "Green Fields", "leberch"],
-    ["05-atlasaudio-621618.mp3", "Wedding Entrance", "AtlasAudio"],
-    ["06-atlasaudio-606284.mp3", "Wedding", "AtlasAudio"],
-    ["07-andriih-601619.mp3", "Wedding Music", "andriih"],
-    ["08-andriig-568195.mp3", "Wedding Music", "andriig"],
-    ["09-alexmorgan-578500.mp3", "Garden Ceremony Glow", "alex-morgan"],
-    ["10-alexmorgan-578502.mp3", "Vow Exchange", "alex-morgan"]
+    "01-paulyudin-574002.mp3",
+    "02-andriig-604061.mp3",
+    "03-atlasaudio-625735.mp3",
+    "04-leberch-594956.mp3",
+    "05-atlasaudio-621618.mp3",
+    "06-atlasaudio-606284.mp3",
+    "07-andriih-601619.mp3",
+    "08-andriig-568195.mp3",
+    "09-alexmorgan-578500.mp3",
+    "10-alexmorgan-578502.mp3"
   ];
   var order = tracks.map(function (_, i) { return i; });
   for (var i = order.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = order[i]; order[i] = order[j]; order[j] = t; }
@@ -120,9 +118,7 @@ input[type=range]{width:130px;accent-color:var(--amber)}
   }
   function load(k) {
     pos = (k + order.length) % order.length;
-    var tr = tracks[order[pos]];
-    audio.src = MUSIC + tr[0];
-    $("now").textContent = "♪ " + tr[1] + " · " + tr[2];
+    audio.src = MUSIC + tracks[order[pos]];
   }
   function next() { load(pos + 1); if (playing) audio.play().catch(function () {}); }
   audio.addEventListener("ended", next);
@@ -132,7 +128,7 @@ input[type=range]{width:130px;accent-color:var(--amber)}
     if (pos < 0) load(0);
     playing = true; applyVolume();
     audio.play().catch(function () { $("hint").textContent = "音乐没有播放，请再点一次「开始轻音乐」。"; });
-    $("play").hidden = true; $("volbox").hidden = false; $("stop").hidden = false; $("now").hidden = false;
+    $("play").hidden = true; $("volbox").hidden = false; $("stop").hidden = false;
   }
   function stop() {
     playing = false; applyVolume(); audio.pause();
