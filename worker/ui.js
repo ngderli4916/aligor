@@ -128,8 +128,16 @@ function adminShell(title, body, script = '') {
 
 const jsonForScript = value => JSON.stringify(value).replace(/</g, '\\u003c');
 
+export const PREVIEW_SESSIONS = [
+  { batch: 'PREVIEW-1111', course: '免费 AI Preview · 11 月 11 日（星期三）8 PM – 9 PM' },
+  { batch: 'PREVIEW-1118', course: '免费 AI Preview · 11 月 18 日（星期三）8 PM – 9 PM' },
+  { batch: 'PREVIEW-1125', course: '免费 AI Preview · 11 月 25 日（星期三）8 PM – 9 PM' },
+];
+
 export function registerPage(defaultBatch = '', stats = null, pixelId = '') {
   const total = Number(stats?.total) || 0;
+  const selectedBatch = PREVIEW_SESSIONS.some(session => session.batch === defaultBatch) ? defaultBatch : PREVIEW_SESSIONS[0].batch;
+  const sessionOptions = PREVIEW_SESSIONS.map(session => `<option value="${session.course}" data-batch="${session.batch}"${session.batch === selectedBatch ? ' selected' : ''}>${session.course}</option>`).join('');
   const proof = total > 0 ? `<p class="proof"><span class="dot"></span>已有 <b>${total}</b> 人报名免费 AI Preview</p>` : '';
   return shell('Aligor Preview 报名', `
     <a class="brand" href="/" style="text-decoration:none;color:inherit">阿理哥 · Aligor</a>
@@ -137,8 +145,8 @@ export function registerPage(defaultBatch = '', stats = null, pixelId = '') {
     <form id="leadForm" class="card grid">
       <label>姓名<input name="name" required maxlength="80" autocomplete="name"></label>
       <label>WhatsApp 号码<input name="phone" required maxlength="30" inputmode="tel" placeholder="例如 0167871902" autocomplete="tel"></label>
-      <label class="full">报名项目<select name="course" id="course"><option value="免费 AI Preview · 11 月 4 日（星期三）8 PM – 9 PM" data-batch="PREVIEW-1104">免费 AI Preview · 11 月 4 日（星期三）8 PM – 9 PM</option><option value="免费 AI Preview · 11 月 11 日（星期三）8 PM – 9 PM" data-batch="PREVIEW-1111">免费 AI Preview · 11 月 11 日（星期三）8 PM – 9 PM</option></select><small class="hint" id="sessionCount"></small></label>
-      <input type="hidden" name="batch" id="batch" value="${defaultBatch||'PREVIEW-1104'}">
+      <label class="full">报名项目<select name="course" id="course">${sessionOptions}</select><small class="hint" id="sessionCount"></small></label>
+      <input type="hidden" name="batch" id="batch" value="${selectedBatch}">
       <label>公司名称（选填）<input name="company" maxlength="100"></label>
       <label>行业（选填）<input name="industry" maxlength="80"></label>
       <fieldset class="full"><legend>你有用过 AI Agent 吗？</legend><div class="choices">
@@ -169,9 +177,9 @@ export function registerPage(defaultBatch = '', stats = null, pixelId = '') {
     <section id="success" class="card success hidden"><h2>报名成功！</h2><p id="successNote"></p><a id="wa" class="btn wa" target="_blank" rel="noopener">打开 WhatsApp</a></section>
   `, `
     const form=document.querySelector('#leadForm'),msg=document.querySelector('#message');
-    const qb=new URLSearchParams(location.search).get('batch'),sel=document.querySelector('#course'),bt=document.querySelector('#batch');
+    const sel=document.querySelector('#course'),bt=document.querySelector('#batch');
     const counts=${jsonForScript(stats?.byBatch||{})},hint=document.querySelector('#sessionCount');
-    function syncBatch(){const b=sel.selectedOptions[0].dataset.batch;if(!qb)bt.value=b;const n=Number(counts[b])||0;hint.textContent=n>0?'这一场已有 '+n+' 人报名':''}
+    function syncBatch(){const b=sel.selectedOptions[0].dataset.batch;bt.value=b;const n=Number(counts[b])||0;hint.textContent=n>0?'这一场已有 '+n+' 人报名':''}
     sel.addEventListener('change',syncBatch);syncBatch();
     form.addEventListener('submit',async e=>{e.preventDefault();msg.textContent='提交中…';const button=form.querySelector('button');button.disabled=true;try{const fd=new FormData(form),data=Object.fromEntries(fd);data.ai_tools=fd.getAll('ai_tools');data.consent=form.consent.checked;const qs=new URLSearchParams(location.search);['utm_source','utm_medium','utm_campaign','utm_content','fbclid'].forEach(k=>{if(qs.get(k))data[k]=qs.get(k)});data.page_url=location.href;const r=await fetch('/api/leads',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(data)});const out=await r.json();if(!r.ok)throw new Error(out.error||'提交失败');if(window.fbq)fbq('track','Lead',{content_name:data.course},{eventID:out.lead_id});form.classList.add('hidden');document.querySelector('#success').classList.remove('hidden');document.querySelector('#wa').href=out.whatsapp_url;document.querySelector('#successNote').textContent='你报名的是：'+data.course+'。我会通过 WhatsApp 联络你，也可以现在直接 WhatsApp 我，获得更快回复。';}catch(err){msg.textContent=err.message;msg.className='full error';button.disabled=false;}});
   `, pixelHead(pixelId));
@@ -192,7 +200,7 @@ export function adminPage() {
     <div class="content">
       <section class="view on" id="tab-overview"><div class="page-head"><div><h1>总览</h1><p class="sub">访客、报名与付款一览</p></div></div>
         <div id="ostats" class="stats"></div><div id="traffic"></div></section>
-      <section class="view" id="tab-preview"><div class="page-head"><div><h1>免费 Preview 报名</h1><p class="sub">11 月 4 日、11 月 11 日两场</p></div><div class="actions"><a class="btn small" href="/api/admin/export.csv">导出 CSV</a></div></div>
+      <section class="view" id="tab-preview"><div class="page-head"><div><h1>免费 Preview 报名</h1><p class="sub">11 月 11 日、11 月 18 日、11 月 25 日三场</p></div><div class="actions"><a class="btn small" href="/api/admin/export.csv">导出 CSV</a></div></div>
         <div id="stats" class="stats"></div>
         <div class="tools"><input id="q" placeholder="姓名、电话或报名ID"><input id="batch" placeholder="批次"><select id="status"><option value="">全部状态</option><option>new</option><option>contacted</option><option>registered</option><option>paid</option><option>attended</option><option>cancelled</option></select><select id="access"><option value="">全部学生</option><option value="granted">已领取链接</option><option value="missing">未领取链接</option></select><button id="search" class="btn small">查询</button></div>
         <div id="message"></div><div class="table-wrap"><table><thead><tr><th>ID</th><th>顾客</th><th>课程 / 批次</th><th>状态</th><th>报名时间</th><th>领取链接记录</th><th>操作</th></tr></thead><tbody id="rows"></tbody></table></div>
