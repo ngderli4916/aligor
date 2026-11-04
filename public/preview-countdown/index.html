@@ -31,6 +31,7 @@ button.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
 button:focus-visible,input:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .vol{display:flex;gap:10px;align-items:center;color:var(--mute);font-size:14px}
 input[type=range]{width:130px;accent-color:var(--amber)}
+.now{color:var(--mute);font-size:13px;white-space:nowrap}
 .hint{width:100%;text-align:center;font-size:13px;color:var(--mute)}
 #video{position:fixed;inset:0;z-index:50;background:#000}
 #video iframe{display:block;width:100%;height:100%;border:0}
@@ -59,6 +60,7 @@ input[type=range]{width:130px;accent-color:var(--amber)}
     <button id="play" type="button">▶ 开始轻音乐</button>
     <span class="vol" id="volbox" hidden>音量 <input id="vol" type="range" min="0" max="100" value="35" aria-label="音量"></span>
     <button class="ghost" id="stop" type="button" hidden>⏸ 暂停音乐</button>
+    <span class="now" id="now" hidden></span>
     <button class="ghost" id="full" type="button">全屏</button>
     <button class="ghost" id="test" type="button">▶ 测试视频</button>
     <span class="hint" id="hint">8:00 一到，会自动全屏播放视频。请先点一下「全屏」或「开始轻音乐」（浏览器规定要先点一次，视频才能自动有声音和全屏）。分享画面给学员时，请勾选“分享声音／Share sound”。</span>
@@ -92,70 +94,53 @@ input[type=range]{width:130px;accent-color:var(--amber)}
   }
   setInterval(tick, 250); tick();
 
-  // ---- soft generated music (Web Audio, nothing to download, no copyright) ----
-  var ctx, master, reverb, timer, playing = false, nextChordAt = 0, step = 0;
-  var chords = [[130.81,196.00,246.94,329.63],[110.00,164.81,196.00,261.63],[87.31,174.61,220.00,329.63],[98.00,196.00,246.94,329.63]];
-  var penta = [392.00,440.00,523.25,587.33,659.25,783.99,880.00];
+  // ---- background music: 10 Pixabay wedding tracks (Pixabay Content License), shuffled, the list repeats ----
+  var MUSIC = "/assets/music/preview-countdown/";
+  var tracks = [
+    ["01-paulyudin-574002.mp3", "Wedding Music", "PaulYudin"],
+    ["02-andriig-604061.mp3", "Wedding Music", "andriig"],
+    ["03-atlasaudio-625735.mp3", "Romantic Wedding", "AtlasAudio"],
+    ["04-leberch-594956.mp3", "Green Fields", "leberch"],
+    ["05-atlasaudio-621618.mp3", "Wedding Entrance", "AtlasAudio"],
+    ["06-atlasaudio-606284.mp3", "Wedding", "AtlasAudio"],
+    ["07-andriih-601619.mp3", "Wedding Music", "andriih"],
+    ["08-andriig-568195.mp3", "Wedding Music", "andriig"],
+    ["09-alexmorgan-578500.mp3", "Garden Ceremony Glow", "alex-morgan"],
+    ["10-alexmorgan-578502.mp3", "Vow Exchange", "alex-morgan"]
+  ];
+  var order = tracks.map(function (_, i) { return i; });
+  for (var i = order.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = order[i]; order[i] = order[j]; order[j] = t; }
+  var audio = new Audio(), pos = -1, playing = false, fails = 0;
+  audio.preload = "auto";
 
   function applyVolume() {
-    if (!master) return;
+    if (!audio) return;
     var v = Number($("vol").value) / 100;
-    master.gain.setTargetAtTime(playing ? v * v * fadeGain : 0, ctx.currentTime, 0.4);
+    audio.volume = playing ? Math.min(1, v * v * fadeGain) : 0;
   }
-  function impulse(seconds) {
-    var rate = ctx.sampleRate, len = rate * seconds, buf = ctx.createBuffer(2, len, rate);
-    for (var c = 0; c < 2; c++) { var d = buf.getChannelData(c); for (var i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.6); }
-    return buf;
+  function load(k) {
+    pos = (k + order.length) % order.length;
+    var tr = tracks[order[pos]];
+    audio.src = MUSIC + tr[0];
+    $("now").textContent = "♪ " + tr[1] + " · " + tr[2];
   }
-  function pad(freq, t0, dur) {
-    [ -4, 4 ].forEach(function (cents) {
-      var o = ctx.createOscillator(), g = ctx.createGain(), f = ctx.createBiquadFilter();
-      o.type = "triangle"; o.frequency.value = freq; o.detune.value = cents;
-      f.type = "lowpass"; f.frequency.value = 1100;
-      g.gain.setValueAtTime(0.0001, t0);
-      g.gain.linearRampToValueAtTime(0.05, t0 + 3);
-      g.gain.setValueAtTime(0.05, t0 + dur - 3);
-      g.gain.linearRampToValueAtTime(0.0001, t0 + dur + 2);
-      o.connect(f); f.connect(g); g.connect(master); g.connect(reverb);
-      o.start(t0); o.stop(t0 + dur + 2.2);
-    });
-  }
-  function pluck(freq, t0) {
-    var o = ctx.createOscillator(), g = ctx.createGain();
-    o.type = "sine"; o.frequency.value = freq;
-    g.gain.setValueAtTime(0.0001, t0);
-    g.gain.exponentialRampToValueAtTime(0.07, t0 + 0.02);
-    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 2.4);
-    o.connect(g); g.connect(master); g.connect(reverb);
-    o.start(t0); o.stop(t0 + 2.5);
-  }
-  function schedule() {
-    while (nextChordAt < ctx.currentTime + 3) {
-      var chord = chords[step % chords.length], t0 = Math.max(nextChordAt, ctx.currentTime);
-      chord.forEach(function (f) { pad(f, t0, 8); });
-      for (var i = 0; i < 4; i++) if (Math.random() < 0.75) pluck(penta[Math.floor(Math.random() * penta.length)], t0 + 1 + i * 1.9 + Math.random() * 0.5);
-      nextChordAt = t0 + 8; step++;
-    }
-  }
+  function next() { load(pos + 1); if (playing) audio.play().catch(function () {}); }
+  audio.addEventListener("ended", next);
+  audio.addEventListener("playing", function () { fails = 0; });
+  audio.addEventListener("error", function () { if (++fails < tracks.length) next(); });
   function start() {
-    if (!ctx) {
-      var AC = window.AudioContext || window.webkitAudioContext;
-      if (!AC) { $("hint").textContent = "这个浏览器不支持播放音乐。"; return; }
-      ctx = new AC(); master = ctx.createGain(); master.gain.value = 0; master.connect(ctx.destination);
-      reverb = ctx.createConvolver(); reverb.buffer = impulse(3.2);
-      var wet = ctx.createGain(); wet.gain.value = 0.55; reverb.connect(wet); wet.connect(master);
-    }
-    ctx.resume(); playing = true; nextChordAt = ctx.currentTime + 0.1;
-    schedule(); clearInterval(timer); timer = setInterval(schedule, 1000);
-    $("play").hidden = true; $("volbox").hidden = false; $("stop").hidden = false; applyVolume();
+    if (pos < 0) load(0);
+    playing = true; applyVolume();
+    audio.play().catch(function () { $("hint").textContent = "音乐没有播放，请再点一次「开始轻音乐」。"; });
+    $("play").hidden = true; $("volbox").hidden = false; $("stop").hidden = false; $("now").hidden = false;
   }
   function stop() {
-    playing = false; applyVolume(); clearInterval(timer);
+    playing = false; applyVolume(); audio.pause();
     $("play").textContent = "▶ 继续轻音乐"; $("play").hidden = false; $("stop").hidden = true;
   }
   function playVideo() {
     videoOn = true;
-    playing = false; applyVolume(); clearInterval(timer);
+    playing = false; applyVolume(); audio.pause();
     $("yt").src = "https://www.youtube-nocookie.com/embed/" + VIDEO_ID + "?autoplay=1&rel=0&playsinline=1&modestbranding=1";
     $("video").hidden = false;
     try { if (!document.fullscreenElement && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(function () {}); } catch (e) {}
