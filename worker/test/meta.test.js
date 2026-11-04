@@ -26,7 +26,7 @@ function makeDb() {
 const PIXEL = '1697028392130040';
 const makeEnv = (extra = {}) => ({ DB: makeDb(), SESSION_SECRET: 'session-secret-for-tests-0123456789', ADMIN_PASSWORD: 'x', META_PIXEL_ID: PIXEL, ...extra });
 const makeCtx = () => ({ promises: [], waitUntil(p) { this.promises.push(p); } });
-const lead = (body = {}) => ({ name: 'Ali Tan', phone: '0167871902', batch: 'PREVIEW-1028', course: '免费 AI Preview', used_ai_agent: '完全没用过', consent: true, ...body });
+const lead = (body = {}) => ({ name: 'Ali Tan', phone: '0167871902', batch: 'PREVIEW-1111', course: '免费 AI Preview · 11 月 11 日（星期三）8 PM – 9 PM', used_ai_agent: '完全没用过', consent: true, ...body });
 
 function withFetch(fn) {
   const calls = [], original = globalThis.fetch;

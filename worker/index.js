@@ -1,7 +1,7 @@
 import { STATUSES, normalizePhone, cleanText, waUrl, csvEscape, htmlEscape, parseBotCommand } from './lib.js';
 import { recordView, getStats } from './analytics.js';
 import { buildCustomerMessage, buildLeadNotification, leadCode, parseLeadCode, redactSecrets } from './notify.js';
-import { registerPage, loginPage, adminPage } from './ui.js';
+import { PREVIEW_SESSIONS, registerPage, loginPage, adminPage } from './ui.js';
 import { PACKAGES, promoState, currentPackages, ClassError, createRegistration, notifyClassRegistration, paymentUrl, findByToken, publicPaymentView, recordPaymentPageOpened, submitPayment, listClassRegistrations, classEvents, classCsv, adminAction, setClassNotes } from './classreg.js';
 import { classRegisterPage, paymentPage, invalidPaymentPage } from './classui.js';
 import { surveyPage, invalidSurveyPage, findSurveyInvite, saveSurvey } from './survey.js';
@@ -120,6 +120,8 @@ async function createLead(request,env,ctx) {
   const data=await bodyData(request);
   if (cleanText(data.website,100)) return json({ok:true},202);
   const name=cleanText(data.name,80), batch=cleanText(data.batch,50), course=cleanText(data.course||'免费 AI Preview',100);
+  const session=PREVIEW_SESSIONS.find(item=>item.batch===batch && item.course===course);
+  if(!session) return json({error:'这个 Preview 场次已经结束，请选择目前开放的场次。'},400);
   let phone;
   try { phone=normalizePhone(data.phone); }
   catch (error) { return json({error:error.message},400); }
