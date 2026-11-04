@@ -28,14 +28,14 @@ const makeEnv = (extra = {}) => ({
   DB: makeDb(),
   SESSION_SECRET: 'session-secret-for-tests-0123456789',
   ADMIN_PASSWORD: 'x',
-  PREVIEW_ACCESS_BATCH: 'PREVIEW-1028',
+  PREVIEW_ACCESS_BATCH: 'PREVIEW-1104',
   PREVIEW_JOIN_URL: JOIN_URL,
   PREVIEW_OWNER_PHONE: '60123456789',
   ...extra,
 });
 const makeCtx = () => ({ promises: [], waitUntil(p) { this.promises.push(p); } });
 
-function addLead(env, { phone = '60167871902', batch = 'PREVIEW-1028', status = 'new', name = 'Test Student' } = {}) {
+function addLead(env, { phone = '60167871902', batch = 'PREVIEW-1104', status = 'new', name = 'Test Student' } = {}) {
   const now = new Date().toISOString();
   env.DB.raw.prepare("INSERT INTO leads(public_id,name,phone_e164,batch,course,status,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?)")
     .run(crypto.randomUUID().slice(0, 8), name, phone, batch, '免费 AI Preview', status, now, now);
@@ -72,7 +72,7 @@ test('a phone registered for the current Preview receives the configured join li
   assert.equal(res.status, 200);
   assert.deepEqual(out, { ok: true, join_url: JOIN_URL });
   const events = env.DB.raw.prepare("SELECT event_type,actor,details FROM lead_events ORDER BY id").all().map(row => ({ ...row }));
-  assert.deepEqual(events, [{ event_type: 'preview_access_granted', actor: 'customer', details: 'batch=PREVIEW-1028' }]);
+  assert.deepEqual(events, [{ event_type: 'preview_access_granted', actor: 'customer', details: 'batch=PREVIEW-1104' }]);
 });
 
 test('the configured owner phone can always inspect the link without creating student attendance', async () => {
@@ -87,7 +87,7 @@ test('the configured owner phone can always inspect the link without creating st
 test('wrong phone, another batch, and cancelled registrations are denied without revealing which check failed', async () => {
   const cases = [
     env => addLead(env, { phone: '60111111111' }),
-    env => addLead(env, { batch: 'PREVIEW-1104' }),
+    env => addLead(env, { batch: 'PREVIEW-1028' }),
     env => addLead(env, { status: 'cancelled' }),
   ];
   const bodies = [];
@@ -121,7 +121,7 @@ test('admin can identify students who obtained the link and see first, last, and
   const login = await call(env, 'POST', '/api/admin/login', { password: 'x' });
   const cookie = login.headers.get('set-cookie').split(';')[0];
 
-  const granted = await call(env, 'GET', '/api/admin/leads?batch=PREVIEW-1028&access=granted', undefined, { cookie });
+  const granted = await call(env, 'GET', '/api/admin/leads?batch=PREVIEW-1104&access=granted', undefined, { cookie });
   assert.equal(granted.status, 200);
   const grantedRows = (await granted.json()).leads;
   assert.equal(grantedRows.length, 1);
@@ -130,7 +130,7 @@ test('admin can identify students who obtained the link and see first, last, and
   assert.ok(grantedRows[0].preview_first_access_at);
   assert.ok(grantedRows[0].preview_last_access_at);
 
-  const missing = await call(env, 'GET', '/api/admin/leads?batch=PREVIEW-1028&access=missing', undefined, { cookie });
+  const missing = await call(env, 'GET', '/api/admin/leads?batch=PREVIEW-1104&access=missing', undefined, { cookie });
   assert.equal(missing.status, 200);
   const missingRows = (await missing.json()).leads;
   assert.equal(missingRows.length, 1);
