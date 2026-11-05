@@ -61,9 +61,9 @@ test('3 & 4. packages: server amounts; tampered amounts are ignored; unknown pac
   const a = await register(env, { package: 'solo_1pc', amount: 1, final_amount: 1, discount_amount: 999 });
   const b = await register(env, { package: 'pair_1pc', ...two, phone: '0161111111', amount: 1 });
   const c = await register(env, { package: 'pair_2pc', ...two, phone: '0162222222', final_amount: 1 });
-  assert.deepEqual([a.json.amount, b.json.amount, c.json.amount], [499, 599, 799]);
+  assert.deepEqual([a.json.amount, b.json.amount, c.json.amount], [499, 599, 859]);
   const rs = env.DB.raw.prepare('SELECT package_code,original_amount,discount_amount,final_amount,participant_count,computer_count FROM class_registrations ORDER BY id').all();
-  assert.deepEqual(rs.map(r => [r.original_amount, r.discount_amount, r.final_amount, r.participant_count, r.computer_count]), [[799, 300, 499, 1, 1], [1198, 599, 599, 2, 1], [1498, 699, 799, 2, 2]]);
+  assert.deepEqual(rs.map(r => [r.original_amount, r.discount_amount, r.final_amount, r.participant_count, r.computer_count]), [[799, 300, 499, 1, 1], [1198, 599, 599, 2, 1], [1498, 639, 859, 2, 2]]);
   assert.equal((await register(env, { package: 'free' })).res.status, 400);
 });
 
@@ -263,7 +263,7 @@ test('16. the QR asset is a real, sizeable JPEG and the payment page references 
 test('18. registration page, old /register, admin, health still work; migrations are idempotent', async () => {
   const env = makeEnv();
   const reg = await call(env, 'GET', '/classregister', undefined); const h = await reg.text();
-  assert.equal(reg.status, 200); assert.ok(h.includes('RM499') && h.includes('RM599') && h.includes('RM799'));
+  assert.equal(reg.status, 200); assert.ok(h.includes('RM499') && h.includes('RM599') && h.includes('RM859'));
   assert.ok(!/SpiderMan|Hermes|Demo|DEMO/.test(h)); assert.ok(!h.includes('qr') || !h.includes('duitnow-nili'), 'no QR before submit');
   assert.equal((await call(env, 'GET', '/register', undefined)).status, 200);
   assert.equal((await call(env, 'GET', '/4916', undefined)).status, 200);
@@ -284,10 +284,10 @@ test('19. countdown: before the deadline the discount applies and the page shows
   const env = makeEnv({ PROMO_ENDS_AT: new Date(Date.now() + 3600e3).toISOString() });
   const page = await (await call(env, 'GET', '/classregister', undefined)).text();
   assert.ok(page.includes('id="promo"') && page.includes('今晚报名倒计时 · 至 12AM') && page.includes('<del>RM799</del>'));
-  assert.ok(page.includes('class="deal"') && !page.includes('今天省') && !page.includes('省 RM') && !page.includes('过了今天，要付') && page.includes('平均每人 RM399.5') && page.includes('id="submit2"') && page.includes('锁定今天的折扣价'));
+  assert.ok(page.includes('class="deal"') && !page.includes('今天省') && !page.includes('省 RM') && !page.includes('过了今天，要付') && page.includes('平均每人 RM429.5') && page.includes('id="submit2"') && page.includes('锁定今天的折扣价'));
   assert.ok(page.indexOf('class="deal"') > page.indexOf('选择上课方式') && page.indexOf('class="deal"') < page.indexOf('id="packages"'), 'deal sits inside the package step, above the packages');
   const { json } = await register(env, { package: 'pair_2pc', second_name: 'Siti', second_phone: '0123456789' });
-  assert.equal(json.amount, 799); assert.equal(row(env).original_amount, 1498); assert.equal(row(env).discount_amount, 699);
+  assert.equal(json.amount, 859); assert.equal(row(env).original_amount, 1498); assert.equal(row(env).discount_amount, 639);
 });
 
 test('20. countdown: after the deadline it disappears but discounted pricing stays unchanged', async () => {

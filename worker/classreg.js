@@ -13,7 +13,7 @@ export const sessionLabel = region => { const s = CLASS_SESSIONS.find(x => x.reg
 export const PACKAGES = {
   solo_1pc: { title: '一个人 · 一台电脑', participants: 1, computers: 1, original: 799, discount: 300, final: 499 },
   pair_1pc: { title: '两个人 · 共用一台电脑', participants: 2, computers: 1, original: 1198, discount: 599, final: 599 },
-  pair_2pc: { title: '两个人 · 各带一台电脑', participants: 2, computers: 2, original: 1498, discount: 699, final: 799 },
+  pair_2pc: { title: '两个人 · 各带一台电脑', participants: 2, computers: 2, original: 1498, discount: 639, final: 859 },
 };
 
 // PROMO_ENDS_AT (ISO time, set in wrangler.jsonc). It controls only the countdown display, never the amount charged.
