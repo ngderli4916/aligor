@@ -1,5 +1,5 @@
 import { htmlEscape as h } from './lib.js';
-import { PACKAGES, STATUS_LABELS } from './classreg.js';
+import { PACKAGES, STATUS_LABELS, CLASS_SESSIONS } from './classreg.js';
 
 
 const css = `
@@ -57,17 +57,18 @@ export function classRegisterPage(prices = PACKAGES, promo = { enabled: false, a
     return `<label class="package${i === 0 ? ' active' : ''}" data-code="${code}"><input type="radio" name="package" value="${code}"${i === 0 ? ' checked' : ''}><span class="tag">${tag}</span><h3>${lines[0]}<br>${lines[1]}</h3>${orig}<div class="price">RM${p.final} <small>${p.participants === 2 ? '／两人总价' : '／总价'}</small></div>${per}</label>`;
   }).join('');
   return head('Aligor｜一天实战课程报名') + `<body>${promoBar(promo)}${topBar}
-<section class="hero"><div class="hero-in"><div><span class="eyebrow">一天实战课程 · 报名</span><h1>从 0 开始建立你的 <em>AI 个人助理</em></h1><p>填写资料，选择上课方式，提交后取得订单编号和付款页面。</p></div><aside class="hero-note"><strong>11 月 15 日</strong><span>星期天 9AM–7PM<br>Skudai, Johor</span></aside></div></section>
+<section class="hero"><div class="hero-in"><div><span class="eyebrow">一天实战课程 · 报名</span><h1>从 0 开始建立你的 <em>AI 个人助理</em></h1><p>填写资料，选择上课方式，提交后取得订单编号和付款页面。</p></div><aside class="hero-note">${CLASS_SESSIONS.map(s => `<strong>${s.city} · ${s.date}</strong><span>${s.day} ${s.time}<br>${s.place}</span>`).join('<span style="display:block;height:12px"></span>')}</aside></div></section>
 <div class="layout"><form class="main" id="form" novalidate>
 <section class="card"><div class="step-head"><span class="step-no">01</span><div><h2>填写报名资料</h2><p>只需要基本资料。</p></div></div><div class="grid2"><div class="field"><label for="name">姓名</label><input id="name" name="name" autocomplete="name" maxlength="80" placeholder="请输入姓名"></div><div class="field"><label for="phone">WhatsApp 电话号码</label><input id="phone" name="phone" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="例如：016 787 1902"></div></div></section>
-<section class="card"><div class="step-head"><span class="step-no">02</span><div><h2>选择上课方式</h2><p>选择后，费用会马上更新。</p></div></div>${dealBox(promo, prices)}<div class="packages" id="packages">${cards}</div>
+<section class="card"><div class="step-head"><span class="step-no">02</span><div><h2>选择上课场次</h2><p>JB 和 KL 价钱一样。</p></div></div><div class="packages" id="sessions" style="grid-template-columns:1fr 1fr">${CLASS_SESSIONS.map(s => `<label class="package session" data-region="${s.region}"><input type="radio" name="region" value="${s.region}"><span class="tag">${s.city}</span><h3>${s.date}<br>${s.day}</h3><span class="original">${s.time}</span><div class="per">${s.place}</div></label>`).join('')}</div></section>
+<section class="card"><div class="step-head"><span class="step-no">03</span><div><h2>选择上课方式</h2><p>选择后，费用会马上更新。</p></div></div>${dealBox(promo, prices)}<div class="packages" id="packages">${cards}</div>
 <div class="second" id="second"><h3 style="font:800 18px var(--serif);margin:0 0 14px">第二位参加者</h3><div class="grid2"><div class="field"><label for="second_name">第二位姓名</label><input id="second_name" maxlength="80" placeholder="请输入姓名"></div><div class="field"><label for="second_phone">第二位 WhatsApp</label><input id="second_phone" inputmode="tel" maxlength="20" placeholder="例如：012 345 6789"></div></div></div></section>
-<section class="card"><div class="step-head"><span class="step-no">03</span><div><h2>提交报名</h2><p>提交后会直接带你到付款页面。</p></div></div>
+<section class="card"><div class="step-head"><span class="step-no">04</span><div><h2>提交报名</h2><p>提交后会直接带你到付款页面。</p></div></div>
 <input class="hidden" id="website" tabindex="-1" autocomplete="off" aria-hidden="true">
 <button class="btn gold submit-btn" style="width:100%;font-size:16px;padding:16px" type="submit" id="submit">${promo?.enabled && promo?.active ? '锁定今天的折扣价，提交报名' : '提交报名'}</button><div class="err" id="err" role="alert"></div></section>
 <section class="success" id="success"><div class="tick">✓</div><h2>报名已建立</h2><p>正在带你到付款页面…如果没有自动跳转，请按下面的按钮。</p><div class="result-grid"><div class="result-item"><span>订单编号</span><strong id="rOrder"></strong></div><div class="result-item"><span>应付金额</span><strong id="rAmount"></strong></div></div><a class="btn gold" id="rPay" href="#">前往付款页面</a></section>
 </form>
-<aside class="summary"><span class="kicker">REGISTRATION SUMMARY</span><h2>报名摘要</h2><div class="sum-row"><span>上课方式</span><strong id="sumPackage"></strong></div><div class="sum-row"><span>参加人数</span><strong id="sumPeople"></strong></div><div class="sum-row"><span>电脑数量</span><strong id="sumPc"></strong></div><div class="sum-total"><span>应付金额</span><strong id="sumTotal"></strong><small id="sumSave"></small></div><div class="flow"><div><b>1</b><span>填写姓名、电话</span></div><div><b>2</b><span>选择上课方式</span></div><div><b>3</b><span>提交后取得订单编号</span></div><div><b>4</b><span>扫 QR 付款，再 WhatsApp 通知我们</span></div></div><button class="btn gold submit-btn" style="width:100%;margin-top:20px;font-size:16px;padding:16px" type="button" id="submit2">${promo?.enabled && promo?.active ? '锁定今天的折扣价，提交报名' : '提交报名'}</button></aside></div>
+<aside class="summary"><span class="kicker">REGISTRATION SUMMARY</span><h2>报名摘要</h2><div class="sum-row"><span>上课场次</span><strong id="sumSession">请选择</strong></div><div class="sum-row"><span>上课方式</span><strong id="sumPackage"></strong></div><div class="sum-row"><span>参加人数</span><strong id="sumPeople"></strong></div><div class="sum-row"><span>电脑数量</span><strong id="sumPc"></strong></div><div class="sum-total"><span>应付金额</span><strong id="sumTotal"></strong><small id="sumSave"></small></div><div class="flow"><div><b>1</b><span>填写姓名、电话</span></div><div><b>2</b><span>选择场次和上课方式</span></div><div><b>3</b><span>提交后取得订单编号</span></div><div><b>4</b><span>扫 QR 付款，再 WhatsApp 通知我们</span></div></div><button class="btn gold submit-btn" style="width:100%;margin-top:20px;font-size:16px;padding:16px" type="button" id="submit2">${promo?.enabled && promo?.active ? '锁定今天的折扣价，提交报名' : '提交报名'}</button></aside></div>
 <footer class="footer">Aligor · 阿理哥</footer>
 <script>(()=>{'use strict';
 const P=${jsonForScript(prices)},LIVE=${promo?.enabled && promo?.active ? 'true' : 'false'};
@@ -75,17 +76,21 @@ const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const form=$('#form'),err=$('#err'),btns=$$('.submit-btn'),LABEL=btns[0].textContent,btn={set disabled(v){btns.forEach(b=>b.disabled=v)},set textContent(v){btns.forEach(b=>b.textContent=v)}};$('#submit2').addEventListener('click',()=>form.requestSubmit());
 let pick='solo_1pc',attempt=null;
 function show(){const p=P[pick],pair=p.participants===2;$('#second').classList.toggle('show',pair);$('#sumPackage').textContent=p.title;$('#sumPeople').textContent=p.participants+' 人';$('#sumPc').textContent=p.computers+' 台';$('#sumTotal').textContent='RM'+p.final;const ss=$('#sumSave');ss.textContent=p.discount?'原价 RM'+p.original:'';ss.className=''}
-$$('.package').forEach(el=>el.addEventListener('click',()=>{pick=el.dataset.code;$$('.package').forEach(x=>x.classList.toggle('active',x===el));el.querySelector('input').checked=true;show()}));show();
+$$('#packages .package').forEach(el=>el.addEventListener('click',()=>{pick=el.dataset.code;$$('#packages .package').forEach(x=>x.classList.toggle('active',x===el));el.querySelector('input').checked=true;show()}));show();
 const params=new URLSearchParams(location.search);
+let region='';const SL=${jsonForScript(Object.fromEntries(CLASS_SESSIONS.map(s => [s.region, `${s.city} · ${s.date}`])))};
+function pickRegion(r){if(!SL[r])return;region=r;$$('#sessions .package').forEach(x=>{const on=x.dataset.region===r;x.classList.toggle('active',on);x.querySelector('input').checked=on});$('#sumSession').textContent=SL[r]}
+$$('#sessions .package').forEach(el=>el.addEventListener('click',()=>pickRegion(el.dataset.region)));
+{const c=(params.get('city')||'').toUpperCase();pickRegion(c==='KL'?'SELANGOR':c==='JB'?'JOHOR':'')}
 const promo=$('#promo');if(promo){const end=Number(promo.dataset.end),off=Number(promo.dataset.now)-Date.now(),els=$$('.cd'),p2=n=>String(n).padStart(2,'0');
 const tick=()=>{const left=Math.max(0,Math.floor((end-(Date.now()+off))/1000));const tx=p2(Math.floor(left/3600))+':'+p2(Math.floor(left%3600/60))+':'+p2(left%60);els.forEach(e=>e.textContent=tx);if(left===0){clearInterval(t);location.reload()}};const t=setInterval(tick,1000);tick()}
 const phoneOk=v=>{const raw=v.trim();if(!/^\\+?[\\d\\s\\-()]+$/.test(raw))return false;const d=raw.replace(/\\D/g,'');const n=raw.startsWith('+')||d.startsWith('60')?d:d.startsWith('0')?'60'+d.slice(1):'';return /^601\\d{8,9}$/.test(n)};
 const uuid=()=>crypto.randomUUID?crypto.randomUUID().replace(/-/g,''):Array.from(crypto.getRandomValues(new Uint8Array(16)),b=>b.toString(16).padStart(2,'0')).join('');
 function fail(m){err.textContent=m;err.classList.add('show');btn.disabled=false;btn.textContent=LABEL}
 form.addEventListener('submit',async e=>{e.preventDefault();err.classList.remove('show');
-const d={name:$('#name').value.trim(),phone:$('#phone').value,package:pick,second_name:'',second_phone:'',website:$('#website').value,source:params.get('source')||params.get('ref')||'',utm_source:params.get('utm_source')||'',utm_medium:params.get('utm_medium')||'',utm_campaign:params.get('utm_campaign')||''};
+const d={name:$('#name').value.trim(),phone:$('#phone').value,region,package:pick,second_name:'',second_phone:'',website:$('#website').value,source:params.get('source')||params.get('ref')||'',utm_source:params.get('utm_source')||'',utm_medium:params.get('utm_medium')||'',utm_campaign:params.get('utm_campaign')||''};
 if(P[pick].participants===2){d.second_name=$('#second_name').value.trim();d.second_phone=$('#second_phone').value}
-if(d.name.length<2)return fail('请填写姓名');if(!phoneOk(d.phone))return fail('请填写有效的马来西亚 WhatsApp 电话号码，例如 016 787 1902');
+if(d.name.length<2)return fail('请填写姓名');if(!region)return fail('请选择上课场次（JB 或 KL）');if(!phoneOk(d.phone))return fail('请填写有效的马来西亚 WhatsApp 电话号码，例如 016 787 1902');
 if(P[pick].participants===2){if(d.second_name.length<2)return fail('请填写第二位参加者姓名');if(!phoneOk(d.second_phone))return fail('请填写第二位参加者有效的 WhatsApp 电话号码')}
 const sig=JSON.stringify(d);if(!attempt||attempt.sig!==sig)attempt={sig,key:uuid()};d.idempotency_key=attempt.key;
 btn.disabled=true;btn.textContent='提交中…';

@@ -61,9 +61,9 @@ test('3 & 4. packages: server amounts; tampered amounts are ignored; unknown pac
   const a = await register(env, { package: 'solo_1pc', amount: 1, final_amount: 1, discount_amount: 999 });
   const b = await register(env, { package: 'pair_1pc', ...two, phone: '0161111111', amount: 1 });
   const c = await register(env, { package: 'pair_2pc', ...two, phone: '0162222222', final_amount: 1 });
-  assert.deepEqual([a.json.amount, b.json.amount, c.json.amount], [399, 499, 699]);
+  assert.deepEqual([a.json.amount, b.json.amount, c.json.amount], [499, 599, 799]);
   const rs = env.DB.raw.prepare('SELECT package_code,original_amount,discount_amount,final_amount,participant_count,computer_count FROM class_registrations ORDER BY id').all();
-  assert.deepEqual(rs.map(r => [r.original_amount, r.discount_amount, r.final_amount, r.participant_count, r.computer_count]), [[699, 300, 399, 1, 1], [1098, 599, 499, 2, 1], [1398, 699, 699, 2, 2]]);
+  assert.deepEqual(rs.map(r => [r.original_amount, r.discount_amount, r.final_amount, r.participant_count, r.computer_count]), [[799, 300, 499, 1, 1], [1198, 599, 599, 2, 1], [1498, 699, 799, 2, 2]]);
   assert.equal((await register(env, { package: 'free' })).res.status, 400);
 });
 
@@ -106,7 +106,7 @@ test('7. token is unguessable; stored only as a hash; invalid tokens reveal noth
   assert.ok(!JSON.stringify(r).includes(t));
   const t2 = tokenOf((await register(env, { phone: '0162000000' })).json); assert.notEqual(t, t2);
   const good = await call(env, 'GET', `/payment?t=${t}`, undefined); const goodHtml = await good.text();
-  assert.equal(good.status, 200); assert.ok(goodHtml.includes('AICL00001') && goodHtml.includes('RM399'));
+  assert.equal(good.status, 200); assert.ok(goodHtml.includes('AICL00001') && goodHtml.includes('RM499'));
   assert.ok(!goodHtml.includes('60123450099') && !goodHtml.includes('0123450099') && !goodHtml.includes('Ah Test'));
   assert.match(good.headers.get('x-robots-tag'), /noindex/); assert.ok(goodHtml.includes('name="robots" content="noindex'));
   const bad = [`/payment?t=${'A'.repeat(43)}`, '/payment?t=AICL00001', '/payment?t=', '/payment', '/payment?order=AICL00001'];
@@ -150,7 +150,7 @@ test('10. Telegram success: one message, exact content, secrets only from env', 
   const tg = calls.filter(c => c.url.includes('api.telegram.org')); assert.equal(tg.length, 1);
   assert.ok(tg[0].url.endsWith(`/bot${TG}/sendMessage`)); assert.equal(tg[0].body.chat_id, CHAT);
   const t = tg[0].body.text;
-  for (const s of ['新的 Aligor 一天课程报名', '#AICL00001', '60167871902', 'JOHOR', '两个人 · 共用一台电脑', '2 人／1 台', 'Siti &lt;b&gt;', '60123456789', '原价：RM1098', '优惠：RM599', '应付：RM499', '等待付款', 'https://aligor.test/4916']) assert.ok(t.includes(s), s);
+  for (const s of ['新的 Aligor 一天课程报名', '#AICL00001', '60167871902', 'JOHOR', '两个人 · 共用一台电脑', '2 人／1 台', 'Siti &lt;b&gt;', '60123456789', '原价：RM1198', '优惠：RM599', '应付：RM599', '场次：JB · 11 月 15 日', '等待付款', 'https://aligor.test/4916']) assert.ok(t.includes(s), s);
   assert.ok(!t.includes('/payment') && !t.includes(TG));
   assert.equal(row(env).telegram_notification_status, 'sent');
 });
@@ -225,7 +225,7 @@ test('14/15. "我已完成付款" -> payment_submitted (no reference needed); on
   assert.ok(!page.includes('id="ref"'), 'no reference input');
   assert.ok(page.includes('Maybank') && page.includes('5512 0352 7689') && page.includes('NILI RESOURCES'), 'bank transfer details');
   const wa = page.match(/https:\/\/wa\.me\/60167871902\?text=[^"]+/); assert.ok(wa, 'WhatsApp link to Adrian');
-  const text = decodeURIComponent(wa[0].split('text=')[1].replace(/&amp;/g, '&')); assert.ok(text.includes('AICL00001') && text.includes('RM399'));
+  const text = decodeURIComponent(wa[0].split('text=')[1].replace(/&amp;/g, '&')); assert.ok(text.includes('AICL00001') && text.includes('RM499'));
   const { cookie: _ } = {}; const cookie = await adminCookie(env);
   assert.equal((await call(env, 'POST', '/api/admin/class/1/confirm', {}, cookie)).status, 400, 'needs confirm:true');
   assert.equal(row(env).payment_status, 'payment_submitted');
@@ -263,7 +263,7 @@ test('16. the QR asset is a real, sizeable JPEG and the payment page references 
 test('18. registration page, old /register, admin, health still work; migrations are idempotent', async () => {
   const env = makeEnv();
   const reg = await call(env, 'GET', '/classregister', undefined); const h = await reg.text();
-  assert.equal(reg.status, 200); assert.ok(h.includes('RM399') && h.includes('RM499') && h.includes('RM699'));
+  assert.equal(reg.status, 200); assert.ok(h.includes('RM499') && h.includes('RM599') && h.includes('RM799'));
   assert.ok(!/SpiderMan|Hermes|Demo|DEMO/.test(h)); assert.ok(!h.includes('qr') || !h.includes('duitnow-nili'), 'no QR before submit');
   assert.equal((await call(env, 'GET', '/register', undefined)).status, 200);
   assert.equal((await call(env, 'GET', '/4916', undefined)).status, 200);
@@ -283,33 +283,33 @@ test('18. registration page, old /register, admin, health still work; migrations
 test('19. countdown: before the deadline the discount applies and the page shows a real countdown', async () => {
   const env = makeEnv({ PROMO_ENDS_AT: new Date(Date.now() + 3600e3).toISOString() });
   const page = await (await call(env, 'GET', '/classregister', undefined)).text();
-  assert.ok(page.includes('id="promo"') && page.includes('今晚报名倒计时 · 至 12AM') && page.includes('<del>RM699</del>'));
-  assert.ok(page.includes('class="deal"') && !page.includes('今天省') && !page.includes('省 RM') && !page.includes('过了今天，要付') && page.includes('平均每人 RM349.5') && page.includes('id="submit2"') && page.includes('锁定今天的折扣价'));
-  assert.ok(page.indexOf('class="deal"') > page.indexOf('选择上课方式') && page.indexOf('class="deal"') < page.indexOf('class="packages"'), 'deal sits inside step 2, above the packages');
+  assert.ok(page.includes('id="promo"') && page.includes('今晚报名倒计时 · 至 12AM') && page.includes('<del>RM799</del>'));
+  assert.ok(page.includes('class="deal"') && !page.includes('今天省') && !page.includes('省 RM') && !page.includes('过了今天，要付') && page.includes('平均每人 RM399.5') && page.includes('id="submit2"') && page.includes('锁定今天的折扣价'));
+  assert.ok(page.indexOf('class="deal"') > page.indexOf('选择上课方式') && page.indexOf('class="deal"') < page.indexOf('id="packages"'), 'deal sits inside the package step, above the packages');
   const { json } = await register(env, { package: 'pair_2pc', second_name: 'Siti', second_phone: '0123456789' });
-  assert.equal(json.amount, 699); assert.equal(row(env).original_amount, 1398); assert.equal(row(env).discount_amount, 699);
+  assert.equal(json.amount, 799); assert.equal(row(env).original_amount, 1498); assert.equal(row(env).discount_amount, 699);
 });
 
 test('20. countdown: after the deadline it disappears but discounted pricing stays unchanged', async () => {
   const env = makeEnv({ PROMO_ENDS_AT: new Date(Date.now() - 1000).toISOString() });
   const page = await (await call(env, 'GET', '/classregister', undefined)).text();
-  assert.ok(!page.includes('id="promo"') && !page.includes('class="deal"') && !page.includes('已经结束') && page.includes('<del>RM699</del>'));
-  const a = await register(env, { amount: 699, final_amount: 699 }); assert.equal(a.json.amount, 399);
-  const b = await register(env, { phone: '0162000001', package: 'pair_1pc', second_name: 'Siti', second_phone: '0123456789' }); assert.equal(b.json.amount, 499);
-  const r = row(env, 2); assert.deepEqual([r.original_amount, r.discount_amount, r.final_amount], [1098, 599, 499]);
-  assert.ok((await (await call(env, 'GET', `/payment?t=${tokenOf(a.json)}`, undefined)).text()).includes('RM399'));
+  assert.ok(!page.includes('id="promo"') && !page.includes('class="deal"') && !page.includes('已经结束') && page.includes('<del>RM799</del>'));
+  const a = await register(env, { amount: 699, final_amount: 699 }); assert.equal(a.json.amount, 499);
+  const b = await register(env, { phone: '0162000001', package: 'pair_1pc', second_name: 'Siti', second_phone: '0123456789' }); assert.equal(b.json.amount, 599);
+  const r = row(env, 2); assert.deepEqual([r.original_amount, r.discount_amount, r.final_amount], [1198, 599, 599]);
+  assert.ok((await (await call(env, 'GET', `/payment?t=${tokenOf(a.json)}`, undefined)).text()).includes('RM499'));
 });
 
 test('21. countdown: no PROMO_ENDS_AT means no countdown and the discount stays', async () => {
   const env = makeEnv();
   const page = await (await call(env, 'GET', '/classregister', undefined)).text();
   assert.ok(!page.includes('id="promo"') && !page.includes('已经结束'));
-  assert.equal((await register(env)).json.amount, 399);
+  assert.equal((await register(env)).json.amount, 499);
 });
 
 test('22. registration page shows the class date and place', async () => {
   const page = await (await call(makeEnv(), 'GET', '/classregister', undefined)).text();
-  assert.ok(page.includes('11 月 15 日') && page.includes('星期天 9AM–7PM') && page.includes('Skudai, Johor') && !page.includes('11 月 1 日') && !page.includes('10 月 18 日') && !page.includes('第二天或第三天'));
+  assert.ok(page.includes('11 月 15 日') && page.includes('星期天 9AM–7PM') && page.includes('Skudai, Johor') && page.includes('KL · 11 月 30 日') && page.includes('星期一 9AM–7PM') && page.includes('data-region="SELANGOR"') && !page.includes('11 月 1 日') && !page.includes('10 月 18 日') && !page.includes('第二天或第三天'));
 });
 
 test('card payment: Shopify button is locked to the order\'s own package, and only when configured', async () => {

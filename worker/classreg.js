@@ -2,12 +2,18 @@ import { cleanText, csvEscape, htmlEscape } from './lib.js';
 import { redactSecrets } from './notify.js';
 
 export const REGIONS = ['JOHOR', 'SELANGOR', 'PENANG'];
+// Class sessions offered on the sign-up page. The DB column stays `region` (KL is stored as SELANGOR); only the page wording changes.
+export const CLASS_SESSIONS = [
+  { region: 'JOHOR', city: 'JB', date: '11 月 15 日', day: '星期天', time: '9AM–7PM', place: 'Skudai, Johor' },
+  { region: 'SELANGOR', city: 'KL', date: '11 月 30 日', day: '星期一', time: '9AM–7PM', place: 'Kuala Lumpur（地点稍后通知）' },
+];
+export const sessionLabel = region => { const s = CLASS_SESSIONS.find(x => x.region === region); return s ? `${s.city} · ${s.date}（${s.day}）· ${s.place}` : region; };
 // Server-side source of truth. Amounts are whole RM integers; the browser never supplies them.
 // original/discount/final are the advertised prices. PROMO_ENDS_AT controls only the on-page urgency countdown; pricing stays unchanged after it ends.
 export const PACKAGES = {
-  solo_1pc: { title: '一个人 · 一台电脑', participants: 1, computers: 1, original: 699, discount: 300, final: 399 },
-  pair_1pc: { title: '两个人 · 共用一台电脑', participants: 2, computers: 1, original: 1098, discount: 599, final: 499 },
-  pair_2pc: { title: '两个人 · 各带一台电脑', participants: 2, computers: 2, original: 1398, discount: 699, final: 699 },
+  solo_1pc: { title: '一个人 · 一台电脑', participants: 1, computers: 1, original: 799, discount: 300, final: 499 },
+  pair_1pc: { title: '两个人 · 共用一台电脑', participants: 2, computers: 1, original: 1198, discount: 599, final: 599 },
+  pair_2pc: { title: '两个人 · 各带一台电脑', participants: 2, computers: 2, original: 1498, discount: 699, final: 799 },
 };
 
 // PROMO_ENDS_AT (ISO time, set in wrangler.jsonc). It controls only the countdown display, never the amount charged.
@@ -111,7 +117,7 @@ export function validateRegistration(data, env = {}, now = Date.now()) {
   if (name.length < 2) throw new ClassError('请输入姓名');
   let phone;
   try { phone = normalizeClassPhone(data.phone); } catch (e) { throw new ClassError(e.message); }
-  const region = String(data.region || 'JOHOR').trim().toUpperCase(); // region is no longer asked on the form; classes are Johor only for now
+  const region = String(data.region || 'JOHOR').trim().toUpperCase(); // the form sends JOHOR (JB) or SELANGOR (KL); older cached pages without it default to JOHOR
   if (!REGIONS.includes(region)) throw new ClassError('请选择上课地区');
   const pkgCode = String(data.package || data.package_code || '').trim();
   if (!Object.prototype.hasOwnProperty.call(PACKAGES, pkgCode)) throw new ClassError('请选择上课方式');
@@ -203,6 +209,7 @@ export function buildClassNotification(row, env) {
     `联络人：${e(row.primary_name)}`,
     `WhatsApp：${e(row.primary_phone_normalized)}`,
     `地区：${e(row.region)}`,
+    `场次：${e(sessionLabel(row.region))}`,
     `配套：${e(PACKAGES[row.package_code]?.title || row.package_code)}`,
     `人数／电脑：${row.participant_count} 人／${row.computer_count} 台`,
   ];
