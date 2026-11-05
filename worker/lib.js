@@ -37,3 +37,6 @@ export function parseBotCommand(text) {
   const command = (parts.shift() || '').split('@')[0].toLowerCase();
   return { command, args: parts };
 }
+
+// The 13 Malaysian states (English), offered as the "location" choice on /register.
+export const MALAYSIA_STATES = ["Johor", "Kedah", "Kelantan", "Malacca", "Negeri Sembilan", "Pahang", "Penang", "Perak", "Perlis", "Sabah", "Sarawak", "Selangor", "Terengganu"];

@@ -50,6 +50,7 @@ export function buildLeadNotification(lead, env, { resubmitted = false } = {}) {
     `WhatsApp：${e(lead.phone_e164)}`,
     `课程／场次：${e(lead.course)}`,
     `批次：${e(lead.batch)}`,
+    `所在地点：${e(orEmpty(lead.location))}`,
     `公司：${e(orEmpty(lead.company))}`,
     `行业：${e(orEmpty(lead.industry))}`,
     `用过AI Agent：${e(orEmpty(lead.used_ai_agent))}`,
