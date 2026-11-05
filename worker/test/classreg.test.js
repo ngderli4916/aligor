@@ -199,7 +199,7 @@ test('13. admin: auth required; list, search, filters, CSV, events; no token lea
   assert.equal((await q('?status=payment_confirmed')).registrations.length, 0);
   const all = JSON.stringify(await q('')); assert.ok(!all.includes('payment_token_hash') && !all.includes('idempotency_key'));
   const csv = await (await call(env, 'GET', '/api/admin/class/export.csv', undefined, cookie)).text();
-  assert.ok(csv.includes('AICL00001') && csv.includes('60161111111') && csv.includes('699'));
+  assert.ok(csv.includes('AICL00001') && csv.includes('60161111111') && csv.includes('859'));
   assert.ok(csv.includes(`"'=HYPERLINK(""x"")"`), 'formula injection neutralised');
   assert.ok(!/[0-9a-f]{64}/.test(csv));
   const ev = await (await call(env, 'GET', '/api/admin/class/1/events', undefined, cookie)).json(); assert.equal(ev.events[0].event_type, 'registration_created');
