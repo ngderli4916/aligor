@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WhatsApp × Hermes Agent 自动回复：2 步做法｜阿理哥 Aligor</title>
+  <meta name="description" content="用 2 步让 WhatsApp 连接 Hermes Agent 和大模型自动回复顾客：先连接，再用公司 SOP、语气和资料训练它，越用越像你的员工。">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="阿理哥 Aligor">
+  <meta property="og:url" content="https://aligor.aligor.workers.dev/whatsapp-hermes-auto-reply/">
+  <meta property="og:title" content="WhatsApp × Hermes Agent 自动回复：2 步做法｜阿理哥 Aligor">
+  <meta property="og:description" content="先连接，再训练：让 WhatsApp 用 AI 自动回复，像真人一样。">
+  <meta name="theme-color" content="#FBF8EE">
+  <link rel="icon" type="image/png" href="../assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700;900&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FBF8EE;--card:#FFFFFF;--ink:#14110F;--ink2:#3B3731;--mute:#6F6A60;--line:#E7E1D0;
+  --yellow:#FFCE32;--yellow-d:#E5A800;--teal:#0F766E;--teal-l:#D9F1EC;--coral:#D9482B;--night:#14110F;
+  --butter:#FFF4D6;--butter-line:#F1DFA8;--wa:#0B5F57;
+  --serif:"Noto Serif SC","Songti SC","Source Han Serif SC",serif;
+  --sans:"Noto Sans SC","PingFang SC","Microsoft YaHei",-apple-system,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --r:20px;--max:1160px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:84px}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.75;font-size:17px;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+ul,ol{list-style:none}
+button{font:inherit;color:inherit}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+h1,h2,h3{font-family:var(--serif);line-height:1.25;letter-spacing:-.01em}
+h2{font-size:clamp(28px,4.2vw,44px);font-weight:900;margin-bottom:16px;text-wrap:balance}
+h2 mark,.big-line mark{background:linear-gradient(transparent 62%,var(--yellow) 62%);color:inherit;padding:0 4px}
+section{padding:84px 0}
+.chapter{display:inline-block;font:800 12.5px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin-bottom:14px}
+.lead{font-size:19px;color:var(--ink2);max-width:720px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:15px 26px;border-radius:999px;font-weight:700;font-size:16px;border:2px solid var(--ink);transition:transform .15s,box-shadow .15s;cursor:pointer;background:transparent;color:var(--ink);text-align:center}
+.btn:hover{transform:translateY(-2px);box-shadow:0 6px 0 var(--ink)}
+.btn-y{background:var(--yellow)}
+.btn-k{background:var(--ink);color:#fff}
+.cta-row{display:flex;gap:14px;flex-wrap:wrap}
+
+/* nav */
+nav{position:sticky;top:0;z-index:50;background:rgba(251,248,238,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav-in{display:flex;align-items:center;justify-content:space-between;height:68px;gap:16px}
+.n-brand{display:flex;align-items:center;gap:10px;font-weight:900;font-size:18px;white-space:nowrap}
+.n-brand img{height:34px;width:auto}
+.menu{display:flex;gap:28px;align-items:center}
+.menu a{font-size:15px;font-weight:500;color:var(--ink2)}
+.menu a:hover{color:var(--ink)}
+.menu .btn{padding:9px 18px;font-size:14px;color:var(--ink)}
+
+/* hero */
+.hero{padding:64px 0 88px}
+.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center}
+.pill{display:inline-flex;gap:8px;align-items:center;background:var(--ink);color:#fff;padding:7px 16px;border-radius:999px;font-size:13px;font-weight:700;margin-bottom:22px;letter-spacing:.04em}
+.pill i{width:8px;height:8px;border-radius:50%;background:var(--yellow);display:block;animation:dotPulse 2.4s ease-out infinite}
+@keyframes dotPulse{0%{box-shadow:0 0 0 0 rgba(255,206,50,.65)}70%,100%{box-shadow:0 0 0 9px rgba(255,206,50,0)}}
+.hero h1{font-size:clamp(38px,6vw,66px);font-weight:900;margin-bottom:22px}
+.hero h1 mark{color:inherit;padding:0 4px;background:linear-gradient(var(--yellow),var(--yellow)) no-repeat 0 100%/0 38%;animation:markSweep .9s .45s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes markSweep{to{background-size:100% 38%}}
+.hero .lead{margin-bottom:30px}
+.two-steps{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 30px}
+.two-steps span{display:inline-flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:7px 16px 7px 8px;font-size:15px;font-weight:700}
+.two-steps b{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--yellow);font-size:13px}
+.hero-note{margin-top:20px;font-size:14px;color:var(--mute)}
+.hero-note a{text-decoration:underline;text-underline-offset:3px}
+
+/* phone */
+.phone{background:var(--night);border-radius:40px;padding:12px;box-shadow:0 30px 60px -20px rgba(20,17,15,.45);max-width:380px;margin:0 auto;animation:phoneFloat 7s ease-in-out infinite}
+@keyframes phoneFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.phone-in{background:#EFEAE0;border-radius:30px;overflow:hidden}
+.phone-top{background:var(--wa);color:#fff;padding:14px 18px;display:flex;align-items:center;gap:12px}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--yellow);display:grid;place-items:center;font-weight:900;color:var(--ink);font-size:14px;flex:none}
+.phone-top b{display:block;font-size:15px;line-height:1.2}
+.phone-top small{opacity:.8;font-size:12px}
+.phone-top img{width:24px;height:24px;margin-left:auto}
+.chat{padding:8px 14px 20px;min-height:440px;display:flex;flex-direction:column;background:#EFEAE0}
+.day{align-self:center;font-size:11.5px;color:var(--mute);background:#fff;border-radius:8px;padding:2px 10px;margin-top:10px}
+.msg{max-width:84%;padding:9px 13px;border-radius:16px;font-size:14.5px;line-height:1.6;margin-top:10px;opacity:0;transform:translateY(8px);animation:pop .5s forwards;box-shadow:0 1px 0 rgba(0,0,0,.06)}
+.msg time{display:block;text-align:right;font-size:10.5px;color:var(--mute);margin-top:2px}
+.cus{align-self:flex-start;background:#fff;border-bottom-left-radius:4px}
+.bot{align-self:flex-end;background:#DCF8C6;border-bottom-right-radius:4px}
+.ai-tag{display:inline-block;font-size:11px;font-weight:700;padding:1px 8px;border-radius:99px;background:var(--teal-l);color:var(--teal);margin-top:5px}
+@keyframes pop{to{opacity:1;transform:none}}
+.typing{align-self:flex-end;background:#DCF8C6;border-radius:16px;border-bottom-right-radius:4px;display:flex;gap:4px;align-items:center;overflow:hidden;opacity:0;max-height:0;padding:0 14px;margin-top:0}
+.typing i{width:7px;height:7px;border-radius:50%;background:#5f8f6a;animation:blink 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
+@keyframes typingShow{0%{opacity:0;max-height:0;padding:0 14px;margin-top:0}12%,85%{opacity:1;max-height:40px;padding:12px 14px;margin-top:10px}100%{opacity:0;max-height:0;padding:0 14px;margin-top:0}}
+.c1{animation-delay:.5s}
+.t1{animation:typingShow 1.6s 1.3s forwards}
+.c2{animation-delay:2.9s}
+.c3{animation-delay:4.2s}
+.t2{animation:typingShow 1.3s 4.9s forwards}
+.c4{animation-delay:6.2s}
+.phone-cap{text-align:center;font-size:12.5px;color:var(--mute);margin-top:14px}
+
+/* how it works */
+.how{background:var(--card);border-block:1px solid var(--line)}
+.flow{display:grid;grid-template-columns:1fr 1fr 1fr 1.35fr 1fr;gap:18px;margin-top:40px;align-items:stretch}
+.node{position:relative;background:var(--paper);border:2px solid var(--ink);border-radius:var(--r);padding:22px 18px;display:flex;flex-direction:column;gap:8px}
+.node:not(:last-child)::after{content:"→";position:absolute;right:-17px;top:calc(50% - 14px);z-index:2;width:28px;height:28px;border-radius:50%;background:var(--yellow);border:2px solid var(--ink);display:grid;place-items:center;font-weight:900;font-size:14px;line-height:1}
+.node .num{font:800 11.5px var(--mono);letter-spacing:.12em;color:var(--mute)}
+.node h3{font-size:20px}
+.node p{font-size:14.5px;color:var(--ink2);line-height:1.6}
+.node .logo{width:40px;height:40px;object-fit:contain}
+.node .emoji{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:22px;background:var(--butter)}
+.node.brain{background:var(--ink);color:#fff;box-shadow:8px 8px 0 var(--yellow)}
+.node.brain p{color:#D8D2C4}
+.node.brain .num{color:var(--yellow)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.chips span{display:inline-flex;align-items:center;gap:6px;background:#fff;color:var(--ink);border-radius:999px;padding:3px 10px 3px 5px;font-size:12.5px;font-weight:700}
+.chips img{width:18px;height:18px;flex:none}
+.big-line{margin-top:44px;font-family:var(--serif);font-size:clamp(22px,3vw,32px);font-weight:900;line-height:1.5}
+
+/* steps */
+.step-head{display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:start;margin-bottom:40px}
+.step-badge{background:var(--ink);color:var(--yellow);border-radius:24px;padding:18px 22px;text-align:center;min-width:132px;box-shadow:8px 8px 0 var(--yellow)}
+.step-badge small{display:block;font:800 12px var(--mono);letter-spacing:.16em;color:#fff}
+.step-badge b{display:block;font-family:var(--serif);font-size:40px;line-height:1.15}
+.subs{display:grid;gap:20px}
+.sub{display:grid;grid-template-columns:64px 1fr;gap:22px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:28px}
+.sub-no{width:52px;height:52px;border-radius:50%;background:var(--ink);color:var(--yellow);display:grid;place-items:center;font:900 20px var(--serif)}
+.sub h3{font-size:23px;margin-bottom:8px}
+.sub p{color:var(--ink2);font-size:16px}
+.sub p+p{margin-top:8px}
+.ways{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+.way{border:2px solid var(--ink);border-radius:16px;padding:20px;background:var(--paper)}
+.way h4{font-size:16px;margin-bottom:6px}
+.way h4 em{font-style:normal;font:800 11.5px var(--mono);letter-spacing:.1em;background:var(--yellow);border-radius:999px;padding:2px 9px;margin-right:8px;vertical-align:2px}
+.way p{font-size:15px}
+.way .btn{margin-top:14px;padding:10px 18px;font-size:14.5px}
+.code{position:relative;margin-top:12px;background:#15130F;color:#E9F7DD;border-radius:12px;padding:14px 92px 14px 16px;font:13.5px/1.6 var(--mono)}
+.code code{display:block;white-space:pre-wrap;overflow-wrap:anywhere}
+.code .lbl{display:block;font:700 10.5px var(--mono);letter-spacing:.12em;color:#A39B8C;margin-bottom:4px;text-transform:uppercase}
+.copy{position:absolute;top:10px;right:10px;border:1px solid #5b554b;background:#2A2620;color:#fff;border-radius:999px;padding:5px 12px;font:700 12px var(--sans);cursor:pointer}
+.copy:hover{background:var(--yellow);color:var(--ink);border-color:var(--yellow)}
+.copy.done{background:var(--yellow);color:var(--ink);border-color:var(--yellow)}
+.phone-path{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:12px;font-size:14px;font-weight:700}
+.phone-path span{background:var(--butter);border:1px solid var(--butter-line);border-radius:8px;padding:3px 10px}
+.phone-path i{font-style:normal;color:var(--mute)}
+.banner-card{background:#121212;border-radius:14px;padding:14px 16px;margin-top:16px;display:flex;align-items:center;gap:14px}
+.banner-card img{height:30px;width:auto;max-width:70%}
+.banner-card span{color:#bbb;font-size:13px}
+.compare{width:100%;border-collapse:separate;border-spacing:0;margin-top:16px;font-size:15px;border:2px solid var(--ink);border-radius:16px;overflow:hidden}
+.compare th,.compare td{padding:13px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+.compare thead th{background:var(--ink);color:#fff;font-weight:700}
+.compare tbody th{background:var(--paper);font-weight:700;white-space:nowrap}
+.compare tr:last-child th,.compare tr:last-child td{border-bottom:0}
+.compare td+td,.compare th+td{border-left:1px solid var(--line)}
+.tip{display:flex;gap:14px;align-items:flex-start;margin-top:4px;background:var(--butter);border:2px solid var(--ink);border-radius:var(--r);padding:22px 24px;box-shadow:6px 6px 0 var(--ink)}
+.tip b.ic{flex:none;width:36px;height:36px;border-radius:50%;background:var(--ink);color:var(--yellow);display:grid;place-items:center;font-size:17px}
+.tip p{font-size:16px}
+.note{margin-top:20px;font-size:14.5px;color:var(--mute)}
+.note a{text-decoration:underline;text-underline-offset:3px}
+
+/* train */
+.train{background:var(--card);border-block:1px solid var(--line)}
+.train .step-badge{background:var(--yellow);color:var(--ink);box-shadow:8px 8px 0 var(--ink)}
+.train .step-badge small{color:var(--ink)}
+.tcards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.tcard{display:flex;flex-direction:column;background:var(--paper);border:2px solid var(--ink);border-radius:var(--r);padding:26px;min-width:0}
+.tcard .k{font:800 12px var(--mono);letter-spacing:.12em;color:var(--teal)}
+.tcard h3{font-size:24px;margin:6px 0 8px}
+.tcard>p{font-size:15.5px;color:var(--ink2);margin-bottom:14px}
+.tpl{position:relative;background:#fff;border:1px dashed #BDB59F;border-radius:14px;padding:44px 16px 16px}
+.tpl pre{font:13px/1.75 var(--mono);color:var(--ink2);white-space:pre-wrap;overflow-wrap:anywhere}
+.tpl .lbl{position:absolute;top:13px;left:16px;font:800 11px var(--mono);letter-spacing:.12em;color:var(--mute)}
+.tpl .copy{background:var(--ink);border-color:var(--ink)}
+.tpl .copy:hover,.tpl .copy.done{background:var(--yellow);color:var(--ink);border-color:var(--ink)}
+.pair{display:grid;gap:10px;margin-bottom:14px}
+.pair div{border-radius:14px;padding:12px 14px;font-size:14.5px;line-height:1.6}
+.pair small{display:block;font-weight:800;font-size:12px;margin-bottom:3px}
+.pair .bad{background:#FFE9E2;border:1px solid #F3CFC4}
+.pair .bad small{color:var(--coral)}
+.pair .good{background:#DCF8C6;border:1px solid #B9E4A0}
+.pair .good small{color:#1F7A3E}
+.close-line{margin-top:40px;text-align:center}
+
+/* loop */
+.loop{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:40px;counter-reset:lp}
+.lp{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:24px 22px}
+.lp::before{counter-increment:lp;content:counter(lp);display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--ink);color:var(--yellow);font-weight:900;margin-bottom:14px}
+.lp:not(:last-child)::after{content:"→";position:absolute;right:-15px;top:34px;z-index:2;width:24px;height:24px;border-radius:50%;background:var(--yellow);display:grid;place-items:center;font-weight:900;font-size:13px}
+.lp h3{font-size:19px;margin-bottom:6px}
+.lp p{font-size:15px;color:var(--ink2)}
+.loop-back{margin-top:18px;display:flex;align-items:center;gap:12px;font-size:15px;color:var(--ink2);background:var(--butter);border:1px dashed var(--butter-line);border-radius:999px;padding:10px 20px;width:fit-content;max-width:100%}
+.loop-back b{font-size:18px}
+
+/* boundaries */
+.bound{background:#FFF1EC;border-block:1px solid #F3CFC4}
+.bgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:36px}
+.bc{background:#fff;border:1px solid #F3CFC4;border-radius:var(--r);padding:22px}
+.bc .tagc{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:12px;font-family:var(--serif);font-weight:900;font-size:18px}
+.bc h3{font-size:18px;margin:10px 0 6px}
+.bc p{font-size:14.5px;color:var(--ink2)}
+.bc.ok .tagc{background:var(--teal-l);color:var(--teal)}
+.bc.ask .tagc{background:var(--butter);color:#8A6A12}
+.bc.human .tagc{background:#FFE4DC;color:var(--coral)}
+.bc.stop .tagc{background:var(--ink);color:var(--yellow)}
+
+/* checklist */
+.checks{max-width:760px;margin-top:32px;display:grid;gap:12px}
+.chk{display:flex;align-items:center;gap:16px;width:100%;background:var(--card);border:2px solid var(--ink);border-radius:16px;padding:16px 20px;text-align:left;cursor:pointer;font-size:16.5px;font-weight:500;transition:background .15s}
+.chk .box{flex:none;width:28px;height:28px;border-radius:8px;border:2px solid var(--ink);display:grid;place-items:center;font-weight:900;font-size:16px;color:transparent;background:#fff}
+.chk[aria-checked=true]{background:var(--butter)}
+.chk[aria-checked=true] .box{background:var(--yellow);color:var(--ink)}
+.chk[aria-checked=true] .txt{text-decoration:line-through;text-decoration-color:rgba(20,17,15,.35)}
+.chk-status{margin-top:16px;font-weight:700;font-size:15px}
+
+/* sources */
+.srcs{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:30px}
+.src{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;transition:transform .2s,box-shadow .2s}
+.src:hover{transform:translateY(-3px);box-shadow:0 12px 24px -16px rgba(20,17,15,.4)}
+.src img{width:36px;height:36px;flex:none}
+.src .ai-ic{width:36px;height:36px;flex:none;border-radius:10px;background:var(--yellow);display:grid;place-items:center;font-weight:900}
+.src b{display:block;font-size:16px}
+.src span{font-size:13.5px;color:var(--mute);overflow-wrap:anywhere}
+
+/* final */
+.final{background:var(--butter);border-top:1px solid var(--butter-line);text-align:center;padding:88px 0}
+.final h2{max-width:760px;margin:0 auto 16px}
+.final .lead{margin:0 auto 30px}
+.final .cta-row{justify-content:center}
+.site-foot{background:var(--night);color:#CFC8BB;padding:36px 0 40px}
+.foot-in{display:flex;align-items:center;justify-content:space-between;gap:20px 32px;flex-wrap:wrap}
+.foot-brand{display:flex;align-items:center;gap:12px}
+.foot-brand img{width:36px;height:36px;object-fit:contain;filter:brightness(0) invert(1)}
+.foot-brand b{display:block;color:#fff;font-size:15px;line-height:1.3}
+.foot-brand span{font-size:12.5px;opacity:.8}
+.foot-links{display:flex;gap:6px 22px;flex-wrap:wrap;font-size:14px}
+.foot-links a{text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(255,255,255,.3)}
+.foot-links a:hover{color:#fff}
+.foot-copy{font-size:12.5px;opacity:.7;width:100%}
+
+/* reveal */
+.rv-on .rv{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+.rv-on .rv.in{opacity:1;transform:none}
+
+@media(max-width:1000px){
+  .flow{grid-template-columns:1fr 1fr}
+  .node.brain{grid-column:span 2}
+  .node::after{display:none!important}
+  .tcards{grid-template-columns:1fr}
+  .loop{grid-template-columns:1fr 1fr}
+  .lp::after{display:none!important}
+  .bgrid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:900px){
+  section{padding:68px 0}
+  .menu a:not(.btn){display:none}
+  .hero-grid{grid-template-columns:1fr;gap:44px}
+  .ways{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  body{font-size:16px}
+  .wrap{padding:0 18px}
+  section{padding:60px 0}
+  .hero{padding:44px 0 64px}
+  .hero .lead{font-size:17px}
+  .cta-row .btn{flex:1 1 auto}
+  .flow{grid-template-columns:1fr;gap:26px}
+  .node.brain{grid-column:auto}
+  .node:not(:last-child)::after{display:grid!important;content:"↓";right:auto;left:calc(50% - 14px);top:auto;bottom:-22px}
+  .step-head{grid-template-columns:1fr;gap:20px}
+  .step-badge{width:fit-content;min-width:0;padding:12px 20px;display:flex;align-items:baseline;gap:12px}
+  .step-badge b{font-size:30px}
+  .sub{grid-template-columns:1fr;gap:12px;padding:22px 18px}
+  .sub-no{width:42px;height:42px;font-size:17px}
+  .sub h3{font-size:21px}
+  .code{padding:42px 14px 14px}
+  .compare,.compare tbody,.compare tr,.compare th,.compare td{display:block}
+  .compare thead{display:none}
+  .compare tr{border-bottom:2px solid var(--ink)}
+  .compare tr:last-child{border-bottom:0}
+  .compare tbody th{white-space:normal;border-bottom:1px solid var(--line)}
+  .compare td+td,.compare th+td{border-left:0}
+  .compare td::before{content:attr(data-h);display:block;font-weight:800;font-size:12.5px;color:var(--teal);margin-bottom:2px}
+  .tcard{padding:20px 16px}
+  .loop,.bgrid,.srcs{grid-template-columns:1fr}
+  .loop-back{border-radius:16px}
+  .tip{padding:18px;box-shadow:4px 4px 0 var(--ink)}
+  .n-brand span{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .msg{animation:none!important;opacity:1;transform:none}
+  .typing{display:none!important}
+  .phone,.pill i,.typing i{animation:none}
+  .hero h1 mark{animation:none;background-size:100% 38%}
+  .btn,.src{transition:none}
+  .rv-on .rv{opacity:1;transform:none;transition:none}
+}
+</style>
+</head>
+<body>
+<nav>
+  <div class="wrap nav-in">
+    <a class="n-brand" href="/"><img src="../assets/logos/aligor-logo-transparent.png" alt="阿理哥 Aligor 标志"><span>阿理哥 · Aligor</span></a>
+    <div class="menu">
+      <a href="#how">原理</a>
+      <a href="#step1">Step 1 连接</a>
+      <a href="#step2">Step 2 训练</a>
+      <a href="#checklist">检查清单</a>
+      <a class="btn btn-y" href="/whatsapp-agent-flow/">完整教学 →</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="pill"><i></i>AI AGENT 教学 · 2 步</div>
+      <h1>让 WhatsApp<br>用 AI 自动回复，<br><mark>像真人一样</mark></h1>
+      <p class="lead">把 WhatsApp 连接到你的 AI，它就可以帮你回顾客。做法只有两步：先<b>连接</b>，再<b>训练</b>。资料给得越清楚，它回得越像你的员工。</p>
+      <div class="two-steps"><span><b>1</b>连接 WhatsApp + Hermes Agent + 大模型</span><span><b>2</b>用 SOP、语气、公司资料训练</span></div>
+      <div class="cta-row">
+        <a class="btn btn-y" href="#how">看 2 步做法 ↓</a>
+        <a class="btn" href="/whatsapp-agent-flow/">完整教学 →</a>
+      </div>
+      <p class="hero-note">这一页是视频「WhatsApp 连接你的 AI，它就可以自动回复了」的图文版。想看更详细的版本，请看 <a href="/whatsapp-agent-flow/">完整教学</a>。</p>
+    </div>
+    <div>
+      <div class="phone" role="img" aria-label="示意动画：顾客在 WhatsApp 问还有没有货，AI 自动回复有货并可以明天寄出，顾客说好，AI 记下订单">
+        <div class="phone-in">
+          <div class="phone-top"><div class="avatar">店</div><div><b>[你的公司] 客服</b><small>在线 · AI 自动回复中</small></div><img src="../assets/whatsapp-hermes-auto-reply/whatsapp.svg" alt="" width="24" height="24"></div>
+          <div class="chat" aria-hidden="true">
+            <span class="day">今天</span>
+            <div class="msg cus c1">老板，这个还有货吗？明天可以寄出吗？<time>14:02</time></div>
+            <div class="typing t1"><i></i><i></i><i></i></div>
+            <div class="msg bot c2">有的哦 😊 今天 4 点前下单，明天就帮你寄出～要帮你开单吗？<br><span class="ai-tag">AI 自动回复</span><time>14:02</time></div>
+            <div class="msg cus c3">好啊！<time>14:03</time></div>
+            <div class="typing t2"><i></i><i></i><i></i></div>
+            <div class="msg bot c4">收到 🙏 帮你记下了，等下发付款链接给你！<br><span class="ai-tag">AI 自动回复</span><time>14:03</time></div>
+          </div>
+        </div>
+      </div>
+      <p class="phone-cap">示意画面：顾客问 → AI 按你的资料回复 → 记下购买意向。</p>
+    </div>
+  </div>
+</header>
+
+<!-- HOW -->
+<section class="how" id="how">
+  <div class="wrap">
+    <div class="chapter">00 · 先看懂原理</div>
+    <h2>一条信息，是这样被回复的。</h2>
+    <p class="lead">不用懂技术，只要记住这 5 个位置。出问题时，你就知道该检查哪里。</p>
+    <div class="flow rv">
+      <div class="node"><span class="num">01</span><div class="emoji" aria-hidden="true">🙋</div><h3>顾客</h3><p>在 WhatsApp 发信息问你问题。</p></div>
+      <div class="node"><span class="num">02</span><img class="logo" src="../assets/whatsapp-hermes-auto-reply/whatsapp.svg" alt="WhatsApp 标志" width="40" height="40"><h3>WhatsApp</h3><p>只是收信息、送信息的入口。</p></div>
+      <div class="node"><span class="num">03</span><img class="logo" src="../assets/whatsapp-hermes-auto-reply/hermes-icon.svg" alt="Hermes Agent 标志" width="40" height="40"><h3>Hermes Agent</h3><p>接住信息，读你的 SOP 和资料，决定怎样回。</p></div>
+      <div class="node brain"><span class="num">04 · 大脑</span><h3>大模型大脑</h3><p>负责理解顾客的话，写出像人的回复。选一个就可以：</p>
+        <div class="chips">
+          <span><img src="../assets/whatsapp-hermes-auto-reply/claudecode-color.svg" alt="" width="18" height="18">Claude Code</span>
+          <span><img src="../assets/whatsapp-hermes-auto-reply/gemini-color.svg" alt="" width="18" height="18">Gemini</span>
+          <span><img src="../assets/whatsapp-hermes-auto-reply/codex-color.svg" alt="" width="18" height="18">Codex</span>
+          <span><img src="../assets/whatsapp-hermes-auto-reply/deepseek-color.svg" alt="" width="18" height="18">DeepSeek</span>
+        </div>
+      </div>
+      <div class="node"><span class="num">05</span><div class="emoji" aria-hidden="true">💬</div><h3>回复顾客</h3><p>答案经 WhatsApp 送回给顾客。</p></div>
+    </div>
+    <p class="big-line rv">WhatsApp 只是入口，<mark>Hermes Agent + 大模型</mark>才是大脑。</p>
+  </div>
+</section>
+
+<!-- STEP 1 -->
+<section id="step1">
+  <div class="wrap">
+    <div class="step-head">
+      <div class="step-badge"><small>STEP</small><b>1</b></div>
+      <div>
+        <div class="chapter">01 · 连接</div>
+        <h2>先把 AI 装好，再把 WhatsApp 接上去。</h2>
+        <p class="lead">顺序很重要：先确认 Hermes Agent 和大模型能正常回复，才去连接 WhatsApp。</p>
+      </div>
+    </div>
+    <div class="subs">
+      <article class="sub rv">
+        <div class="sub-no">a</div>
+        <div>
+          <h3>安装 Hermes Agent，连接大模型大脑</h3>
+          <p>两个方法选一个就好。新手建议从 Desktop 开始。</p>
+          <div class="ways">
+            <div class="way">
+              <h4><em>方法 A</em>Desktop（新手较容易）</h4>
+              <p>到 Hermes 官方网站下载 Desktop 版本，跟着画面安装。</p>
+              <a class="btn btn-y" href="https://hermes-agent.nousresearch.com/" target="_blank" rel="noopener">打开 Hermes 官网 ↗</a>
+            </div>
+            <div class="way">
+              <h4><em>方法 B</em>CLI（macOS / Linux / WSL2）</h4>
+              <p>在 Terminal 运行官方安装命令：</p>
+              <div class="code"><span class="lbl">安装</span><code>curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash</code><button class="copy" type="button">复制</button></div>
+              <p style="margin-top:12px">装好后运行设置向导，选择你要用的模型 Provider——这一步就是<b>「连接大模型大脑」</b>：</p>
+              <div class="code"><span class="lbl">设置</span><code>hermes setup</code><button class="copy" type="button">复制</button></div>
+            </div>
+          </div>
+          <div class="banner-card"><img src="../assets/whatsapp-hermes-auto-reply/hermes-banner.png" alt="Hermes Agent 字标" width="1145" height="196"><span>官方工具</span></div>
+        </div>
+      </article>
+
+      <article class="sub rv">
+        <div class="sub-no">b</div>
+        <div>
+          <h3>先测试 Agent 本身能不能回复</h3>
+          <p>还没碰 WhatsApp 之前，先打开 Hermes，问它一个简单问题，例如「你好，介绍一下你自己」。</p>
+          <p>它能正常回答，才进入下一步。否则之后没反应，你分不出问题出在<b>大模型</b>还是 <b>WhatsApp</b>。</p>
+        </div>
+      </article>
+
+      <article class="sub rv">
+        <div class="sub-no">c</div>
+        <div>
+          <h3>连接 WhatsApp</h3>
+          <p>① 在 Terminal 运行 WhatsApp 设置向导，按提示选择 <b>bot</b> 或 <b>self-chat</b> 模式：</p>
+          <div class="code"><span class="lbl">连接 WhatsApp</span><code>hermes whatsapp</code><button class="copy" type="button">复制</button></div>
+          <p style="margin-top:14px">② 拿起手机，打开 WhatsApp，扫描 Terminal 显示的 QR：</p>
+          <div class="phone-path"><span>WhatsApp</span><i>→</i><span>Settings</span><i>→</i><span>Linked Devices</span><i>→</i><span>Link a Device</span><i>→</i><span>扫 QR</span></div>
+          <p style="margin-top:14px">③ 启动 Gateway，让它开始接收和回复信息：</p>
+          <div class="code"><span class="lbl">启动</span><code>hermes gateway</code><button class="copy" type="button">复制</button></div>
+        </div>
+      </article>
+
+      <article class="sub rv">
+        <div class="sub-no">d</div>
+        <div>
+          <h3>两种接法，差在哪里？</h3>
+          <p>上面用的是 WhatsApp Web Bridge（扫 QR）。正式做生意，可以考虑官方的 Cloud API。</p>
+          <table class="compare">
+            <thead><tr><th></th><th>WhatsApp Web Bridge</th><th>Meta WhatsApp Cloud API</th></tr></thead>
+            <tbody>
+              <tr><th>怎样连接</th><td data-h="Web Bridge">扫 QR，很快就接好</td><td data-h="Cloud API">Meta 官方路径</td></tr>
+              <tr><th>适合</th><td data-h="Web Bridge">学习、测试、小规模使用</td><td data-h="Cloud API">正式商业使用</td></tr>
+              <tr><th>需要准备</th><td data-h="Web Bridge">一个专用号码</td><td data-h="Cloud API">Meta Business、专用号码、公开的 HTTPS webhook</td></tr>
+              <tr><th>要注意</th><td data-h="Web Bridge">属于非官方 Web 自动化，有账号被限制的风险；请用专用号码，绝对不要群发</td><td data-h="Cloud API">有 24 小时规则：超过 24 小时主动发信息，要用已批准的模板</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <div class="tip rv">
+        <b class="ic" aria-hidden="true">!</b>
+        <p><b>小提醒：</b>客服请用一个<b>专用号码</b>，不要用你的私人号码。测试阶段，只允许你自己和团队的号码，不要一开始就开放给所有顾客。</p>
+      </div>
+    </div>
+    <p class="note">命令会更新，安装前请对照官方文件（链接在本页下方「官方资料」）。</p>
+  </div>
+</section>
+
+<!-- STEP 2 -->
+<section class="train" id="step2">
+  <div class="wrap">
+    <div class="step-head">
+      <div class="step-badge"><small>STEP</small><b>2</b></div>
+      <div>
+        <div class="chapter">02 · 训练（最关键）</div>
+        <h2>接好只是开始，<mark>训练</mark>才决定它像不像你的员工。</h2>
+        <p class="lead">给它三样东西：做事的规则、说话的语气、公司的资料。下面每一样都有模板，复制后改成你自己的内容。</p>
+      </div>
+    </div>
+    <div class="tcards">
+      <article class="tcard rv">
+        <span class="k">训练 ①</span>
+        <h3>公司 SOP</h3>
+        <p>告诉它「怎样做事」：什么可以答、什么不能答、什么要交给真人。</p>
+        <div class="tpl"><span class="lbl">SOP 模板</span><button class="copy" type="button">复制</button><pre>你是 [你的公司] 的 WhatsApp 客服。请遵守：
+1. 顾客用什么语言，你就用什么语言回复。
+2. 先回答顾客的问题，再问必要的资料。
+3. 只使用「公司资料」里已批准的价格和政策。
+4. 不确定的事情不要猜，也不要承诺。
+5. 投诉、退款、付款问题，一律转给真人处理。
+6. 顾客有购买意向时，记录：产品、数量、联络方式。</pre></div>
+      </article>
+      <article class="tcard rv">
+        <span class="k">训练 ②</span>
+        <h3>回复顾客的语气</h3>
+        <p>告诉它「怎样说话」。同一个答案，语气不同，顾客感觉完全不一样。</p>
+        <div class="pair">
+          <div class="bad"><small>✕ 不好：像机器人</small>您好，感谢您的询问。该产品目前库存充足。请问您是否需要进行下单操作？</div>
+          <div class="good"><small>✓ 好：像真人店员</small>有的哦 😊 今天下单明天就寄～要帮你开单吗？</div>
+        </div>
+        <div class="tpl"><span class="lbl">语气模板</span><button class="copy" type="button">复制</button><pre>回复语气：
+- 简短，一次只讲重点（2–3 句以内）。
+- 亲切，像店里熟悉产品的店员。
+- 可以用一两个 emoji，不要太多。
+- 不用官腔，不说「您好，感谢您的询问」这类句子。
+- 顾客急的时候，先安抚，再给答案。</pre></div>
+      </article>
+      <article class="tcard rv">
+        <span class="k">训练 ③</span>
+        <h3>公司资料</h3>
+        <p>告诉它「答案是什么」。它只能根据你给的资料回答，所以要写清楚。</p>
+        <div class="tpl"><span class="lbl">资料模板</span><button class="copy" type="button">复制</button><pre>公司名称：[你的公司]
+营业时间：[例：星期一至六 10am–7pm]
+地址：[你的店面地址]
+
+产品：
+- 名称：[产品名称]
+  适合对象：[适合谁]
+  价格：[RM 价格]
+  库存：[有货 / 预购 / 缺货]
+
+配送：[几点前下单当天寄出、运费、几天到]
+付款：[接受的付款方式]
+保修 / 退换：[条件和期限]
+
+常见问题 + 已批准答案：
+- 问：[顾客常问的问题]
+  答：[你批准的答案]
+
+更新时间：[YYYY-MM-DD]
+负责人：[谁负责更新这份资料]</pre></div>
+      </article>
+    </div>
+    <p class="big-line close-line rv">资料越清楚，它回复<mark>越像你的员工</mark>。</p>
+  </div>
+</section>
+
+<!-- IMPROVE -->
+<section id="improve">
+  <div class="wrap">
+    <div class="chapter">03 · 越用越精准</div>
+    <h2>它不是装好就完美，是越用越准。</h2>
+    <p class="lead">刚开始的几个星期，每天花一点时间看它的回复。你每修正一次，它下次就答得更好。</p>
+    <div class="loop rv">
+      <div class="lp"><h3>每天看回复</h3><p>刚上线时，每天看一遍它回了什么。</p></div>
+      <div class="lp"><h3>找出答错的</h3><p>哪一句不对、哪一句语气怪，记下来。</p></div>
+      <div class="lp"><h3>改资料 / SOP</h3><p>修正公司资料或 SOP，删掉过期的价格。</p></div>
+      <div class="lp"><h3>加进 FAQ</h3><p>顾客真实问到的新问题，加进常见问题和答案。</p></div>
+    </div>
+    <div class="loop-back rv"><b aria-hidden="true">↺</b><span>然后回到第 1 步。稳定以后，改成<b>每星期检查一次</b>。</span></div>
+  </div>
+</section>
+
+<!-- BOUNDARIES -->
+<section class="bound" id="boundary">
+  <div class="wrap">
+    <div class="chapter" style="color:var(--coral)">04 · 安全边界</div>
+    <h2>它什么时候不该自己回？</h2>
+    <p class="lead">好的 AI 客服不是每一句都抢着答，而是知道自己的界限。</p>
+    <div class="bgrid">
+      <div class="bc ok rv"><span class="tagc">答</span><h3>可以自动回复</h3><p>营业时间、地址、产品资料、已批准的 FAQ、下单步骤。</p></div>
+      <div class="bc ask rv"><span class="tagc">问</span><h3>先问一个必要问题</h3><p>答案要看情况时，例如预算、型号、订单号码，先问清楚再答。</p></div>
+      <div class="bc human rv"><span class="tagc">转</span><h3>必须转人工</h3><p>投诉、退款、付款异常、特殊折扣、顾客说要找真人。</p></div>
+      <div class="bc stop rv"><span class="tagc">停</span><h3>看不懂就不要猜</h3><p>只发「1」、看不清的截图、意思不清楚的信息——不乱猜，交给人。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CHECKLIST -->
+<section id="checklist">
+  <div class="wrap">
+    <div class="chapter">05 · 上线前检查</div>
+    <h2>开放给顾客之前，逐项打勾。</h2>
+    <p class="lead">全部做到了，才开放给真实顾客。点一下就可以打勾（只存在你的浏览器画面，不会上传）。</p>
+    <div class="checks" id="checks">
+      <button class="chk" type="button" role="checkbox" aria-checked="false"><span class="box" aria-hidden="true">✓</span><span class="txt">先用测试号码试过，不直接拿真实顾客试</span></button>
+      <button class="chk" type="button" role="checkbox" aria-checked="false"><span class="box" aria-hidden="true">✓</span><span class="txt">常见问题都答对了</span></button>
+      <button class="chk" type="button" role="checkbox" aria-checked="false"><span class="box" aria-hidden="true">✓</span><span class="txt">问它资料里没有的东西，它不会乱编</span></button>
+      <button class="chk" type="button" role="checkbox" aria-checked="false"><span class="box" aria-hidden="true">✓</span><span class="txt">投诉、退款、付款这类敏感问题，会转人工</span></button>
+      <button class="chk" type="button" role="checkbox" aria-checked="false"><span class="box" aria-hidden="true">✓</span><span class="txt">知道怎样立即暂停 Gateway</span></button>
+    </div>
+    <p class="chk-status" id="chk-status" aria-live="polite">已完成 0 / 5</p>
+  </div>
+</section>
+
+<!-- SOURCES -->
+<section class="how" id="sources">
+  <div class="wrap">
+    <div class="chapter">06 · 官方资料</div>
+    <h2>命令会更新，以官方文件为准。</h2>
+    <p class="lead">实际安装时，请同时打开对应的官方文件。想看每一步更详细的说明，看阿理哥的完整教学。</p>
+    <div class="srcs">
+      <a class="src" href="https://hermes-agent.nousresearch.com/docs/getting-started/installation" target="_blank" rel="noopener"><img src="../assets/whatsapp-hermes-auto-reply/hermes-icon.svg" alt="" width="36" height="36"><div><b>Hermes Agent：Installation ↗</b><span>安装 Hermes Agent</span></div></a>
+      <a class="src" href="https://hermes-agent.nousresearch.com/docs/user-guide/messaging/whatsapp" target="_blank" rel="noopener"><img src="../assets/whatsapp-hermes-auto-reply/whatsapp.svg" alt="" width="36" height="36"><div><b>Hermes：WhatsApp Web Bridge ↗</b><span>扫 QR 连接 WhatsApp</span></div></a>
+      <a class="src" href="https://hermes-agent.nousresearch.com/docs/user-guide/messaging/whatsapp-cloud" target="_blank" rel="noopener"><img src="../assets/whatsapp-hermes-auto-reply/whatsapp.svg" alt="" width="36" height="36"><div><b>Hermes：Meta WhatsApp Cloud API ↗</b><span>官方 Cloud API 接法</span></div></a>
+      <a class="src" href="/whatsapp-agent-flow/"><span class="ai-ic" aria-hidden="true">阿</span><div><b>阿理哥：WhatsApp AI Agent 完整教学 →</b><span>安装、连接、知识库、SOP、测试与上线</span></div></a>
+    </div>
+  </div>
+</section>
+
+<!-- NEXT (optional) -->
+<section class="final" id="next">
+  <div class="wrap">
+    <div class="chapter" style="color:#8A6A12">下一步（可选）</div>
+    <h2>WhatsApp 自动回复，<br>只是 AI Agent 最小的一件事。</h2>
+    <p class="lead">同一个 AI Agent，还可以帮你整理资料、做报告、做网页、剪视频、跟进工作。想系统化了解它还能做什么，可以看免费的 AI Agent Preview。</p>
+    <div class="cta-row">
+      <a class="btn btn-k js-preview" href="/register?source=whatsapp-hermes-auto-reply">免费观看 AI Agent Preview →</a>
+      <a class="btn" href="/">到阿理哥主页</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap foot-in">
+    <div class="foot-brand"><img src="../assets/logos/aligor-logo-transparent.png" alt="阿理哥 Aligor 标志"><div><b>阿理哥 · Aligor</b><span>Malaysia · AI Agent · SME Automation</span></div></div>
+    <div class="foot-links">
+      <a href="/">主页</a>
+      <a href="/whatsapp-agent-flow/">完整教学</a>
+      <a href="https://www.instagram.com/aligor4916/" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.facebook.com/aligor4916/" target="_blank" rel="noopener">Facebook</a>
+      <a href="https://www.threads.com/@aligor4916" target="_blank" rel="noopener">Threads</a>
+    </div>
+    <div class="foot-copy">© 2026 阿理哥 Aligor</div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  // Copy buttons: copy the <code> or <pre> next to the button.
+  function fallbackCopy(text){
+    var ta=document.createElement("textarea");ta.value=text;ta.setAttribute("readonly","");
+    ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();
+    var ok=false;try{ok=document.execCommand("copy")}catch(e){}
+    document.body.removeChild(ta);return ok;
+  }
+  document.querySelectorAll(".copy").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      var src=btn.parentElement.querySelector("code,pre");if(!src)return;
+      var text=src.textContent.trim();
+      function done(ok){
+        btn.textContent=ok?"已复制":"请手动复制";btn.classList.toggle("done",ok);
+        setTimeout(function(){btn.textContent="复制";btn.classList.remove("done")},1400);
+      }
+      if(navigator.clipboard&&window.isSecureContext){
+        navigator.clipboard.writeText(text).then(function(){done(true)},function(){done(fallbackCopy(text))});
+      }else{done(fallbackCopy(text))}
+    });
+  });
+
+  // Checklist toggles (visual only, nothing is stored or sent).
+  var chks=document.querySelectorAll(".chk"),status=document.getElementById("chk-status");
+  function update(){
+    var n=0;chks.forEach(function(c){if(c.getAttribute("aria-checked")==="true")n++});
+    status.textContent=n===chks.length?"已完成 "+n+" / "+chks.length+" ✓ 可以小范围开放给顾客了":"已完成 "+n+" / "+chks.length;
+  }
+  chks.forEach(function(c){
+    c.addEventListener("click",function(){
+      c.setAttribute("aria-checked",c.getAttribute("aria-checked")==="true"?"false":"true");update();
+    });
+  });
+
+  // Gentle reveal on scroll (skipped for reduced-motion visitors).
+  var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(!reduce&&"IntersectionObserver" in window){
+    document.body.classList.add("rv-on");
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}});
+    },{rootMargin:"0px 0px -8% 0px"});
+    document.querySelectorAll(".rv").forEach(function(el){io.observe(el)});
+  }
+
+  // Page-view tracking (same endpoint as other Aligor guides).
+  function track(path){
+    try{
+      var body=JSON.stringify({path:path,ref:document.referrer||""});
+      if(navigator.sendBeacon){navigator.sendBeacon("/api/track",new Blob([body],{type:"application/json"}))}
+      else{fetch("/api/track",{method:"POST",keepalive:true,headers:{"content-type":"application/json"},body:body})}
+    }catch(e){}
+  }
+  track("/whatsapp-hermes-auto-reply");
+  document.querySelectorAll(".js-preview").forEach(function(a){
+    a.addEventListener("click",function(){track("/click/whatsapp-hermes-auto-reply/free-preview")});
+  });
+})();
+</script>
+</body>
+</html>
