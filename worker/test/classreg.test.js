@@ -263,7 +263,9 @@ test('16. the QR asset is a real, sizeable JPEG and the payment page references 
 test('18. registration page, old /register, admin, health still work; migrations are idempotent', async () => {
   const env = makeEnv();
   const reg = await call(env, 'GET', '/classregister', undefined); const h = await reg.text();
-  assert.equal(reg.status, 200); assert.ok(h.includes('RM499') && h.includes('RM599') && h.includes('RM859'));
+  assert.equal(reg.status, 200); assert.ok(h.includes('RM499') && h.includes('RM859'));
+  assert.ok(!h.includes('pair_1pc') && !h.includes('两个人 · 共用一台电脑') && !h.includes('DOUBLE · SHARE') && !h.includes('RM599'), 'shared-computer couple package is not publicly advertised');
+  assert.ok(h.includes('solo_1pc') && h.includes('pair_2pc'), 'solo and two-computer packages remain public');
   assert.ok(!/SpiderMan|Hermes|Demo|DEMO/.test(h)); assert.ok(!h.includes('qr') || !h.includes('duitnow-nili'), 'no QR before submit');
   assert.equal((await call(env, 'GET', '/register', undefined)).status, 200);
   assert.equal((await call(env, 'GET', '/4916', undefined)).status, 200);

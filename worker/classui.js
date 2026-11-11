@@ -16,7 +16,7 @@ const css = `
 input,select,textarea{width:100%;border:1px solid #bcb4a5;background:#fff;padding:13px 14px;border-radius:0;font:500 16px var(--sans);color:#111;outline:none}input:focus,select:focus{border-color:#000;box-shadow:0 0 0 3px rgba(255,206,50,.5)}
 .btn{display:inline-flex;align-items:center;justify-content:center;border:1px solid #000;background:#000;color:#fff;padding:13px 18px;font:800 14px var(--sans);cursor:pointer;min-height:49px;text-decoration:none}.btn:hover{background:#282828}.btn.gold{background:var(--yellow);color:#000}.btn.gold:hover{background:#ffe06f}.btn:disabled{opacity:.55;cursor:wait}
 .hint{font-size:12px;color:var(--muted);margin-top:10px}
-.packages{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.package{position:relative;border:1px solid var(--line);background:#fff;padding:18px 15px;cursor:pointer;min-height:150px;display:block}.package:hover{border-color:#000}.package.active{border:2px solid #000;background:#fff9df;box-shadow:6px 6px 0 var(--yellow)}.package input{position:absolute;opacity:0;width:1px;height:1px}
+.packages{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.package{position:relative;border:1px solid var(--line);background:#fff;padding:18px 15px;cursor:pointer;min-height:150px;display:block}.package:hover{border-color:#000}.package.active{border:2px solid #000;background:#fff9df;box-shadow:6px 6px 0 var(--yellow)}.package input{position:absolute;opacity:0;width:1px;height:1px}
 .package .tag{font:700 10px var(--mono);letter-spacing:.08em;color:#766525}.package .original{display:block;margin-top:8px;font-size:12px;color:var(--muted)}.package .save{display:inline-block;margin-top:8px;background:#000;color:var(--yellow);padding:4px 7px;font:700 10px var(--mono)}.package h3{font:800 17px/1.35 var(--serif);margin:8px 0 12px}.price{font:800 28px/1 var(--serif)}.price small{font:600 12px var(--sans);color:var(--muted)}
 .second{display:none;margin-top:22px;padding-top:20px;border-top:1px dashed var(--line)}.second.show{display:block}
 .summary{position:sticky;top:16px;background:#070707;color:#fff;border:1px solid var(--gold);padding:24px}.summary .kicker{font:700 10px var(--mono);letter-spacing:.14em;color:var(--yellow)}.summary h2{font:800 24px var(--serif);margin:10px 0 18px}.sum-row{display:flex;justify-content:space-between;gap:16px;border-top:1px solid #333;padding:12px 0;font-size:13px}.sum-row span{color:#aaa}.sum-row strong{text-align:right}
@@ -46,9 +46,12 @@ input,select,textarea{width:100%;border:1px solid #bcb4a5;background:#fff;paddin
 const head = (title, extra = '') => `<!doctype html><html lang="zh-Hans"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#080808">${extra}<title>${title}</title><style>${css}</style></head>`;
 const topBar = '<header class="top"><div class="top-in"><div class="brand">阿理哥 · Aligor<small>AI AGENT PRACTICAL CLASS</small></div></div></header>';
 const jsonForScript = v => JSON.stringify(v).replace(/</g, '\\u003c');
+// The shared-computer couple package remains available only by direct enquiry; it is intentionally not advertised publicly.
+const PUBLIC_PACKAGE_CODES = ['solo_1pc', 'pair_2pc'];
 
 export function classRegisterPage(prices = PACKAGES, promo = { enabled: false, active: true }) {
-  const cards = Object.entries(prices).map(([code, p], i) => {
+  const publicPrices = Object.fromEntries(PUBLIC_PACKAGE_CODES.filter(code => prices[code]).map(code => [code, prices[code]]));
+  const cards = Object.entries(publicPrices).map(([code, p], i) => {
     const tag = code === 'solo_1pc' ? 'SOLO' : code === 'pair_1pc' ? 'DOUBLE · SHARE' : 'DOUBLE · 2 COMPUTERS';
     const lines = p.title.split(' · ');
     const live = promo?.enabled && promo?.active && p.discount > 0;
@@ -61,7 +64,7 @@ export function classRegisterPage(prices = PACKAGES, promo = { enabled: false, a
 <div class="layout"><form class="main" id="form" novalidate>
 <section class="card"><div class="step-head"><span class="step-no">01</span><div><h2>填写报名资料</h2><p>只需要基本资料。</p></div></div><div class="grid2"><div class="field"><label for="name">姓名</label><input id="name" name="name" autocomplete="name" maxlength="80" placeholder="请输入姓名"></div><div class="field"><label for="phone">WhatsApp 电话号码</label><input id="phone" name="phone" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="例如：016 787 1902"></div></div></section>
 <section class="card"><div class="step-head"><span class="step-no">02</span><div><h2>选择上课场次</h2><p>JB 和 KL 价钱一样。</p></div></div><div class="packages" id="sessions" style="grid-template-columns:1fr 1fr">${CLASS_SESSIONS.map(s => `<label class="package session" data-region="${s.region}"><input type="radio" name="region" value="${s.region}"><span class="tag">${s.city}</span><h3>${s.date}<br>${s.day}</h3><span class="original">${s.time}</span><div class="per">${s.place}</div></label>`).join('')}</div></section>
-<section class="card"><div class="step-head"><span class="step-no">03</span><div><h2>选择上课方式</h2><p>选择后，费用会马上更新。</p></div></div>${dealBox(promo, prices)}<div class="packages" id="packages">${cards}</div>
+<section class="card"><div class="step-head"><span class="step-no">03</span><div><h2>选择上课方式</h2><p>选择后，费用会马上更新。</p></div></div>${dealBox(promo, publicPrices)}<div class="packages" id="packages">${cards}</div>
 <div class="second" id="second"><h3 style="font:800 18px var(--serif);margin:0 0 14px">第二位参加者</h3><div class="grid2"><div class="field"><label for="second_name">第二位姓名</label><input id="second_name" maxlength="80" placeholder="请输入姓名"></div><div class="field"><label for="second_phone">第二位 WhatsApp</label><input id="second_phone" inputmode="tel" maxlength="20" placeholder="例如：012 345 6789"></div></div></div></section>
 <section class="card"><div class="step-head"><span class="step-no">04</span><div><h2>提交报名</h2><p>提交后会直接带你到付款页面。</p></div></div>
 <input class="hidden" id="website" tabindex="-1" autocomplete="off" aria-hidden="true">
@@ -71,7 +74,7 @@ export function classRegisterPage(prices = PACKAGES, promo = { enabled: false, a
 <aside class="summary"><span class="kicker">REGISTRATION SUMMARY</span><h2>报名摘要</h2><div class="sum-row"><span>上课场次</span><strong id="sumSession">请选择</strong></div><div class="sum-row"><span>上课方式</span><strong id="sumPackage"></strong></div><div class="sum-row"><span>参加人数</span><strong id="sumPeople"></strong></div><div class="sum-row"><span>电脑数量</span><strong id="sumPc"></strong></div><div class="sum-total"><span>应付金额</span><strong id="sumTotal"></strong><small id="sumSave"></small></div><div class="flow"><div><b>1</b><span>填写姓名、电话</span></div><div><b>2</b><span>选择场次和上课方式</span></div><div><b>3</b><span>提交后取得订单编号</span></div><div><b>4</b><span>扫 QR 付款，再 WhatsApp 通知我们</span></div></div><button class="btn gold submit-btn" style="width:100%;margin-top:20px;font-size:16px;padding:16px" type="button" id="submit2">${promo?.enabled && promo?.active ? '锁定今天的折扣价，提交报名' : '提交报名'}</button></aside></div>
 <footer class="footer">Aligor · 阿理哥</footer>
 <script>(()=>{'use strict';
-const P=${jsonForScript(prices)},LIVE=${promo?.enabled && promo?.active ? 'true' : 'false'};
+const P=${jsonForScript(publicPrices)},LIVE=${promo?.enabled && promo?.active ? 'true' : 'false'};
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const form=$('#form'),err=$('#err'),btns=$$('.submit-btn'),LABEL=btns[0].textContent,btn={set disabled(v){btns.forEach(b=>b.disabled=v)},set textContent(v){btns.forEach(b=>b.textContent=v)}};$('#submit2').addEventListener('click',()=>form.requestSubmit());
 let pick='solo_1pc',attempt=null;
