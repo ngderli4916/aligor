@@ -5,7 +5,7 @@ export const REGIONS = ['JOHOR', 'SELANGOR', 'PENANG'];
 // Class sessions offered on the sign-up page. The DB column stays `region` (KL is stored as SELANGOR); only the page wording changes.
 export const CLASS_SESSIONS = [
   { region: 'JOHOR', city: 'JB', date: '11 月 15 日', day: '星期天', time: '9AM–7PM', place: 'Skudai, Johor' },
-  { region: 'SELANGOR', city: 'KL', date: '11 月 29 日', day: '星期天', time: '9AM–7PM', place: 'Kuala Lumpur（地点稍后通知）' },
+  { region: 'SELANGOR', city: 'KL', date: '11 月 29 日', day: '星期天', time: '9AM–7PM', place: 'Kuala Lumpur（Cheras）' },
 ];
 export const sessionLabel = region => { const s = CLASS_SESSIONS.find(x => x.region === region); return s ? `${s.city} · ${s.date}（${s.day}）· ${s.place}` : region; };
 // Server-side source of truth. Amounts are whole RM integers; the browser never supplies them.
