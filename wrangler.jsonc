@@ -19,7 +19,7 @@
   ],
   "vars": {
     "PUBLIC_BASE_URL": "https://aligor.aligor.workers.dev",
-    "PREVIEW_ACCESS_BATCH": "PREVIEW-1104",
+    "PREVIEW_ACCESS_BATCH": "PREVIEW-1111",
     "PROMO_ENDS_AT": "2026-11-05T00:00:00+08:00",
     "WHATSAPP_NUMBER": "60167871902",
     "META_PIXEL_ID": "1697028392130040",
