@@ -98,11 +98,14 @@ test('7. a hostile batch value cannot break out of the script tag', async () => 
   assert.ok(html.includes('\\u003c/script>'));
 });
 
-test('8. only Nov 11, Nov 18 and Nov 25 are open; the completed Nov 4 session is absent', async () => {
+test('8. only Nov 11, Nov 19 and Nov 25 are open; the rescheduled Nov 18 date is absent', async () => {
   const { html } = await page(makeEnv());
   assert.ok(html.includes('PREVIEW-1111') && html.includes('PREVIEW-1118') && html.includes('PREVIEW-1125'));
-  assert.ok(html.includes('11 月 11 日') && html.includes('11 月 18 日') && html.includes('11 月 25 日'));
+  assert.ok(html.includes('11 月 11 日'));
+  assert.ok(html.includes('11 月 19 日（星期四）8 PM – 9 PM'));
+  assert.ok(html.includes('11 月 25 日'));
   assert.ok(!html.includes('PREVIEW-1104') && !html.includes('11 月 4 日'));
+  assert.ok(!html.includes('11 月 18 日（星期三）8 PM – 9 PM'));
 });
 
 test('9. the API rejects a direct registration for the completed Nov 4 session', async () => {
