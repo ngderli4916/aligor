@@ -143,9 +143,10 @@ async function loadFull(env, where, value) {
 export async function createInvoice(env, data) {
   await ensureInvoiceTables(env);
   const v = validate(data), t = now(), pub = crypto.randomUUID().replaceAll('-', '') + crypto.randomUUID().slice(0, 8).replaceAll('-', ''), iss = issuer(env);
+  const invoiceNo = /^AICL\d{5}$/.test(v.sourceOrderId) ? v.sourceOrderId : null;
   const result = await env.DB.prepare(`INSERT INTO invoices(invoice_no,public_id,document_type,status,customer_name,customer_company,customer_phone,customer_email,customer_address,issue_date,due_date,subtotal_cents,discount_cents,tax_rate,tax_cents,total_cents,notes,terms,source_order_id,issuer_name,issuer_brand,issuer_reg_no,issuer_tin,issuer_address,issuer_phone,created_at,updated_at)
-    VALUES('ALI-'||strftime('%Y%m','now')||'-'||printf('%05d',(SELECT COALESCE(MAX(id),0)+1 FROM invoices)),?,?,'draft',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
-    .bind(pub,v.type,v.name,v.company,v.phone,v.email,v.address,v.issueDate,v.dueDate,v.subtotal,v.discount,v.taxRate,v.tax,v.total,v.notes,v.terms,v.sourceOrderId,iss.name,iss.brand,iss.regNo,iss.tin,iss.address,iss.phone,t,t).run();
+    VALUES(COALESCE(?,'ALI-'||strftime('%Y%m','now')||'-'||printf('%05d',(SELECT COALESCE(MAX(id),0)+1 FROM invoices))),?,?,'draft',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
+    .bind(invoiceNo,pub,v.type,v.name,v.company,v.phone,v.email,v.address,v.issueDate,v.dueDate,v.subtotal,v.discount,v.taxRate,v.tax,v.total,v.notes,v.terms,v.sourceOrderId,iss.name,iss.brand,iss.regNo,iss.tin,iss.address,iss.phone,t,t).run();
   const id = Number(result.meta.last_row_id);
   for (let i = 0; i < v.items.length; i++) {
     const x = v.items[i];

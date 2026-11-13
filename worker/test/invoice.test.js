@@ -14,7 +14,7 @@ const data = (extra={}) => ({document_type:'invoice',customer_name:'测试顾客
 test('invoice lifecycle: draft is private, editable, numbered, issued, paid and printable', async()=>{
   const env=makeEnv();
   const draft=await createInvoice(env,data());
-  assert.match(draft.invoice_no,/^ALI-\d{6}-00001$/); assert.equal(draft.total,'788.00'); assert.equal(draft.customer_phone,'60167871902');
+  assert.equal(draft.invoice_no,'AICL00001'); assert.equal(draft.total,'788.00'); assert.equal(draft.customer_phone,'60167871902');
   assert.equal(await findPublicInvoice(env,draft.public_id),null);
   const edited=await updateInvoice(env,draft.id,data({discount:0,items:[{description:'AI Agent 一天实战课程',quantity:1,unit_price:399}]}));
   assert.equal(edited.total,'399.00');
@@ -31,7 +31,8 @@ test('invoice lifecycle: draft is private, editable, numbered, issued, paid and 
 test('invoice validation and draft-only deletion',async()=>{
   const env=makeEnv();
   await assert.rejects(()=>createInvoice(env,data({customer_name:'',items:[]})),/顾客姓名/);
-  const draft=await createInvoice(env,data({customer_phone:''}));
+  const draft=await createInvoice(env,data({customer_phone:'',source_order_id:''}));
+  assert.match(draft.invoice_no,/^ALI-\d{6}-00001$/);
   assert.deepEqual(await deleteInvoice(env,draft.id),{ok:true});
   assert.equal(env.DB.raw.prepare('SELECT COUNT(*) n FROM invoices').get().n,0);
 });
