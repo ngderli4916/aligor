@@ -22,7 +22,7 @@ test('invoice lifecycle: draft is private, editable, numbered, issued, paid and 
   const publicRow=await findPublicInvoice(env,draft.public_id); assert.equal(publicRow.total,'399.00');
   const page=invoicePage(publicRow); assert.match(page,/测试顾客/); assert.match(page,/RM 399\.00/); assert.match(page,/打印 \/ 保存 PDF/);
   assert.match(page,/Maybank/); assert.match(page,/5512 0352 7689/); assert.match(page,/NILI RESOURCES/);
-  assert.match(page,/\/assets\/payment\/duitnow-nili-resources\.jpg/); assert.match(page,/DuitNow 付款二维码/);
+  assert.doesNotMatch(page,/\/assets\/payment\/duitnow-nili-resources\.jpg/); assert.doesNotMatch(page,/DuitNow 付款二维码/);
   await assert.rejects(()=>updateInvoice(env,draft.id,data()),/只有草稿/);
   const paid=await invoiceAction(env,draft.id,'paid'); assert.equal(paid.status,'paid');
   const listed=await listInvoices(env,new URL('https://aligor.test/api/admin/invoices?status=paid')); assert.equal(listed.stats.paid,1); assert.equal(listed.stats.paid_amount,'399.00');
