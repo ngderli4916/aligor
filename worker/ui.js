@@ -130,7 +130,6 @@ function adminShell(title, body, script = '') {
 const jsonForScript = value => JSON.stringify(value).replace(/</g, '\\u003c');
 
 export const PREVIEW_SESSIONS = [
-  { batch: 'PREVIEW-1111', course: '免费 AI Preview · 11 月 11 日（星期三）8 PM – 9 PM' },
   { batch: 'PREVIEW-1118', course: '免费 AI Preview · 11 月 19 日（星期四）8 PM – 9 PM' },
   { batch: 'PREVIEW-1125', course: '免费 AI Preview · 11 月 25 日（星期三）8 PM – 9 PM' },
 ];
@@ -202,7 +201,7 @@ export function adminPage() {
     <div class="content">
       <section class="view on" id="tab-overview"><div class="page-head"><div><h1>总览</h1><p class="sub">访客、报名与付款一览</p></div></div>
         <div id="ostats" class="stats"></div><div id="traffic"></div></section>
-      <section class="view" id="tab-preview"><div class="page-head"><div><h1>免费 Preview 报名</h1><p class="sub">11 月 11 日、11 月 19 日、11 月 25 日三场</p></div><div class="actions"><a class="btn small" href="/api/admin/export.csv">导出 CSV</a></div></div>
+      <section class="view" id="tab-preview"><div class="page-head"><div><h1>免费 Preview 报名</h1><p class="sub">11 月 19 日、11 月 25 日两场</p></div><div class="actions"><a class="btn small" href="/api/admin/export.csv">导出 CSV</a></div></div>
         <div id="stats" class="stats"></div>
         <div class="tools"><input id="q" placeholder="姓名、电话或报名ID"><input id="batch" placeholder="批次"><select id="status"><option value="">全部状态</option><option>new</option><option>contacted</option><option>registered</option><option>paid</option><option>attended</option><option>cancelled</option></select><select id="access"><option value="">全部学生</option><option value="granted">已领取链接</option><option value="missing">未领取链接</option></select><button id="search" class="btn small">查询</button></div>
         <div id="message"></div><div class="table-wrap"><table><thead><tr><th>ID</th><th>顾客</th><th>课程 / 批次</th><th>状态</th><th>报名时间</th><th>领取链接记录</th><th>操作</th></tr></thead><tbody id="rows"></tbody></table></div>

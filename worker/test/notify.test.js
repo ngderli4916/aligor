@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import worker from '../index.js';
 import { buildLeadNotification, buildCustomerMessage, formatMalaysiaTime, groupLinkState, leadCode, parseLeadCode } from '../notify.js';
 
-const COURSE_1 = '免费 AI Preview · 11 月 11 日（星期三）8 PM – 9 PM';
+const COURSE_1 = '免费 AI Preview · 11 月 19 日（星期四）8 PM – 9 PM';
 const COURSE_2 = '免费 AI Preview · 11 月 18 日（星期三）8 PM – 9 PM';
 const GROUP = 'https://chat.whatsapp.com/TESTGROUP123?s=cl&p=i';
 const realFetch = globalThis.fetch;
@@ -61,7 +61,7 @@ const makeCtx = () => ({ promises: [], waitUntil(p) { this.promises.push(p); } }
 const settle = ctx => Promise.all(ctx.promises);
 
 const payload = (extra = {}) => ({
-  name: 'Siti Aminah', phone: '012-345 6789', batch: 'PREVIEW-1111', course: COURSE_1,
+  name: 'Siti Aminah', phone: '012-345 6789', batch: 'PREVIEW-1118', course: COURSE_1,
   used_ai_agent: '有，曾经试过', ai_tools: ['ChatGPT', 'Claude'], ai_tools_other: 'Gemini',
   company: 'Aminah Bakery', industry: '餐饮', location: 'Selangor', goal: '想自动回复顾客', consent: true, ...extra,
 });
@@ -115,7 +115,7 @@ test('4. Telegram payload is the compact message with the unmasked number', asyn
     '姓名：Siti Aminah',
     'WhatsApp：60123456789',
     `课程／场次：${COURSE_1}`,
-    '批次：PREVIEW-1111',
+    '批次：PREVIEW-1118',
     '所在地点：Selangor',
     '公司：Aminah Bakery',
     '行业：餐饮',

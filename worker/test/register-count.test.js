@@ -75,7 +75,7 @@ test('5. a new registration raises the number shown', async () => {
   const env = makeEnv();
   const submit = phone => worker.fetch(new Request('https://aligor.aligor.workers.dev/api/leads', {
     method: 'POST', headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ name: 'Ali Ahmad', phone, batch: 'PREVIEW-1111', course: '免费 AI Preview · 11 月 11 日（星期三）8 PM – 9 PM', used_ai_agent: '完全没用过', consent: true }),
+    body: JSON.stringify({ name: 'Ali Ahmad', phone, batch: 'PREVIEW-1118', course: '免费 AI Preview · 11 月 19 日（星期四）8 PM – 9 PM', used_ai_agent: '完全没用过', consent: true }),
   }), env, makeCtx());
   assert.equal((await submit('0123456781')).status, 201);
   assert.ok((await page(env)).html.includes('已有 <b>1</b> 人报名'));
@@ -98,17 +98,42 @@ test('7. a hostile batch value cannot break out of the script tag', async () => 
   assert.ok(html.includes('\\u003c/script>'));
 });
 
-test('8. only Nov 11, Nov 19 and Nov 25 are open; the rescheduled Nov 18 date is absent', async () => {
+test('8. only Nov 19 and Nov 25 are open; completed Nov 11 is absent and Nov 19 is the default', async () => {
   const { html } = await page(makeEnv());
-  assert.ok(html.includes('PREVIEW-1111') && html.includes('PREVIEW-1118') && html.includes('PREVIEW-1125'));
-  assert.ok(html.includes('11 月 11 日'));
+  assert.ok(html.includes('PREVIEW-1118') && html.includes('PREVIEW-1125'));
+  assert.ok(!html.includes('PREVIEW-1111') && !html.includes('11 月 11 日'));
   assert.ok(html.includes('11 月 19 日（星期四）8 PM – 9 PM'));
   assert.ok(html.includes('11 月 25 日'));
+  assert.match(html, /<option[^>]*data-batch="PREVIEW-1118"[^>]* selected>/);
+  assert.match(html, /<input type="hidden" name="batch"[^>]*value="PREVIEW-1118">/);
   assert.ok(!html.includes('PREVIEW-1104') && !html.includes('11 月 4 日'));
   assert.ok(!html.includes('11 月 18 日（星期三）8 PM – 9 PM'));
 });
 
-test('9. the API rejects a direct registration for the completed Nov 4 session', async () => {
+test('9. a stale Nov 11 query falls back to the current Nov 19 session', async () => {
+  const env = makeEnv();
+  const ctx = makeCtx();
+  const res = await worker.fetch(new Request('https://aligor.aligor.workers.dev/register?batch=PREVIEW-1111', { headers: { 'user-agent': AGENT } }), env, ctx);
+  await Promise.all(ctx.promises);
+  const html = await res.text();
+  assert.equal(res.status, 200);
+  assert.ok(!html.includes('PREVIEW-1111') && !html.includes('11 月 11 日'));
+  assert.match(html, /<option[^>]*data-batch="PREVIEW-1118"[^>]* selected>/);
+  assert.match(html, /<input type="hidden" name="batch"[^>]*value="PREVIEW-1118">/);
+});
+
+test('10. the API rejects a direct registration for the completed Nov 11 session', async () => {
+  const env = makeEnv();
+  const res = await worker.fetch(new Request('https://aligor.aligor.workers.dev/api/leads', {
+    method: 'POST', headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ name: 'Late Student', phone: '0123456781', batch: 'PREVIEW-1111', course: '免费 AI Preview · 11 月 11 日（星期三）8 PM – 9 PM', used_ai_agent: '完全没用过', consent: true }),
+  }), env, makeCtx());
+  assert.equal(res.status, 400);
+  assert.match((await res.json()).error, /已经结束/);
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) count FROM leads').get().count, 0);
+});
+
+test('11. the API rejects a direct registration for the completed Nov 4 session', async () => {
   const env = makeEnv();
   const res = await worker.fetch(new Request('https://aligor.aligor.workers.dev/api/leads', {
     method: 'POST', headers: { 'content-type': 'application/json' },
@@ -119,7 +144,7 @@ test('9. the API rejects a direct registration for the completed Nov 4 session',
   assert.equal(env.DB.raw.prepare('SELECT COUNT(*) count FROM leads').get().count, 0);
 });
 
-test('10. if the count cannot be read the page still loads, without a count', async () => {
+test('12. if the count cannot be read the page still loads, without a count', async () => {
   const env = makeEnv();
   env.DB = { prepare() { throw new Error('D1 unavailable'); } };
   const { status, html } = await page(env);

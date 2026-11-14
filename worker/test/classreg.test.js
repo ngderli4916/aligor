@@ -278,7 +278,7 @@ test('18. registration page, old /register, admin, health still work; migrations
   const fresh = new DatabaseSync(':memory:'); fresh.exec(sql); fresh.exec(sql);
   assert.equal(fresh.prepare("SELECT COUNT(*) c FROM sqlite_master WHERE name IN ('class_registrations','class_registration_events')").get().c, 2);
   // old lead flow untouched
-  const lead = await call(env, 'POST', '/api/leads', { name: 'Old Lead', phone: '0161234567', batch: 'PREVIEW-1111', course: '免费 AI Preview · 11 月 11 日（星期三）8 PM – 9 PM', used_ai_agent: '有', consent: true });
+  const lead = await call(env, 'POST', '/api/leads', { name: 'Old Lead', phone: '0161234567', batch: 'PREVIEW-1118', course: '免费 AI Preview · 11 月 19 日（星期四）8 PM – 9 PM', used_ai_agent: '有', consent: true });
   assert.equal(lead.status, 201); assert.match((await lead.json()).lead_id, /^AIPR\d{5}$/);
 });
 
