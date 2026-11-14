@@ -63,7 +63,7 @@ const settle = ctx => Promise.all(ctx.promises);
 const payload = (extra = {}) => ({
   name: 'Siti Aminah', phone: '012-345 6789', batch: 'PREVIEW-1118', course: COURSE_1,
   used_ai_agent: '有，曾经试过', ai_tools: ['ChatGPT', 'Claude'], ai_tools_other: 'Gemini',
-  company: 'Aminah Bakery', industry: '餐饮', location: 'Selangor', goal: '想自动回复顾客', consent: true, ...extra,
+  company: 'Aminah Bakery', industry: '餐饮', location: 'Selangor', heard_from: '朋友介绍', referrer_name: 'Ali', goal: '想自动回复顾客', consent: true, ...extra,
 });
 async function submit(env, ctx, data) {
   return worker.fetch(new Request('https://aligor.aligor.workers.dev/api/leads', {
@@ -117,6 +117,7 @@ test('4. Telegram payload is the compact message with the unmasked number', asyn
     `课程／场次：${COURSE_1}`,
     '批次：PREVIEW-1118',
     '所在地点：Selangor',
+    '从哪里知道：朋友介绍（介绍人：Ali）',
     '公司：Aminah Bakery',
     '行业：餐饮',
     '用过AI Agent：有，曾经试过',
@@ -307,4 +308,26 @@ test('location: the 13 English states are offered, stored (column added on first
   assert.equal((await submit(env, ctx, payload({ phone: '0111111111', location: 'Atlantis' }))).status, 400);
   const { location, ...noLocation } = payload({ phone: '0122222222' });
   assert.equal((await submit(env, ctx, noLocation)).status, 201);
+});
+
+test('heard_from: six sources offered; referrer name only kept for 朋友介绍 and optional', async () => {
+  const env = makeEnv(), ctx = makeCtx();
+  const page = await (await worker.fetch(new Request('https://aligor.aligor.workers.dev/register'), env, ctx)).text();
+  const select = page.match(/<select name="heard_from"[\s\S]*?<\/select>/)[0];
+  assert.ok(select.includes('required'));
+  assert.deepEqual([...select.matchAll(/<option value="([^"]*)">/g)].map(m => m[1]).filter(Boolean), ['小红书', 'Facebook', 'Instagram', 'TikTok', 'Google', '朋友介绍']);
+  assert.ok(/id="referrerBox"[^>]*hidden/.test(page) || /class="full hidden" id="referrerBox"/.test(page));
+  assert.ok(page.includes('name="referrer_name"'));
+  assert.equal((await submit(env, ctx, payload({ heard_from: '朋友介绍', referrer_name: 'Ali' }))).status, 201); await settle(ctx);
+  let row = rows(env, 'SELECT heard_from, referrer_name FROM leads')[0];
+  assert.deepEqual([row.heard_from, row.referrer_name], ['朋友介绍', 'Ali']);
+  // friend referral without a name is fine
+  assert.equal((await submit(env, ctx, payload({ phone: '0133333333', heard_from: '朋友介绍' }))).status, 201); await settle(ctx);
+  // a name sent with another source is dropped
+  assert.equal((await submit(env, ctx, payload({ phone: '0144444444', heard_from: 'TikTok', referrer_name: 'Ali' }))).status, 201); await settle(ctx);
+  row = rows(env, "SELECT heard_from, referrer_name FROM leads WHERE phone_e164 LIKE '%144444444'")[0];
+  assert.deepEqual([row.heard_from, row.referrer_name], ['TikTok', '']);
+  // unknown source refused; missing accepted (older callers)
+  assert.equal((await submit(env, ctx, payload({ phone: '0155555555', heard_from: 'Radio' }))).status, 400);
+  assert.equal((await submit(env, ctx, payload({ phone: '0166666666' }))).status, 201);
 });

@@ -1,7 +1,7 @@
 import { classAdminTabHtml, classAdminScript } from './classui.js';
 import { invoiceAdminTabHtml, invoiceAdminScript } from './invoiceui.js';
 import { pixelHead } from './meta.js';
-import { MALAYSIA_STATES } from './lib.js';
+import { MALAYSIA_STATES, HEARD_FROM_OPTIONS, REFERRAL_OPTION } from './lib.js';
 const css = `
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+SC:wght@700;900&display=swap");
 :root{--ink:#14110F;--ink2:#3B3731;--muted:#6F6A60;--paper:#FBF8EE;--card:#fff;--yellow:#FFC93C;--green:#0F766E;--line:#E7E1D0;--field:#D9D2BF;--red:#B42318;--serif:"Noto Serif SC","Songti SC","Source Han Serif SC",serif;--sans:"Noto Sans SC","PingFang SC","Microsoft YaHei",-apple-system,system-ui,sans-serif}
@@ -148,6 +148,8 @@ export function registerPage(defaultBatch = '', stats = null, pixelId = '') {
       <label class="full">报名项目<select name="course" id="course">${sessionOptions}</select><small class="hint" id="sessionCount"></small></label>
       <input type="hidden" name="batch" id="batch" value="${selectedBatch}">
       <label class="full">所在地点 Location<select name="location" required><option value="">Select your state</option>${MALAYSIA_STATES.map(state => `<option value="${state}">${state}</option>`).join('')}</select></label>
+      <label class="full">你是从哪里知道我们的？<select name="heard_from" id="heardFrom" required><option value="">请选择</option>${HEARD_FROM_OPTIONS.map(item => `<option value="${item}">${item}</option>`).join('')}</select></label>
+      <label class="full hidden" id="referrerBox">方便写是谁介绍你的吗？（选填）<input name="referrer_name" id="referrerName" maxlength="80" placeholder="介绍人的名字"></label>
       <label>公司名称（选填）<input name="company" maxlength="100"></label>
       <label>行业（选填）<input name="industry" maxlength="80"></label>
       <fieldset class="full"><legend>你有用过 AI Agent 吗？</legend><div class="choices">
@@ -182,6 +184,8 @@ export function registerPage(defaultBatch = '', stats = null, pixelId = '') {
     const counts=${jsonForScript(stats?.byBatch||{})},hint=document.querySelector('#sessionCount');
     function syncBatch(){const b=sel.selectedOptions[0].dataset.batch;bt.value=b;const n=Number(counts[b])||0;hint.textContent=n>0?'这一场已有 '+n+' 人报名':''}
     sel.addEventListener('change',syncBatch);syncBatch();
+    const heard=document.querySelector('#heardFrom'),refBox=document.querySelector('#referrerBox'),refName=document.querySelector('#referrerName');
+    heard.addEventListener('change',()=>{const on=heard.value===${jsonForScript(REFERRAL_OPTION)};refBox.classList.toggle('hidden',!on);if(!on)refName.value=''});
     form.addEventListener('submit',async e=>{e.preventDefault();msg.textContent='提交中…';const button=form.querySelector('button');button.disabled=true;try{const fd=new FormData(form),data=Object.fromEntries(fd);data.ai_tools=fd.getAll('ai_tools');data.consent=form.consent.checked;const qs=new URLSearchParams(location.search);['utm_source','utm_medium','utm_campaign','utm_content','fbclid'].forEach(k=>{if(qs.get(k))data[k]=qs.get(k)});data.page_url=location.href;const r=await fetch('/api/leads',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(data)});const out=await r.json();if(!r.ok)throw new Error(out.error||'提交失败');if(window.fbq)fbq('track','Lead',{content_name:data.course},{eventID:out.lead_id});form.classList.add('hidden');document.querySelector('#success').classList.remove('hidden');document.querySelector('#wa').href=out.whatsapp_url;document.querySelector('#successNote').textContent='你报名的是：'+data.course+'。我会通过 WhatsApp 联络你，也可以现在直接 WhatsApp 我，获得更快回复。';}catch(err){msg.textContent=err.message;msg.className='full error';button.disabled=false;}});
   `, pixelHead(pixelId));
 }
