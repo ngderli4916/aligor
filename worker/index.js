@@ -54,6 +54,12 @@ async function route(request, env, ctx) {
   if (request.method==='POST' && path==='/api/track') return track(request,env,ctx);
   if (request.method==='POST' && path==='/api/leads') return createLead(request,env,ctx);
   if (request.method==='GET' && path==='/4916') return html(await isAdmin(request,env) ? adminPage() : loginPage());
+  if (request.method==='GET' && (path==='/list' || path.startsWith('/list/'))) {
+    if (!await isAdmin(request,env)) return html(loginPage('','/list/'),noindex);
+    const page=await env.ASSETS.fetch(request), headers=new Headers(page.headers);
+    headers.set('cache-control','no-store'); headers.set('x-robots-tag','noindex, nofollow');
+    return new Response(page.body,{status:page.status,headers});
+  }
   if (request.method==='POST' && path==='/api/admin/login') return login(request,env);
   if (request.method==='POST' && path==='/api/admin/logout') return new Response(null,{status:204,headers:{'set-cookie':sessionCookie('',request,0)}});
   if (path.startsWith('/api/admin/')) {
@@ -230,8 +236,9 @@ async function exportCsv(env) {
 
 async function login(request,env) {
   const data=await bodyData(request); if(!env.ADMIN_PASSWORD||!env.SESSION_SECRET)return html(loginPage('服务器尚未设置管理员密码'));
-  if(!safeEqual(String(data.password||''),env.ADMIN_PASSWORD))return html(loginPage('密码不正确'));
-  const token=await signSession(env.SESSION_SECRET); return new Response(null,{status:303,headers:{location:'/4916','set-cookie':sessionCookie(token,request,28800)}});
+  const next=data.next==='/list/'?'/list/':'/4916';
+  if(!safeEqual(String(data.password||''),env.ADMIN_PASSWORD))return html(loginPage('密码不正确',next));
+  const token=await signSession(env.SESSION_SECRET); return new Response(null,{status:303,headers:{location:next,'set-cookie':sessionCookie(token,request,28800)}});
 }
 
 function sessionCookie(token,request,maxAge){

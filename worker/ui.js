@@ -190,8 +190,9 @@ export function registerPage(defaultBatch = '', stats = null, pixelId = '') {
   `, pixelHead(pixelId));
 }
 
-export function loginPage(error = '') {
-  return shell('Aligor 后台登入', `<div class="brand">阿理哥 · Aligor</div><section class="hero"><h1>报名后台</h1><p>只有管理员可以查看完整顾客资料。</p></section><form class="card" method="post" action="/api/admin/login"><label>管理员密码<input type="password" name="password" required autocomplete="current-password"></label>${error?`<p class="error">${error}</p>`:''}<p><button class="btn dark">登入</button></p></form>`);
+export function loginPage(error = '', next = '') {
+  const list = next === '/list/';
+  return shell('Aligor 后台登入', `<div class="brand">阿理哥 · Aligor</div><section class="hero"><h1>${list ? '网页清单' : '报名后台'}</h1><p>${list ? '只有管理员可以查看网站所有页面。' : '只有管理员可以查看完整顾客资料。'}</p></section><form class="card" method="post" action="/api/admin/login">${list ? '<input type="hidden" name="next" value="/list/">' : ''}<label>管理员密码<input type="password" name="password" required autocomplete="current-password"></label>${error?`<p class="error">${error}</p>`:''}<p><button class="btn dark">登入</button></p></form>`);
 }
 
 export function adminPage() {
