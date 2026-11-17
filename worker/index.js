@@ -8,6 +8,7 @@ import { surveyPage, invalidSurveyPage, findSurveyInvite, saveSurvey } from './s
 import { InvoiceError, createInvoice, updateInvoice, invoiceAction, deleteInvoice, listInvoices, getInvoice, findPublicInvoice, invoiceCsv } from './invoice.js';
 import { invoicePage, invalidInvoicePage } from './invoiceui.js';
 import { handleCourse } from './course.js';
+import { calendarPage, calendarIcs } from './calendar.js';
 import { META_CSP_SCRIPT, META_CSP_CONNECT, META_CSP_IMG, adSource, sendLeadToMeta } from './meta.js';
 
 const json = (data, status=200, headers={}) => new Response(JSON.stringify(data), {status, headers:{'content-type':'application/json; charset=utf-8',...headers}});
@@ -30,6 +31,8 @@ async function route(request, env, ctx) {
     return html(registerPage(cleanText(url.searchParams.get('batch'),50),await registrationStats(env),env.META_PIXEL_ID));
   }
   if (request.method==='GET' && path==='/classregister') return html(classRegisterPage(currentPackages(env),promoState(env)),{'cache-control':'no-store'});
+  if (request.method==='GET' && path==='/calendar/test') return html(calendarPage(url.origin),{'cache-control':'no-store'});
+  if (request.method==='GET' && path==='/calendar/test.ics') return new Response(calendarIcs(),{headers:{'content-type':'text/calendar; charset=utf-8','content-disposition':'attachment; filename="aligor-ai-agent-test-2026-11-19.ics"','cache-control':'no-store'}});
   if (request.method==='GET' && path==='/survey') {
     const invite=await findSurveyInvite(env,url.searchParams.get('t'));
     const response=html(invite?surveyPage(invite):invalidSurveyPage(),{'cache-control':'no-store','x-robots-tag':'noindex, nofollow'});
