@@ -63,7 +63,7 @@ const settle = ctx => Promise.all(ctx.promises);
 const payload = (extra = {}) => ({
   name: 'Siti Aminah', phone: '012-345 6789', batch: 'PREVIEW-1111', course: COURSE_1,
   used_ai_agent: '有，曾经试过', ai_tools: ['ChatGPT', 'Claude'], ai_tools_other: 'Gemini',
-  company: 'Aminah Bakery', industry: '餐饮', goal: '想自动回复顾客', consent: true, ...extra,
+  company: 'Aminah Bakery', industry: '餐饮', location: 'Selangor', heard_from: '朋友介绍', referrer_name: 'Ali', goal: '想自动回复顾客', consent: true, ...extra,
 });
 async function submit(env, ctx, data) {
   return worker.fetch(new Request('https://aligor.aligor.workers.dev/api/leads', {
@@ -116,6 +116,8 @@ test('4. Telegram payload is the compact message with the unmasked number', asyn
     'WhatsApp：60123456789',
     `课程／场次：${COURSE_1}`,
     '批次：PREVIEW-1111',
+    '所在地点：Selangor',
+    '从哪里知道：朋友介绍（介绍人：Ali）',
     '公司：Aminah Bakery',
     '行业：餐饮',
     '用过AI Agent：有，曾经试过',
@@ -284,4 +286,36 @@ test('13. a duplicate submit is labelled and does not create a second row', asyn
 test('14. very long answers stay under the Telegram message limit', () => {
   const lead = { id: 9, name: '长'.repeat(80), phone_e164: '60123456789', course: COURSE_1, batch: 'B', goal: '字'.repeat(800), company: '公'.repeat(100), created_at: '2026-10-06T13:05:00.000Z' };
   assert.ok(buildLeadNotification(lead, makeEnv()).text.length < 4000);
+});
+
+test('location: the 13 English states are offered, stored, and unknown values are rejected', async () => {
+  const STATES = ['Johor', 'Kedah', 'Kelantan', 'Malacca', 'Negeri Sembilan', 'Pahang', 'Penang', 'Perak', 'Perlis', 'Sabah', 'Sarawak', 'Selangor', 'Terengganu'];
+  const env = makeEnv(), ctx = makeCtx();
+  const page = await (await worker.fetch(new Request('https://aligor.aligor.workers.dev/register'), env, ctx)).text();
+  const select = page.match(/<select name="location"[\s\S]*?<\/select>/)?.[0] || '';
+  assert.ok(select.includes('required'));
+  assert.deepEqual([...select.matchAll(/<option value="([^"]*)">/g)].map(m => m[1]).filter(Boolean), STATES);
+  assert.equal((await submit(env, ctx, payload({ location: 'Penang' }))).status, 201); await settle(ctx);
+  assert.equal(rows(env, 'SELECT location FROM leads')[0].location, 'Penang');
+  await submit(env, ctx, payload({ location: 'Sabah' })); await settle(ctx);
+  assert.equal(rows(env, 'SELECT location FROM leads')[0].location, 'Sabah');
+  await submit(env, ctx, payload({ location: '' })); await settle(ctx);
+  assert.equal(rows(env, 'SELECT location FROM leads')[0].location, 'Sabah');
+  assert.equal((await submit(env, ctx, payload({ phone: '0111111111', location: 'Atlantis' }))).status, 400);
+});
+
+test('heard_from: six sources are offered and referrer name is stored only for friend referrals', async () => {
+  const env = makeEnv(), ctx = makeCtx();
+  const page = await (await worker.fetch(new Request('https://aligor.aligor.workers.dev/register'), env, ctx)).text();
+  const select = page.match(/<select name="heard_from"[\s\S]*?<\/select>/)?.[0] || '';
+  assert.ok(select.includes('required'));
+  assert.deepEqual([...select.matchAll(/<option value="([^"]*)">/g)].map(m => m[1]).filter(Boolean), ['小红书', 'Facebook', 'Instagram', 'TikTok', 'Google', '朋友介绍']);
+  assert.ok(page.includes('name="referrer_name"'));
+  assert.equal((await submit(env, ctx, payload())).status, 201); await settle(ctx);
+  let row = rows(env, 'SELECT heard_from, referrer_name FROM leads')[0];
+  assert.deepEqual([row.heard_from, row.referrer_name], ['朋友介绍', 'Ali']);
+  assert.equal((await submit(env, ctx, payload({ phone: '0144444444', heard_from: 'TikTok', referrer_name: 'Ali' }))).status, 201); await settle(ctx);
+  row = rows(env, "SELECT heard_from, referrer_name FROM leads WHERE phone_e164 LIKE '%144444444'")[0];
+  assert.deepEqual([row.heard_from, row.referrer_name], ['TikTok', '']);
+  assert.equal((await submit(env, ctx, payload({ phone: '0155555555', heard_from: 'Radio' }))).status, 400);
 });

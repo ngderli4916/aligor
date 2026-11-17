@@ -1,4 +1,4 @@
-import { STATUSES, normalizePhone, cleanText, waUrl, csvEscape, htmlEscape, parseBotCommand } from './lib.js';
+import { STATUSES, normalizePhone, cleanText, waUrl, csvEscape, htmlEscape, parseBotCommand, MALAYSIA_STATES, HEARD_FROM_OPTIONS, REFERRAL_OPTION } from './lib.js';
 import { recordView, getStats } from './analytics.js';
 import { buildCustomerMessage, buildLeadNotification, leadCode, parseLeadCode, redactSecrets } from './notify.js';
 import { PREVIEW_SESSIONS, registerPage, loginPage, adminPage } from './ui.js';
@@ -119,6 +119,18 @@ async function bodyData(request) {
   const form=await request.formData(); return Object.fromEntries(form);
 }
 
+const LEAD_EXTRA_COLUMNS=['location','heard_from','referrer_name'];
+const leadExtrasReady=new WeakSet();
+async function ensureLeadExtras(env) {
+  if (leadExtrasReady.has(env.DB)) return true;
+  try {
+    const info=await env.DB.prepare('PRAGMA table_info(leads)').all();
+    const have=new Set((info.results||[]).map(column=>column.name));
+    for (const column of LEAD_EXTRA_COLUMNS) if (!have.has(column)) await env.DB.prepare(`ALTER TABLE leads ADD COLUMN ${column} TEXT NOT NULL DEFAULT ''`).run();
+    leadExtrasReady.add(env.DB); return true;
+  } catch (error) { console.error('lead_extra_columns_failed',redactSecrets(error?.message,env)); return false; }
+}
+
 async function createLead(request,env,ctx) {
   const data=await bodyData(request);
   if (cleanText(data.website,100)) return json({ok:true},202);
@@ -135,10 +147,18 @@ async function createLead(request,env,ctx) {
   const tools=Array.isArray(data.ai_tools)?data.ai_tools:[data.ai_tools].filter(Boolean);
   const values={company:cleanText(data.company,100),industry:cleanText(data.industry,80),usedAiAgent:cleanText(data.used_ai_agent,40),aiTools:tools.map(x=>cleanText(x,50)).filter(Boolean).slice(0,12).join(', '),aiToolsOther:cleanText(data.ai_tools_other,100),goal:cleanText(data.goal,800),source:cleanText(adSource(data)||data.source||'aligor',80)};
   if(!values.usedAiAgent) return json({error:'请选择是否使用过 AI Agent'},400);
+  const location=cleanText(data.location,40);
+  if(location && !MALAYSIA_STATES.includes(location)) return json({error:'请选择所在地点'},400);
+  const heardFrom=cleanText(data.heard_from,40);
+  if(heardFrom && !HEARD_FROM_OPTIONS.includes(heardFrom)) return json({error:'请选择你是从哪里知道我们的'},400);
+  const referrerName=heardFrom===REFERRAL_OPTION?cleanText(data.referrer_name,80):'';
+  const hasExtras=await ensureLeadExtras(env);
   const existing=await env.DB.prepare('SELECT id FROM leads WHERE phone_e164=? AND batch=?').bind(phone,batch).first();
-  await env.DB.prepare(`INSERT INTO leads(public_id,name,phone_e164,batch,course,company,industry,used_ai_agent,ai_tools,ai_tools_other,goal,source,status,consent_whatsapp,consent_at,created_at,updated_at)
-    VALUES(?,?,?,?,?,?,?,?,?,?,?,?,'new',1,?,?,?) ON CONFLICT(phone_e164,batch) DO UPDATE SET name=excluded.name,course=excluded.course,company=excluded.company,industry=excluded.industry,used_ai_agent=excluded.used_ai_agent,ai_tools=excluded.ai_tools,ai_tools_other=excluded.ai_tools_other,goal=excluded.goal,source=CASE WHEN excluded.source='aligor' THEN leads.source ELSE excluded.source END,consent_whatsapp=1,consent_at=excluded.consent_at,updated_at=excluded.updated_at`)
-    .bind(publicId,name,phone,batch,course,values.company,values.industry,values.usedAiAgent,values.aiTools,values.aiToolsOther,values.goal,values.source,timestamp,timestamp,timestamp).run();
+  const baseCols='public_id,name,phone_e164,batch,course,company,industry,used_ai_agent,ai_tools,ai_tools_other,goal,source';
+  const baseVals=[publicId,name,phone,batch,course,values.company,values.industry,values.usedAiAgent,values.aiTools,values.aiToolsOther,values.goal,values.source];
+  await env.DB.prepare(`INSERT INTO leads(${baseCols}${hasExtras?',location,heard_from,referrer_name':''},status,consent_whatsapp,consent_at,created_at,updated_at)
+    VALUES(?,?,?,?,?,?,?,?,?,?,?,?${hasExtras?',?,?,?':''},'new',1,?,?,?) ON CONFLICT(phone_e164,batch) DO UPDATE SET name=excluded.name,course=excluded.course,company=excluded.company,industry=excluded.industry,${hasExtras?"location=CASE WHEN excluded.location='' THEN leads.location ELSE excluded.location END,heard_from=CASE WHEN excluded.heard_from='' THEN leads.heard_from ELSE excluded.heard_from END,referrer_name=CASE WHEN excluded.heard_from='' THEN leads.referrer_name ELSE excluded.referrer_name END,":''}used_ai_agent=excluded.used_ai_agent,ai_tools=excluded.ai_tools,ai_tools_other=excluded.ai_tools_other,goal=excluded.goal,source=CASE WHEN excluded.source='aligor' THEN leads.source ELSE excluded.source END,consent_whatsapp=1,consent_at=excluded.consent_at,updated_at=excluded.updated_at`)
+    .bind(...baseVals,...(hasExtras?[location,heardFrom,referrerName]:[]),timestamp,timestamp,timestamp).run();
   const lead=await env.DB.prepare('SELECT * FROM leads WHERE phone_e164=? AND batch=?').bind(phone,batch).first();
   await addEvent(env,lead.id,existing?'resubmitted':'submitted','customer',`source=${values.source}`);
   const notification=notifyNewLead(env,lead,{resubmitted:Boolean(existing)});
@@ -193,7 +213,7 @@ async function updateLead(id,data,env,actor) {
 
 async function exportCsv(env) {
   const rows=(await env.DB.prepare('SELECT * FROM leads ORDER BY created_at DESC').all()).results;
-  const cols=['code','id','public_id','name','phone_e164','batch','course','company','industry','used_ai_agent','ai_tools','ai_tools_other','goal','source','status','consent_at','notes','created_at','updated_at'];
+  const cols=['code','id','public_id','name','phone_e164','batch','course','location','heard_from','referrer_name','company','industry','used_ai_agent','ai_tools','ai_tools_other','goal','source','status','consent_at','notes','created_at','updated_at'];
   const body='\ufeff'+[cols.join(','),...rows.map(r=>({...r,code:leadCode(r.id)})).map(r=>cols.map(c=>csvEscape(r[c])).join(','))].join('\n');
   return new Response(body,{headers:{'content-type':'text/csv; charset=utf-8','content-disposition':'attachment; filename="aligor-leads.csv"'}});
 }

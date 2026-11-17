@@ -37,3 +37,7 @@ export function parseBotCommand(text) {
   const command = (parts.shift() || '').split('@')[0].toLowerCase();
   return { command, args: parts };
 }
+
+export const HEARD_FROM_OPTIONS = ['小红书', 'Facebook', 'Instagram', 'TikTok', 'Google', '朋友介绍'];
+export const REFERRAL_OPTION = '朋友介绍';
+export const MALAYSIA_STATES = ['Johor', 'Kedah', 'Kelantan', 'Malacca', 'Negeri Sembilan', 'Pahang', 'Penang', 'Perak', 'Perlis', 'Sabah', 'Sarawak', 'Selangor', 'Terengganu'];
