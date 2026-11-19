@@ -137,3 +137,58 @@ test('helpers', () => {
   assert.equal(malaysiaTime('2026-11-19T16:30:00.000Z'), '2026-11-20 00:30');
   assert.equal(malaysiaTime('nope'), '');
 });
+
+// ---------- shared team link (#k=<key>) ----------
+const LINK_KEY = 'synthetic-link-key-0123456789abcdefABCDEF_-xyz';
+const linkEnv = DB => ({ DB, TEAM_DASHBOARD_LINK_KEY: LINK_KEY });
+const withKey = (path, key) => new Request(ORIGIN + path, { headers: key === undefined ? {} : { 'x-team-link-key': key } });
+
+test('shared link: correct key reads the course list; missing, wrong or partial keys get nothing', async () => {
+  const { raw, DB } = memoryDb(); seedLeads(raw); const env = linkEnv(DB);
+  const ok = await worker.fetch(withKey(TEAM_DASHBOARD_API, LINK_KEY), env);
+  assert.equal(ok.status, 200); assertNoStore(ok);
+  const text = await ok.text(); assertNoFullPhone(text);
+  const data = JSON.parse(text);
+  assert.equal(data.total, 2); assert.deepEqual(data.registrations.map(r => r.name), ['Beta Sample', '甲 同学']);
+  for (const hidden of ['Cancelled Person', 'Preview Only', 'Wrong Source', 'Class Lead']) assert.ok(!text.includes(hidden));
+  for (const key of [undefined, '', 'wrong', LINK_KEY.slice(0, -1), LINK_KEY + 'x', LINK_KEY.toUpperCase(), 'x'.repeat(600)]) {
+    const res = await worker.fetch(withKey(TEAM_DASHBOARD_API, key), env);
+    assert.equal(res.status, 401, String(key)); assertNoStore(res); assertNoLeadData(await res.text());
+  }
+  // The key is never accepted from the query string (it would land in logs).
+  const viaQuery = await worker.fetch(new Request(`${ORIGIN}${TEAM_DASHBOARD_API}?k=${LINK_KEY}`), env);
+  assert.equal(viaQuery.status, 401); assertNoLeadData(await viaQuery.text());
+});
+
+test('shared link: page shell is served without data and never contains the key', async () => {
+  const { raw, DB } = memoryDb(); seedLeads(raw); const env = linkEnv(DB);
+  const res = await worker.fetch(new Request(ORIGIN + TEAM_DASHBOARD_PATH), env);
+  assert.equal(res.status, 200); assertNoStore(res);
+  assert.equal(res.headers.get('referrer-policy'), 'no-referrer');
+  const html = await res.text();
+  assertNoLeadData(html); assert.ok(!html.includes(LINK_KEY));
+  assert.match(html, /location\.hash/); assert.match(html, /x-team-link-key/);
+});
+
+test('shared link: rotating the secret revokes the old link; weak secrets are ignored', async () => {
+  const { raw, DB } = memoryDb(); seedLeads(raw);
+  const rotatedEnv = { DB, TEAM_DASHBOARD_LINK_KEY: 'a-brand-new-synthetic-key-0123456789ABCDEFGH' };
+  assert.equal((await worker.fetch(withKey(TEAM_DASHBOARD_API, LINK_KEY), rotatedEnv)).status, 401);
+  assert.equal((await worker.fetch(withKey(TEAM_DASHBOARD_API, rotatedEnv.TEAM_DASHBOARD_LINK_KEY), rotatedEnv)).status, 200);
+  for (const weak of ['short', '1234', 'has spaces in it but is definitely long enough!!']) {
+    const env = { DB, TEAM_DASHBOARD_LINK_KEY: weak };
+    const res = await worker.fetch(withKey(TEAM_DASHBOARD_API, weak), env);
+    assert.equal(res.status, 401, weak); assertNoLeadData(await res.text());
+    const page = await worker.fetch(new Request(ORIGIN + TEAM_DASHBOARD_PATH), env);
+    assert.equal(page.status, 503); assertNoLeadData(await page.text());
+  }
+});
+
+test('shared link and Access can coexist; a wrong link key does not fall through to Access', async () => {
+  const { raw, DB } = memoryDb(); seedLeads(raw);
+  const env = { ...teamEnv(DB), TEAM_DASHBOARD_LINK_KEY: LINK_KEY };
+  assert.equal((await worker.fetch(get(TEAM_DASHBOARD_API, await keys.sign()), env)).status, 200);
+  assert.equal((await worker.fetch(withKey(TEAM_DASHBOARD_API, LINK_KEY), env)).status, 200);
+  const mixed = new Request(ORIGIN + TEAM_DASHBOARD_API, { headers: { 'x-team-link-key': 'wrong', 'cf-access-jwt-assertion': await keys.sign() } });
+  assert.equal((await worker.fetch(mixed, env)).status, 401);
+});

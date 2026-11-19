@@ -1,7 +1,11 @@
 // Read-only team board for the AI Personal Assistant partner course.
-// Access is checked on the server for both the page and its data: a Cloudflare Access
-// application JWT (signature, issuer, audience, expiry) plus an email allowlist.
-// Missing config, a missing/invalid token or a non-member email never returns lead data.
+// Two ways in, both checked on the server before any lead data is returned:
+//  1. Shared team link (Adrian's choice, 2026-11-20): /team/ai-personal-assistant#k=<key>.
+//     The key sits after '#', so browsers never send it in the page request, Referer or logs;
+//     the page script sends it only as a header to the data API, compared to the
+//     TEAM_DASHBOARD_LINK_KEY secret. Rotating that secret revokes the old link.
+//  2. Cloudflare Access application JWT (signature, issuer, audience, expiry) + email allowlist.
+// With neither configured, or a missing/wrong key/token, no lead data is returned.
 import { AI_AGENT_BATCH, leadCode } from './notify.js';
 
 export const TEAM_DASHBOARD_PATH = '/team/ai-personal-assistant';
@@ -11,6 +15,7 @@ const SOURCE = 'ai-agent-registration';
 const MAX_ROWS = 2000;
 const CLOCK_SKEW_S = 60;
 const CERTS_TTL_MS = 10 * 60 * 1000;
+const LINK_KEY_HEADER = 'x-team-link-key';
 
 const NO_STORE = {
   'cache-control': 'no-store, no-cache, must-revalidate, private, max-age=0',
@@ -37,9 +42,15 @@ export async function teamDashboardRoute(request, env) {
   if (!isApi && !isPage) return jsonResponse({ ok: false, error: 'Not found' }, 404);
   if (request.method !== 'GET') return jsonResponse({ ok: false, error: 'Method not allowed' }, 405);
 
+  if (isPage) {
+    // The page shell carries no lead data. In shared-link mode the key is in the URL fragment,
+    // which the server never sees, so the shell is served and the data API does the check.
+    if (linkKey(env)) return htmlResponse(dashboardPage());
+    const access = await verifyTeamAccess(request, env);
+    return access.ok ? htmlResponse(dashboardPage()) : htmlResponse(deniedPage(access), access.status);
+  }
   const access = await verifyTeamAccess(request, env);
-  if (!access.ok) return isApi ? jsonResponse({ ok: false, error: access.message }, access.status) : htmlResponse(deniedPage(access), access.status);
-  if (isPage) return htmlResponse(dashboardPage());
+  if (!access.ok) return jsonResponse({ ok: false, error: access.message }, access.status);
   try {
     return jsonResponse({ ok: true, ...(await listCourseRegistrations(env)) });
   } catch (error) {
@@ -93,9 +104,33 @@ function teamConfig(env) {
   return { domain, aud, members };
 }
 
+function linkKey(env) {
+  const key = String(env.TEAM_DASHBOARD_LINK_KEY || '').trim();
+  return /^[A-Za-z0-9_-]{32,256}$/.test(key) ? key : null;
+}
+
+async function digest(text) {
+  return new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(String(text))));
+}
+
+async function sameSecret(given, expected) {
+  const [a, b] = await Promise.all([digest(given), digest(expected)]);
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a[i] ^ b[i];
+  return diff === 0;
+}
+
 export async function verifyTeamAccess(request, env) {
+  const key = linkKey(env), given = request.headers.get(LINK_KEY_HEADER);
+  if (given !== null) {
+    if (key && given.length <= 512 && await sameSecret(given, key)) return { ok: true, via: 'link' };
+    return { ok: false, status: 401, reason: 'bad_link', message: '链接无效或已更换，请向 Adrian 拿最新的看板链接。' };
+  }
   const config = teamConfig(env);
-  if (!config) return { ok: false, status: 503, reason: 'not_configured', message: '团队看板尚未完成访问设置。' };
+  if (!config) {
+    if (key) return { ok: false, status: 401, reason: 'no_link_key', message: '链接不完整，请从团队群重新打开完整的看板链接。' };
+    return { ok: false, status: 503, reason: 'not_configured', message: '团队看板尚未完成访问设置。' };
+  }
   const token = request.headers.get('cf-access-jwt-assertion') || '';
   if (!token) return { ok: false, status: 401, reason: 'no_token', message: '请先通过团队登录。' };
   let claims;
@@ -103,7 +138,7 @@ export async function verifyTeamAccess(request, env) {
   catch { return { ok: false, status: 401, reason: 'invalid_token', message: '登录已失效，请重新打开页面登录。' }; }
   const email = String(claims.email || '').trim().toLowerCase();
   if (!email || !config.members.has(email)) return { ok: false, status: 403, reason: 'not_member', message: '这个账号没有查看权限。' };
-  return { ok: true, email };
+  return { ok: true, via: 'access', email };
 }
 
 const b64urlBytes = text => {
@@ -197,6 +232,7 @@ footer{max-width:1100px;margin:0 auto;padding:16px;color:var(--muted);font-size:
 <script>
 const $=s=>document.querySelector(s),q=$('#q'),btn=$('#refresh'),rows=$('#rows'),table=$('#table'),empty=$('#empty'),notice=$('#notice'),count=$('#count');
 let list=[],loaded=false;
+let linkKey=new URLSearchParams(location.hash.slice(1)).get('k');
 const cell=(cls,text,label)=>{const td=document.createElement('td');td.className=cls;td.textContent=text;if(label)td.dataset.label=label;return td};
 function render(){
   const term=q.value.trim().toLowerCase();
@@ -210,11 +246,11 @@ function render(){
 async function load(){
   btn.disabled=true;btn.textContent='读取中…';notice.textContent='';notice.className='notice';
   try{
-    const res=await fetch('${TEAM_DASHBOARD_API}',{cache:'no-store',credentials:'same-origin',headers:{accept:'application/json'}});
+    const res=await fetch('${TEAM_DASHBOARD_API}',{cache:'no-store',credentials:'same-origin',headers:linkKey?{accept:'application/json','${LINK_KEY_HEADER}':linkKey}:{accept:'application/json'}});
     let data=null;try{data=await res.json()}catch{}
     if(!res.ok||!data||!data.ok){
       notice.className='notice '+(res.status===401||res.status===403?'warn':'err');
-      notice.textContent=(data&&data.error)||(res.status===401?'登录已失效，请重新打开页面登录。':'读取失败，请稍后再按刷新。');
+      notice.textContent=(data&&data.error)||(res.status===401?'链接无效或已失效，请向 Adrian 拿最新的看板链接。':'读取失败，请稍后再按刷新。');
       if(res.status===401||res.status===403){list=[];loaded=false;$('#total').textContent='—';$('#meta').textContent='';}
       else $('#meta').textContent=loaded?'以下仍是上次读取的名单':'';
       return;
@@ -226,6 +262,7 @@ async function load(){
     $('#meta').textContent=loaded?'以下仍是上次读取的名单':'';
   }finally{btn.disabled=false;btn.textContent='刷新';render()}
 }
-q.addEventListener('input',render);btn.addEventListener('click',load);load();
+q.addEventListener('input',render);btn.addEventListener('click',load);
+addEventListener('hashchange',()=>{linkKey=new URLSearchParams(location.hash.slice(1)).get('k');list=[];loaded=false;$('#total').textContent='—';load()});load();
 </script></body></html>`;
 }
