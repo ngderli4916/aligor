@@ -12,8 +12,8 @@ const valid={name:'Test Student',phone:'012 345 6789',company:'Demo & Co',indust
 test('registration defaults to Chinese, offers English, and stays standalone',async()=>{
   const zh=await (await worker.fetch(new Request('https://course.test/register-ai-agent'),{})).text();
   assert.match(zh,/<html lang="zh-Hans">/);
-  assert.match(zh,/<title>AI Agentic AI 个人助理｜课程报名<\/title>/);
-  assert.match(zh,/<h1>.*<em data-copy="theme">AI Agentic AI 个人助理<\/em><\/h1>/);
+  assert.match(zh,/<title>AI 个人助理｜课程报名<\/title>/);
+  assert.match(zh,/<h1>.*<em data-copy="theme">AI 个人助理<\/em><\/h1>/);
   assert.match(zh,/11 月 26 日（星期四）/);
   assert.match(zh,/<button[^>]*>华语<\/button>/);
   assert.match(zh,/<button[^>]*>English<\/button>/);
@@ -22,8 +22,8 @@ test('registration defaults to Chinese, offers English, and stays standalone',as
     const r=await worker.fetch(new Request('https://course.test/register-ai-agent'+suffix+'?lang=en'),{});
     assert.equal(r.status,200);
     const text=await r.text();
-    assert.match(text,/<title>Register for AI Agentic AI Personal Assistant<\/title>/);
-    assert.match(text,/<h1>.*<em data-copy="theme">AI Agentic AI Personal Assistant<\/em><\/h1>/);
+    assert.match(text,/<title>Register for AI Personal Assistant<\/title>/);
+    assert.match(text,/<h1>.*<em data-copy="theme">AI Personal Assistant<\/em><\/h1>/);
     assert.doesNotMatch(text,/aligor|阿理哥|阿里哥|preview/i);
     assert.match(text,/Thursday, 26 November 2026/);
     assert.match(text,/12PM - 4PM/);
