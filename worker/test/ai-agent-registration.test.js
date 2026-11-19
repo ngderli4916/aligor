@@ -41,7 +41,7 @@ test('stores a separate CRM lead, sends one operator notification and keeps Prev
   const DB={prepare(sql){return{bind(...args){return{first:async()=>raw.prepare(sql).get(...args)??null,run:async()=>raw.prepare(sql).run(...args)};}};}};
   const calls=[];
   t.mock.method(globalThis,'fetch',async(url,opts)=>{calls.push([url,JSON.parse(opts.body)]);return new Response('{}',{status:200});});
-  const env={DB,TELEGRAM_BOT_TOKEN:'test-token',TELEGRAM_CHAT_ID:'test-chat'};
+  const env={DB,TELEGRAM_BOT_TOKEN:'test-token',TELEGRAM_CHAT_ID:'test-chat',PARTNER_SIGNUP_WEBHOOK_URL:'https://hooks.example.test/webhook/aligor-partner-registration',PARTNER_SIGNUP_WEBHOOK_SECRET:'fixture-secret'};
   for(const [data,status,headers] of [[null,400],[{...valid,company:''},400],[{...valid,phone:'abc0123456789'},400],[valid,403,{origin:'https://other.test'}],[{...valid,foo:'x'.repeat(4096)},413],[{...valid,website:'spam'},200]])assert.equal((await worker.fetch(request(data,headers),env)).status,status);
   assert.equal(raw.prepare('SELECT count(*) AS n FROM leads').get().n,1);
   assert.equal(calls.length,0);
@@ -53,7 +53,11 @@ test('stores a separate CRM lead, sends one operator notification and keeps Prev
   const rows=raw.prepare('SELECT * FROM leads ORDER BY id').all();
   assert.equal(rows.length,2);assert.equal(rows[0].name,'Existing');
   const lead=rows[1]; assert.equal(lead.batch,'AI-AGENT-REGISTRATION');assert.equal(lead.source,'ai-agent-registration');assert.equal(lead.phone_e164,'60123456789');assert.equal(lead.company,'Demo & Co');assert.equal(lead.industry,'Retail');assert.equal(lead.consent_whatsapp,0);
-  assert.equal(calls.length,1);assert.match(calls[0][0],/\/sendMessage$/);assert.equal(calls[0][1].chat_id,'test-chat');assert.match(calls[0][1].text,/AI Agent Course[\s\S]*Test Student[\s\S]*60123456789[\s\S]*Demo &amp; Co[\s\S]*Retail/);assert.doesNotMatch(calls[0][1].text,/Preview/);
+  assert.equal(calls.length,2);
+  const [,telegram]=calls.find(([url])=>/\/sendMessage$/.test(url));
+  assert.equal(telegram.chat_id,'test-chat');assert.match(telegram.text,/AI Agent Course[\s\S]*Test Student[\s\S]*60123456789[\s\S]*Demo &amp; Co[\s\S]*Retail/);assert.doesNotMatch(telegram.text,/Preview/);
+  const hook=calls.find(([url])=>String(url)===env.PARTNER_SIGNUP_WEBHOOK_URL);
+  assert.deepEqual(hook?.[1],{event:'aligor.partner-registration.created',leadId:lead.id});
   assert.deepEqual(raw.prepare('SELECT event_type FROM lead_events ORDER BY id').all().map(x=>x.event_type),['submitted','telegram_sent']);
   assert.doesNotMatch(buildCustomerMessage(lead,{WHATSAPP_GROUP_URL:'https://chat.whatsapp.com/shouldnotshow'}),/https:\/\//);
 });

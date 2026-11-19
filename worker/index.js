@@ -10,6 +10,7 @@ import { invoicePage, invalidInvoicePage } from './invoiceui.js';
 import { META_CSP_SCRIPT, META_CSP_CONNECT, META_CSP_IMG, adSource, sendLeadToMeta } from './meta.js';
 import { previewAccessPage, verifyPreviewAccess } from './previewaccess.js';
 import { aiAgentRegistrationPage, saveAiAgentRegistration } from './ai-agent-registration.js';
+import { notifyPartnerRegistration } from './partner-webhook.js';
 
 const json = (data, status=200, headers={}) => new Response(JSON.stringify(data), {status, headers:{'content-type':'application/json; charset=utf-8',...headers}});
 const html = (body,extra={},csp=`default-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'unsafe-inline' ${META_CSP_SCRIPT}; connect-src 'self' ${META_CSP_CONNECT}; img-src 'self' data: ${META_CSP_IMG}; form-action 'self'; frame-ancestors 'none'`) => new Response(body,{headers:{...extra,'content-type':'text/html; charset=utf-8','content-security-policy':csp,'x-frame-options':'DENY','referrer-policy':'same-origin'}});
@@ -61,7 +62,7 @@ async function route(request, env, ctx) {
     const result=await saveAiAgentRegistration(request,env);
     if(result.lead){
       await safeEvent(env,result.lead.id,'submitted','customer','source=ai-agent-registration');
-      const notification=notifyNewLead(env,result.lead);
+      const notification=Promise.all([notifyNewLead(env,result.lead),notifyPartnerRegistration(env,result.lead.id)]);
       if(ctx&&typeof ctx.waitUntil==='function')ctx.waitUntil(notification);else await notification;
     }
     return json(result.body,result.status,{'cache-control':'no-store'});
