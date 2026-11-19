@@ -1,6 +1,6 @@
 import { STATUSES, normalizePhone, cleanText, waUrl, csvEscape, htmlEscape, parseBotCommand, MALAYSIA_STATES, HEARD_FROM_OPTIONS, REFERRAL_OPTION } from './lib.js';
 import { recordView, getStats } from './analytics.js';
-import { buildCustomerMessage, buildLeadNotification, leadCode, parseLeadCode, redactSecrets } from './notify.js';
+import { AI_AGENT_BATCH, buildCustomerMessage, buildLeadNotification, leadCode, parseLeadCode, redactSecrets } from './notify.js';
 import { PREVIEW_SESSIONS, registerPage, loginPage, adminPage } from './ui.js';
 import { PACKAGES, promoState, currentPackages, ClassError, createRegistration, notifyClassRegistration, paymentUrl, findByToken, publicPaymentView, recordPaymentPageOpened, submitPayment, listClassRegistrations, classEvents, classCsv, adminAction, setClassNotes } from './classreg.js';
 import { classRegisterPage, paymentPage, invalidPaymentPage } from './classui.js';
@@ -9,6 +9,7 @@ import { InvoiceError, createInvoice, updateInvoice, invoiceAction, deleteInvoic
 import { invoicePage, invalidInvoicePage } from './invoiceui.js';
 import { META_CSP_SCRIPT, META_CSP_CONNECT, META_CSP_IMG, adSource, sendLeadToMeta } from './meta.js';
 import { previewAccessPage, verifyPreviewAccess } from './previewaccess.js';
+import { aiAgentRegistrationPage, saveAiAgentRegistration } from './ai-agent-registration.js';
 
 const json = (data, status=200, headers={}) => new Response(JSON.stringify(data), {status, headers:{'content-type':'application/json; charset=utf-8',...headers}});
 const html = (body,extra={},csp=`default-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'unsafe-inline' ${META_CSP_SCRIPT}; connect-src 'self' ${META_CSP_CONNECT}; img-src 'self' data: ${META_CSP_IMG}; form-action 'self'; frame-ancestors 'none'`) => new Response(body,{headers:{...extra,'content-type':'text/html; charset=utf-8','content-security-policy':csp,'x-frame-options':'DENY','referrer-policy':'same-origin'}});
@@ -29,6 +30,9 @@ async function route(request, env, ctx) {
     return html(registerPage(cleanText(url.searchParams.get('batch'),50),await registrationStats(env),env.META_PIXEL_ID));
   }
   if (request.method==='GET' && path==='/classregister') return html(classRegisterPage(currentPackages(env),promoState(env)),{'cache-control':'no-store'});
+  if (request.method==='GET' && ['/register-ai-agent','/register-ai-agent/'].includes(path)) {
+    return html(aiAgentRegistrationPage(),{'cache-control':'no-store','referrer-policy':'no-referrer'},"default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'");
+  }
   if (request.method==='GET' && path==='/preview-live') return html(previewAccessPage(),{'cache-control':'no-store','x-robots-tag':'noindex, nofollow','referrer-policy':'no-referrer'});
   if (request.method==='GET' && path==='/survey') {
     const invite=await findSurveyInvite(env,url.searchParams.get('t'));
@@ -53,6 +57,15 @@ async function route(request, env, ctx) {
   if (request.method==='POST' && path==='/api/payment/submit') return classPaymentSubmit(request,env);
   if (request.method==='POST' && path==='/api/track') return track(request,env,ctx);
   if (request.method==='POST' && path==='/api/leads') return createLead(request,env,ctx);
+  if (request.method==='POST' && path==='/api/register-ai-agent') {
+    const result=await saveAiAgentRegistration(request,env);
+    if(result.lead){
+      await safeEvent(env,result.lead.id,'submitted','customer','source=ai-agent-registration');
+      const notification=notifyNewLead(env,result.lead);
+      if(ctx&&typeof ctx.waitUntil==='function')ctx.waitUntil(notification);else await notification;
+    }
+    return json(result.body,result.status,{'cache-control':'no-store'});
+  }
   if (request.method==='GET' && path==='/4916') return html(await isAdmin(request,env) ? adminPage() : loginPage());
   if (request.method==='GET' && (path==='/list' || path.startsWith('/list/'))) {
     if (!await isAdmin(request,env)) return html(loginPage('','/list/'),noindex);
@@ -181,8 +194,8 @@ async function createLead(request,env,ctx) {
 // Real numbers only: distinct people overall, and registrations per session. Cancelled sign-ups are not counted.
 async function registrationStats(env) {
   try {
-    const total=(await env.DB.prepare("SELECT COUNT(DISTINCT phone_e164) n FROM leads WHERE status!='cancelled'").first())?.n||0;
-    const rows=(await env.DB.prepare("SELECT batch,COUNT(*) n FROM leads WHERE status!='cancelled' GROUP BY batch").all()).results;
+    const total=(await env.DB.prepare("SELECT COUNT(DISTINCT phone_e164) n FROM leads WHERE status!='cancelled' AND batch!=?").bind(AI_AGENT_BATCH).first())?.n||0;
+    const rows=(await env.DB.prepare("SELECT batch,COUNT(*) n FROM leads WHERE status!='cancelled' AND batch!=? GROUP BY batch").bind(AI_AGENT_BATCH).all()).results;
     return {total,byBatch:Object.fromEntries(rows.map(row=>[row.batch,row.n]))};
   } catch(error) { console.error('registration_stats_failed',redactSecrets(error?.message,env)); return null; }
 }

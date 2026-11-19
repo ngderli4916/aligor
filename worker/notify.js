@@ -1,5 +1,7 @@
 import { htmlEscape } from './lib.js';
 
+export const AI_AGENT_BATCH = 'AI-AGENT-REGISTRATION';
+
 const GROUP_URL_PATTERN = /^https:\/\/chat\.whatsapp\.com\/[A-Za-z0-9_-]+(\?\S*)?$/;
 
 export function groupLinkState(env) {
@@ -11,6 +13,7 @@ export function groupLinkState(env) {
 
 // The reply Adrian copies or opens in WhatsApp. The session is read from lead.course, never guessed.
 export function buildCustomerMessage(lead, env) {
+  if (lead.batch === AI_AGENT_BATCH) return `Hi ${lead.name}, thank you for registering for the AI Agent course. We’ll contact you with class details when available.`;
   const group = groupLinkState(env);
   const lines = [`Hi ${lead.name}，你报名的 ${lead.course} 已经成功了 👍`, ''];
   if (group.state === 'ok') lines.push('请先加入这个WhatsApp Group，我会在里面发送上课链接和提醒：', group.url, '');
@@ -41,6 +44,12 @@ export function parseLeadCode(text) {
 
 // Compact message for Adrian's assistant bot. Everything after this is handled by his agent.
 export function buildLeadNotification(lead, env, { resubmitted = false } = {}) {
+  if (lead.batch === AI_AGENT_BATCH) return {text:[
+    '🔔 新报名｜AI Agent Course', `报名ID：#${leadCode(lead.id)}`, `批次：${AI_AGENT_BATCH}`,
+    `姓名：${htmlEscape(lead.name)}`, `联系号码：${htmlEscape(lead.phone_e164)}`,
+    `公司：${htmlEscape(lead.company)}`, `行业：${htmlEscape(lead.industry)}`,
+    `报名时间：${htmlEscape(formatMalaysiaTime(lead.created_at))}`,
+  ].join('\n')};
   const tools = [lead.ai_tools, lead.ai_tools_other].filter(Boolean).join('、');
   const e = htmlEscape;
   const lines = [
