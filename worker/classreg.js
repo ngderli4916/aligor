@@ -4,7 +4,7 @@ import { redactSecrets } from './notify.js';
 export const REGIONS = ['JOHOR', 'SELANGOR', 'PENANG'];
 // Class sessions offered on the sign-up page. The DB column stays `region` (KL is stored as SELANGOR); only the page wording changes.
 export const CLASS_SESSIONS = [
-  { region: 'JOHOR', city: 'JB', date: '11 月 15 日', day: '星期天', time: '9AM–7PM', place: 'Skudai, Johor' },
+  { region: 'JOHOR', city: 'JB', date: '12 月 13 日', day: '星期天', time: '9AM–7PM', place: 'Skudai, Johor' },
   { region: 'SELANGOR', city: 'KL', date: '11 月 29 日', day: '星期天', time: '9AM–7PM', place: 'Kuala Lumpur（Cheras）' },
 ];
 export const sessionLabel = region => { const s = CLASS_SESSIONS.find(x => x.region === region); return s ? `${s.city} · ${s.date}（${s.day}）· ${s.place}` : region; };
@@ -13,7 +13,7 @@ export const sessionLabel = region => { const s = CLASS_SESSIONS.find(x => x.reg
 export const PACKAGES = {
   solo_1pc: { title: '一个人 · 一台电脑', participants: 1, computers: 1, original: 799, discount: 300, final: 499 },
   pair_1pc: { title: '两个人 · 共用一台电脑', participants: 2, computers: 1, original: 1198, discount: 599, final: 599 },
-  pair_2pc: { title: '两个人 · 各带一台电脑', participants: 2, computers: 2, original: 1498, discount: 639, final: 859 },
+  pair_2pc: { title: '两个人 · 各带一台电脑', participants: 2, computers: 2, original: 1598, discount: 699, final: 899 },
 };
 
 // PROMO_ENDS_AT (ISO time, set in wrangler.jsonc). It controls only the countdown display, never the amount charged.

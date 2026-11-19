@@ -61,9 +61,9 @@ test('3 & 4. packages: server amounts; tampered amounts are ignored; unknown pac
   const a = await register(env, { package: 'solo_1pc', amount: 1, final_amount: 1, discount_amount: 999 });
   const b = await register(env, { package: 'pair_1pc', ...two, phone: '0161111111', amount: 1 });
   const c = await register(env, { package: 'pair_2pc', ...two, phone: '0162222222', final_amount: 1 });
-  assert.deepEqual([a.json.amount, b.json.amount, c.json.amount], [499, 599, 859]);
+  assert.deepEqual([a.json.amount, b.json.amount, c.json.amount], [499, 599, 899]);
   const rs = env.DB.raw.prepare('SELECT package_code,original_amount,discount_amount,final_amount,participant_count,computer_count FROM class_registrations ORDER BY id').all();
-  assert.deepEqual(rs.map(r => [r.original_amount, r.discount_amount, r.final_amount, r.participant_count, r.computer_count]), [[799, 300, 499, 1, 1], [1198, 599, 599, 2, 1], [1498, 639, 859, 2, 2]]);
+  assert.deepEqual(rs.map(r => [r.original_amount, r.discount_amount, r.final_amount, r.participant_count, r.computer_count]), [[799, 300, 499, 1, 1], [1198, 599, 599, 2, 1], [1598, 699, 899, 2, 2]]);
   assert.equal((await register(env, { package: 'free' })).res.status, 400);
 });
 
@@ -150,7 +150,7 @@ test('10. Telegram success: one message, exact content, secrets only from env', 
   const tg = calls.filter(c => c.url.includes('api.telegram.org')); assert.equal(tg.length, 1);
   assert.ok(tg[0].url.endsWith(`/bot${TG}/sendMessage`)); assert.equal(tg[0].body.chat_id, CHAT);
   const t = tg[0].body.text;
-  for (const s of ['新的 Aligor 一天课程报名', '#AICL00001', '60167871902', 'JOHOR', '两个人 · 共用一台电脑', '2 人／1 台', 'Siti &lt;b&gt;', '60123456789', '原价：RM1198', '优惠：RM599', '应付：RM599', '场次：JB · 11 月 15 日', '等待付款', 'https://aligor.test/4916']) assert.ok(t.includes(s), s);
+  for (const s of ['新的 Aligor 一天课程报名', '#AICL00001', '60167871902', 'JOHOR', '两个人 · 共用一台电脑', '2 人／1 台', 'Siti &lt;b&gt;', '60123456789', '原价：RM1198', '优惠：RM599', '应付：RM599', '场次：JB · 12 月 13 日', '等待付款', 'https://aligor.test/4916']) assert.ok(t.includes(s), s);
   assert.ok(!t.includes('/payment') && !t.includes(TG));
   assert.equal(row(env).telegram_notification_status, 'sent');
 });
@@ -199,7 +199,7 @@ test('13. admin: auth required; list, search, filters, CSV, events; no token lea
   assert.equal((await q('?status=payment_confirmed')).registrations.length, 0);
   const all = JSON.stringify(await q('')); assert.ok(!all.includes('payment_token_hash') && !all.includes('idempotency_key'));
   const csv = await (await call(env, 'GET', '/api/admin/class/export.csv', undefined, cookie)).text();
-  assert.ok(csv.includes('AICL00001') && csv.includes('60161111111') && csv.includes('859'));
+  assert.ok(csv.includes('AICL00001') && csv.includes('60161111111') && csv.includes('899'));
   assert.ok(csv.includes(`"'=HYPERLINK(""x"")"`), 'formula injection neutralised');
   assert.ok(!/[0-9a-f]{64}/.test(csv));
   const ev = await (await call(env, 'GET', '/api/admin/class/1/events', undefined, cookie)).json(); assert.equal(ev.events[0].event_type, 'registration_created');
@@ -263,7 +263,7 @@ test('16. the QR asset is a real, sizeable JPEG and the payment page references 
 test('18. registration page, old /register, admin, health still work; migrations are idempotent', async () => {
   const env = makeEnv();
   const reg = await call(env, 'GET', '/classregister', undefined); const h = await reg.text();
-  assert.equal(reg.status, 200); assert.ok(h.includes('RM499') && h.includes('RM859'));
+  assert.equal(reg.status, 200); assert.ok(h.includes('RM499') && h.includes('RM899'));
   assert.ok(!h.includes('pair_1pc') && !h.includes('两个人 · 共用一台电脑') && !h.includes('DOUBLE · SHARE') && !h.includes('RM599'), 'shared-computer couple package is not publicly advertised');
   assert.ok(h.includes('solo_1pc') && h.includes('pair_2pc'), 'solo and two-computer packages remain public');
   assert.ok(!/SpiderMan|Hermes|Demo|DEMO/.test(h)); assert.ok(!h.includes('qr') || !h.includes('duitnow-nili'), 'no QR before submit');
@@ -286,10 +286,10 @@ test('19. countdown: before the deadline the discount applies and the page shows
   const env = makeEnv({ PROMO_ENDS_AT: new Date(Date.now() + 3600e3).toISOString() });
   const page = await (await call(env, 'GET', '/classregister', undefined)).text();
   assert.ok(page.includes('id="promo"') && page.includes('今晚报名倒计时 · 至 12AM') && page.includes('<del>RM799</del>'));
-  assert.ok(page.includes('class="deal"') && !page.includes('今天省') && !page.includes('省 RM') && !page.includes('过了今天，要付') && page.includes('平均每人 RM429.5') && page.includes('id="submit2"') && page.includes('锁定今天的折扣价'));
+  assert.ok(page.includes('class="deal"') && !page.includes('今天省') && !page.includes('省 RM') && !page.includes('过了今天，要付') && page.includes('平均每人 RM449.5') && page.includes('id="submit2"') && page.includes('锁定今天的折扣价'));
   assert.ok(page.indexOf('class="deal"') > page.indexOf('选择上课方式') && page.indexOf('class="deal"') < page.indexOf('id="packages"'), 'deal sits inside the package step, above the packages');
   const { json } = await register(env, { package: 'pair_2pc', second_name: 'Siti', second_phone: '0123456789' });
-  assert.equal(json.amount, 859); assert.equal(row(env).original_amount, 1498); assert.equal(row(env).discount_amount, 639);
+  assert.equal(json.amount, 899); assert.equal(row(env).original_amount, 1598); assert.equal(row(env).discount_amount, 699);
 });
 
 test('20. countdown: after the deadline it disappears but discounted pricing stays unchanged', async () => {
@@ -311,7 +311,7 @@ test('21. countdown: no PROMO_ENDS_AT means no countdown and the discount stays'
 
 test('22. registration page shows the class date and place', async () => {
   const page = await (await call(makeEnv(), 'GET', '/classregister', undefined)).text();
-  assert.ok(page.includes('11 月 15 日') && page.includes('星期天 9AM–7PM') && page.includes('Skudai, Johor') && page.includes('KL · 11 月 29 日') && page.includes('Kuala Lumpur（Cheras）') && !page.includes('地点稍后通知') && !page.includes('星期一') && !page.includes('11 月 30 日') && page.includes('data-region="SELANGOR"') && !page.includes('11 月 1 日') && !page.includes('10 月 18 日') && !page.includes('第二天或第三天'));
+  assert.ok(page.includes('12 月 13 日') && page.includes('星期天 9AM–7PM') && page.includes('Skudai, Johor') && page.includes('KL · 11 月 29 日') && page.includes('Kuala Lumpur（Cheras）') && !page.includes('地点稍后通知') && !page.includes('星期一') && !page.includes('11 月 30 日') && page.includes('data-region="SELANGOR"') && !page.includes('11 月 1 日') && !page.includes('10 月 18 日') && !page.includes('第二天或第三天'));
   assert.ok(page.includes('.package.session .tag{font:900 22px/1'), 'JB and KL labels use the larger city style');
 });
 
