@@ -9,9 +9,16 @@ const path='/api/register-ai-agent';
 const request=(data,headers={})=>new Request('https://course.test'+path,{method:'POST',headers:{'Content-Type':'application/json',...headers},body:JSON.stringify(data)});
 const valid={name:'Test Student',phone:'012 345 6789',company:'Demo & Co',industry:'Retail',batch:'PREVIEW-1118',source:'wrong'};
 
-test('new route is English, standalone, and has the four required fields',async()=>{
+test('registration defaults to Chinese, offers English, and stays standalone',async()=>{
+  const zh=await (await worker.fetch(new Request('https://course.test/register-ai-agent'),{})).text();
+  assert.match(zh,/<html lang="zh-Hans">/);
+  assert.match(zh,/<title>AI Agent 课程报名<\/title>/);
+  assert.match(zh,/11 月 26 日（星期四）/);
+  assert.match(zh,/<button[^>]*>华语<\/button>/);
+  assert.match(zh,/<button[^>]*>English<\/button>/);
+  for (const label of ['姓名','联系电话','公司名称','行业','提交报名']) assert.ok(zh.includes(label));
   for(const suffix of ['','/']){
-    const r=await worker.fetch(new Request('https://course.test/register-ai-agent'+suffix),{});
+    const r=await worker.fetch(new Request('https://course.test/register-ai-agent'+suffix+'?lang=en'),{});
     assert.equal(r.status,200);
     const text=await r.text();
     assert.match(text,/<title>Register for AI Agent<\/title>/);
@@ -20,7 +27,7 @@ test('new route is English, standalone, and has the four required fields',async(
     assert.match(text,/12PM - 4PM/);
     assert.match(text,/Taman Impian Emas/);
     for(const [key,label] of Object.entries({name:'Name',phone:'Contact Number',company:'Company Name',industry:'Industry'})) {
-      assert.match(text,new RegExp(`<label for="${key}">${label}</label><input[^>]+required>`));
+      assert.match(text,new RegExp(`<label for="${key}"[^>]*>${label}</label><input[^>]+required>`));
     }
   }
 });
