@@ -15,7 +15,8 @@ export async function notifyPartnerRegistration(env, leadId) {
       try {
         const response = await fetch(url.href, {
           method:'POST', headers:{'content-type':'application/json',authorization:`Bearer ${secret}`},
-          body, redirect:'error', signal:AbortSignal.timeout(25000)
+          // Workers rejects 'error'; 'manual' keeps the bearer token on this URL.
+          body, redirect:'manual', signal:AbortSignal.timeout(25000)
         });
         if (response.ok) return;
         if (response.status < 500) break;

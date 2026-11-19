@@ -4,6 +4,24 @@ import { DatabaseSync } from 'node:sqlite';
 import {readFileSync} from 'node:fs';
 import worker from '../index.js';
 import {buildCustomerMessage} from '../notify.js';
+import {notifyPartnerRegistration} from '../partner-webhook.js';
+
+test('partner webhook uses Workers-compatible fetch without following redirects', async (t) => {
+  const endpoint = 'https://hooks.example.test/webhook/aligor-partner-registration';
+  const attempts = [], received = [];
+  t.mock.method(console, 'error', () => {});
+  t.mock.method(globalThis, 'fetch', async (url, options) => {
+    attempts.push(url);
+    // Unlike Node fetch, workerd throws before sending when redirect is 'error'.
+    if (!['manual', 'follow'].includes(options.redirect)) throw new TypeError('Unsupported redirect mode');
+    received.push(url);
+    if (options.redirect === 'follow') received.push('https://other.example.test/');
+    return Response.redirect('https://other.example.test/', 307);
+  });
+  await notifyPartnerRegistration({PARTNER_SIGNUP_WEBHOOK_URL:endpoint,PARTNER_SIGNUP_WEBHOOK_SECRET:'fixture-secret'}, 999);
+  assert.deepEqual(received, [endpoint]);
+  assert.deepEqual(attempts, [endpoint]);
+});
 
 const path='/api/register-ai-agent';
 const request=(data,headers={})=>new Request('https://course.test'+path,{method:'POST',headers:{'Content-Type':'application/json',...headers},body:JSON.stringify(data)});
