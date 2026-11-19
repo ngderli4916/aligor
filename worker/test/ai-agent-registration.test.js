@@ -16,6 +16,9 @@ test('new route is English, standalone, and has the four required fields',async(
     const text=await r.text();
     assert.match(text,/<title>Register for AI Agent<\/title>/);
     assert.doesNotMatch(text,/aligor|阿理哥|阿里哥|preview/i);
+    assert.match(text,/Thursday, 26 November 2026/);
+    assert.match(text,/12PM - 4PM/);
+    assert.match(text,/Taman Impian Emas/);
     for(const [key,label] of Object.entries({name:'Name',phone:'Contact Number',company:'Company Name',industry:'Industry'})) {
       assert.match(text,new RegExp(`<label for="${key}">${label}</label><input[^>]+required>`));
     }
