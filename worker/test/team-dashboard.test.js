@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import worker from '../index.js';
-import { TEAM_DASHBOARD_API, TEAM_DASHBOARD_PATH, malaysiaTime, phoneLast4 } from '../team-dashboard.js';
+import { TEAM_DASHBOARD_API, TEAM_DASHBOARD_PATH, malaysiaTime, displayPhone, whatsappUrl } from '../team-dashboard.js';
 import { TEAM_DOMAIN, MEMBER, STRANGER, memoryDb, seedLeads, accessKeys, teamEnv } from './team-access-fixture.mjs';
 
 const keys = await accessKeys();
@@ -18,6 +18,9 @@ const get = (path, token, headers = {}) => new Request(ORIGIN + path, { headers:
 const ALL_PHONES = ['60100000101', '60100000202', '60100000303', '60100000404', '60100000505', '60100000606'];
 const assertNoFullPhone = text => { for (const phone of ALL_PHONES) { assert.ok(!text.includes(phone), `full phone leaked: ${phone}`); assert.ok(!text.includes(phone.slice(2)), 'local phone leaked'); } };
 const assertNoLeadData = text => { assertNoFullPhone(text); for (const word of ['甲 同学', 'Beta Sample', 'Sample Works', 'AIPR']) assert.ok(!text.includes(word), `lead data leaked: ${word}`); };
+// Allowed responses carry this course's numbers only; other batches/sources/cancelled never appear.
+const OTHER_PHONES = ['60100000303', '60100000404', '60100000505', '60100000606'];
+const assertOnlyCoursePhones = text => { for (const phone of OTHER_PHONES) assert.ok(!text.includes(phone.slice(2)), `non-course phone leaked: ${phone}`); };
 const assertNoStore = res => { assert.match(res.headers.get('cache-control'), /no-store/); assert.match(res.headers.get('cache-control'), /private/); assert.equal(res.headers.get('x-robots-tag'), 'noindex, nofollow'); };
 
 function setup() { const { raw, DB } = memoryDb(); seedLeads(raw); return { raw, env: teamEnv(DB) }; }
@@ -65,13 +68,13 @@ test('member sees only valid registrations for this course, newest first, with m
   const { env } = setup();
   const res = await worker.fetch(get(`${TEAM_DASHBOARD_API}?batch=PREVIEW-1118&source=aligor&status=cancelled`, await keys.sign({ email: 'LEAD.TWO@example.test' })), env);
   assert.equal(res.status, 200); assertNoStore(res);
-  const text = await res.text(); assertNoFullPhone(text);
+  const text = await res.text(); assertOnlyCoursePhones(text);
   const data = JSON.parse(text);
   assert.equal(data.total, 2);
   assert.equal(data.registrations.length, data.total);
   assert.deepEqual(data.registrations.map(r => r.name), ['Beta Sample', '甲 同学']);
-  assert.deepEqual(Object.keys(data.registrations[0]).sort(), ['code', 'company', 'industry', 'name', 'phone_last4', 'registered_at', 'registered_at_myt']);
-  assert.deepEqual(data.registrations[0], { code: '#AIPR00002', name: 'Beta Sample', company: 'Sample Works', industry: 'Manufacturing', phone_last4: '0202', registered_at: '2026-11-19T05:30:00.000Z', registered_at_myt: '2026-11-19 13:30' });
+  assert.deepEqual(Object.keys(data.registrations[0]).sort(), ['code', 'company', 'industry', 'name', 'phone', 'registered_at', 'registered_at_myt', 'whatsapp_url']);
+  assert.deepEqual(data.registrations[0], { code: '#AIPR00002', name: 'Beta Sample', company: 'Sample Works', industry: 'Manufacturing', phone: '+60 100000202', whatsapp_url: 'https://wa.me/60100000202', registered_at: '2026-11-19T05:30:00.000Z', registered_at_myt: '2026-11-19 13:30' });
   assert.equal(data.registrations[1].registered_at_myt, '2026-11-18 10:00');
   for (const hidden of ['Cancelled Person', 'Preview Only', 'Wrong Source', 'Class Lead']) assert.ok(!text.includes(hidden));
 });
@@ -86,7 +89,8 @@ test('page shell for a member carries no lead data and no full numbers', async (
   for (const label of ['有效报名', '搜索姓名或公司', '刷新', '报名 ID', '报名时间（UTC+8）', '目前还没有人报名', '读取失败']) assert.ok(html.includes(label), label);
   assertNoLeadData(html);
   assert.ok(!/setInterval|setTimeout/.test(html), 'no polling');
-  assert.ok(!/\b(edit|delete|export|csv|wa\.me|whatsapp)\b/i.test(html), 'read-only page');
+  assert.ok(!/\b(edit|delete|export|csv)\b/i.test(html), 'read-only page');
+  assert.match(html, /a\.rel='noopener noreferrer'/);
 });
 
 test('a new public registration shows up on the next refresh; cancelling removes it from the count', async () => {
@@ -98,7 +102,8 @@ test('a new public registration shows up on the next refresh; cancelling removes
   const after = await (await worker.fetch(get(TEAM_DASHBOARD_API, token), env)).json();
   assert.equal(after.total, before.total + 1);
   assert.equal(after.registrations[0].name, 'Newest Synthetic');
-  assert.equal(after.registrations[0].phone_last4, '0909');
+  assert.equal(after.registrations[0].phone, '+60 1000000909');
+  assert.equal(after.registrations[0].whatsapp_url, 'https://wa.me/601000000909');
   raw.prepare("UPDATE leads SET status='cancelled' WHERE name='Newest Synthetic'").run();
   const cancelled = await (await worker.fetch(get(TEAM_DASHBOARD_API, token), env)).json();
   assert.equal(cancelled.total, before.total);
@@ -132,8 +137,10 @@ test('Access key rotation is picked up; non-GET is rejected', async () => {
 });
 
 test('helpers', () => {
-  assert.equal(phoneLast4('60123456789'), '6789');
-  assert.equal(phoneLast4(''), '');
+  assert.equal(displayPhone('60123456789'), '+60 123456789');
+  assert.equal(displayPhone(''), '');
+  assert.equal(whatsappUrl('60123456789'), 'https://wa.me/60123456789');
+  assert.equal(whatsappUrl('abc'), '');
   assert.equal(malaysiaTime('2026-11-19T16:30:00.000Z'), '2026-11-20 00:30');
   assert.equal(malaysiaTime('nope'), '');
 });
@@ -147,7 +154,8 @@ test('shared link: correct key reads the course list; missing, wrong or partial 
   const { raw, DB } = memoryDb(); seedLeads(raw); const env = linkEnv(DB);
   const ok = await worker.fetch(withKey(TEAM_DASHBOARD_API, LINK_KEY), env);
   assert.equal(ok.status, 200); assertNoStore(ok);
-  const text = await ok.text(); assertNoFullPhone(text);
+  const text = await ok.text(); assertOnlyCoursePhones(text);
+  assert.ok(text.includes('https://wa.me/60100000202'));
   const data = JSON.parse(text);
   assert.equal(data.total, 2); assert.deepEqual(data.registrations.map(r => r.name), ['Beta Sample', '甲 同学']);
   for (const hidden of ['Cancelled Person', 'Preview Only', 'Wrong Source', 'Class Lead']) assert.ok(!text.includes(hidden));
@@ -191,4 +199,11 @@ test('shared link and Access can coexist; a wrong link key does not fall through
   assert.equal((await worker.fetch(withKey(TEAM_DASHBOARD_API, LINK_KEY), env)).status, 200);
   const mixed = new Request(ORIGIN + TEAM_DASHBOARD_API, { headers: { 'x-team-link-key': 'wrong', 'cf-access-jwt-assertion': await keys.sign() } });
   assert.equal((await worker.fetch(mixed, env)).status, 401);
+});
+
+test('page script parses as valid JavaScript', async () => {
+  const { DB } = memoryDb();
+  const html = await (await worker.fetch(new Request(ORIGIN + TEAM_DASHBOARD_PATH), { DB, TEAM_DASHBOARD_LINK_KEY: LINK_KEY })).text();
+  const script = html.match(/<script>([\s\S]*)<\/script>/)[1];
+  assert.doesNotThrow(() => new Function(script));
 });

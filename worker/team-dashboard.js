@@ -74,7 +74,8 @@ export async function listCourseRegistrations(env) {
       name: String(row.name || ''),
       company: String(row.company || ''),
       industry: String(row.industry || ''),
-      phone_last4: phoneLast4(row.phone_e164),
+      phone: displayPhone(row.phone_e164),
+      whatsapp_url: whatsappUrl(row.phone_e164),
       registered_at: String(row.created_at || ''),
       registered_at_myt: malaysiaTime(row.created_at),
     })),
@@ -82,9 +83,16 @@ export async function listCourseRegistrations(env) {
   };
 }
 
-export function phoneLast4(phone) {
+// Adrian's decision (2026-11-20): the team sees full numbers and a WhatsApp link per person.
+export function displayPhone(phone) {
   const digits = String(phone || '').replace(/\D/g, '');
-  return digits.length >= 4 ? digits.slice(-4) : '';
+  if (!digits) return '';
+  return digits.startsWith('60') ? `+60 ${digits.slice(2)}` : `+${digits}`;
+}
+
+export function whatsappUrl(phone) {
+  const digits = String(phone || '').replace(/\D/g, '');
+  return /^\d{8,15}$/.test(digits) ? `https://wa.me/${digits}` : '';
 }
 
 export function malaysiaTime(iso) {
@@ -211,14 +219,15 @@ input:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline
 .count{color:var(--muted);font-size:.85rem;margin:0 0 8px}
 table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
 th,td{text-align:left;padding:.7rem .85rem;border-bottom:1px solid var(--line);vertical-align:top}th{font-size:.78rem;color:var(--muted);font-weight:650;background:color-mix(in srgb,var(--card) 92%,var(--ink))}tr:last-child td{border-bottom:0}
-td.code,td.phone,td.time{font-variant-numeric:tabular-nums;white-space:nowrap}td.code{font-weight:650}
+td.code,td.phone,td.time{font-variant-numeric:tabular-nums;white-space:nowrap}
+a.wa{display:inline-flex;align-items:center;margin-left:10px;padding:.3rem .7rem;min-height:32px;border-radius:999px;background:#25d366;color:#06240f;font-size:.82rem;font-weight:700;text-decoration:none;vertical-align:middle}a.wa:hover{background:#4be083}a.wa:focus-visible{outline:3px solid var(--accent);outline-offset:2px}td.code{font-weight:650}
 .empty{background:var(--card);border:1px dashed var(--line);border-radius:14px;padding:2rem 1rem;text-align:center;color:var(--muted)}
 footer{max-width:1100px;margin:0 auto;padding:16px;color:var(--muted);font-size:.78rem}
 @media(max-width:720px){
  table,tbody{display:block;width:100%}td{display:block;min-width:0;overflow-wrap:anywhere}table{background:none;border:0}thead{display:none}
  tr{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:0 0 10px;display:grid;grid-template-columns:1fr auto;gap:2px 12px}
  td{border:0;padding:0}td.name{grid-column:1;font-weight:700;font-size:1.05rem}td.code{grid-column:2;grid-row:1;text-align:right;color:var(--muted);font-size:.85rem;white-space:nowrap}
- td.company,td.industry,td.phone,td.time{grid-column:1/-1;font-size:.9rem}td[data-label]:before{content:attr(data-label)"：";color:var(--muted)}
+ td.company,td.industry,td.phone,td.time{grid-column:1/-1;font-size:.9rem}td.phone{display:flex;align-items:center;flex-wrap:wrap;gap:6px}td.phone a.wa{margin-left:auto;min-height:40px;padding:.45rem 1rem}td[data-label]:before{content:attr(data-label)"：";color:var(--muted)}
 }
 [hidden]{display:none!important}
 </style></head><body>
@@ -228,16 +237,17 @@ footer{max-width:1100px;margin:0 auto;padding:16px;color:var(--muted);font-size:
 <p id="notice" class="notice" role="alert"></p><p id="count" class="count"></p>
 <div id="empty" class="empty" hidden></div>
 <table id="table" hidden><thead><tr><th>报名 ID</th><th>姓名</th><th>公司</th><th>行业</th><th>联系电话</th><th>报名时间（UTC+8）</th></tr></thead><tbody id="rows"></tbody></table></main>
-<footer>只显示「AI 个人助理」课程的有效报名（已排除取消）。电话只显示尾四位。</footer>
+<footer>只显示「AI 个人助理」课程的有效报名（已排除取消）。名单含完整电话，请勿把本页链接转发到团队以外。</footer>
 <script>
 const $=s=>document.querySelector(s),q=$('#q'),btn=$('#refresh'),rows=$('#rows'),table=$('#table'),empty=$('#empty'),notice=$('#notice'),count=$('#count');
 let list=[],loaded=false;
 let linkKey=new URLSearchParams(location.hash.slice(1)).get('k');
 const cell=(cls,text,label)=>{const td=document.createElement('td');td.className=cls;td.textContent=text;if(label)td.dataset.label=label;return td};
+const phoneCell=r=>{const td=cell('phone',r.phone||'—','电话');if(typeof r.whatsapp_url==='string'&&r.whatsapp_url.startsWith('https://wa.me/')){const a=document.createElement('a');a.className='wa';a.href=r.whatsapp_url;a.target='_blank';a.rel='noopener noreferrer';a.textContent='WhatsApp';a.setAttribute('aria-label','WhatsApp '+r.name);td.append(a)}return td};
 function render(){
   const term=q.value.trim().toLowerCase();
   const shown=term?list.filter(r=>r.name.toLowerCase().includes(term)||r.company.toLowerCase().includes(term)):list;
-  rows.replaceChildren(...shown.map(r=>{const tr=document.createElement('tr');tr.append(cell('code',r.code),cell('name',r.name),cell('company',r.company||'—','公司'),cell('industry',r.industry||'—','行业'),cell('phone',r.phone_last4?'•••• '+r.phone_last4:'—','电话'),cell('time',r.registered_at_myt,'报名时间'));return tr}));
+  rows.replaceChildren(...shown.map(r=>{const tr=document.createElement('tr');tr.append(cell('code',r.code),cell('name',r.name),cell('company',r.company||'—','公司'),cell('industry',r.industry||'—','行业'),phoneCell(r),cell('time',r.registered_at_myt,'报名时间'));return tr}));
   const none=loaded&&!shown.length;
   table.hidden=!shown.length;empty.hidden=!none;
   empty.textContent=list.length?'没有符合「'+q.value.trim()+'」的报名。':'目前还没有人报名。';
