@@ -30,8 +30,8 @@ const valid={name:'Test Student',phone:'012 345 6789',company:'Demo & Co',indust
 test('registration defaults to Chinese, offers English, and stays standalone',async()=>{
   const zh=await (await worker.fetch(new Request('https://course.test/register-ai-agent'),{})).text();
   assert.match(zh,/<html lang="zh-Hans">/);
-  assert.match(zh,/<title>AI 个人助理｜课程报名<\/title>/);
-  assert.match(zh,/<h1>.*<em data-copy="theme">AI 个人助理<\/em><\/h1>/);
+  assert.match(zh,/<title>AI 助理｜课程报名<\/title>/);
+  assert.match(zh,/<h1>.*<em data-copy="theme">AI 助理<\/em><\/h1>/);
   assert.match(zh,/11 月 26 日（星期四）/);
   assert.match(zh,/<button[^>]*>华语<\/button>/);
   assert.match(zh,/<button[^>]*>English<\/button>/);

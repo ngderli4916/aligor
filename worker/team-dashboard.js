@@ -231,13 +231,13 @@ footer{max-width:1100px;margin:0 auto;padding:16px;color:var(--muted);font-size:
 }
 [hidden]{display:none!important}
 </style></head><body>
-<header><p class="eyebrow">团队看板 · 只读</p><h1>AI 个人助理｜报名名单</h1>
+<header><p class="eyebrow">团队看板 · 只读</p><h1>AI 助理｜报名名单</h1>
 <section class="summary" aria-live="polite"><p class="total"><span>有效报名</span><b id="total">—</b></p><p class="meta" id="meta">读取中…</p></section></header>
 <main><div class="tools"><input id="q" type="search" placeholder="搜索姓名或公司" aria-label="搜索姓名或公司" autocomplete="off"><button id="refresh" type="button">刷新</button></div>
 <p id="notice" class="notice" role="alert"></p><p id="count" class="count"></p>
 <div id="empty" class="empty" hidden></div>
 <table id="table" hidden><thead><tr><th>报名 ID</th><th>姓名</th><th>公司</th><th>行业</th><th>联系电话</th><th>报名时间（UTC+8）</th></tr></thead><tbody id="rows"></tbody></table></main>
-<footer>只显示「AI 个人助理」课程的有效报名（已排除取消）。名单含完整电话，请勿把本页链接转发到团队以外。</footer>
+<footer>只显示「AI 助理」课程的有效报名（已排除取消）。名单含完整电话，请勿把本页链接转发到团队以外。</footer>
 <script>
 const $=s=>document.querySelector(s),q=$('#q'),btn=$('#refresh'),rows=$('#rows'),table=$('#table'),empty=$('#empty'),notice=$('#notice'),count=$('#count');
 let list=[],loaded=false;
