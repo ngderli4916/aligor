@@ -43,9 +43,11 @@ export function parseLeadCode(text) {
 }
 
 // Compact message for Adrian's assistant bot. Everything after this is handled by his agent.
-export function buildLeadNotification(lead, env, { resubmitted = false } = {}) {
+export function buildLeadNotification(lead, env, { resubmitted = false, registrationCount = null } = {}) {
   if (lead.batch === AI_AGENT_BATCH) return {text:[
-    '🔔 新报名｜AI Agent Course', `报名ID：#${leadCode(lead.id)}`, `批次：${AI_AGENT_BATCH}`,
+    '🔔 新报名｜AI Agent Course',
+    Number.isSafeInteger(registrationCount) && registrationCount >= 0 ? `目前已有 ${registrationCount} 人报名` : '目前报名人数：暂未取得',
+    `报名ID：#${leadCode(lead.id)}`, `批次：${AI_AGENT_BATCH}`,
     `姓名：${htmlEscape(lead.name)}`, `联系号码：${htmlEscape(lead.phone_e164)}`,
     `公司：${htmlEscape(lead.company)}`, `行业：${htmlEscape(lead.industry)}`,
     `报名时间：${htmlEscape(formatMalaysiaTime(lead.created_at))}`,

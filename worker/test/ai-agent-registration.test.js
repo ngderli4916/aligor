@@ -73,7 +73,7 @@ test('stores a separate CRM lead, sends one operator notification and keeps Prev
   const lead=rows[1]; assert.equal(lead.batch,'AI-AGENT-REGISTRATION');assert.equal(lead.source,'ai-agent-registration');assert.equal(lead.phone_e164,'60123456789');assert.equal(lead.company,'Demo & Co');assert.equal(lead.industry,'Retail');assert.equal(lead.consent_whatsapp,0);
   assert.equal(calls.length,2);
   const [,telegram]=calls.find(([url])=>/\/sendMessage$/.test(url));
-  assert.equal(telegram.chat_id,'test-chat');assert.match(telegram.text,/AI Agent Course[\s\S]*Test Student[\s\S]*60123456789[\s\S]*Demo &amp; Co[\s\S]*Retail/);assert.doesNotMatch(telegram.text,/Preview/);
+  assert.equal(telegram.chat_id,'test-chat');assert.match(telegram.text,/AI Agent Course[\s\S]*Test Student[\s\S]*60123456789[\s\S]*Demo &amp; Co[\s\S]*Retail/);assert.doesNotMatch(telegram.text,/Preview/);assert.match(telegram.text,/^目前已有 1 人报名$/m);
   const hook=calls.find(([url])=>String(url)===env.PARTNER_SIGNUP_WEBHOOK_URL);
   assert.deepEqual(hook?.[1],{event:'aligor.partner-registration.created',leadId:lead.id});
   assert.deepEqual(raw.prepare('SELECT event_type FROM lead_events ORDER BY id').all().map(x=>x.event_type),['submitted','telegram_sent']);

@@ -296,7 +296,8 @@ async function handleCommand(env,chatId,text) {
 async function notifyNewLead(env,lead,options={}) {
   if(!env.TELEGRAM_BOT_TOKEN||!env.TELEGRAM_CHAT_ID){await safeEvent(env,lead.id,'telegram_skipped','system','missing_telegram_config');return;}
   try{
-    const {text}=buildLeadNotification(lead,env,options);
+    const registrationCount=lead.batch===AI_AGENT_BATCH ? await countAiAgentRegistrations(env) : null;
+    const {text}=buildLeadNotification(lead,env,{...options,registrationCount});
     const response=await sendText(env,env.TELEGRAM_CHAT_ID,text);
     if(!response||!response.ok)throw new Error(`telegram_http_${response?.status??'none'}`);
     await safeEvent(env,lead.id,'telegram_sent','system','');
