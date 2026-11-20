@@ -9,7 +9,7 @@ import { InvoiceError, createInvoice, updateInvoice, invoiceAction, deleteInvoic
 import { invoicePage, invalidInvoicePage } from './invoiceui.js';
 import { META_CSP_SCRIPT, META_CSP_CONNECT, META_CSP_IMG, adSource, sendLeadToMeta } from './meta.js';
 import { previewAccessPage, verifyPreviewAccess } from './previewaccess.js';
-import { aiAgentRegistrationPage, saveAiAgentRegistration } from './ai-agent-registration.js';
+import { aiAgentRegistrationPage, countAiAgentRegistrations, saveAiAgentRegistration } from './ai-agent-registration.js';
 import { notifyPartnerRegistration } from './partner-webhook.js';
 import { isTeamDashboardPath, teamDashboardRoute } from './team-dashboard.js';
 
@@ -34,7 +34,7 @@ async function route(request, env, ctx) {
   }
   if (request.method==='GET' && path==='/classregister') return html(classRegisterPage(currentPackages(env),promoState(env)),{'cache-control':'no-store'});
   if (request.method==='GET' && ['/register-ai-agent','/register-ai-agent/'].includes(path)) {
-    return html(aiAgentRegistrationPage(url.searchParams.get('lang')),{'cache-control':'no-store','referrer-policy':'no-referrer'},"default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'");
+    return html(aiAgentRegistrationPage(url.searchParams.get('lang'),await countAiAgentRegistrations(env)),{'cache-control':'no-store','referrer-policy':'no-referrer'},"default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'");
   }
   if (request.method==='GET' && path==='/preview-live') return html(previewAccessPage(),{'cache-control':'no-store','x-robots-tag':'noindex, nofollow','referrer-policy':'no-referrer'});
   if (request.method==='GET' && path==='/survey') {
