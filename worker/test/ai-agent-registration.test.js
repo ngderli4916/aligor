@@ -79,3 +79,31 @@ test('stores a separate CRM lead, sends one operator notification and keeps Prev
   assert.deepEqual(raw.prepare('SELECT event_type FROM lead_events ORDER BY id').all().map(x=>x.event_type),['submitted','telegram_sent']);
   assert.doesNotMatch(buildCustomerMessage(lead,{WHATSAPP_GROUP_URL:'https://chat.whatsapp.com/shouldnotshow'}),/https:\/\//);
 });
+
+test('only one of two last-seat requests succeeds and a full class has no usable form', async(t)=>{
+  const raw=new DatabaseSync(':memory:');t.after(()=>raw.close());
+  raw.exec(readFileSync(new URL('./schema.sql',import.meta.url),'utf8'));
+  const seed=raw.prepare('INSERT INTO leads(public_id,name,phone_e164,batch,source,status,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?)');
+  for(let i=0;i<19;i++)seed.run(`p${i}`,'Fixture',`601100000${i.toString().padStart(2,'0')}`,'AI-AGENT-REGISTRATION','ai-agent-registration','new','a','a');
+  seed.run('cancelled','Fixture','60125555555','AI-AGENT-REGISTRATION','ai-agent-registration','cancelled','a','a');
+  seed.run('other','Fixture','60126666666','PREVIEW-1118','aligor','new','a','a');
+  const DB={prepare(sql){return{bind(...args){return{first:async()=>raw.prepare(sql).get(...args)??null,run:async()=>raw.prepare(sql).run(...args)};}};}};
+  const calls=[];
+  t.mock.method(globalThis,'fetch',async(url)=>{calls.push(url);return new Response('{}',{status:200});});
+  const env={DB,TELEGRAM_BOT_TOKEN:'fixture',TELEGRAM_CHAT_ID:'fixture',PARTNER_SIGNUP_WEBHOOK_URL:'https://hooks.example.test/webhook/aligor-partner-registration',PARTNER_SIGNUP_WEBHOOK_SECRET:'fixture'};
+  const results=await Promise.all(['012 345 6789','012 987 6543'].map(phone=>worker.fetch(request({...valid,phone}),env)));
+  assert.deepEqual(results.map(r=>r.status).sort(),[200,409]);
+  assert.equal((await results.find(r=>r.status===409).json()).code,'registration_full');
+  assert.equal(raw.prepare("SELECT count(*) n FROM leads WHERE batch='AI-AGENT-REGISTRATION' AND status!='cancelled'").get().n,20);
+  assert.equal(calls.length,2);
+  for(const [suffix,copy] of [['','本期报名已满，请下次再来报名。'],['?lang=en','This class is full. Please register for the next session.']]){
+    const response=await worker.fetch(new Request('https://course.test/register-ai-agent'+suffix),env);
+    const text=await response.text();
+    assert.match(text,/<form id="registration"[^>]*\shidden>/);
+    assert.ok(text.includes(`<p data-copy="fullMessage">${copy}</p>`));
+  }
+  raw.prepare("UPDATE leads SET status='cancelled' WHERE public_id='p0'").run();
+  const reopened=await worker.fetch(new Request('https://course.test/register-ai-agent'),env);
+  assert.doesNotMatch(await reopened.text(),/<form id="registration"[^>]*\shidden>/);
+  assert.equal((await worker.fetch(request({...valid,phone:'012 333 5555'}),env)).status,200);
+});

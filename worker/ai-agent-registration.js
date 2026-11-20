@@ -4,6 +4,12 @@ import { AI_AGENT_BATCH } from './notify.js';
 
 const SOURCE = 'ai-agent-registration';
 const COURSE = 'AI Agent Course';
+const CAPACITY = 20;
+const ACTIVE_SCOPE = "batch=? AND source=? AND status!='cancelled'";
+const FULL_COPY = {
+  zh:{fullTitle:'报名已满',fullMessage:'本期报名已满，请下次再来报名。'},
+  en:{fullTitle:'Registration full',fullMessage:'This class is full. Please register for the next session.'},
+};
 
 export async function saveAiAgentRegistration(request, env) {
   const failure = (error, status=400) => ({body:{ok:false,error},status});
@@ -35,8 +41,15 @@ export async function saveAiAgentRegistration(request, env) {
   catch { return failure('Enter a valid Malaysian contact number.'); }
   const stamp=new Date().toISOString();
   const lead=await env.DB.prepare(`INSERT INTO leads(public_id,name,phone_e164,batch,course,company,industry,source,status,consent_whatsapp,created_at,updated_at)
-    VALUES(?,?,?,?,?,?,?,?,'new',0,?,?) ON CONFLICT(phone_e164,batch) DO NOTHING RETURNING id,name,phone_e164,batch,course,company,industry,created_at`)
-    .bind(crypto.randomUUID().slice(0,8).toUpperCase(),name,phone,AI_AGENT_BATCH,COURSE,company,industry,SOURCE,stamp,stamp).first();
+    SELECT ?,?,?,?,?,?,?,?,'new',0,?,? WHERE (SELECT COUNT(*) FROM leads WHERE ${ACTIVE_SCOPE}) < ?
+    ON CONFLICT(phone_e164,batch) DO NOTHING RETURNING id,name,phone_e164,batch,course,company,industry,created_at`)
+    .bind(crypto.randomUUID().slice(0,8).toUpperCase(),name,phone,AI_AGENT_BATCH,COURSE,company,industry,SOURCE,stamp,stamp,AI_AGENT_BATCH,SOURCE,CAPACITY).first();
+  if (!lead) {
+    const duplicate = await env.DB.prepare('SELECT 1 AS known FROM leads WHERE phone_e164=? AND batch=?').bind(phone,AI_AGENT_BATCH).first();
+    if (!duplicate || (await countAiAgentRegistrations(env)) >= CAPACITY) {
+      return {status:409,body:{ok:false,code:'registration_full',error:FULL_COPY.en.fullMessage}};
+    }
+  }
   // Identical public response for new and repeated numbers; only new leads notify.
   return {status:200,body:{ok:true},lead};
 }
@@ -45,7 +58,7 @@ export async function saveAiAgentRegistration(request, env) {
 export async function countAiAgentRegistrations(env) {
   if (!env?.DB) return null;
   try {
-    const row=await env.DB.prepare("SELECT COUNT(*) AS n FROM leads WHERE batch=? AND source=? AND status!='cancelled'").bind(AI_AGENT_BATCH,SOURCE).first();
+    const row=await env.DB.prepare(`SELECT COUNT(*) AS n FROM leads WHERE ${ACTIVE_SCOPE}`).bind(AI_AGENT_BATCH,SOURCE).first();
     const n=Number(row?.n);
     return Number.isInteger(n)&&n>=0?n:null;
   } catch { console.error('ai_agent_count_failed'); return null; }
@@ -57,7 +70,8 @@ const COPY={
 };
 
 export function aiAgentRegistrationPage(language, count=null) {
-  const initial=language==='en'?'en':'zh', t=COPY[initial];
+  const initial=language==='en'?'en':'zh', t={...COPY[initial],...FULL_COPY[initial]};
+  const full=Number.isInteger(count)&&count>=CAPACITY;
   const n=Number.isInteger(count)&&count>0?count:0, countText=n?t[n===1?'countOne':'countMany'].replace('{n}',String(n)):'';
   return `<!doctype html><html lang="${t.lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${t.title}</title><meta name="description" content="${t.description}">
 <style>
@@ -68,20 +82,21 @@ main{min-height:calc(100svh - 72px);padding-top:2rem}.language{max-width:1170px;
 </style></head><body><nav class="language" aria-label="Language / 语言"><button type="button" lang="zh-Hans" data-language="zh" aria-pressed="${initial==='zh'}">华语</button><button type="button" lang="en" data-language="en" aria-pressed="${initial==='en'}">English</button></nav>
 <main><header><p class="eyebrow" data-copy="eyebrow">${t.eyebrow}</p><h1><em data-copy="theme">${t.theme}</em></h1><p class="intro" data-copy="intro">${t.intro}</p>
 <dl class="class-details"><div><dt data-copy="dateLabel">${t.dateLabel}</dt><dd><time datetime="2026-11-26" data-copy="date">${t.date}</time></dd></div><div><dt data-copy="timeLabel">${t.timeLabel}</dt><dd>12PM - 4PM</dd></div><div><dt data-copy="locationLabel">${t.locationLabel}</dt><dd>Taman Impian Emas</dd></div></dl>${n?`<p class="headcount" data-count="${n}">${countText.replace(String(n),`<strong>${n}</strong>`)}</p>`:''}</header>
-<section class="card"><form id="registration" method="post" action="/api/register-ai-agent"><h2 data-copy="details">${t.details}</h2>
+<section class="card"><form id="registration" method="post" action="/api/register-ai-agent"${full?' hidden':''}><h2 data-copy="details">${t.details}</h2>
 <div class="field"><label for="name" data-copy="name">${t.name}</label><input id="name" name="name" autocomplete="name" maxlength="80" required></div>
 <div class="field"><label for="phone" data-copy="phone">${t.phone}</label><input id="phone" name="phone" type="tel" autocomplete="tel" maxlength="32" placeholder="${t.phoneHint}" data-hint="phoneHint" required></div>
 <div class="field"><label for="company" data-copy="company">${t.company}</label><input id="company" name="company" autocomplete="organization" maxlength="100" required></div>
 <div class="field"><label for="industry" data-copy="industry">${t.industry}</label><input id="industry" name="industry" maxlength="80" placeholder="${t.industryHint}" data-hint="industryHint" required></div>
 <div class="trap" aria-hidden="true"><label for="website">Leave this blank</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>
 <p class="privacy" data-copy="privacy">${t.privacy}</p><button type="submit">${t.submit}</button><p id="feedback" role="alert"></p><noscript>${t.noscript}</noscript></form>
-<div id="done" role="status" tabindex="-1" hidden><h2 data-copy="done">${t.done}</h2><p data-copy="thanks">${t.thanks}</p></div></section></main>
+<div id="done" role="status" tabindex="-1" hidden><h2 data-copy="done">${t.done}</h2><p data-copy="thanks">${t.thanks}</p></div>
+<div id="full" role="status" tabindex="-1"${full?'':' hidden'}><h2 data-copy="fullTitle">${t.fullTitle}</h2><p data-copy="fullMessage">${t.fullMessage}</p></div></section></main>
 <script>
 const form=document.querySelector('#registration'),button=form.querySelector('button'),feedback=document.querySelector('#feedback'),done=document.querySelector('#done');
-const copy=${JSON.stringify(COPY)}, switches=document.querySelectorAll('[data-language]');
+const copy=${JSON.stringify({zh:{...COPY.zh,...FULL_COPY.zh},en:{...COPY.en,...FULL_COPY.en}})}, switches=document.querySelectorAll('[data-language]'), full=document.querySelector('#full');
 let language='${initial}', errorKey='';
 function render(){const t=copy[language]; document.documentElement.lang=t.lang;document.title=t.title;document.querySelector('meta[name=description]').content=t.description;document.querySelectorAll('[data-copy]').forEach(el=>el.textContent=t[el.dataset.copy]);document.querySelectorAll('[data-hint]').forEach(el=>el.placeholder=t[el.dataset.hint]);switches.forEach(el=>el.setAttribute('aria-pressed',String(el.dataset.language===language)));button.textContent=t[button.disabled?'sending':'submit'];feedback.textContent=errorKey?t[errorKey]:'';const hc=document.querySelector('[data-count]');if(hc){const n=Number(hc.dataset.count),[a,b]=t[n===1?'countOne':'countMany'].split('{n}'),s=document.createElement('strong');s.textContent=n;hc.replaceChildren(a,s,b);}}
 switches.forEach(el=>el.addEventListener('click',()=>{language=el.dataset.language;render();const url=new URL(location.href);if(language==='en')url.searchParams.set('lang','en');else url.searchParams.delete('lang');history.replaceState(null,'',url); }));
-form.addEventListener('submit',async e=>{e.preventDefault();if(button.disabled)return;button.disabled=true;errorKey='';render();try{const res=await fetch(form.action,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.fromEntries(new FormData(form)))});const data=await res.json();if(!res.ok||!data.ok){errorKey=data.error===copy.en.phoneError?'phoneError':data.error===copy.en.requiredError?'requiredError':'failed';return;}form.reset();form.hidden=true;done.hidden=false;done.focus();}catch{errorKey='failed';}finally{button.disabled=false;render();}});
+form.addEventListener('submit',async e=>{e.preventDefault();if(button.disabled||form.hidden)return;button.disabled=true;errorKey='';render();try{const res=await fetch(form.action,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.fromEntries(new FormData(form)))});const data=await res.json();if(res.status===409&&data.code==='registration_full'){form.hidden=true;full.hidden=false;const hc=document.querySelector('[data-count]');if(hc)hc.hidden=true;full.focus();return;}if(!res.ok||!data.ok){errorKey=data.error===copy.en.phoneError?'phoneError':data.error===copy.en.requiredError?'requiredError':'failed';return;}form.reset();form.hidden=true;done.hidden=false;done.focus();}catch{errorKey='failed';}finally{button.disabled=false;render();}});
 </script></body></html>`;
 }
