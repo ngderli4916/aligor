@@ -7,8 +7,8 @@ import fs from 'node:fs';
 import worker from '../index.js';
 import { buildLeadNotification, buildCustomerMessage, formatMalaysiaTime, groupLinkState, leadCode, parseLeadCode } from '../notify.js';
 
-const COURSE_1 = '免费 AI Preview · 11 月 25 日（星期三）8 PM – 9 PM';
-const COURSE_2 = '免费 AI Preview · 12 月 2 日（星期三）8 PM – 9 PM';
+const COURSE_1 = '免费 AI Preview · 11 月 25 日（星期三）8 PM – 9:30 PM';
+const COURSE_2 = '免费 AI Preview · 12 月 2 日（星期三）8 PM – 9:30 PM';
 const GROUP = 'https://chat.whatsapp.com/TESTGROUP123?s=cl&p=i';
 const realFetch = globalThis.fetch;
 let telegramCalls;

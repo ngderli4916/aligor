@@ -75,7 +75,7 @@ test('5. a new registration raises the number shown', async () => {
   const env = makeEnv();
   const submit = phone => worker.fetch(new Request('https://aligor.aligor.workers.dev/api/leads', {
     method: 'POST', headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ name: 'Ali Ahmad', phone, batch: 'PREVIEW-1125', course: '免费 AI Preview · 11 月 25 日（星期三）8 PM – 9 PM', used_ai_agent: '完全没用过', consent: true }),
+    body: JSON.stringify({ name: 'Ali Ahmad', phone, batch: 'PREVIEW-1125', course: '免费 AI Preview · 11 月 25 日（星期三）8 PM – 9:30 PM', used_ai_agent: '完全没用过', consent: true }),
   }), env, makeCtx());
   assert.equal((await submit('0123456781')).status, 201);
   assert.ok((await page(env)).html.includes('已有 <b>1</b> 人报名'));
@@ -102,8 +102,8 @@ test('8. only Nov 25 and Dec 2 are open; Nov 19 and earlier are absent and Nov 2
   const { html } = await page(makeEnv());
   assert.ok(html.includes('PREVIEW-1125') && html.includes('PREVIEW-1202'));
   assert.ok(!html.includes('PREVIEW-1118') && !html.includes('PREVIEW-1111') && !html.includes('11 月 11 日') && !html.includes('11 月 19 日'));
-  assert.ok(html.includes('11 月 25 日（星期三）8 PM – 9 PM'));
-  assert.ok(html.includes('12 月 2 日（星期三）8 PM – 9 PM'));
+  assert.ok(html.includes('11 月 25 日（星期三）8 PM – 9:30 PM'));
+  assert.ok(html.includes('12 月 2 日（星期三）8 PM – 9:30 PM'));
   assert.match(html, /<option[^>]*data-batch="PREVIEW-1125"[^>]* selected>/);
   assert.match(html, /<input type="hidden" name="batch"[^>]*value="PREVIEW-1125">/);
   assert.ok(!html.includes('PREVIEW-1104') && !html.includes('11 月 4 日'));
@@ -125,7 +125,7 @@ test('10. the API rejects a direct registration for the completed Nov 11 session
   const env = makeEnv();
   const res = await worker.fetch(new Request('https://aligor.aligor.workers.dev/api/leads', {
     method: 'POST', headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ name: 'Late Student', phone: '0123456781', batch: 'PREVIEW-1111', course: '免费 AI Preview · 11 月 11 日（星期三）8 PM – 9 PM', used_ai_agent: '完全没用过', consent: true }),
+    body: JSON.stringify({ name: 'Late Student', phone: '0123456781', batch: 'PREVIEW-1111', course: '免费 AI Preview · 11 月 11 日（星期三）8 PM – 9:30 PM', used_ai_agent: '完全没用过', consent: true }),
   }), env, makeCtx());
   assert.equal(res.status, 400);
   assert.match((await res.json()).error, /已经结束/);
@@ -136,7 +136,7 @@ test('11. the API rejects a direct registration for the completed Nov 4 session'
   const env = makeEnv();
   const res = await worker.fetch(new Request('https://aligor.aligor.workers.dev/api/leads', {
     method: 'POST', headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ name: 'Late Student', phone: '0123456781', batch: 'PREVIEW-1104', course: '免费 AI Preview · 11 月 4 日（星期三）8 PM – 9 PM', used_ai_agent: '完全没用过', consent: true }),
+    body: JSON.stringify({ name: 'Late Student', phone: '0123456781', batch: 'PREVIEW-1104', course: '免费 AI Preview · 11 月 4 日（星期三）8 PM – 9:30 PM', used_ai_agent: '完全没用过', consent: true }),
   }), env, makeCtx());
   assert.equal(res.status, 400);
   assert.match((await res.json()).error, /已经结束/);

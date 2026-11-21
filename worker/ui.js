@@ -130,8 +130,8 @@ function adminShell(title, body, script = '') {
 const jsonForScript = value => JSON.stringify(value).replace(/</g, '\\u003c');
 
 export const PREVIEW_SESSIONS = [
-  { batch: 'PREVIEW-1125', course: '免费 AI Preview · 11 月 25 日（星期三）8 PM – 9 PM' },
-  { batch: 'PREVIEW-1202', course: '免费 AI Preview · 12 月 2 日（星期三）8 PM – 9 PM' },
+  { batch: 'PREVIEW-1125', course: '免费 AI Preview · 11 月 25 日（星期三）8 PM – 9:30 PM' },
+  { batch: 'PREVIEW-1202', course: '免费 AI Preview · 12 月 2 日（星期三）8 PM – 9:30 PM' },
 ];
 
 export function registerPage(defaultBatch = '', stats = null, pixelId = '') {
