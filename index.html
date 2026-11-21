@@ -133,16 +133,16 @@ section{padding:120px 0}
 .strip-in span{font-size:13.5px;color:var(--mute)}
 
 /* drum: four words, one at a time */
-.drum{padding:0;position:relative;height:520vh}
+.drum{padding:0;position:relative;height:580vh}
 .drum-stage{position:sticky;top:0;height:100vh;height:100svh;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
 .drum-head{text-align:center;margin-bottom:4vh}
 .drum-head h2{font-size:clamp(22px,2.6vw,30px);letter-spacing:-.02em;color:var(--ink2);font-weight:600}
-.drum-list{position:relative;height:min(52vh,460px);overflow:hidden;-webkit-mask-image:linear-gradient(transparent,#000 18%,#000 82%,transparent);mask-image:linear-gradient(transparent,#000 18%,#000 82%,transparent)}
-.drum-list::before,.drum-list::after{content:"";position:absolute;left:4%;right:4%;height:1px;background:var(--line);top:calc(50% - .72em);font-size:clamp(54px,9vw,120px)}
-.drum-list::after{top:calc(50% + .72em)}
-.drum-word{position:absolute;left:0;right:0;top:50%;text-align:center;font-weight:700;letter-spacing:-.05em;line-height:1;font-size:clamp(54px,9vw,120px);color:rgba(26,14,8,.2);transform:translateY(calc(-50% + var(--o,0) * 1.15em)) scale(calc(1 - var(--a,0) * .16));opacity:calc(1 - var(--a,0) * .38);transition:transform .7s cubic-bezier(.2,.8,.2,1),opacity .7s,color .5s;will-change:transform}
-.drum-word.on{color:var(--orange);text-shadow:0 10px 60px rgba(255,122,26,.25)}
-.drum-glow{position:absolute;left:50%;top:50%;width:min(900px,90vw);height:200px;transform:translate(-50%,-50%);background:radial-gradient(closest-side,rgba(255,180,120,.28),transparent);pointer-events:none}
+.drum-list{--fs:clamp(36px,9vw,120px);position:relative;height:min(56vh,calc(var(--fs) * 6));overflow:hidden;perspective:1350px;-webkit-mask-image:linear-gradient(transparent,#000 22%,#000 78%,transparent);mask-image:linear-gradient(transparent,#000 22%,#000 78%,transparent)}
+.drum-list::before,.drum-list::after{content:"";position:absolute;left:4%;right:4%;height:1px;background:var(--line);top:calc(50% - var(--fs) * .68);z-index:2}
+.drum-list::after{top:calc(50% + var(--fs) * .68)}
+.drum-cyl{position:absolute;left:0;right:0;top:50%;height:0;transform-style:preserve-3d;transform:translateZ(calc(var(--fs) * -3.6)) rotateX(var(--turn,0deg));will-change:transform}
+.drum-word{position:absolute;left:0;right:0;top:0;height:1.1em;margin-top:-.55em;text-align:center;white-space:nowrap;font-weight:700;letter-spacing:-.05em;line-height:1.1;font-size:var(--fs);color:color-mix(in srgb,var(--orange) calc(var(--lit,0) * 100%),rgba(26,14,8,.22));transform:rotateX(calc(var(--i) * -18deg)) translateZ(calc(var(--fs) * 3.6));backface-visibility:hidden;opacity:var(--op,0)}
+.drum-glow{position:absolute;left:50%;top:50%;width:min(900px,90vw);height:calc(var(--fs) * 2.4);transform:translate(-50%,-50%);background:radial-gradient(closest-side,rgba(255,180,120,.28),transparent);pointer-events:none}
 .drum-foot{width:min(1120px,100% - 40px);margin:4vh auto 0;display:flex;justify-content:space-between;align-items:baseline;gap:20px;font-size:18px}
 .drum-foot .count{color:var(--mute);white-space:nowrap}
 .drum-foot .count b{color:var(--orange);font-weight:600}
@@ -356,7 +356,7 @@ section{padding:120px 0}
 .btn-tc2{background:rgba(255,255,255,.06);color:#FFF6EF;border-radius:11px;font-size:15px;padding:11px 18px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
 .btn-tc2:hover{background:rgba(255,255,255,.12)}
 .tc-glow{position:absolute;left:50%;bottom:-120px;width:110%;height:420px;transform:translateX(-50%);background:radial-gradient(50% 50% at 50% 100%,#FF8A3D,rgba(232,80,14,.6) 40%,rgba(20,10,5,0) 72%);pointer-events:none}
-.app{position:relative;z-index:1;margin:48px auto 0;width:100%;max-width:1000px;height:clamp(340px,calc(100svh - 330px),470px);display:grid;grid-template-columns:200px 1fr 1fr;background:#121010;border:1px solid rgba(255,255,255,.08);border-bottom:0;border-radius:14px 14px 0 0;overflow:hidden;font-size:13px;color:#E9E4DF;box-shadow:0 -20px 60px rgba(0,0,0,.4);text-align:left;line-height:1.5}
+.app{position:relative;z-index:1;margin:48px auto 0;width:100%;max-width:1000px;height:clamp(380px,calc(100svh - 300px),560px);display:grid;grid-template-columns:200px 1fr 1fr;background:#121010;border:1px solid rgba(255,255,255,.08);border-bottom:0;border-radius:14px 14px 0 0;overflow:hidden;font-size:13px;color:#E9E4DF;box-shadow:0 -20px 60px rgba(0,0,0,.4);text-align:left;line-height:1.5}
 .app svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .app-side{background:#161413;border-right:1px solid rgba(255,255,255,.06);padding:12px 10px}
 .app-dots{display:flex;gap:6px;padding:2px 4px 14px}
@@ -425,7 +425,10 @@ section{padding:120px 0}
   .tcs{padding-bottom:80px}
   .tc-actions .btn{flex:1;white-space:nowrap;font-size:14px;padding:11px 12px}
   .tc-actions{width:100%}
-  .app{grid-template-columns:1fr;grid-template-rows:auto 230px;height:auto;margin-top:36px}
+  .app{grid-template-columns:1fr;grid-template-rows:auto var(--pane-h,340px);height:auto;margin-top:36px}
+  .app-head{display:none}
+  .app-feed{padding-top:14px;gap:10px}
+  .steps{gap:7px}
   .app-chat{border-right:0;border-bottom:1px solid rgba(255,255,255,.06)}
   .st em{display:none}
   .st.ok em.sw,.st.ok em.th{display:flex}
@@ -572,6 +575,8 @@ section{padding:120px 0}
     </div>
     <div class="drum-list" aria-hidden="true">
       <div class="drum-glow"></div>
+      <div class="drum-cyl">
+      <div class="drum-word">24 小时在线</div>
       <div class="drum-word">自动回复</div>
       <div class="drum-word">自动开单</div>
       <div class="drum-word">自动做报告</div>
@@ -580,9 +585,11 @@ section{padding:120px 0}
       <div class="drum-word">记得住</div>
       <div class="drum-word">会提醒</div>
       <div class="drum-word">要审批</div>
+      </div>
     </div>
-    <div class="drum-foot" aria-hidden="true"><span class="count"><b id="drum-n">1</b> / 8</span><span class="drum-desc" id="drum-desc">WhatsApp 顾客来问，按你的规则回复；不懂的，转给你。</span></div>
+    <div class="drum-foot" aria-hidden="true"><span class="count"><b id="drum-n">1</b> / 9</span><span class="drum-desc" id="drum-desc">半夜、周末、假期，顾客来问，它都在。</span></div>
     <div class="drum-static">
+      <div><b>24 小时在线</b><span>半夜、周末、假期，顾客来问，它都在。</span></div>
       <div><b>自动回复</b><span>WhatsApp 顾客来问，按你的规则回复；不懂的，转给你。</span></div>
       <div><b>自动开单</b><span>顾客下单，它帮你开单、记录，再通知你。</span></div>
       <div><b>自动做报告</b><span>每天早上，昨天卖了什么，整理好给你。</span></div>
@@ -910,19 +917,35 @@ section{padding:120px 0}
     else{
       var words=drum.querySelectorAll('.drum-word'), n=document.getElementById('drum-n'), desc=document.getElementById('drum-desc');
       var texts=Array.prototype.map.call(drum.querySelectorAll('.drum-static span'),function(s){return s.textContent});
-      var cur=-1;
-      function set(i){
-        if(i===cur)return;cur=i;
-        words.forEach(function(w,k){var o=k-i;w.style.setProperty('--o',o);w.style.setProperty('--a',Math.abs(o));w.classList.toggle('on',o===0)});
-        n.textContent=i+1;desc.textContent=texts[i];
+      var cyl=drum.querySelector('.drum-cyl'), N=words.length, cur=-1, pos=0, goal=0, raf=0;
+      words.forEach(function(w,k){w.style.setProperty('--i',k)});
+      function sm(t){return t*t*(3-2*t)}
+      function draw(){
+        cyl.style.setProperty('--turn',(pos*18).toFixed(3)+'deg');
+        words.forEach(function(w,k){
+          var d=Math.abs(k-pos);
+          w.style.setProperty('--op',Math.max(0,1-d*.3).toFixed(3));
+          w.style.setProperty('--lit',Math.max(0,1-d*1.6).toFixed(3));
+        });
+        var i=Math.min(N-1,Math.max(0,Math.round(pos)));
+        if(i!==cur){cur=i;n.textContent=i+1;desc.textContent=texts[i]}
+      }
+      function tick(){
+        pos+=(goal-pos)*.16;
+        if(Math.abs(goal-pos)<.001)pos=goal;
+        draw();
+        raf=pos===goal?0:requestAnimationFrame(tick);
       }
       function upd(){
         var r=drum.getBoundingClientRect(), span=drum.offsetHeight-innerHeight;
         var p=span>0?Math.min(1,Math.max(0,-r.top/span)):0;
-        set(Math.min(words.length-1,Math.floor(p*words.length)));
+        var u=p*(N-1), k=Math.floor(u), f=u-k;              // rest on each word, then turn to the next
+        f=sm(Math.min(1,Math.max(0,(f-.18)/.64)));
+        goal=Math.min(N-1,k+f);
+        if(!raf)raf=requestAnimationFrame(tick);
       }
-      addEventListener('scroll',function(){requestAnimationFrame(upd)},{passive:true});
-      addEventListener('resize',upd);upd();
+      addEventListener('scroll',upd,{passive:true});
+      addEventListener('resize',upd);upd();pos=goal;draw();
     }
   }
 
@@ -1007,6 +1030,10 @@ section{padding:120px 0}
     else{
       var topPx=70;
       var size=function(){
+        if(innerWidth<=640){                                                 // phone: the pane fills what the screen has left under the chat
+          var ch=q('.app-chat').offsetHeight;
+          app.style.setProperty('--pane-h',Math.max(300,Math.min(520,innerHeight-84-78-ch))+'px');
+        }else app.style.removeProperty('--pane-h');
         var h=tc.offsetHeight;
         topPx=Math.min(70,innerHeight-h-(innerWidth<=760?84:12));          // a phone shows the window part when the card is taller than the screen
         tcw.style.top=topPx+'px';
