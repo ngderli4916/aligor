@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { DatabaseSync } from 'node:sqlite';
 import fs from 'node:fs';
 import worker from '../index.js';
-import { normalizeClassPhone, CLASS_SCHEMA } from '../classreg.js';
+import { normalizeClassPhone, CLASS_SCHEMA, buildClassNotification, adminRow, sessionLabel } from '../classreg.js';
 
 function makeDb() {
   const db = new DatabaseSync(':memory:');
@@ -311,7 +311,7 @@ test('21. countdown: no PROMO_ENDS_AT means no countdown and the discount stays'
 
 test('22. registration page shows the class date and place', async () => {
   const page = await (await call(makeEnv(), 'GET', '/classregister', undefined)).text();
-  assert.ok(page.includes('12 月 13 日') && page.includes('星期天 9AM–7PM') && page.includes('Skudai, Johor') && page.includes('KL · 11 月 29 日') && page.includes('Kuala Lumpur（Cheras）') && !page.includes('地点稍后通知') && !page.includes('星期一') && !page.includes('11 月 30 日') && page.includes('data-region="SELANGOR"') && !page.includes('11 月 1 日') && !page.includes('10 月 18 日') && !page.includes('第二天或第三天'));
+  assert.ok(page.includes('12 月 13 日') && page.includes('星期天 9AM–7PM') && page.includes('Skudai, Johor') && page.includes('KL · 11 月 29 日') && page.includes('Kuala Lumpur（Cheras）') && !page.includes('地点稍后通知') && !page.includes('星期一') && !page.includes('11 月 30 日') && page.includes('12 月 27 日') && page.includes('data-session="JB-1213"') && page.includes('data-session="JB-1227"') && page.includes('data-session="KL-1129"') && !page.includes('11 月 1 日') && !page.includes('10 月 18 日') && !page.includes('第二天或第三天'));
   assert.ok(page.includes('.package.session .tag{font:900 22px/1'), 'JB and KL labels use the larger city style');
 });
 
@@ -352,4 +352,26 @@ test('region is no longer asked: a registration without it is saved as JOHOR', a
   assert.equal(res.status, 201); assert.equal(row(env).region, 'JOHOR');
   const page = await (await call(env, 'GET', '/classregister', undefined)).text();
   assert.ok(!page.includes('id="region"') && !page.includes('上课地区') && !page.includes('请选择上课地区') && !page.includes('电话、地区'));
+});
+
+test('JB has two dates: the chosen session is saved, shown to Adrian and in the admin list', async () => {
+  const env = makeEnv();
+  const res = await call(env, 'POST', '/api/classregister', base({ region: undefined, session: 'JB-1227' }));
+  assert.equal(res.status, 201);
+  assert.equal(row(env).region, 'JOHOR'); assert.equal(row(env).session_code, 'JB-1227');
+  const notice = buildClassNotification(row(env), env);
+  assert.ok(notice.includes('场次：JB · 12 月 27 日（星期天）'), notice);
+  assert.equal(adminRow(row(env)).session_label, 'JB · 12 月 27 日（星期天）· Skudai, Johor');
+  const kl = await call(env, 'POST', '/api/classregister', base({ phone: '0161234567', region: undefined, session: 'KL-1129' }));
+  assert.equal(kl.status, 201);
+  assert.equal(env.DB.raw.prepare('SELECT region, session_code FROM class_registrations WHERE id=2').get().region, 'SELANGOR');
+  assert.equal((await call(env, 'POST', '/api/classregister', base({ phone: '0169999999', session: 'JB-0101' }))).status, 400);
+});
+
+test('old pages that send only region get that region\'s first session; old rows without a session still get a label', async () => {
+  const env = makeEnv();
+  assert.equal((await register(env, { region: 'JOHOR' })).res.status, 201);
+  assert.equal(row(env).session_code, 'JB-1213');
+  assert.equal(sessionLabel('JOHOR', null), 'JB · 12 月 13 日（星期天）· Skudai, Johor');
+  assert.equal(sessionLabel('PENANG', null), 'PENANG');
 });

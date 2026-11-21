@@ -2,12 +2,15 @@ import { cleanText, csvEscape, htmlEscape } from './lib.js';
 import { redactSecrets } from './notify.js';
 
 export const REGIONS = ['JOHOR', 'SELANGOR', 'PENANG'];
-// Class sessions offered on the sign-up page. The DB column stays `region` (KL is stored as SELANGOR); only the page wording changes.
+// Class sessions offered on the sign-up page. Each registration stores `region` (KL is stored as SELANGOR) and the
+// chosen `session_code`. Rows saved before session_code existed have it NULL and fall back to the region's first session.
 export const CLASS_SESSIONS = [
-  { region: 'JOHOR', city: 'JB', date: '12 月 13 日', day: '星期天', time: '9AM–7PM', place: 'Skudai, Johor' },
-  { region: 'SELANGOR', city: 'KL', date: '11 月 29 日', day: '星期天', time: '9AM–7PM', place: 'Kuala Lumpur（Cheras）' },
+  { code: 'JB-1213', region: 'JOHOR', city: 'JB', date: '12 月 13 日', day: '星期天', time: '9AM–7PM', place: 'Skudai, Johor' },
+  { code: 'JB-1227', region: 'JOHOR', city: 'JB', date: '12 月 27 日', day: '星期天', time: '9AM–7PM', place: 'Skudai, Johor' },
+  { code: 'KL-1129', region: 'SELANGOR', city: 'KL', date: '11 月 29 日', day: '星期天', time: '9AM–7PM', place: 'Kuala Lumpur（Cheras）' },
 ];
-export const sessionLabel = region => { const s = CLASS_SESSIONS.find(x => x.region === region); return s ? `${s.city} · ${s.date}（${s.day}）· ${s.place}` : region; };
+export const findSession = (region, code) => CLASS_SESSIONS.find(x => x.code === code) || CLASS_SESSIONS.find(x => x.region === region);
+export const sessionLabel = (region, code) => { const s = findSession(region, code); return s ? `${s.city} · ${s.date}（${s.day}）· ${s.place}` : region; };
 // Server-side source of truth. Amounts are whole RM integers; the browser never supplies them.
 // original/discount/final are the advertised prices. PROMO_ENDS_AT controls only the on-page urgency countdown; pricing stays unchanged after it ends.
 export const PACKAGES = {
@@ -63,6 +66,7 @@ export const CLASS_SCHEMA = [
   utm_campaign TEXT NOT NULL DEFAULT '',
   payment_submitted_at TEXT,
   payment_confirmed_at TEXT,
+  session_code TEXT,
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
 )`,
@@ -87,6 +91,9 @@ export async function ensureClassTables(env) {
   const db = env.DB;
   if (ensured.has(db)) return;
   for (const sql of CLASS_SCHEMA) await db.prepare(sql).run();
+  // Tables created before session_code existed get the column added once; "duplicate column" means it is already there.
+  try { await db.prepare('ALTER TABLE class_registrations ADD COLUMN session_code TEXT').run(); }
+  catch (e) { if (!/duplicate column/i.test(String(e?.message || e))) throw e; }
   ensured.add(db);
 }
 
@@ -117,8 +124,14 @@ export function validateRegistration(data, env = {}, now = Date.now()) {
   if (name.length < 2) throw new ClassError('请输入姓名');
   let phone;
   try { phone = normalizeClassPhone(data.phone); } catch (e) { throw new ClassError(e.message); }
-  const region = String(data.region || 'JOHOR').trim().toUpperCase(); // the form sends JOHOR (JB) or SELANGOR (KL); older cached pages without it default to JOHOR
+  // The form sends `session` (e.g. JB-1227). Older cached pages send only `region` (or nothing, meaning JOHOR):
+  // those get that region's first session.
+  const sessionCode = String(data.session || '').trim().toUpperCase();
+  const picked = sessionCode ? CLASS_SESSIONS.find(x => x.code === sessionCode) : null;
+  if (sessionCode && !picked) throw new ClassError('请选择上课场次');
+  const region = picked ? picked.region : String(data.region || 'JOHOR').trim().toUpperCase();
   if (!REGIONS.includes(region)) throw new ClassError('请选择上课地区');
+  const session = picked ? picked.code : (CLASS_SESSIONS.find(x => x.region === region)?.code || null);
   const pkgCode = String(data.package || data.package_code || '').trim();
   if (!Object.prototype.hasOwnProperty.call(PACKAGES, pkgCode)) throw new ClassError('请选择上课方式');
   const pkg = { ...PACKAGES[pkgCode], ...priceFor(env, pkgCode, now) };
@@ -131,7 +144,7 @@ export function validateRegistration(data, env = {}, now = Date.now()) {
   }
   const key = String(data.idempotency_key || '').trim();
   if (!/^[A-Za-z0-9_-]{16,64}$/.test(key)) throw new ClassError('页面已过期，请刷新后再提交');
-  return { name, phone, region, pkgCode, pkg, secondName, secondPhone, key,
+  return { name, phone, region, session, pkgCode, pkg, secondName, secondPhone, key,
     source: cleanText(data.source, 80), utm_source: cleanText(data.utm_source, 80), utm_medium: cleanText(data.utm_medium, 80), utm_campaign: cleanText(data.utm_campaign, 120) };
 }
 
@@ -158,10 +171,10 @@ async function safeClassEvent(env, id, type, actor, details) {
   try { await addClassEvent(env, id, type, actor, details); } catch (e) { console.error('class_event_failed', redactSecrets(e?.message, env)); }
 }
 
-const sameRegistration = (row, v) => row.primary_phone_normalized === v.phone && row.package_code === v.pkgCode && row.region === v.region && row.primary_name === v.name && (row.second_phone_normalized || null) === v.secondPhone;
+const sameRegistration = (row, v) => row.primary_phone_normalized === v.phone && row.package_code === v.pkgCode && row.region === v.region && (row.session_code || null) === v.session && row.primary_name === v.name && (row.second_phone_normalized || null) === v.secondPhone;
 
-const INSERT_SQL = `INSERT INTO class_registrations(public_order_id,idempotency_key,payment_token_hash,primary_name,primary_phone_normalized,region,package_code,participant_count,computer_count,second_name,second_phone_normalized,original_amount,discount_amount,final_amount,payment_status,registration_status,telegram_notification_status,source,utm_source,utm_medium,utm_campaign,created_at,updated_at)
-VALUES((SELECT 'AICL'||printf('%05d',MAX(COALESCE((SELECT seq FROM sqlite_sequence WHERE name='class_registrations'),0),COALESCE((SELECT MAX(id) FROM class_registrations),0))+1)),?,?,?,?,?,?,?,?,?,?,?,?,?,'awaiting_payment','registered','pending',?,?,?,?,?,?)`;
+const INSERT_SQL = `INSERT INTO class_registrations(public_order_id,idempotency_key,payment_token_hash,primary_name,primary_phone_normalized,region,session_code,package_code,participant_count,computer_count,second_name,second_phone_normalized,original_amount,discount_amount,final_amount,payment_status,registration_status,telegram_notification_status,source,utm_source,utm_medium,utm_campaign,created_at,updated_at)
+VALUES((SELECT 'AICL'||printf('%05d',MAX(COALESCE((SELECT seq FROM sqlite_sequence WHERE name='class_registrations'),0),COALESCE((SELECT MAX(id) FROM class_registrations),0))+1)),?,?,?,?,?,?,?,?,?,?,?,?,?,?,'awaiting_payment','registered','pending',?,?,?,?,?,?)`;
 
 // Returns { row, token, created }. Safe to call twice with the same payload (browser retry, double click).
 export async function createRegistration(env, data) {
@@ -175,13 +188,13 @@ export async function createRegistration(env, data) {
   }
   // Same person, same details, within 10 minutes (e.g. refreshed page, new key): return the existing order.
   const since = new Date(Date.now() - 10 * 60e3).toISOString();
-  const dup = await env.DB.prepare(`SELECT * FROM class_registrations WHERE primary_phone_normalized=? AND package_code=? AND region=? AND primary_name=? AND COALESCE(second_phone_normalized,'')=? AND registration_status='registered' AND payment_status IN ('awaiting_payment','payment_submitted') AND created_at>=? ORDER BY id DESC LIMIT 1`)
-    .bind(v.phone, v.pkgCode, v.region, v.name, v.secondPhone || '', since).first();
+  const dup = await env.DB.prepare(`SELECT * FROM class_registrations WHERE primary_phone_normalized=? AND package_code=? AND region=? AND COALESCE(session_code,'')=? AND primary_name=? AND COALESCE(second_phone_normalized,'')=? AND registration_status='registered' AND payment_status IN ('awaiting_payment','payment_submitted') AND created_at>=? ORDER BY id DESC LIMIT 1`)
+    .bind(v.phone, v.pkgCode, v.region, v.session || '', v.name, v.secondPhone || '', since).first();
   if (dup) return { row: dup, token: await derivePaymentToken(env, dup.idempotency_key), created: false };
   const hash = await sha256Hex(token), t = nowIso();
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
-      await env.DB.prepare(INSERT_SQL).bind(v.key, hash, v.name, v.phone, v.region, v.pkgCode, v.pkg.participants, v.pkg.computers, v.secondName, v.secondPhone, v.pkg.original, v.pkg.discount, v.pkg.final, v.source, v.utm_source, v.utm_medium, v.utm_campaign, t, t).run();
+      await env.DB.prepare(INSERT_SQL).bind(v.key, hash, v.name, v.phone, v.region, v.session, v.pkgCode, v.pkg.participants, v.pkg.computers, v.secondName, v.secondPhone, v.pkg.original, v.pkg.discount, v.pkg.final, v.source, v.utm_source, v.utm_medium, v.utm_campaign, t, t).run();
       break;
     } catch (e) {
       const msg = String(e?.message || '');
@@ -209,7 +222,7 @@ export function buildClassNotification(row, env) {
     `联络人：${e(row.primary_name)}`,
     `WhatsApp：${e(row.primary_phone_normalized)}`,
     `地区：${e(row.region)}`,
-    `场次：${e(sessionLabel(row.region))}`,
+    `场次：${e(sessionLabel(row.region, row.session_code))}`,
     `配套：${e(PACKAGES[row.package_code]?.title || row.package_code)}`,
     `人数／电脑：${row.participant_count} 人／${row.computer_count} 台`,
   ];
@@ -297,7 +310,7 @@ export async function listClassRegistrations(env, url) {
   const stats = { total: 0, confirmed_amount: confirmed }; for (const c of counts) { stats[c.s] = c.n; stats.total += c.n; }
   return { registrations: rows.map(adminRow), stats };
 }
-export const adminRow = r => { const { payment_token_hash, idempotency_key, ...rest } = r; return { ...rest, package_title: PACKAGES[r.package_code]?.title || r.package_code, status_label: STATUS_LABELS[r.payment_status] || r.payment_status }; };
+export const adminRow = r => { const { payment_token_hash, idempotency_key, ...rest } = r; return { ...rest, package_title: PACKAGES[r.package_code]?.title || r.package_code, session_label: sessionLabel(r.region, r.session_code), status_label: STATUS_LABELS[r.payment_status] || r.payment_status }; };
 
 export async function classEvents(env, id) {
   await ensureClassTables(env);
@@ -308,7 +321,7 @@ const FORMULA = /^[=+\-@\t\r]/;
 export async function classCsv(env) {
   await ensureClassTables(env);
   const rows = (await env.DB.prepare('SELECT * FROM class_registrations ORDER BY id').all()).results;
-  const cols = ['public_order_id', 'created_at', 'primary_name', 'primary_phone_normalized', 'region', 'package_code', 'participant_count', 'computer_count', 'second_name', 'second_phone_normalized', 'original_amount', 'discount_amount', 'final_amount', 'payment_reference', 'payment_status', 'registration_status', 'telegram_notification_status', 'payment_confirmed_at', 'admin_notes', 'source', 'utm_source', 'utm_medium', 'utm_campaign'];
+  const cols = ['public_order_id', 'created_at', 'primary_name', 'primary_phone_normalized', 'region', 'session_code', 'package_code', 'participant_count', 'computer_count', 'second_name', 'second_phone_normalized', 'original_amount', 'discount_amount', 'final_amount', 'payment_reference', 'payment_status', 'registration_status', 'telegram_notification_status', 'payment_confirmed_at', 'admin_notes', 'source', 'utm_source', 'utm_medium', 'utm_campaign'];
   const cell = v => { const s = String(v ?? ''); return csvEscape(FORMULA.test(s) ? `'${s}` : s); };
   return '﻿' + [cols.join(','), ...rows.map(r => cols.map(c => cell(r[c])).join(','))].join('\n');
 }
