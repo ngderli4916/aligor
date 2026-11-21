@@ -13,6 +13,7 @@ import { aiAgentRegistrationPage, countAiAgentRegistrations, saveAiAgentRegistra
 import { notifyPartnerRegistration } from './partner-webhook.js';
 import { isTeamDashboardPath, teamDashboardRoute } from './team-dashboard.js';
 import { isPartnerCoursePath, partnerCourseRoute } from './partnercourse.js';
+import { myLinks, myLinksPage } from './mylinks.js';
 
 const json = (data, status=200, headers={}) => new Response(JSON.stringify(data), {status, headers:{'content-type':'application/json; charset=utf-8',...headers}});
 const html = (body,extra={},csp=`default-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'unsafe-inline' ${META_CSP_SCRIPT}; connect-src 'self' ${META_CSP_CONNECT}; img-src 'self' data: ${META_CSP_IMG}; form-action 'self'; frame-ancestors 'none'`) => new Response(body,{headers:{...extra,'content-type':'text/html; charset=utf-8','content-security-policy':csp,'x-frame-options':'DENY','referrer-policy':'same-origin'}});
@@ -72,6 +73,10 @@ async function route(request, env, ctx) {
     return json(result.body,result.status,{'cache-control':'no-store'});
   }
   if (request.method==='GET' && path==='/4916') return html(await isAdmin(request,env) ? adminPage() : loginPage());
+  if (request.method==='GET' && (path==='/my-links' || path==='/my-links/')) {
+    if (!await isAdmin(request,env)) return html(loginPage('','/my-links/'),noindex);
+    return new Response(myLinksPage(await myLinks(env,url.origin)),{headers:{'content-type':'text/html; charset=utf-8','cache-control':'no-store','x-robots-tag':'noindex, nofollow','referrer-policy':'no-referrer','x-frame-options':'DENY','content-security-policy':"default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"}});
+  }
   if (request.method==='GET' && (path==='/list' || path.startsWith('/list/'))) {
     if (!await isAdmin(request,env)) return html(loginPage('','/list/'),noindex);
     const page=await env.ASSETS.fetch(request), headers=new Headers(page.headers);
@@ -254,7 +259,7 @@ async function exportCsv(env) {
 
 async function login(request,env) {
   const data=await bodyData(request); if(!env.ADMIN_PASSWORD||!env.SESSION_SECRET)return html(loginPage('服务器尚未设置管理员密码'));
-  const next=data.next==='/list/'?'/list/':'/4916';
+  const next=['/list/','/my-links/'].includes(data.next)?data.next:'/4916';
   if(!safeEqual(String(data.password||''),env.ADMIN_PASSWORD))return html(loginPage('密码不正确',next));
   const token=await signSession(env.SESSION_SECRET); return new Response(null,{status:303,headers:{location:next,'set-cookie':sessionCookie(token,request,28800)}});
 }
