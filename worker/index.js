@@ -12,6 +12,7 @@ import { previewAccessPage, verifyPreviewAccess } from './previewaccess.js';
 import { aiAgentRegistrationPage, countAiAgentRegistrations, saveAiAgentRegistration } from './ai-agent-registration.js';
 import { notifyPartnerRegistration } from './partner-webhook.js';
 import { isTeamDashboardPath, teamDashboardRoute } from './team-dashboard.js';
+import { isPartnerCoursePath, partnerCourseRoute } from './partnercourse.js';
 
 const json = (data, status=200, headers={}) => new Response(JSON.stringify(data), {status, headers:{'content-type':'application/json; charset=utf-8',...headers}});
 const html = (body,extra={},csp=`default-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'unsafe-inline' ${META_CSP_SCRIPT}; connect-src 'self' ${META_CSP_CONNECT}; img-src 'self' data: ${META_CSP_IMG}; form-action 'self'; frame-ancestors 'none'`) => new Response(body,{headers:{...extra,'content-type':'text/html; charset=utf-8','content-security-policy':csp,'x-frame-options':'DENY','referrer-policy':'same-origin'}});
@@ -26,6 +27,7 @@ export default { async fetch(request, env, ctx) {
 async function route(request, env, ctx) {
   const url = new URL(request.url), path=url.pathname;
   if (isTeamDashboardPath(path)) return teamDashboardRoute(request,env);
+  if (isPartnerCoursePath(path)) return partnerCourseRoute(request,env);
   if (request.method==='GET' && path==='/') return Response.redirect(`${url.origin}/register`,302);
   if (request.method==='GET' && path==='/register') {
     const tracking=isAdmin(request,env).then(skip=>recordView(env,request,{path:'/register',ref:request.headers.get('referer'),source:'server',skip})).catch(error=>console.error('track_failed',redactSecrets(error?.message,env)));

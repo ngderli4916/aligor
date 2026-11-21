@@ -1,0 +1,36 @@
+{
+  "total": 64,
+  "hidden": [],
+  "chapters": [
+    {
+      "file": "01-opening.html",
+      "first": 1,
+      "last": 11
+    },
+    {
+      "file": "02-phase-1-codex.html",
+      "first": 12,
+      "last": 17
+    },
+    {
+      "file": "03-phase-2-hermes.html",
+      "first": 18,
+      "last": 24
+    },
+    {
+      "file": "04-phase-3-company-role.html",
+      "first": 25,
+      "last": 55
+    },
+    {
+      "file": "05-phase-4-telegram.html",
+      "first": 56,
+      "last": 63
+    },
+    {
+      "file": "12-closing.html",
+      "first": 64,
+      "last": 64
+    }
+  ]
+}
