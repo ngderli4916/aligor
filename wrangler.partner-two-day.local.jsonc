@@ -1,0 +1,19 @@
+{
+  "name": "aligor-partner-two-day-local",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "vars": {
+    "PARTNER_TWO_DAY_OPEN": "1"
+  },
+  "d1_databases": [
+    {
+      "binding": "PARTNER_TWO_DAY_DB",
+      "database_name": "aligor-partner-two-day-local",
+      "database_id": "00000000-0000-4000-8000-000000000001",
+      "migrations_dir": "worker/partner-two-day-migrations"
+    }
+  ]
+}
