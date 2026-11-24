@@ -1,5 +1,5 @@
 {
-  "total": 65,
+  "total": 66,
   "hidden": [],
   "chapters": [
     {
@@ -20,17 +20,17 @@
     {
       "file": "04-phase-3-company-role.html",
       "first": 25,
-      "last": 56
+      "last": 57
     },
     {
       "file": "05-phase-4-telegram.html",
-      "first": 57,
-      "last": 64
+      "first": 58,
+      "last": 65
     },
     {
       "file": "12-closing.html",
-      "first": 65,
-      "last": 65
+      "first": 66,
+      "last": 66
     }
   ]
 }
