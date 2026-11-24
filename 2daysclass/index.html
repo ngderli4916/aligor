@@ -152,6 +152,7 @@ section{padding:120px 0}
 
 /* course: three outcomes */
 .outs3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:48px}
+@media(min-width:761px){.outs3 .out:nth-child(7):last-child{grid-column:2}}
 .out{background:#fff;border-radius:var(--r);box-shadow:0 0 0 1px var(--line),0 12px 30px rgba(26,14,8,.04);overflow:hidden;transition:transform .25s,box-shadow .25s}
 .out:hover{transform:translateY(-3px);box-shadow:0 0 0 1px var(--line),0 22px 40px rgba(26,14,8,.08)}
 .out-vis{height:170px;position:relative;background:linear-gradient(160deg,#FFE7D2,#FFB98A 70%,#FF8F4A);display:grid;place-items:center;overflow:hidden}
@@ -522,6 +523,23 @@ section{padding:120px 0}
 .teacher .role{color:var(--orange);font-weight:700;font-size:14px;margin:0 0 12px}
 .teacher p{margin:0 0 8px;color:var(--ink2);line-height:1.7}
 .price-box .perk{display:inline-flex;align-self:flex-start;align-items:center;gap:8px;border:1px solid rgba(255,179,107,.5);color:#FFB36B;border-radius:999px;padding:7px 15px;font-weight:700;font-size:15px}
+.ai-staff{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin:34px auto 0;max-width:860px}
+.ai-staff span{background:#fff;border-radius:999px;padding:12px 22px;font-size:17px;font-weight:700;color:var(--ink);box-shadow:0 0 0 1px var(--line)}
+.ai-staff span::before{content:"✕";color:var(--orange);margin-right:8px}
+.aia-note{margin:26px auto 0;max-width:760px;font-size:15.5px;color:var(--ink2);line-height:1.6}
+.sk3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:40px auto 0;max-width:980px;text-align:left}
+.sk3 div{background:#fff;border-radius:var(--r);padding:26px 26px 22px;box-shadow:0 0 0 1px var(--line)}
+.sk3 b{display:block;font-size:28px;letter-spacing:-.04em;color:var(--orange);margin-bottom:6px}
+.sk3 span{font-size:16px;color:var(--ink2);line-height:1.55}
+@media(max-width:760px){.sk3{grid-template-columns:1fr}}
+.tk{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:40px auto 0;max-width:1040px;text-align:left}
+.tk>div{background:#fff;border-radius:var(--r);padding:26px 26px 22px;box-shadow:0 0 0 1px var(--line)}
+.tk small{display:block;font-size:12.5px;font-weight:700;color:var(--orange);letter-spacing:.04em;margin-bottom:4px}
+.tk h3{font-size:24px;letter-spacing:-.03em;margin:0 0 6px}
+.tk p{margin:0 0 14px;font-size:15.5px;color:var(--ink2);line-height:1.55}
+.tk ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.tk li{background:var(--peach);color:var(--ink);border-radius:999px;padding:6px 14px;font-size:14px;font-weight:600}
+@media(max-width:760px){.tk{grid-template-columns:1fr}}
 .vs{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:44px;text-align:left}
 .vs-col{border-radius:var(--r);padding:30px 30px 14px;background:#fff;box-shadow:0 0 0 1px var(--line),0 12px 30px rgba(26,14,8,.04)}
 .vs-col.co{background:linear-gradient(160deg,#FFF3E8,#FFE0C7);box-shadow:0 0 0 2px var(--orange),0 20px 50px rgba(232,89,12,.14)}
@@ -556,7 +574,7 @@ section{padding:120px 0}
 <!-- HERO -->
 <header class="hero">
   <div class="wrap">
-    <div class="badge"><i></i>零基础 · 两天实战 · 六个成果</div>
+    <div class="badge"><i></i>零基础 · 两天实战 · 七个成果</div>
     <h1>两天，打造<br>你全公司的 <span class="hl">AI 助理</span></h1>
     <p class="lead">老板、主管、员工，都能用手机指挥公司的 AI 助理：<br>回顾客、管 Email、做报告、看懂公司的账，不用写代码。</p>
     <div class="cta-row">
@@ -623,8 +641,19 @@ section{padding:120px 0}
       <div><b>整理 Email</b><span>分好类、写好摘要，几百封也一眼看完。</span></div>
       <div><b>帮你发 Email</b><span>回复草稿写好，你点头，它就发出去。</span></div>
       <div><b>全自动营销</b><span>写文案、按时发布，每天不断更。</span></div>
-      <div><b>给你报告</b><span>每天早上，昨天卖了什么、谁要跟进，整理好给你。</span></div>
+      <div><b>给你报告</b><span>帮你做报告，还帮你分析：哪里卖得好、哪里要注意。</span></div>
       <div><b>看懂公司的账</b><span>单据、开销、收入，整理成一眼看懂的报表。</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- AI STAFF -->
+<section class="vs-sec" id="staff">
+  <div class="wrap center">
+    <div class="eyebrow">AI 员工</div>
+    <h2>AI 员工，<br>和一般员工不一样。</h2>
+    <div class="ai-staff">
+      <span>不会埋怨</span><span>不会请假</span><span>不会给你脸色看</span><span>不会一直给借口</span><span>不会粗心</span>
     </div>
   </div>
 </section>
@@ -657,18 +686,484 @@ section{padding:120px 0}
   </div>
 </section>
 
+<!-- SECOND BRAIN: scroll-driven (title → collect → think → neurons connect → recall) -->
+<style>
+.sb{position:relative;height:720vh;background:#040A1A;color:#fff}
+.sb-stage{position:sticky;top:0;height:100vh;height:100dvh;overflow:hidden;background:radial-gradient(95% 85% at 60% 52%,#0E2550 0%,#071631 48%,#040A1A 100%)}
+.sb-cv{position:absolute;inset:0;width:100%;height:100%}
+.sb-frame{position:absolute;inset:18px;pointer-events:none}
+.sb-frame i{position:absolute;width:14px;height:14px;border-color:rgba(255,255,255,.28);border-style:solid}
+.sb-frame i:nth-child(1){left:0;top:0;border-width:1px 0 0 1px}.sb-frame i:nth-child(2){right:0;top:0;border-width:1px 1px 0 0}
+.sb-frame i:nth-child(3){left:0;bottom:0;border-width:0 0 1px 1px}.sb-frame i:nth-child(4){right:0;bottom:0;border-width:0 1px 1px 0}
+.sb-count{position:absolute;right:36px;top:88px;text-align:right;font-variant-numeric:tabular-nums;opacity:0}
+.sb-count small{display:block;font-size:11px;letter-spacing:.06em;color:rgba(255,255,255,.55)}
+.sb-count b{font-size:clamp(20px,2.1vw,28px);letter-spacing:-.02em}
+.sb-hero{position:absolute;inset:0;display:grid;place-content:center;text-align:center;z-index:3;padding:0 20px;pointer-events:none}
+.sb-hero small{font-size:13px;font-weight:700;letter-spacing:.2em;color:#8FD3FF}
+.sb-hero h2{margin:14px 0 0;font-size:clamp(40px,7vw,104px);line-height:1.04;letter-spacing:-.045em;color:#fff}
+.sb-hero h2 em,.sb-step h3 em{font-style:normal;background:linear-gradient(90deg,#FFB37A,#F9A8D4 35%,#A5B4FC 65%,#67E8F9);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sb-hero p{margin:18px auto 0;max-width:620px;font-size:clamp(15px,1.5vw,19px);color:rgba(255,255,255,.72)}
+.sb-copy{position:absolute;left:clamp(20px,5vw,80px);top:50%;width:min(470px,36vw);transform:translateY(-50%);z-index:3;pointer-events:none}
+.sb-step{position:absolute;left:0;right:0;top:0;transform:translateY(-50%);opacity:0;will-change:opacity,transform}
+.sb-step small{display:block;font-size:12px;font-weight:700;letter-spacing:.16em;color:#8FD3FF;margin-bottom:12px}
+.sb-step h3{font-size:clamp(28px,3.1vw,46px);line-height:1.14;letter-spacing:-.035em;margin:0}
+.sb-step p{margin:14px 0 0;font-size:clamp(14px,1.3vw,17px);line-height:1.7;color:rgba(255,255,255,.72)}
+.sb-chip{position:absolute;left:0;top:0;z-index:2;display:flex;align-items:center;gap:7px;white-space:nowrap;padding:7px 13px 7px 8px;border-radius:999px;font-size:clamp(12px,1.05vw,14px);font-weight:600;background:rgba(10,24,52,.78);border:1px solid rgba(143,211,255,.28);box-shadow:0 0 24px rgba(56,189,248,.18);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);opacity:0;will-change:transform,opacity;pointer-events:none}
+.sb-chip i{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:12px;background:var(--c);color:#fff;font-weight:800}
+.sb-label{position:absolute;left:0;top:0;z-index:2;transform:translate(-50%,-50%);font-size:clamp(12px,1.1vw,15px);font-weight:600;white-space:nowrap;color:rgba(255,255,255,.88);opacity:0;pointer-events:none;text-shadow:0 0 12px rgba(4,10,26,.9)}
+.sb-ask{position:absolute;right:clamp(16px,3vw,48px);bottom:clamp(40px,6vh,70px);width:min(420px,calc(100vw - 32px));z-index:4;opacity:0;will-change:opacity,transform}
+.sb-q,.sb-a{border-radius:16px;padding:12px 16px;font-size:14.5px;line-height:1.55}
+.sb-q{background:#fff;color:var(--ink);margin-left:40px;border-bottom-right-radius:4px;font-weight:600}
+.sb-a{margin-top:10px;background:rgba(9,26,58,.94);border:1px solid rgba(143,211,255,.35);border-bottom-left-radius:4px;opacity:0}
+.sb-a b{color:#FFB37A}
+.sb-a em{font-style:normal;display:inline-block;margin:6px 6px 0 0;font-size:12px;color:#BAE6FD;background:rgba(56,189,248,.14);border-radius:6px;padding:2px 8px}
+.sb-end{position:absolute;left:0;right:0;bottom:4.5vh;text-align:center;font-size:clamp(15px,1.6vw,20px);font-weight:700;opacity:0;z-index:4;padding:0 20px}
+.sb-end em{font-style:normal;color:#8FD3FF}
+@media(max-width:760px){
+  .sb{height:640vh}
+  .sb-copy{left:20px;right:20px;width:auto;top:104px;transform:none}
+  .sb-step{transform:none}
+  .sb-step h3{font-size:27px}.sb-step p{font-size:13.5px;margin-top:8px;line-height:1.6}
+  .sb-count{top:auto;bottom:18px;right:22px}
+  .sb-ask{bottom:78px}
+  .sb-end{bottom:22px}
+}
+@media (prefers-reduced-motion:reduce){
+  .sb{height:auto}.sb-stage{position:relative;height:auto;padding:70px 20px}
+  .sb-cv,.sb-frame,.sb-count,.sb-label,.sb-chip{display:none}
+  .sb-hero,.sb-copy,.sb-ask,.sb-end{position:relative;inset:auto;left:auto;top:auto;bottom:auto;right:auto;transform:none;width:auto;max-width:560px;margin:20px auto 0;opacity:1!important}
+  .sb-step{position:relative;transform:none;opacity:1!important;margin-bottom:24px}
+  .sb-a{opacity:1!important}
+}
+</style>
+<section class="sb" id="second-brain" aria-label="建立公司的第二大脑">
+  <div class="sb-stage">
+    <canvas class="sb-cv" aria-hidden="true"></canvas>
+    <div class="sb-frame" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="sb-count" aria-hidden="true"><small>已收进大脑</small><b><span id="sb-n">0</span> 条</b></div>
+
+    <div class="sb-hero">
+      <small>两天课会教你</small>
+      <h2>建立公司的<br><em>第二大脑</em>。</h2>
+      <p>公司里每一样东西，都记得住、找得到、连得起来。</p>
+    </div>
+
+    <div class="sb-copy">
+      <div class="sb-step"><small>01 · 收集</small><h3>公司每天的东西，<br><em>全部收进去</em>。</h3><p>Facebook、Instagram、小红书、TikTok 的营销内容，Email、WhatsApp、联络人，Invoice、Voucher，Newsletter、最新资讯、你的点子……</p></div>
+      <div class="sb-step"><small>02 · 消化</small><h3>不是把每一句话<br>存起来，<em>它会分析</em>。</h3><p>看懂 Invoice 号码、金额、是谁的客户；哪篇内容带来询问；哪个点子跟哪条新闻有关。</p></div>
+      <div class="sb-step"><small>03 · 连接</small><h3>就像你的大脑，<br>用<em>神经元</em>连起一切。</h3><p>客户连到账单，账单连到 Email，内容连到询问，点子连到最新资讯。越用，连得越多、越聪明。</p></div>
+      <div class="sb-step"><small>04 · 问它</small><h3>想知道什么，<br><em>问一句就有</em>。</h3><p>它从大脑里找出答案，还告诉你资料来自哪里。</p></div>
+    </div>
+
+    <div class="sb-ask" aria-hidden="true">
+      <div class="sb-q">上个月哪个平台，带来最多客户？</div>
+      <div class="sb-a"><b>小红书。</b>3 篇笔记带来 18 个询问，5 个成交，大部分是 WhatsApp 来问的。<br><em>小红书内容</em><em>WhatsApp 询问</em><em>客户名单</em></div>
+    </div>
+    <div class="sb-end">两天课，教你建立<em>公司自己的第二大脑</em>。</div>
+  </div>
+</section>
+<script>
+(function(){
+  var sec=document.getElementById('second-brain'); if(!sec) return;
+  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var stage=sec.querySelector('.sb-stage'), cv=sec.querySelector('.sb-cv'), ctx=cv.getContext('2d');
+  var $=function(s){return sec.querySelector(s)}, $$=function(s){return Array.prototype.slice.call(sec.querySelectorAll(s))};
+  var hero=$('.sb-hero'), steps=$$('.sb-step'), ask=$('.sb-ask'), ans=$('.sb-a'), end=$('.sb-end'), count=$('.sb-count'), nEl=document.getElementById('sb-n');
+  // knowledge clusters = neuron groups
+  var CL=[
+    {t:'客户',c:[103,232,249]},{t:'营销内容',c:[249,168,212]},{t:'账单 · Invoice',c:[255,179,122]},
+    {t:'Email · WhatsApp',c:[147,197,253]},{t:'点子',c:[196,181,253]},{t:'最新资讯',c:[253,224,71]}];
+  // where each cluster sits (unit layout) and its size
+  var LAY_D=[[-.62,-.18,1.15],[.05,-.62,.8],[.62,-.2,1.05],[.02,.5,.9],[-.5,.62,.6],[.66,.62,.62]];
+  var LAY_M=[[-.5,-.5,1],[.48,-.62,.85],[.55,.05,.95],[-.45,.25,.9],[-.05,.78,.65],[.55,.72,.6]];
+  // content sources that fly in (chip text, colour, cluster)
+  var SRC=[['f','Facebook 营销','#1877F2',1],['IG','Instagram','#E1306C',1],['小','小红书','#FF2442',1],['T','TikTok','#111',1],
+    ['@','Email','#2563EB',3],['W','WhatsApp','#25D366',3],['👤','联络人','#0EA5E9',0],['¥','Invoice','#E8590C',2],
+    ['V','Voucher','#9333EA',2],['N','Newsletter','#CA8A04',5],['i','最新资讯','#F59E0B',5],['💡','点子','#7C3AED',4]];
+  var chips=SRC.map(function(s){var d=document.createElement('div');d.className='sb-chip';d.style.setProperty('--c',s[2]);d.innerHTML='<i>'+s[0]+'</i>'+s[1];stage.appendChild(d);return d});
+  var labels=CL.map(function(k){var d=document.createElement('div');d.className='sb-label';d.textContent=k.t;stage.appendChild(d);return d});
+  var W,H,DPR,mob,P=[],X=[],seed=11,G={};
+  function rnd(){seed=(seed*16807)%2147483647;return (seed-1)/2147483646}
+  function gauss(){return (rnd()+rnd()+rnd()+rnd()-2)/2}
+  function geo(){
+    mob=W<761;
+    var cx=mob?W*.5:W*.7, cy=mob?H*.6:H*.53, S=mob?Math.min(W*.44,H*.26):Math.min(W*.26,H*.36);
+    G={cx:cx,cy:cy,S:S,R:mob?S*.36:S*.42};
+    G.hubs=(mob?LAY_M:LAY_D).map(function(l){return {x:cx+l[0]*S,y:cy+l[1]*S,r:G.R*l[2]}});
+    // chips on a ring around the brain
+    G.chip=SRC.map(function(_,i){var a=-Math.PI/2+i*Math.PI*2/SRC.length;var rx=mob?W*.3:S*1.15, ry=mob?H*.2:S*.92, x=cx+Math.cos(a)*rx;if(mob)x=Math.max(70,Math.min(W-70,x));return {x:x,y:cy+Math.sin(a)*ry}});
+  }
+  function build(){
+    DPR=Math.min(devicePixelRatio||1,2); W=stage.clientWidth; H=stage.clientHeight;
+    cv.width=W*DPR; cv.height=H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0); geo();
+    var N=mob?1000:2000; P=[]; seed=11;
+    var PAL=[[140,225,255],[235,248,255],[255,196,150],[255,150,205],[110,195,255],[255,232,160],[160,240,230]];
+    for(var i=0;i<N;i++){
+      var k=Math.floor(rnd()*CL.length), rr=.08+Math.pow(rnd(),.85)*.92, a=rnd()*6.283;
+      P.push({k:k,src:i%SRC.length,fx:rnd(),fy:rnd(),cr:rr,ca:a,ox:gauss(),oy:gauss(),
+        u0:rnd(),th:rnd()*6.283,tr:.35+.65*Math.sqrt(rnd()),sp:.7+rnd()*.8,pc:PAL[Math.floor(rnd()*PAL.length)],
+        sz:1.1+rnd()*2.1,tw:rnd()*6.283,link:rnd()<.62});
+    }
+    // long links between clusters (neuron to another neuron's core)
+    X=[]; for(var j=0;j<(mob?110:240);j++){X.push({a:Math.floor(rnd()*N),k:Math.floor(rnd()*CL.length),w:rnd()})}
+    // make sure the source chip maps to a sensible cluster for some particles
+    P.forEach(function(q,i){if(i%5===0) q.k=SRC[q.src][3]});
+  }
+  var cl=function(v){return v<0?0:v>1?1:v}, seg=function(p,a,b){return cl((p-a)/(b-a))}, ease=function(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2}, eo=function(t){return 1-Math.pow(1-t,3)};
+  var p=0, inView=false, t0=performance.now(), pos=[];
+  // the "thinking" body: a dense, twisting tube of light that stretches and bends (scroll + time)
+  function tube(q,t,m){
+    var L=mob?W*.82:G.S*(1.55+.55*m), T=-.42+.62*m+.08*Math.sin(t*.35);
+    var u=(q.u0+t*.085*q.sp)%1, s=u-.5, along=s*L;
+    var bend=Math.sin(u*3.4+m*3.2+t*.5)*G.S*(.16+.22*m)+Math.sin(u*7.1-t*.7)*G.S*.06;
+    var cT=Math.cos(T), sT=Math.sin(T), bx=G.cx+cT*along-sT*bend, by=G.cy+sT*along+cT*bend;
+    var rad=G.S*(mob?.25:.31)*(.22+.78*Math.pow(Math.sin(Math.PI*u),.45))*(1+.48*Math.sin(u*4.2+m*4+t*.6));
+    var th=q.th+t*.22*q.sp+u*2.4, c=Math.cos(th), d=Math.sin(th), off=c*rad*q.tr, dep=d*rad*q.tr;
+    return [bx-sT*off+cT*dep*.3, by+cT*off+sT*dep*.3, d];
+  }
+  function place(q,t,pp){
+    var aChip=ease(seg(pp,.14,.26)), aBall=ease(seg(pp,.29,.40)), aNet=ease(seg(pp,.5,.62)), m=seg(pp,.3,.52);
+    var x=q.fx*W+Math.sin(t*.3+q.tw)*6, y=q.fy*H+Math.cos(t*.25+q.tw)*6;
+    var ch=G.chip[q.src], bx=ch.x+q.ox*(mob?20:34), by=ch.y+q.oy*(mob?14:22);
+    x+=(bx-x)*aChip; y+=(by-y)*aChip;
+    var tb=tube(q,t,m); x+=(tb[0]-x)*aBall; y+=(tb[1]-y)*aBall;
+    var hh=G.hubs[q.k], ca=q.ca+t*.05*(q.k%2?1:-1), nx=hh.x+Math.cos(ca)*q.cr*hh.r, ny=hh.y+Math.sin(ca)*q.cr*hh.r*.9;
+    var an=aNet*(1+.25*Math.sin(q.tw)*(1-aNet)); an=an>1?1:an;  // stagger: some neurons arrive first
+    x+=(nx-x)*an; y+=(ny-y)*an;
+    return [x,y,tb[2],nx,ny];
+  }
+  function frame(now){
+    if(!inView) return;
+    var t=(now-t0)/1000, hubs=G.hubs;
+    ctx.clearRect(0,0,W,H);
+    var aChip=ease(seg(p,.14,.26)), aBall=ease(seg(p,.29,.40)), aNet=ease(seg(p,.5,.62)), hot=seg(p,.84,.9);
+    var tubeW=aBall*(1-aNet), boom=Math.sin(Math.PI*seg(p,.525,.64)), aN2=aNet*aNet;
+    for(var i=0;i<P.length;i++){
+      var q=P[i], c1=place(q,t,p), c0=place(q,t-.045,p);
+      var vx=c1[0]-c0[0], vy=c1[1]-c0[1], vl=Math.hypot(vx,vy);
+      if(vl>220){vx=vy=0;vl=0}
+      var f=1+9*tubeW; vx*=f; vy*=f; vl*=f;
+      if(vl>26){vx*=26/vl;vy*=26/vl}
+      if(boom>0){var dx=c1[3]-c1[0], dy=c1[4]-c1[1], dl=Math.hypot(dx,dy)||1, L2=Math.min(85,dl*.5)*boom;
+        vx=vx*(1-boom)+dx/dl*L2; vy=vy*(1-boom)+dy/dl*L2;}
+      pos[i]=[c1[0],c1[1],c1[2],vx,vy];
+    }
+    ctx.globalCompositeOperation='lighter';
+    // links from every neuron to its core
+    if(aNet>0){
+      ctx.lineWidth=.6;
+      for(i=0;i<P.length;i++){var q2=P[i];if(!q2.link)continue;var h2=hubs[q2.k],k2=CL[q2.k].c,pp=pos[i];
+        ctx.strokeStyle='rgba('+k2[0]+','+k2[1]+','+k2[2]+','+(.2*aN2)+')';ctx.beginPath();ctx.moveTo(h2.x,h2.y);ctx.lineTo(pp[0],pp[1]);ctx.stroke();}
+      // long cross-cluster links
+      ctx.lineWidth=.7;
+      X.forEach(function(e){var pp=pos[e.a],h3=hubs[e.k];var hl=hot&&((P[e.a].k===1&&e.k===3)||(P[e.a].k===3&&e.k===0)||(P[e.a].k===1&&e.k===0));
+        ctx.strokeStyle=hl?'rgba(255,190,140,'+(.55*hot)+')':'rgba(190,220,255,'+(.11*aN2*(.5+e.w))+')';ctx.beginPath();ctx.moveTo(pp[0],pp[1]);ctx.lineTo(h3.x,h3.y);ctx.stroke();});
+    }
+    // neurons: flowing streaks while thinking, round dots once connected
+    for(i=0;i<P.length;i++){
+      var q3=P[i],k3=CL[q3.k].c,pp3=pos[i],tw=.55+.45*Math.sin(t*2+q3.tw);
+      var mix=tubeW*(1-boom), r=Math.round(k3[0]+(q3.pc[0]-k3[0])*mix), g=Math.round(k3[1]+(q3.pc[1]-k3[1])*mix), b=Math.round(k3[2]+(q3.pc[2]-k3[2])*mix);
+      var depth=.55+.45*pp3[2];
+      var al=(.28+.5*aChip)*(1-tubeW)*(1-aNet)+tubeW*(.42+.55*depth)+aNet*.6*tw;
+      al*=1-.35*boom;
+      if(p<.12) al=.22*tw;
+      var col='rgba('+r+','+g+','+b+','+Math.min(1,al).toFixed(3)+')';
+      var sl=Math.hypot(pp3[3],pp3[4]);
+      if(sl>2.5&&aNet<.96){ctx.strokeStyle=col;ctx.lineWidth=tubeW>.5?1.15+depth*.5:1.3;ctx.beginPath();ctx.moveTo(pp3[0]-pp3[3],pp3[1]-pp3[4]);ctx.lineTo(pp3[0],pp3[1]);ctx.stroke()}
+      else{ctx.fillStyle=col;ctx.beginPath();ctx.arc(pp3[0],pp3[1],q3.sz*(1+aNet*.35),0,6.283);ctx.fill()}
+    }
+    // bright cores
+    if(aNet>0) hubs.forEach(function(h,j){var k=CL[j].c,R=(mob?26:40)*(1+.08*Math.sin(t*2+j)),g=ctx.createRadialGradient(h.x,h.y,0,h.x,h.y,R);
+      g.addColorStop(0,'rgba(255,255,255,'+aN2+')');g.addColorStop(.18,'rgba('+k.join(',')+','+(.9*aN2)+')');g.addColorStop(1,'rgba('+k.join(',')+',0)');
+      ctx.fillStyle=g;ctx.beginPath();ctx.arc(h.x,h.y,R,0,6.283);ctx.fill();});
+    // travelling signals along hot links in the recall scene
+    if(hot>0){[[1,3],[3,0],[1,0]].forEach(function(e,j){var A=hubs[e[0]],B=hubs[e[1]],f=((t*.5+j*.33)%1);
+      ctx.fillStyle='rgba(255,220,180,'+hot+')';ctx.beginPath();ctx.arc(A.x+(B.x-A.x)*f,A.y+(B.y-A.y)*f,3.2,0,6.283);ctx.fill();})}
+    ctx.globalCompositeOperation='source-over';
+    // labels
+    var lv=seg(p,.6,.66);
+    labels.forEach(function(l,j){var h=hubs[j];l.style.transform='translate('+h.x+'px,'+(h.y-h.r-(mob?10:16))+'px) translate(-50%,-50%)';l.style.opacity=lv});
+    requestAnimationFrame(frame);
+  }
+  function update(){
+    var r=sec.getBoundingClientRect(), Hs=stage.clientHeight;
+    p=cl(-r.top/(r.height-Hs));
+    var was=inView; inView=r.bottom>-20&&r.top<Hs+20;
+    if(inView&&!was) requestAnimationFrame(frame);
+    var ho=seg(p,.1,.15); hero.style.opacity=seg(p,0,.03)*(1-ho); hero.style.transform='scale('+(1+ho*.08)+')';
+    var win=[[.14,.18,.28,.31],[.31,.35,.47,.5],[.52,.57,.78,.81],[.81,.85,1.1,1.2]];
+    steps.forEach(function(s,i){var w=win[i],v=seg(p,w[0],w[1])*(1-seg(p,w[2],w[3]));s.style.opacity=v;s.style.transform=(mob?'':'translateY(-50%) ')+'translateY('+((1-v)*18)+'px)'});
+    // chips: fly in from outside, then get pulled into the brain
+    var pull=ease(seg(p,.27,.34));
+    chips.forEach(function(c,i){var g=G.chip[i],v=eo(seg(p,.14+i*.008,.19+i*.008));
+      var sx=G.cx+(g.x-G.cx)*2.2, sy=G.cy+(g.y-G.cy)*2.2;
+      var x=sx+(g.x-sx)*v, y=sy+(g.y-sy)*v; x+=(G.cx-x)*pull; y+=(G.cy-y)*pull;
+      c.style.opacity=v*(1-pull); c.style.transform='translate('+x+'px,'+y+'px) translate(-50%,-50%) scale('+(1-pull*.6)+')'});
+    count.style.opacity=seg(p,.14,.18);
+    nEl.textContent=Math.round(28640*ease(seg(p,.15,.66))).toLocaleString('en-US');
+    var av=seg(p,.85,.89); ask.style.opacity=av; ask.style.transform='translateY('+((1-av)*16)+'px)';
+    ans.style.opacity=seg(p,.9,.94);
+    end.style.opacity=seg(p,.96,.995);
+  }
+  var tick=false;
+  addEventListener('scroll',function(){if(!tick){tick=true;requestAnimationFrame(function(){tick=false;update()})}},{passive:true});
+  addEventListener('resize',function(){build();update()});
+  build(); update();
+})();
+</script>
+
+<!-- ACCOUNTING PAIN: scroll-driven animation (documents → AI → dashboard) -->
+<style>
+.acc{position:relative;height:560vh;background:#0B0604;color:#fff}
+.acc-stage{position:sticky;top:0;height:100vh;height:100dvh;overflow:hidden;background:radial-gradient(120% 90% at 50% 55%,#2A140A 0%,#120905 55%,#0B0604 100%)}
+.acc-docs{position:absolute;inset:0;perspective:900px}
+.acc-doc{position:absolute;left:50%;top:50%;width:var(--dw);aspect-ratio:3/4;margin:calc(var(--dw)*-.667) 0 0 calc(var(--dw)*-.5);border-radius:6px;background:#FBF7F1;box-shadow:0 10px 30px rgba(0,0,0,.45);padding:calc(var(--dw)*.1) calc(var(--dw)*.1) 0;overflow:hidden;will-change:transform,opacity}
+.acc-doc i{display:block;height:calc(var(--dw)*.045);border-radius:3px;background:rgba(26,14,8,.12);margin:0 0 calc(var(--dw)*.07)}
+.acc-doc i:nth-child(odd){width:78%}
+.acc-doc b{display:block;font-size:calc(var(--dw)*.11);font-weight:800;letter-spacing:.02em;margin:0 0 calc(var(--dw)*.08);color:var(--c)}
+.acc-doc .hd{height:calc(var(--dw)*.12);border-radius:3px;background:var(--c);opacity:.85;margin:0 0 calc(var(--dw)*.08)}
+.acc-doc.xl{background:#F3FBF5;background-image:linear-gradient(rgba(16,124,65,.18) 1px,transparent 1px),linear-gradient(90deg,rgba(16,124,65,.18) 1px,transparent 1px);background-size:100% 12%,25% 100%}
+.acc-doc.pdf::after{content:"PDF";position:absolute;right:8%;top:6%;font-size:calc(var(--dw)*.1);font-weight:800;color:#fff;background:#D93025;border-radius:3px;padding:1px 5px}
+.acc-doc.rc{background:#FFFBEA}
+.acc-glow{position:absolute;left:50%;top:50%;width:70vmin;height:70vmin;margin:-35vmin 0 0 -35vmin;border-radius:50%;background:radial-gradient(circle,rgba(255,122,26,.55) 0%,rgba(232,89,12,.18) 35%,transparent 68%);opacity:0;will-change:opacity,transform}
+.acc-core{position:absolute;left:50%;top:50%;width:19vmin;height:19vmin;margin:-9.5vmin 0 0 -9.5vmin;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#FFB067,#FF7A1A 45%,#C2410C 100%);box-shadow:0 0 60px rgba(255,122,26,.8),0 0 160px rgba(255,122,26,.45),inset 0 0 22px rgba(255,255,255,.45);font-weight:800;font-size:6vmin;letter-spacing:-.04em;opacity:0;will-change:transform,opacity}
+.acc-ring{position:absolute;left:50%;top:50%;border-radius:50%;border:1.5px dashed rgba(255,168,100,.45);opacity:0;will-change:transform,opacity}
+.acc-ring.r1{width:32vmin;height:32vmin;margin:-16vmin 0 0 -16vmin}
+.acc-ring.r2{width:46vmin;height:46vmin;margin:-23vmin 0 0 -23vmin;border-style:dotted;border-color:rgba(255,200,150,.3)}
+.acc-txt{position:absolute;z-index:3;left:0;right:0;text-align:center;padding:0 20px;pointer-events:none;will-change:opacity,transform}
+.acc-pain{top:0;padding:13vh 20px 60px;background:radial-gradient(ellipse 46% 48% at 50% 48%,rgba(11,6,4,.94) 45%,rgba(11,6,4,0) 100%)}
+.acc-pain .eyebrow{color:#FF9A4D}
+.acc-pain h2{color:#fff;margin:0}
+.acc-pain p{margin:12px auto 0;max-width:640px;color:rgba(255,255,255,.72);font-size:clamp(15px,1.5vw,18px)}
+.acc-chips{position:absolute;z-index:3;left:0;right:0;bottom:7vh;display:flex;flex-wrap:wrap;justify-content:center;gap:10px;padding:0 16px}
+.acc-chips span{background:rgba(26,13,7,.72);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-radius:999px;padding:9px 18px;font-size:clamp(13px,1.3vw,16px);font-weight:600;opacity:0;will-change:opacity,transform}
+.acc-ai{top:auto;bottom:9vh}
+.acc-ai h3{font-size:clamp(22px,2.6vw,34px);letter-spacing:-.03em;margin:0 0 10px}
+.acc-steps{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:clamp(13px,1.3vw,16px);color:rgba(255,255,255,.8)}
+.acc-steps span{opacity:0}
+.acc-steps span::before{content:"✓ ";color:#FF9A4D;font-weight:800}
+.acc-dash{position:absolute;z-index:4;left:50%;top:52%;width:min(980px,calc(100vw - 32px));transform:translate(-50%,-50%);opacity:0;will-change:transform,opacity}
+.acc-db{background:#FFFDF9;color:var(--ink);border-radius:20px;padding:22px 24px 20px;box-shadow:0 30px 90px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.08),0 0 80px rgba(255,122,26,.25)}
+.acc-db-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:16px}
+.acc-db-top h3{margin:0;font-size:clamp(17px,1.8vw,22px);letter-spacing:-.03em}
+.acc-db-top small{font-size:12px;font-weight:700;color:#fff;background:var(--orange);border-radius:999px;padding:4px 12px;white-space:nowrap}
+.acc-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+.acc-kpi{background:#FFF3E8;border-radius:14px;padding:12px 14px}
+.acc-kpi small{display:block;font-size:12px;font-weight:700;color:var(--mute)}
+.acc-kpi b{font-size:clamp(18px,2.2vw,28px);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.acc-row{display:grid;grid-template-columns:1.1fr 1fr;gap:12px}
+.acc-box{border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.acc-box>small{display:block;font-size:12px;font-weight:700;color:var(--mute);margin-bottom:8px}
+.acc-bars{display:flex;align-items:flex-end;gap:10px;height:120px}
+.acc-bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
+.acc-bar i{display:block;width:100%;border-radius:6px 6px 2px 2px;background:linear-gradient(180deg,#FF9A4D,#E8590C);height:calc(var(--h) * var(--g,0))}
+.acc-bar span{font-size:11px;color:var(--mute);white-space:nowrap}
+.acc-list{margin:0;padding:0;list-style:none;font-size:13.5px}
+.acc-list li{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-top:1px solid var(--line);opacity:0}
+.acc-list li:first-child{border-top:0}
+.acc-list em{font-style:normal;color:var(--mute);font-size:12px}
+.acc-alerts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.acc-alerts span{font-size:13px;font-weight:600;border-radius:10px;padding:7px 12px;opacity:0}
+.acc-alerts .w{background:#FFF1E6;color:#B4410B;box-shadow:inset 0 0 0 1px rgba(232,89,12,.3)}
+.acc-alerts .t{background:#EEF7F0;color:#146C3A;box-shadow:inset 0 0 0 1px rgba(20,108,58,.25)}
+.acc-end{position:absolute;z-index:4;left:0;right:0;bottom:3.5vh;text-align:center;font-size:clamp(15px,1.6vw,20px);font-weight:700;opacity:0}
+.acc-end em{font-style:normal;color:#FF9A4D}
+.acc-note{position:absolute;right:14px;bottom:10px;font-size:11px;color:rgba(255,255,255,.4)}
+@media(max-width:760px){
+  .acc{height:480vh}
+  .acc-db{padding:16px 14px 14px;border-radius:16px}
+  .acc-kpis{gap:6px}.acc-kpi{padding:8px 9px}.acc-kpi small{font-size:10.5px}.acc-kpi b{font-size:16px;white-space:nowrap}.acc-note{right:auto;left:14px;bottom:auto;top:84px}
+  .acc-row{grid-template-columns:1fr}
+  .acc-bars{height:70px}
+  .acc-list{font-size:12.5px}.acc-list li{padding:4px 0}
+  .acc-alerts span{font-size:12px;padding:5px 9px}
+  .acc-dash{top:50%}
+}
+@media (prefers-reduced-motion:reduce){
+  .acc{height:auto}
+  .acc-stage{position:relative;height:auto;padding:70px 0 60px}
+  .acc-docs,.acc-glow,.acc-core,.acc-ring,.acc-ai{display:none}
+  .acc-txt,.acc-chips,.acc-dash,.acc-end{position:relative;inset:auto;top:auto;bottom:auto;left:auto;transform:none;opacity:1!important;margin:24px auto 0}
+  .acc-chips span,.acc-list li,.acc-alerts span{opacity:1!important}
+  .acc-bar i{--g:1!important}
+}
+</style>
+<section class="acc" id="accounting" aria-label="整理账单最大的烦恼">
+  <div class="acc-stage">
+    <div class="acc-docs" aria-hidden="true"></div>
+    <div class="acc-glow" aria-hidden="true"></div>
+    <div class="acc-ring r1" aria-hidden="true"></div>
+    <div class="acc-ring r2" aria-hidden="true"></div>
+    <div class="acc-core" aria-hidden="true">AI</div>
+
+    <div class="acc-txt acc-pain">
+      <div class="eyebrow">Accounting · 整理账单</div>
+      <h2>整理账单，<br>最大的烦恼。</h2>
+      <p>发票、薪资、销售单、Voucher、PDF、Excel……<br>一大堆，格式都不一样。</p>
+    </div>
+    <div class="acc-chips"><span>单据堆成山</span><span>格式都不一样</span><span>漏单、金额对不上</span><span>月底加班到半夜</span></div>
+
+    <div class="acc-txt acc-ai" aria-hidden="true">
+      <h3>交给 AI 整理</h3>
+      <div class="acc-steps"><span>读完 328 份单据</span><span>分好类：发票、薪资、销售、Voucher</span><span>检查：哪张缺了、哪里对不上</span></div>
+    </div>
+
+    <div class="acc-dash">
+      <div class="acc-db">
+        <div class="acc-db-top"><h3>公司付款 Dashboard · 11 月</h3><small>AI 已整理</small></div>
+        <div class="acc-kpis">
+          <div class="acc-kpi"><small>待付款总额</small><b>RM <span data-to="48260">0</span></b></div>
+          <div class="acc-kpi"><small>本周到期</small><b><span data-to="12">0</span> 笔</b></div>
+          <div class="acc-kpi"><small>已整理单据</small><b><span data-to="328">0</span> 份</b></div>
+        </div>
+        <div class="acc-row">
+          <div class="acc-box"><small>付款分类</small>
+            <div class="acc-bars">
+              <div class="acc-bar" style="--h:100%"><i></i><span>薪资</span></div>
+              <div class="acc-bar" style="--h:72%"><i></i><span>供应商</span></div>
+              <div class="acc-bar" style="--h:38%"><i></i><span>租金</span></div>
+              <div class="acc-bar" style="--h:24%"><i></i><span>水电</span></div>
+              <div class="acc-bar" style="--h:16%"><i></i><span>其他</span></div>
+            </div>
+          </div>
+          <div class="acc-box"><small>快到期</small>
+            <ul class="acc-list">
+              <li><span>11 月薪资 <em>Payroll</em></span><b>RM 21,600</b></li>
+              <li><span>供应商发票 <em>INV-1042</em></span><b>RM 8,400</b></li>
+              <li><span>办公室租金 <em>Voucher</em></span><b>RM 4,500</b></li>
+              <li><span>电费、网络 <em>PDF</em></span><b>RM 1,260</b></li>
+            </ul>
+          </div>
+        </div>
+        <div class="acc-alerts"><span class="w">⚠ 缺 2 张收据</span><span class="w">⚠ INV-1042 金额对不上</span><span class="t">💡 建议：先付本周到期的 3 笔</span></div>
+      </div>
+    </div>
+    <div class="acc-end">AI 整理、指出问题、给建议；<em>最后由你审核。</em></div>
+    <div class="acc-note">示意画面</div>
+  </div>
+</section>
+<script>
+(function(){
+  var sec=document.getElementById('accounting'); if(!sec) return;
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var stage=sec.querySelector('.acc-stage'), box=sec.querySelector('.acc-docs');
+  var $=function(s){return sec.querySelector(s)}, $$=function(s){return Array.prototype.slice.call(sec.querySelectorAll(s))};
+  var pain=$('.acc-pain'), chips=$$('.acc-chips span'), ai=$('.acc-ai'), steps=$$('.acc-steps span'), dash=$('.acc-dash'),
+      glow=$('.acc-glow'), core=$('.acc-core'), r1=$('.acc-ring.r1'), r2=$('.acc-ring.r2'), end=$('.acc-end'),
+      nums=$$('.acc-kpi [data-to]'), bars=$$('.acc-bar i'), rows=$$('.acc-list li'), alerts=$$('.acc-alerts span');
+  if(reduce){nums.forEach(function(n){n.textContent=(+n.dataset.to).toLocaleString('en-US')});return}
+  var TYPES=[['INVOICE','#E8590C',''],['PAYROLL','#2563EB',''],['SALES','#16A34A',''],['VOUCHER','#9333EA',''],['RECEIPT','#B45309','rc'],['PDF','#D93025','pdf'],['EXCEL','#107C41','xl'],['BANK','#0F766E','']];
+  var small=innerWidth<760, N=small?30:56, docs=[], seed=7;
+  function rnd(){seed=(seed*16807)%2147483647;return (seed-1)/2147483646}
+  for(var k=0;k<N;k++){
+    var t=TYPES[k%TYPES.length], d=document.createElement('div');
+    d.className='acc-doc '+t[2]; d.style.setProperty('--c',t[1]);
+    var w=(small?52:70)+rnd()*(small?40:60); d.style.setProperty('--dw',w+'px');
+    d.innerHTML=(t[2]==='xl'?'<b>EXCEL</b>':'<div class="hd"></div><b>'+t[0]+'</b>')+'<i></i><i></i><i></i><i></i><i></i>';
+    box.appendChild(d);
+    docs.push({el:d,x:rnd()*1.1-.55,y:rnd()*1.1-.55,z:rnd(),rot:rnd()*50-25,ry:rnd()*40-20,a:rnd()*6.283,ph:rnd()*6.283,delay:rnd()*.35});
+  }
+  var cl=function(v){return v<0?0:v>1?1:v}, seg=function(p,a,b){return cl((p-a)/(b-a))}, ease=function(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2};
+  var easeOut=function(t){return 1-Math.pow(1-t,3)};
+  function render(){
+    var r=sec.getBoundingClientRect(), H=stage.clientHeight, W=stage.clientWidth;
+    var p=cl(-r.top/(r.height-H));
+    if(r.bottom<-50||r.top>H+50) return;
+    // 1) documents: drift in, then spiral into the AI core
+    var inP=easeOut(seg(p,0,.12)), suck=seg(p,.30,.56);
+    docs.forEach(function(o){
+      var s=ease(cl((suck-o.delay*.6)/(1-o.delay*.6)));
+      var fx=o.x*W*(0.55+0.45*inP), fy=o.y*H*(0.55+0.45*inP)+Math.sin(o.ph+p*9)*14*(1-s);
+      var ang=o.a+s*7, rad=Math.hypot(fx,fy)*(1-s);
+      var x=fx*(1-s)+Math.cos(ang)*rad*s*.6, y=fy*(1-s)+Math.sin(ang)*rad*s*.6;
+      var sc=(0.65+o.z*0.6)*(1-s*.9), op=inP*(1-seg(s,.75,1));
+      o.el.style.opacity=op;
+      o.el.style.transform='translate3d('+x.toFixed(1)+'px,'+y.toFixed(1)+'px,'+((o.z-.5)*200).toFixed(0)+'px) rotate('+(o.rot*(1-s)+s*360).toFixed(1)+'deg) rotateY('+(o.ry*(1-s)).toFixed(1)+'deg) scale('+sc.toFixed(3)+')';
+    });
+    // 2) pain headline + chips
+    var painOut=seg(p,.26,.34);
+    pain.style.opacity=seg(p,.02,.1)*(1-painOut); pain.style.transform='translateY('+(-painOut*30)+'px)';
+    chips.forEach(function(c,i){var v=seg(p,.1+i*.035,.15+i*.035)*(1-painOut);c.style.opacity=v;c.style.transform='translateY('+((1-v)*16)+'px)'});
+    // 3) AI core
+    var coreIn=seg(p,.28,.40), coreOut=seg(p,.64,.72), pulse=1+Math.sin(p*60)*.03*coreIn;
+    core.style.opacity=coreIn*(1-coreOut); core.style.transform='scale('+((0.4+0.6*easeOut(coreIn))*pulse*(1+coreOut*.6)).toFixed(3)+')';
+    glow.style.opacity=coreIn*(1-coreOut*.7)*(0.6+0.4*seg(p,.45,.56)); glow.style.transform='scale('+(0.6+coreIn*.5+coreOut*1.2).toFixed(3)+')';
+    r1.style.opacity=coreIn*(1-coreOut)*.9; r1.style.transform='rotate('+(p*720)+'deg) scale('+(0.7+coreIn*.3)+')';
+    r2.style.opacity=coreIn*(1-coreOut)*.7; r2.style.transform='rotate('+(-p*480)+'deg) scale('+(0.7+coreIn*.3)+')';
+    var aiV=seg(p,.40,.46)*(1-seg(p,.62,.68));
+    ai.style.opacity=aiV;
+    steps.forEach(function(s,i){var v=seg(p,.46+i*.045,.5+i*.045);s.style.opacity=v});
+    // 4) dashboard
+    var dIn=easeOut(seg(p,.66,.76));
+    dash.style.opacity=dIn; dash.style.transform='translate(-50%,-50%) scale('+(0.6+0.4*dIn).toFixed(3)+')';
+    var nV=easeOut(seg(p,.74,.84));
+    nums.forEach(function(n){n.textContent=Math.round(+n.dataset.to*nV).toLocaleString('en-US')});
+    bars.forEach(function(b,i){b.style.setProperty('--g',easeOut(seg(p,.76+i*.012,.84+i*.012)).toFixed(3))});
+    rows.forEach(function(li,i){var v=seg(p,.78+i*.02,.81+i*.02);li.style.opacity=v;li.style.transform='translateX('+((1-v)*14)+'px)'});
+    alerts.forEach(function(a,i){var v=seg(p,.86+i*.025,.89+i*.025);a.style.opacity=v;a.style.transform='translateY('+((1-v)*10)+'px)'});
+    end.style.opacity=seg(p,.93,.98);
+  }
+  var ticking=false;
+  function onScroll(){if(!ticking){ticking=true;requestAnimationFrame(function(){ticking=false;render()})}}
+  addEventListener('scroll',onScroll,{passive:true}); addEventListener('resize',onScroll); render();
+})();
+</script>
+
+<!-- AUTOMATION vs AI AUTOMATION -->
+<section class="vs-sec" id="ai-auto">
+  <div class="wrap center">
+    <div class="eyebrow">自动化 VS AI 自动化</div>
+    <h2>不只是照规则跑，<br>它还会帮你看出问题。</h2>
+    <div class="vs">
+      <div class="vs-col">
+        <h3>一般自动化</h3>
+        <p class="vs-tag">照设好的规则跑</p>
+        <div class="vs-row"><small>怎么做</small><p>照规则一步一步跑</p></div>
+        <div class="vs-row"><small>整理账单时</small><p>把数字搬进表格</p></div>
+        <div class="vs-row"><small>有缺、有问题</small><p>规则没写到，它看不出来</p></div>
+        <div class="vs-row"><small>会不会问你</small><p>不会，照跑</p></div>
+        <div class="vs-row"><small>最后</small><p>出错了，你才发现</p></div>
+      </div>
+      <div class="vs-col co">
+        <h3>AI 自动化</h3>
+        <p class="vs-tag">会看、会想、会问你</p>
+        <div class="vs-row"><small>怎么做</small><p>看懂内容，再按你的规则做</p></div>
+        <div class="vs-row"><small>整理账单时</small><p>一边整理，一边帮你检查</p></div>
+        <div class="vs-row"><small>有缺、有问题</small><p>直接指出：哪张单缺了、哪里对不上</p></div>
+        <div class="vs-row"><small>会不会问你</small><p>会问你，还给你建议怎样做</p></div>
+        <div class="vs-row"><small>最后</small><p>你自己审核，确认了才算数</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS + TOOLS -->
+<section class="vs-sec" id="skills">
+  <div class="wrap center">
+    <div class="eyebrow">Skill + Tools</div>
+    <h2>AI Agent 不是一开始<br>就什么都会。</h2>
+    <p class="aia-note">它需要很多 Skill 和 Tools 来辅助。你掌握了这些，它才会：</p>
+    <div class="sk3">
+      <div><b>更强</b><span>装上 Skill，学会新的工作。</span></div>
+      <div><b>更准</b><span>接上 Tools，做事有根有据。</span></div>
+      <div><b>更好用</b><span>越用越顺手，交代一句就做完。</span></div>
+    </div>
+  </div>
+</section>
+
 <!-- COURSE -->
 <section class="course" id="course">
   <div class="wrap center">
     <div class="eyebrow">两天课程</div>
-    <h2>两天，做出这六样东西。</h2>
+    <h2>两天，做出这七样东西。</h2>
     <div class="outs3">
       <div class="out"><div class="out-vis"><span>1</span></div><div class="out-tx"><small>第 1 样</small><p class="big">你自己的 AI 助理。<br>手机一句话，它就开工；<br>公司资料，它都记得住。</p></div></div>
       <div class="out"><div class="out-vis"><span>2</span></div><div class="out-tx"><small>第 2 样</small><p class="big">会自动回复的 WhatsApp。<br>按你的规则回顾客；<br>不懂的，转给你。</p></div></div>
       <div class="out"><div class="out-vis"><span>3</span></div><div class="out-tx"><small>第 3 样</small><p class="big">你的 Email 助理。<br>连上 Gmail：查信、整理、<br>写好回复等你批准。</p></div></div>
-      <div class="out"><div class="out-vis"><span>4</span></div><div class="out-tx"><small>第 4 样</small><p class="big">你自己的网站。<br>Landing Page 到完整网站，<br>做好、发布上线。</p></div></div>
-      <div class="out"><div class="out-vis"><span>5</span></div><div class="out-tx"><small>第 5 样</small><p class="big">一眼看懂的 Dashboard。<br>Excel、Lark、Monday 接进来，<br>公司数据一个画面看完。</p></div></div>
-      <div class="out"><div class="out-vis"><span>6</span></div><div class="out-tx"><small>第 6 样</small><p class="big">AI 记账与报告。<br>单据、薪资整理成草稿，<br>公司的账一眼看懂。</p></div></div>
+      <div class="out"><div class="out-vis"><span>4</span></div><div class="out-tx"><small>第 4 样</small><p class="big">你公司的「第二大脑」。<br>账单、Email、联络人、点子，<br>全部收进去，AI 看懂、连起来。</p></div></div>
+      <div class="out"><div class="out-vis"><span>5</span></div><div class="out-tx"><small>第 5 样</small><p class="big">公司付款 Dashboard。<br>全公司要付款的单据，<br>整理成一个画面看完。</p></div></div>
+      <div class="out"><div class="out-vis"><span>6</span></div><div class="out-tx"><small>第 6 样</small><p class="big">一眼看懂的 Dashboard。<br>Excel、Lark、Monday 接进来，<br>公司数据一个画面看完。</p></div></div>
+      <div class="out"><div class="out-vis"><span>7</span></div><div class="out-tx"><small>第 7 样</small><p class="big">AI 记账与报告。<br>单据、薪资整理成草稿，<br>公司的账一眼看懂。</p></div></div>
     </div>
   </div>
 </section>
@@ -821,6 +1316,20 @@ section{padding:120px 0}
       <div class="b"><h3>自动剪接视频</h3><p>剪好后自动上传 Instagram。</p></div>
       <div class="b"><h3>运输追踪</h3><p>中国到马来西亚，到货自动通知。</p></div>
       <div class="b"><h3>Jombuy 社区团购</h3><p>开团到积分，做成系统。<a href="https://jombuy.com.my/" target="_blank" rel="noopener">jombuy.com.my →</a></p></div>
+    </div>
+  </div>
+</section>
+
+<!-- TOOLS WE USE -->
+<section class="vs-sec" id="tools">
+  <div class="wrap center">
+    <div class="eyebrow">我们会用到的工具</div>
+    <h2>AI Agent 背后，<br>是这几样东西。</h2>
+    <div class="tk">
+      <div><small>大脑</small><h3>LLM 大语言模型</h3><p>AI 的大脑，负责看懂、思考、写出来。</p><ul><li>ChatGPT</li><li>Claude</li><li>Gemini</li></ul></div>
+      <div><small>助理本身</small><h3>AI Agent</h3><p>会动手做事的 AI，用手机就能指挥。</p><ul><li>ChatGPT Codex</li><li>Hermes Agent</li></ul></div>
+      <div><small>技能</small><h3>Skill</h3><p>教 AI 一种新工作，装上就会做。</p><ul><li>做网站</li><li>剪辑视频</li><li>做报告</li><li>整理账单</li></ul></div>
+      <div><small>工具</small><h3>Tools</h3><p>让 AI 接上你每天在用的软件和资料。</p><ul><li>Telegram</li><li>WhatsApp</li><li>Gmail</li><li>Excel</li><li>Lark</li><li>Monday</li></ul></div>
     </div>
   </div>
 </section>
