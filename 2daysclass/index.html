@@ -22,7 +22,7 @@
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,400..700&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Google+Sans+Flex:opsz,wght@6..144,400..700&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
   <style>html{-webkit-text-size-adjust:100%}body{margin:0;background:#F8F4EE}</style>
 <style>
 :root{
@@ -610,6 +610,291 @@ section{padding:120px 0}
     <div><b>零基础</b><span>不需要会写 program</span></div>
   </div>
 </div>
+
+<!-- AI AUTOMATION: scroll-driven (AI cursors click through apps: invoice → PDF → send; pile of documents → folders) -->
+<style>
+.aa{position:relative;height:760vh;background:#1F3BFF;color:#fff}
+.aa-stage{position:sticky;top:0;height:100vh;height:100dvh;overflow:hidden;background:#1F3BFF;
+  background-image:linear-gradient(rgba(255,255,255,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.09) 1px,transparent 1px),linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);
+  background-size:120px 120px,120px 120px,24px 24px,24px 24px}
+.aa-root{position:absolute;left:0;top:0;transform-origin:0 0}
+.aa-root *{box-sizing:border-box}
+.aa-title{position:absolute;left:0;right:0;text-align:center;font-family:Anton,Impact,"Arial Narrow",sans-serif;letter-spacing:.01em;line-height:.9;color:transparent;-webkit-text-stroke:2px #fff;white-space:nowrap}
+.aa-title b{display:block;color:#D7FF3A;-webkit-text-stroke:0}
+.aa-sub{position:absolute;left:0;right:0;text-align:center;font-weight:700;font-size:22px;letter-spacing:-.01em}
+.aa-sub em{font-style:normal;background:#D7FF3A;color:#111;padding:2px 8px;border-radius:4px}
+.aa-dim{position:absolute;font:600 11px/1 ui-monospace,Menlo,monospace;color:rgba(255,255,255,.85);border:1px solid rgba(255,255,255,.7);padding:3px 6px;background:#1F3BFF}
+.aa-line{position:absolute;border:1px solid rgba(255,255,255,.55)}
+.aa-head{position:absolute;display:flex;align-items:center;gap:10px;font-weight:800;font-size:15px}
+.aa-head i{font-style:normal;font-family:Anton,Impact,sans-serif;font-weight:400;letter-spacing:.04em;background:#D7FF3A;color:#111;padding:4px 10px;font-size:15px}
+.aa-cmd{position:absolute;display:flex;gap:10px;align-items:flex-start;background:#fff;color:#111;border:2px solid #111;box-shadow:5px 5px 0 #111;border-radius:14px;padding:10px 14px;font-size:15px;font-weight:600;line-height:1.45}
+.aa-cmd small{display:block;font-size:11px;font-weight:800;color:#1F3BFF;letter-spacing:.06em}
+.aa-cmd span.mic{flex:0 0 30px;height:30px;border-radius:50%;background:#1F3BFF;color:#fff;display:grid;place-items:center;font-size:15px}
+.aa-win{position:absolute;background:#fff;color:#111;border:2px solid #111;border-radius:12px;box-shadow:8px 8px 0 rgba(10,16,60,.55);overflow:hidden;display:flex;flex-direction:column}
+.aa-bar{flex:0 0 36px;display:flex;align-items:center;gap:7px;padding:0 12px;background:#F1F2F6;border-bottom:2px solid #111;font-size:13px;font-weight:700}
+.aa-bar s{width:10px;height:10px;border-radius:50%;background:#FF5F57;text-decoration:none}.aa-bar s+s{background:#FEBC2E}.aa-bar s+s+s{background:#28C840;margin-right:6px}
+.aa-body{flex:1;display:flex;min-height:0}
+.aa-side{flex:0 0 120px;background:#F7F8FB;border-right:1px solid #E3E5EC;padding:12px 10px;font-size:13px;display:flex;flex-direction:column;gap:4px}
+.aa-side span{padding:7px 9px;border-radius:7px;color:#555}.aa-side span.on{background:#1F3BFF;color:#fff;font-weight:700}
+.aa-main{flex:1;padding:14px 16px;display:flex;flex-direction:column;gap:9px;min-width:0}
+.aa-tool{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:15px}
+.aa-btn{display:inline-flex;align-items:center;gap:6px;border:2px solid #111;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:800;background:#D7FF3A;color:#111;transition:transform .08s}
+.aa-btn.dark{background:#111;color:#fff}
+.aa-btn.down{transform:translate(2px,2px);box-shadow:none}
+.aa-row{display:grid;grid-template-columns:62px 1fr;align-items:center;gap:8px;font-size:12.5px;color:#666}
+.aa-f{border:1.5px solid #D5D8E2;border-radius:7px;padding:7px 9px;min-height:33px;color:#111;font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;background:#fff}
+.aa-f.act{border-color:#1F3BFF;box-shadow:0 0 0 3px rgba(31,59,255,.15)}
+.aa-f.act::after{content:"";display:inline-block;width:2px;height:15px;background:#1F3BFF;vertical-align:-2px;margin-left:1px;animation:aaBlink 1s steps(1) infinite}
+@keyframes aaBlink{50%{opacity:0}}
+.aa-items{border:1.5px solid #E3E5EC;border-radius:8px;font-size:12.5px;overflow:hidden}
+.aa-items div{display:flex;justify-content:space-between;padding:7px 10px;border-top:1px solid #EEF0F4}.aa-items div:first-child{border-top:0;background:#F7F8FB;font-weight:700;color:#666}
+.aa-foot{display:flex;justify-content:space-between;align-items:center;margin-top:auto}
+.aa-total{font-weight:900;font-size:18px}
+.aa-chatbody{flex:1;background:#EFE7DC;padding:14px;display:flex;flex-direction:column;gap:10px;font-size:13.5px;min-height:0}
+.aa-msg{max-width:78%;padding:8px 11px;border-radius:10px;background:#fff;line-height:1.45;box-shadow:0 1px 0 rgba(0,0,0,.08)}
+.aa-msg.me{align-self:flex-end;background:#D9FDD3}
+.aa-msg small{display:block;text-align:right;font-size:10.5px;color:#888}
+.aa-msg small b{color:#999;font-weight:700}.aa-msg small b.read{color:#34B7F1}
+.aa-pdfmsg{display:flex;gap:9px;align-items:center}
+.aa-pdfmsg i{font-style:normal;flex:0 0 34px;height:40px;border-radius:5px;background:#E5322D;color:#fff;font-size:10px;font-weight:900;display:grid;place-items:center}
+.aa-input{flex:0 0 52px;display:flex;align-items:center;gap:10px;padding:0 12px;border-top:1px solid #DDD;background:#F6F6F6;font-size:13px;color:#888}
+.aa-input .aa-in{flex:1;background:#fff;border-radius:18px;padding:8px 12px;white-space:nowrap;overflow:hidden}
+.aa-send{width:36px;height:36px;border-radius:50%;background:#00A884;color:#fff;display:grid;place-items:center;font-size:15px;border:2px solid #111}
+.aa-clip{font-size:18px}
+.aa-pdf{position:absolute;width:110px;height:140px;background:#fff;border:2px solid #111;border-radius:6px;box-shadow:6px 6px 0 rgba(10,16,60,.5);padding:10px;color:#111;font-size:9px}
+.aa-pdf b{display:inline-block;background:#E5322D;color:#fff;font-size:10px;padding:1px 5px;border-radius:3px}
+.aa-pdf p{margin:8px 0 4px;font-weight:800;font-size:11px}
+.aa-pdf i{display:block;height:4px;background:#E6E8EE;border-radius:2px;margin:5px 0}
+.aa-toast{position:absolute;width:300px;background:#fff;color:#111;border:2px solid #111;box-shadow:5px 5px 0 #111;font-size:13px;font-weight:700}
+.aa-toast div{background:#111;color:#D7FF3A;font:700 10px/1 ui-monospace,Menlo,monospace;letter-spacing:.08em;padding:5px 8px;display:flex;justify-content:space-between}
+.aa-toast p{margin:0;padding:9px 10px;display:flex;gap:8px;align-items:center}
+.aa-toast.warn div{color:#FF8A3D}
+.aa-igbody{flex:1;padding:12px 14px;display:flex;flex-direction:column;gap:10px;min-height:0}
+.aa-igwho{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:700}
+.aa-igwho i{width:30px;height:30px;border-radius:50%;background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF);font-style:normal}
+.aa-igmsg{align-self:flex-start;background:#EFEFEF;border-radius:16px;padding:8px 12px;font-size:13.5px}
+.aa-file{position:absolute;width:86px;height:98px;background:#fff;border:2px solid #111;border-radius:8px;color:#111;padding:7px;font-size:10.5px;font-weight:800;display:flex;flex-direction:column;gap:4px;box-shadow:3px 3px 0 rgba(0,0,0,.25)}
+.aa-file b{font-size:9px;color:#fff;background:var(--c);border-radius:3px;padding:2px 4px;align-self:flex-start;letter-spacing:.04em}
+.aa-file i{display:block;height:3px;background:#E6E8EE;border-radius:2px}
+.aa-folder{position:absolute;width:160px;height:126px;color:#111}
+.aa-folder .tab{position:absolute;left:0;top:0;width:62px;height:18px;border:2px solid #111;border-bottom:0;border-radius:8px 8px 0 0;background:var(--c)}
+.aa-folder .bx{position:absolute;left:0;right:0;top:16px;bottom:0;border:2px solid #111;border-radius:0 10px 10px 10px;background:var(--c);box-shadow:5px 5px 0 rgba(10,16,60,.5);padding:12px 12px;display:flex;flex-direction:column;justify-content:flex-end}
+.aa-folder strong{font-size:15px;line-height:1.15}
+.aa-folder em{font-style:normal;position:absolute;right:10px;top:10px;min-width:30px;height:30px;border-radius:15px;background:#111;color:#D7FF3A;display:grid;place-items:center;font:700 14px/1 ui-monospace,Menlo,monospace;padding:0 6px}
+.aa-folder.pop .bx{transform:scale(1.05)}
+.aa-cur{position:absolute;left:0;top:0;width:0;height:0;z-index:20;pointer-events:none}
+.aa-cur svg{position:absolute;left:-3px;top:-2px;width:26px;height:30px;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.35))}
+.aa-cur span{position:absolute;left:18px;top:22px;white-space:nowrap;font:800 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.04em;color:#111;background:var(--c);border:1.5px solid #111;padding:4px 6px}
+.aa-ring{position:absolute;left:-18px;top:-18px;width:36px;height:36px;border-radius:50%;border:3px solid var(--c);opacity:0}
+.aa-final{position:absolute;left:0;right:0;text-align:center}
+.aa-final h3{margin:0;font-family:"Noto Sans SC",sans-serif;font-weight:900;font-size:150px;line-height:1;letter-spacing:-.04em;color:#D7FF3A;text-shadow:8px 8px 0 #111}
+.aa-final p{margin:18px 0 0;font-size:22px;font-weight:700}
+.aa-stats{display:flex;justify-content:center;gap:16px;margin-top:26px;flex-wrap:wrap}
+.aa-stats div{background:#fff;color:#111;border:2px solid #111;box-shadow:5px 5px 0 #111;padding:12px 18px;text-align:left;min-width:180px}
+.aa-stats small{display:block;font-size:12px;font-weight:800;color:#1F3BFF}
+.aa-stats b{font-family:Anton,Impact,sans-serif;font-weight:400;font-size:40px;letter-spacing:.01em;line-height:1.1}
+@media (prefers-reduced-motion:reduce){
+  .aa{height:auto}.aa-stage{position:relative;height:auto;min-height:100vh}
+}
+</style>
+<section class="aa" id="automation" aria-label="AI Automation：AI 自己点、自己做完">
+  <div class="aa-stage">
+    <div class="aa-root">
+      <div class="aa-line" data-l="hl"></div><div class="aa-line" data-l="vl"></div>
+      <div class="aa-dim" data-l="d1">AI × 1 句话</div><div class="aa-dim" data-l="d2">38 CLICKS</div><div class="aa-dim" data-l="d3">0 次是你</div>
+      <div class="aa-title" data-l="title"><span data-t="t1">AI AUTOMATION</span></div>
+      <div class="aa-sub" data-l="sub">你只说一句，<em>AI 自己点、自己做完</em>。</div>
+      <div class="aa-head" data-l="head"><i>AI AUTOMATION</i><span class="aa-scene">01 · 开单 → PDF → 发给顾客</span></div>
+
+      <div class="aa-cmd" data-l="cmd1"><span class="mic">🎙</span><div><small>你（语音）</small>帮陈先生开单：明天包车新山到新加坡，做成 PDF 发给他。</div></div>
+
+      <div class="aa-win" data-l="inv">
+        <div class="aa-bar"><s></s><s></s><s></s>会计软件 · 单据</div>
+        <div class="aa-body">
+          <div class="aa-side"><span class="on">单据 Invoice</span><span>客户</span><span>应收账款</span><span>报表</span><span>设定</span></div>
+          <div class="aa-main">
+            <div class="aa-tool">新单据 INV-2025-118<span class="aa-btn" data-k="new">＋ 新单据</span></div>
+            <div class="aa-row">客户<div class="aa-f" data-k="f1" data-txt="陈先生（Tan Travel）"></div></div>
+            <div class="aa-row">项目<div class="aa-f" data-k="f2" data-txt="包车：新山 → 新加坡"></div></div>
+            <div class="aa-row">日期<div class="aa-f" data-k="f3" data-txt="2026-11-28"></div></div>
+            <div class="aa-row">金额<div class="aa-f" data-k="f4" data-txt="RM 850.00"></div></div>
+            <div class="aa-items"><div><span>项目</span><span>金额</span></div><div><span>包车（7 座）· 1 天</span><span data-k="amt">—</span></div></div>
+            <div class="aa-foot"><span class="aa-total">合计 <span data-k="tot">RM 0.00</span></span><span class="aa-btn dark" data-k="pdfbtn">⤓ 生成 PDF</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="aa-win" data-l="chat">
+        <div class="aa-bar"><s></s><s></s><s></s>WhatsApp · 陈先生</div>
+        <div class="aa-chatbody">
+          <div class="aa-msg">你好，明天新山到新加坡包车，麻烦开单给我 🙏<small>10:02</small></div>
+          <div class="aa-msg me aa-pdfmsg" data-k="sent" style="opacity:0"><i>PDF</i><div>INV-2025-118.pdf<br><span style="color:#666;font-size:12px">包车 · RM 850.00</span><small>10:03 <b data-k="ticks">✓✓</b></small></div></div>
+          <div class="aa-msg me" data-k="sent2" style="opacity:0">陈先生您好，单据已附上，谢谢！<small>10:03 <b data-k="ticks2">✓✓</b></small></div>
+        </div>
+        <div class="aa-input"><span class="aa-clip" data-k="clip">📎</span><span class="aa-in" data-k="inp">输入讯息</span><span class="aa-send" data-k="send">➤</span></div>
+      </div>
+      <div class="aa-pdf" data-k="pdf"><b>PDF</b><p>INVOICE<br>INV-2025-118</p><i></i><i></i><i style="width:60%"></i><p style="margin-top:10px">RM 850.00</p><i></i></div>
+
+      <div class="aa-cmd" data-l="cmd2"><span class="mic">🎙</span><div><small>你（语音）</small>Instagram 里会计部丢来的单据，全部帮我分好类。</div></div>
+      <div class="aa-win" data-l="ig">
+        <div class="aa-bar"><s></s><s></s><s></s>Instagram · 讯息</div>
+        <div class="aa-igbody">
+          <div class="aa-igwho"><i></i>会计部 Amy<span class="aa-btn" data-k="sort" style="margin-left:auto">✦ 全部整理</span></div>
+          <div class="aa-igmsg">这个月的单据，全部在这里了 📂</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+(function(){
+  var sec=document.getElementById('automation'); if(!sec) return;
+  var stage=sec.querySelector('.aa-stage'), root=sec.querySelector('.aa-root');
+  var Q=function(s){return root.querySelector(s)}, QA=function(s){return Array.prototype.slice.call(root.querySelectorAll(s))};
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // ---- documents & folders (scene 2)
+  var FD=[['Invoice','#D7FF3A'],['Voucher','#FF8FCB'],['Payment Voucher','#FFB36B'],['Payroll','#7FE7FF'],['Claim','#C9B6FF']];
+  var FILES=[['INV-1042',0],['PV-0318',2],['CLM-07',4],['VCH-221',1],['PAY-11月 A',3],['INV-1043',0],['CLM-08',4],['PV-0319',2],['VCH-222',1],['INV-1051',0],['PAY-11月 B',3],['CLM-09',4],['PV-0325',2],['VCH-230',1],['INV-1060',0]];
+  var folders=FD.map(function(f){var d=document.createElement('div');d.className='aa-folder';d.style.setProperty('--c',f[1]);d.innerHTML='<div class="tab"></div><div class="bx"><em>0</em><strong>'+f[0]+'</strong></div>';root.appendChild(d);return d});
+  var files=FILES.map(function(f){var d=document.createElement('div');d.className='aa-file';d.style.setProperty('--c',['#5A6B00','#C0237A','#C25A00','#00799A','#5B3FC4'][f[1]]);
+    d.innerHTML='<b>'+(['INVOICE','VOUCHER','PAYMENT V.','PAYROLL','CLAIM'][f[1]])+'</b>'+f[0]+'<i></i><i></i><i style="width:60%"></i>';root.appendChild(d);return d});
+  // ---- toasts (retro pop-ups that stack)
+  var TO=[[.325,'INVOICE','✓ INV-2025-118 已生成',0,0],[.385,'ATTACH','📎 PDF 已附上',0,0],[.43,'SENT','✓ 已发送给陈先生',0,0],[.455,'LEDGER','✓ 已记进应收账款',0,0],
+          [.79,'CHECK','⚠ CLM-07 缺收据，已标记',1,1],[.81,'CHECK','⚠ VCH-221 金额对不上',1,1],[.83,'DONE','✓ 15 份单据，分好 5 类',0,1]];
+  var toasts=TO.map(function(t){var d=document.createElement('div');d.className='aa-toast'+(t[3]?' warn':'');d.innerHTML='<div><span>'+t[1]+'</span><span>✕</span></div><p>'+t[2]+'</p>';root.appendChild(d);return d});
+  // ---- AI cursors with name tags
+  var CUR=[['AI · 开单','#D7FF3A'],['AI · 归档','#FF8FCB'],['AI · 检查','#FFB36B'],['AI · 薪资','#7FE7FF']];
+  var curs=CUR.map(function(c){var d=document.createElement('div');d.className='aa-cur';d.style.setProperty('--c',c[1]);
+    d.innerHTML='<div class="aa-ring"></div><svg viewBox="0 0 26 30"><path d="M3 2l19 15-8.5 1.2L18 27l-4 1.6-4.4-9L3 24z" fill="'+c[1]+'" stroke="#111" stroke-width="2" stroke-linejoin="round"/></svg><span>'+c[0]+'</span>';root.appendChild(d);return d});
+  var finalEl=document.createElement('div');finalEl.className='aa-final';finalEl.innerHTML='<h3>全自动。</h3><p>你只要说一句话，最后审核一下。</p><div class="aa-stats"><div><small>AI 自己点了</small><b>38 次</b></div><div><small>你点了</small><b>0 次</b></div><div><small>花的时间</small><b>2 分钟</b></div></div>';root.appendChild(finalEl);
+
+  // ---- layouts (virtual canvas): desktop 1280×760, phone 430×900
+  var LD={VW:1280,VH:760,title:[0,250,1280,0],tfs:180,sub:[0,520],hl:[60,560,1160,0],vl:[640,90,0,600],d1:[80,96],d2:[1080,96],d3:[1090,600],head:[60,40],
+    cmd1:[640,30,560],inv:[60,110,600,500],chat:[720,150,480,420],cmd2:[640,30,560],ig:[60,110,560,540],
+    slot:function(i){return [92+(i%5)*102,262+Math.floor(i/5)*116]},fold:function(j){return j<3?[690+j*186,150]:[783+(j-3)*186,330]},
+    toast:function(i){return i<4?[60+i*300,650]:[720,480+(i-4)*64]},fin:390,fh3:150};
+  var LM={VW:430,VH:900,title:[0,300,430,0],tfs:92,sub:[0,560],hl:[15,640,400,0],vl:[215,150,0,560],d1:[20,180],d2:[300,180],d3:[300,700],head:[15,24],
+    cmd1:[15,84,400],inv:[15,188,400,358],chat:[15,566,400,250],cmd2:[15,84,400],ig:[15,188,400,350],
+    slot:function(i){return [26+(i%5)*76,292+Math.floor(i/5)*80]},fold:function(j){return j<3?[15+j*138,566]:[84+(j-3)*138,696]},
+    toast:function(i){return [55,i<4?500:470]},fin:420,fh3:84};
+  var L, S=1, mob=false;
+  function put(el,a){el.style.left=a[0]+'px';el.style.top=a[1]+'px';if(a[2])el.style.width=a[2]+'px';if(a[3])el.style.height=a[3]+'px'}
+  function layout(){
+    var W=stage.clientWidth,H=stage.clientHeight; mob=W<761; L=mob?LM:LD;
+    S=Math.min(W/L.VW,H/L.VH); root.style.width=L.VW+'px'; root.style.height=L.VH+'px';
+    root.style.transform='translate('+((W-L.VW*S)/2)+'px,'+((H-L.VH*S)/2)+'px) scale('+S+')';
+    var T=Q('[data-l=title]'); T.style.top=L.title[1]+'px'; T.style.fontSize=L.tfs+'px';
+    Q('[data-t=t1]').innerHTML=mob?'AI<br>AUTO-<br>MATION':'AI AUTOMATION'; if(mob) T.style.top=(L.title[1]-120)+'px';
+    var s=Q('[data-l=sub]'); s.style.top=L.sub[1]+'px'; s.style.fontSize=(mob?18:22)+'px'; s.style.padding='0 16px';
+    put(Q('[data-l=hl]'),[L.hl[0],L.hl[1],L.hl[2],1]); put(Q('[data-l=vl]'),[L.vl[0],L.vl[1],1,L.vl[3]]);
+    put(Q('[data-l=d1]'),L.d1); put(Q('[data-l=d2]'),L.d2); put(Q('[data-l=d3]'),L.d3); put(Q('[data-l=head]'),L.head);
+    ['cmd1','cmd2'].forEach(function(k){var e=Q('[data-l='+k+']');e.style.top=L[k][1]+'px';e.style.width=L[k][2]+'px';e.style.left=(mob?L[k][0]:L[k][0])+'px'});
+    put(Q('[data-l=inv]'),L.inv); put(Q('[data-l=chat]'),L.chat); put(Q('[data-l=ig]'),L.ig);
+    Q('.aa-side').style.display=mob?'none':'';
+    folders.forEach(function(f,j){var a=L.fold(j);put(f,a);f.style.width=(mob?126:160)+'px';f.style.height=(mob?110:126)+'px'});
+    files.forEach(function(f){f.style.width=(mob?66:86)+'px';f.style.height=(mob?74:98)+'px';f.style.fontSize=(mob?9:10.5)+'px'});
+    toasts.forEach(function(t){t.style.width=(mob?320:290)+'px'});
+    finalEl.style.top=(L.fin-(mob?160:180))+'px'; finalEl.querySelector('h3').style.fontSize=L.fh3+'px';
+    finalEl.querySelector('p').style.fontSize=(mob?17:22)+'px';
+    QA('.aa-stats div').forEach(function(d){d.style.minWidth=(mob?118:180)+'px';d.style.padding=mob?'8px 10px':'12px 18px'});
+    QA('.aa-stats b').forEach(function(b){b.style.fontSize=(mob?26:40)+'px'});
+    Q('.aa-final').style.padding='0 12px';
+  }
+  var cl=function(v){return v<0?0:v>1?1:v}, seg=function(p,a,b){return cl((p-a)/(b-a))}, e2=function(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2};
+  function rect(el){var r=el.getBoundingClientRect(),o=root.getBoundingClientRect();return {x:(r.left-o.left)/S,y:(r.top-o.top)/S,w:r.width/S,h:r.height/S}}
+  function ctr(el){var r=rect(el);return [r.x+r.w*.55,r.y+r.h*.55]}
+  function lerp(a,b,t){return [a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t]}
+  function vis(el,v,dy){el.style.opacity=v;el.style.transform='translateY('+((1-v)*(dy||24))+'px)';el.style.visibility=v>0.01?'visible':'hidden'}
+  var K=function(k){return Q('[data-k='+k+']')};
+  function path(keys,p){ // keys: [[p, point],...] → eased position
+    if(p<=keys[0][0]) return keys[0][1];
+    for(var i=1;i<keys.length;i++) if(p<=keys[i][0]){var a=keys[i-1],b=keys[i];return lerp(a[1],b[1],e2((p-a[0])/(b[0]-a[0])))}
+    return keys[keys.length-1][1];
+  }
+  function setCur(c,pt,click,p){c.style.transform='translate('+pt[0]+'px,'+pt[1]+'px)';var r=c.querySelector('.aa-ring'),k=0;
+    (click||[]).forEach(function(t){var d=(p-t)/.012;if(d>=0&&d<=1)k=Math.max(k,1-d)});
+    r.style.opacity=k;r.style.transform='scale('+(1+(1-k)*1.4)+')'}
+  function type(el,v){var s=el.dataset.txt,n=Math.round(s.length*cl(v));el.textContent=s.slice(0,n);el.classList.toggle('act',v>0&&v<1)}
+  var p=0;
+  function render(){
+    var r=sec.getBoundingClientRect(),H=stage.clientHeight; p=cl(-r.top/(r.height-H));
+    if(reduce) p=.96; else if(r.bottom<-50||r.top>H+50) return;
+    // intro
+    var tOut=seg(p,.09,.13), tIn=e2(seg(p,0,.04));
+    var T=Q('[data-l=title]'); T.style.opacity=tIn*(1-tOut); T.style.transform='scale('+(0.92+.08*tIn+tOut*.25)+')';
+    Q('[data-l=sub]').style.opacity=seg(p,.02,.05)*(1-tOut);
+    ['hl','vl','d1','d2','d3'].forEach(function(k,i){Q('[data-l='+k+']').style.opacity=seg(p,.01+i*.006,.04+i*.006)*(1-tOut*.85)});
+    var sA=seg(p,.12,.16)*(1-seg(p,.5,.535)), sB=seg(p,.525,.56)*(1-seg(p,.875,.9));
+    vis(Q('[data-l=head]'),Math.max(sA,sB),10); Q('.aa-scene').textContent=p<.52?'01 · 开单 → PDF → 发给顾客':'02 · 一堆单据，自动分类';
+    // ---- scene 1
+    vis(Q('[data-l=cmd1]'),seg(p,.11,.14)*(1-seg(p,.5,.53)),14);
+    vis(Q('[data-l=inv]'),seg(p,.13,.17)*(1-seg(p,.5,.535)),40);
+    vis(Q('[data-l=chat]'),seg(p,.15,.19)*(1-seg(p,.5,.535)),40);
+    K('new').classList.toggle('down',p>.175&&p<.185); K('pdfbtn').classList.toggle('down',p>.315&&p<.325);
+    type(K('f1'),seg(p,.195,.225)); type(K('f2'),seg(p,.235,.265)); type(K('f3'),seg(p,.27,.28)); type(K('f4'),seg(p,.285,.305));
+    var amtOn=p>.305; K('amt').textContent=amtOn?'RM 850.00':'—'; K('tot').textContent=amtOn?'RM 850.00':'RM 0.00';
+    var pdf=K('pdf'), pv=seg(p,.32,.335)*(1-seg(p,.415,.425));
+    var pb=ctr(K('pdfbtn')), ci=ctr(K('inp')), fly=e2(seg(p,.34,.385));
+    var pp=lerp([pb[0]-60,pb[1]-170],[ci[0]-55,ci[1]-150],fly);
+    pdf.style.opacity=pv*(1-seg(p,.5,.53)); pdf.style.left=pp[0]+'px'; pdf.style.top=pp[1]+'px'; pdf.style.transform='rotate('+(-8+fly*14)+'deg) scale('+(1-fly*.35)+')';
+    K('inp').textContent=p>.39&&p<.42?'📎 INV-2025-118.pdf':'输入讯息';
+    K('send').classList.toggle('down',p>.415&&p<.425);
+    var sv=seg(p,.42,.435); K('sent').style.opacity=sv; K('sent').style.transform='translateY('+(1-sv)*10+'px)';
+    var sv2=seg(p,.44,.455); K('sent2').style.opacity=sv2; K('sent2').style.transform='translateY('+(1-sv2)*10+'px)';
+    K('ticks').className=p>.47?'read':''; K('ticks2').className=p>.48?'read':'';
+    // cursor 0 through scene 1
+    var off=[L.VW+40,L.VH*.8], c0keys=[[.15,off],[.172,ctr(K('new'))],[.19,ctr(K('f1'))],[.23,ctr(K('f2'))],[.268,ctr(K('f3'))],[.282,ctr(K('f4'))],[.31,ctr(K('pdfbtn'))],
+      [.335,ctr(K('pdfbtn'))],[.385,ci],[.405,ctr(K('send'))],[.43,ctr(K('send'))],[.5,[L.VW*.5,L.VH+60]]];
+    // ---- scene 2
+    vis(Q('[data-l=cmd2]'),seg(p,.53,.56)*(1-seg(p,.875,.9)),14);
+    vis(Q('[data-l=ig]'),seg(p,.54,.575)*(1-seg(p,.875,.9)),40);
+    K('sort').classList.toggle('down',p>.585&&p<.595);
+    var counts=[0,0,0,0,0], fstart=function(i){return .605+i*.0125}, fdur=.045;
+    var fv=seg(p,.555,.58)*(1-seg(p,.875,.9));
+    folders.forEach(function(f,j){vis(f,seg(p,.56+j*.008,.585+j*.008)*(1-seg(p,.875,.9)),30)});
+    files.forEach(function(el,i){
+      var t=FILES[i][1], s0=L.slot(i), fo=L.fold(t), ft=[fo[0]+(mob?28:38)+(i%3)*8,fo[1]+(mob?26:34)];
+      var appear=seg(p,.565+i*.002,.58+i*.002), k=e2(seg(p,fstart(i),fstart(i)+fdur));
+      var pt=lerp(s0,ft,k), arc=Math.sin(Math.PI*k)*-60;
+      el.style.left=pt[0]+'px'; el.style.top=(pt[1]+arc)+'px';
+      el.style.transform='rotate('+((i%2?-1:1)*k*10)+'deg) scale('+(1-k*.45)+')';
+      el.style.opacity=appear*(1-seg(k,.85,1))*(1-seg(p,.875,.9));
+      el.style.visibility=el.style.opacity>0.01?'visible':'hidden';
+      if(k>=.95) counts[t]++;
+    });
+    folders.forEach(function(f,j){f.querySelector('em').textContent=counts[j]});
+    // cursors in scene 2: each one carries every 4th file
+    var C2=curs.map(function(c,j){var my=[];for(var i=j;i<files.length;i+=4)my.push(i);return my});
+    function cursor2(j){
+      var my=C2[j], start=[j%2?-40:L.VW+40, L.VH*(.3+.15*j)];
+      if(j===0&&p<.6){ return null }
+      var keys=[[.58,start]];
+      my.forEach(function(i){var t=FILES[i][1],s0=L.slot(i),fo=L.fold(t);keys.push([fstart(i)-.004,[s0[0]+30,s0[1]+40]]);keys.push([fstart(i)+fdur,[fo[0]+50,fo[1]+60]])});
+      keys.push([.87,[keys[keys.length-1][1][0]+40,L.VH+60]]);
+      return path(keys,p);
+    }
+    // place cursors
+    curs.forEach(function(c,j){
+      var pt=null, clicks=[];
+      if(p<.52){ if(j===0){pt=path(c0keys,p);clicks=[.175,.315,.415];} else pt=[-80,-80]; }
+      else if(p<.6){ if(j===0){pt=path([[.52,[L.VW*.5,L.VH+60]],[.583,ctr(K('sort'))],[.6,ctr(K('sort'))]],p);clicks=[.588]} else pt=path([[.55,[j%2?-40:L.VW+40,L.VH*(.3+.15*j)]],[.6,[L.slot(j)[0]+30,L.slot(j)[1]+40]]],p) }
+      else { pt=cursor2(j)||[-80,-80]; files.forEach(function(_,i){if(i%4===j)clicks.push(fstart(i)-.004)}) }
+      setCur(c,pt,clicks,p); c.style.opacity=(p>.15&&p<.89)?1:0;
+    });
+    // toasts
+    toasts.forEach(function(t,i){var a=TO[i],v=seg(p,a[0],a[0]+.012)*(1-(a[4]?seg(p,.875,.9):seg(p,.5,.53)));
+      if(mob&&TO[i+1]&&TO[i+1][4]===a[4]) v*=1-seg(p,TO[i+1][0],TO[i+1][0]+.008);var pos=L.toast(i);
+      t.style.left=pos[0]+'px';t.style.top=pos[1]+'px';t.style.opacity=v;t.style.transform='scale('+(.85+.15*v)+')';t.style.visibility=v>0.01?'visible':'hidden'});
+    // finale
+    var fvv=e2(seg(p,.9,.95)); finalEl.style.opacity=fvv; finalEl.style.transform='scale('+(.8+.2*fvv)+')';
+    QA('.aa-stats div').forEach(function(d,i){var v=seg(p,.94+i*.012,.955+i*.012);d.style.opacity=v;d.style.transform='translateY('+(1-v)*16+'px)'});
+  }
+  var tick=false;
+  addEventListener('scroll',function(){if(!tick){tick=true;requestAnimationFrame(function(){tick=false;render()})}},{passive:true});
+  addEventListener('resize',function(){layout();render()});
+  layout(); render();
+})();
+</script>
 
 <!-- WHAT: four words, one at a time -->
 <section class="drum" id="what">
