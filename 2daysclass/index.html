@@ -563,7 +563,7 @@ section{padding:120px 0}
       <a class="btn btn-w" href="/2days-botsclass/">报名两天 AI 助理课程 <span class="ar">→</span></a>
       <a class="btn btn-g" href="#course">看你会学到什么</a>
     </div>
-    <p class="hero-note">讲师：Adrian（阿理哥）× Jason · 合作课程。今天报名买一送一，带上你的主管一起来。</p>
+    <p class="hero-note">讲师：Adrian（阿理哥）× Jason。今天报名买一送一，带上你的主管一起来。</p>
   </div>
   <div class="stage">
     <div class="win" aria-label="手机对话示意图">
@@ -771,7 +771,7 @@ section{padding:120px 0}
   <div class="wrap">
     <div class="dark split">
       <div>
-        <div class="eyebrow">两天 AI 实战课 · 合作课程</div>
+        <div class="eyebrow">两天 AI 课程</div>
         <h2>两天，<br>把 AI 助理带回公司。</h2>
         <div class="pv-meta">
           <div><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span>两整天实作，每一步都有检查点</span></div>
@@ -845,7 +845,7 @@ section{padding:120px 0}
         <div class="t-photo"><img src="/assets/team/jason-thow-partner.webp" alt="Jason Thow Seng Yeap" loading="lazy" style="object-position:50% 25%"></div>
         <div class="t-tx">
           <h3>Jason Thow</h3>
-          <p class="role">合作讲师 · 公司财务与会计自动化</p>
+          <p class="role">讲师 · 公司财务与会计自动化</p>
           <p>马来西亚特许会计师 CA(M)，会计学士 B.Acc (Hons)。J &amp; J Group 合伙人，在新山提供会计、审计、税务及公司秘书服务。</p>
           <p>J &amp; J Corporate Services 获 Golden Bull Award 2023（Emerging SMEs）。</p>
           <p><b>这两天，他教你用 AI 把公司财务和会计自动化：单据、记账、薪资整理成草稿，账目一眼看懂。</b></p>
@@ -1101,6 +1101,8 @@ section{padding:120px 0}
     Array.prototype.forEach.call(g.children,function(c,i){c.style.setProperty('--d',(Math.min(i,5)*0.08)+'s');targets.push(c)});
   })});
   var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.12,rootMargin:'0px 0px -6% 0px'});
+  // the price section shows whole, not piece by piece while scrolling
+  targets=targets.filter(function(el){return !el.closest('#preview')});
   targets.forEach(function(el){el.classList.add('rv');io.observe(el)});
   setTimeout(function(){targets.forEach(function(el){if(!el.classList.contains('in')){var r=el.getBoundingClientRect();if(r.top<innerHeight)el.classList.add('in')}})},2500);
 })();
