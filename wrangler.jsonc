@@ -10,6 +10,12 @@
     "binding": "ASSETS",
     "run_worker_first": ["/register", "/register/*", "/register-ai-agent", "/register-ai-agent/*", "/classregister", "/preview-live", "/survey", "/payment", "/invoice/*", "/4916", "/4916/*", "/list", "/list/*", "/team", "/team/*", "/codexhermes-4hr-class", "/codexhermes-4hr-class/*", "/my-links", "/my-links/*", "/2days-botsclass", "/2days-botsclass/*", "/api/*"]
   },
+  "r2_buckets": [
+    {
+      "binding": "PARTNER_TWO_DAY_PROOFS",
+      "bucket_name": "aligor-2days-proofs"
+    }
+  ],
   "d1_databases": [
     {
       "binding": "DB",
@@ -36,6 +42,9 @@
     "INVOICE_ISSUER_ADDRESS": "25, Jalan Pertama 4, Pusat Perdagangan Danga Utama, 81200 Johor Bahru, Johor",
     "INVOICE_ISSUER_PHONE": "60167871902",
     "ALLOWED_ORIGINS": "https://aligor.aligor.workers.dev",
-    "PARTNER_TWO_DAY_OPEN": "1"
+    "PARTNER_TWO_DAY_OPEN": "1",
+    "PARTNER_TWO_DAY_FEE_1": "3000",
+    "PARTNER_TWO_DAY_FEE_2": "3000",
+    "PARTNER_TWO_DAY_PAYMENT_OPEN": "1"
   }
 }
