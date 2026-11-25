@@ -1817,8 +1817,8 @@ main h1,main h2,main h3,footer h2{text-wrap:balance;line-break:strict}
         </div>
         <div class="pr-row pr-r" data-at=".68">
           <div class="pr-tag">再送</div>
-          <h3><span class="nw">一年内无限次</span><span class="nw">免费复习</span><small class="pr-val">价值 RM5,000</small></h3>
-          <p>一年内，想再来几次都可以，<span class="nw">随时回来上课</span>，<span class="nw">只需付场地费</span>。</p>
+          <h3><span class="nw">无限次免费复习</span><small class="pr-val">价值 RM5,000</small></h3>
+          <p>学完之后，想再来几次都可以，<span class="nw">随时回来上课</span>，<span class="nw">只需付场地费</span>。</p>
         </div>
         <div class="pr-cta pr-r" data-at=".8">
           <a class="btn btn-d" href="/2days-botsclass/">报名两天 AI 助理课程 <span class="ar">→</span></a>
@@ -2200,8 +2200,6 @@ main h1,main h2,main h3,footer h2{text-wrap:balance;line-break:strict}
     var p=Math.max(0,Math.min(1,-r.top/tot));
     if(r.top>innerHeight*.35) p=-1;
     els.forEach(function(e){e.classList.toggle('on',p>=parseFloat(e.dataset.at))});
-    var k=Math.max(0,Math.min(1,(p-.3)/.16)); k=1-Math.pow(1-k,3);
-    num.textContent=fmt(Math.round((7000-4000*k)/10)*10);
   }
   function req(){if(!ticking){ticking=true;requestAnimationFrame(upd)}}
   addEventListener('scroll',req,{passive:true});addEventListener('resize',req);upd();
