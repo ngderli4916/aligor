@@ -132,6 +132,8 @@ export function renderPartnerTwoDay(state) {
   const {open,closed,payable,fees,feesSet,deadline,test} = state;
   const live = open && !closed;
   const feeText = n => feesSet ? rm(fees[n]) : '费用待确认';
+  const bogo = feesSet && fees[2] < fees[1]*2; // two seats cost less than two singles, e.g. buy one, get one free
+  const closedText = feesSet ? '付款通道开通后开放' : '费用确认后开放';
   const bank = PARTNER_TWO_DAY_BANK;
   const closedCard = `<div class="closed-card"><strong>报名已截止</strong><p>报名在 2026 年 11 月 27 日（星期五）5PM 截止。如有疑问，请直接联系我们。</p></div>`;
   const form = `<noscript><p>请启用 JavaScript 后提交。</p></noscript><form id="signup" autocomplete="on" method="post" action="${registrationPath}" enctype="multipart/form-data" novalidate>
@@ -139,13 +141,14 @@ export function renderPartnerTwoDay(state) {
 <li class="step"><h3><span class="n">1</span>填写报名资料</h3>
 <label for="name">第一位学员姓名</label><input id="name" name="name" required maxlength="100" autocomplete="name">
 <label for="phone">联络手机号码</label><input id="phone" name="phone" required type="tel" maxlength="30" autocomplete="tel" inputmode="tel" placeholder="012-345 6789">
-<fieldset><legend>报名人数</legend><div class="choices"><label><input name="seats" type="radio" value="1" checked>一位</label><label><input name="seats" type="radio" value="2">两位</label></div></fieldset>
+<fieldset><legend>报名人数</legend><div class="choices"><label><input name="seats" type="radio" value="1" checked>一位</label><label><input name="seats" type="radio" value="2">两位${bogo&&fees[2]===fees[1]?'<em class="free">送一位</em>':''}</label></div></fieldset>
 <div id="second" class="conditional" hidden><label for="secondName">第二位学员姓名 <span class="optional">可稍后补</span></label><input id="secondName" name="secondName" maxlength="100" disabled></div>
 <label class="check" for="companyInvoice"><input id="companyInvoice" name="companyInvoice" type="checkbox">需要开单给公司</label>
 <div id="company" class="conditional" hidden><label for="companyName">公司开单名称</label><input id="companyName" name="companyName" maxlength="160" autocomplete="organization" disabled><label for="companyAddress">公司地址 <span class="optional">选填</span></label><input id="companyAddress" name="companyAddress" maxlength="300" autocomplete="street-address" disabled><p>其他公司资料，之后需要时再向你确认。</p></div>
 </li>
 <li class="step"><h3><span class="n">2</span>确认应付金额</h3>
-<div class="amount${feesSet?'':' pending'}"><span id="amountLabel">一位学员</span><strong id="amount">${feeText(1)}</strong></div>
+<div class="amount${feesSet?'':' pending'}"><span id="amountLabel">一位学员</span><span class="price"><s id="was" hidden>${bogo?rm(fees[1]*2):''}</s><strong id="amount">${feeText(1)}</strong></span></div>
+<p id="promo" class="promo" hidden>${bogo&&fees[2]===fees[1]?'买一送一：第二位学员免费':bogo?'两位同报优惠':''}</p>
 ${feesSet?'':'<p class="note">一人和两人的收费确认后才开放付款，请先不要转账。</p>'}
 <label class="check"><input id="amountConfirmed" name="amountConfirmed" type="checkbox"${payable?'':' disabled'}>我已确认应付金额</label>
 <input type="hidden" id="expectedAmount" name="expectedAmount" value="${feesSet?fees[1]:''}">
@@ -157,17 +160,17 @@ ${feesSet?'':'<p class="note">一人和两人的收费确认后才开放付款�
 <div><dt>银行</dt><dd>${bank.bank}</dd></div>
 <div><dt>户口号码</dt><dd class="acct"><span id="acct">${bank.account}</span><button type="button" class="copy" data-copy="${bank.account}">复制</button></dd></div>
 </dl>
-<p class="note">${payable?'转账备注请写第一位学员姓名。':'费用确认前请勿转账。'}</p>
+<p class="note">${payable?'转账备注请写第一位学员姓名。':feesSet?'付款通道开通后才可转账，请先不要转账。':'费用确认前请勿转账。'}</p>
 </li>
 <li class="step"><h3><span class="n">4</span>上传付款凭证</h3>
-<label class="drop" for="proof"><span id="proofText">${payable?'选择截图或 PDF':'费用确认后开放上传'}</span><small>JPG、PNG、WEBP、HEIC 或 PDF，5MB 以内</small></label>
+<label class="drop" for="proof"><span id="proofText">${payable?'选择截图或 PDF':closedText+'上传'}</span><small>JPG、PNG、WEBP、HEIC 或 PDF，5MB 以内</small></label>
 <input id="proof" name="proof" type="file" accept="image/jpeg,image/png,image/webp,image/heic,application/pdf"${payable?' required':' disabled'}>
 <img id="preview" alt="付款凭证预览" hidden>
 </li>
 <li class="step"><h3><span class="n">5</span>提交</h3>
 <div class="honeypot" aria-hidden="true"><label for="website">请留空</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>
 <p class="privacy">你填写的资料和付款凭证只用于本次课程报名、核对款项和开单跟进，不会公开。提交后状态为「待核实」，我们核对款项后才确认名额。</p>
-<button type="submit" id="submit"${payable?'':' disabled'}>${payable?'提交报名和付款凭证':'费用确认后开放提交'}</button>
+<button type="submit" id="submit"${payable?'':' disabled'}>${payable?'提交报名和付款凭证':closedText+'提交'}</button>
 </li>
 </ol>
 </form><div id="result" role="status" aria-live="polite" tabindex="-1"></div>`;
@@ -180,7 +183,7 @@ function tick(){const left=DEADLINE-Date.now();if(left<=0){closeNow();return;}co
 const f=document.querySelector('#signup');
 if(f){const result=document.querySelector('#result'), button=f.querySelector('#submit'), label=button.textContent;
 function fields(){const two=f.elements.seats.value==='2', bill=f.elements.companyInvoice.checked;document.querySelector('#second').hidden=!two;document.querySelector('#company').hidden=!bill;f.elements.secondName.disabled=!two;f.elements.companyName.disabled=!bill;f.elements.companyName.required=bill;f.elements.companyAddress.disabled=!bill;
-document.querySelector('#amountLabel').textContent=two?'两位学员合计':'一位学员';document.querySelector('#amount').textContent=FEES?'RM'+FEES[two?2:1].toLocaleString('en-US'):'费用待确认';f.elements.expectedAmount.value=FEES?FEES[two?2:1]:'';}
+document.querySelector('#amountLabel').textContent=two?'两位学员合计':'一位学员';document.querySelector('#amount').textContent=FEES?'RM'+FEES[two?2:1].toLocaleString('en-US'):'费用待确认';const deal=!!FEES&&two&&FEES[2]<FEES[1]*2;document.querySelector('#was').hidden=!deal;document.querySelector('#promo').hidden=!deal;f.elements.expectedAmount.value=FEES?FEES[two?2:1]:'';}
 f.addEventListener('change',e=>{if(e.target.name==='seats'&&f.elements.amountConfirmed.checked)f.elements.amountConfirmed.checked=false;fields();});fields();
 document.querySelector('.copy').addEventListener('click',async e=>{try{await navigator.clipboard.writeText(e.target.dataset.copy);e.target.textContent='已复制';setTimeout(()=>e.target.textContent='复制',1500);}catch{}});
 const proof=f.elements.proof, pv=document.querySelector('#preview');
@@ -213,7 +216,7 @@ tick();
 .steps{list-style:none;margin:0;padding:0}.step{padding:20px 0;border-top:1px solid var(--line)}.step:first-child{border-top:0;padding-top:6px}.step h3{display:flex;align-items:center;gap:10px;margin:0 0 8px;font-size:19px;letter-spacing:-.02em}.n{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:9px;background:linear-gradient(135deg,var(--orange2),var(--orange));color:#fff;font-size:14px;letter-spacing:0;flex:none;box-shadow:inset 0 0 0 2px rgba(255,255,255,.25)}
 label,legend{font-weight:600;font-size:15px}label{display:block;margin:14px 0 6px}input:not([type=checkbox]):not([type=radio]):not([type=file]){font:inherit;width:100%;min-height:48px;border:0;box-shadow:inset 0 0 0 1px var(--field);border-radius:12px;padding:10px 14px;background:#fff;color:var(--ink);transition:box-shadow .15s}input:not([type=checkbox]):not([type=radio]):not([type=file]):focus{outline:none;box-shadow:inset 0 0 0 2px var(--orange)}input::placeholder{color:rgba(26,14,8,.35)}
 fieldset{border:0;padding:0;margin:16px 0 0;min-width:0}.choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}.choices label,.check{display:flex;align-items:center;gap:10px;min-height:48px;margin:0;padding:8px 14px;border-radius:12px;box-shadow:inset 0 0 0 1px var(--field);cursor:pointer;transition:background .15s,box-shadow .15s}.check{margin-top:14px}.choices label:has(:checked),.check:has(:checked){background:#FFF3E8;box-shadow:inset 0 0 0 2px var(--orange)}.check:has(:disabled){opacity:.5;cursor:default}input[type=radio],input[type=checkbox]{accent-color:var(--orange);width:18px;height:18px;margin:0;flex:none}.optional{font-weight:400;font-size:.87em;color:var(--mute)}.conditional{padding:2px 0 4px}
-.amount{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:16px 18px;border-radius:16px;background:var(--bg);margin:10px 0 4px}.amount span{color:var(--ink2);font-weight:600}.amount strong{font-size:clamp(30px,4vw,40px);letter-spacing:-.04em;font-variant-numeric:tabular-nums}.amount.pending strong{font-size:18px;letter-spacing:0;color:var(--orange);background:var(--peach);padding:3px 12px;border-radius:999px}.note{font-size:14px!important;color:#9A4A12!important;margin:10px 0 0!important}
+.amount{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:16px 18px;border-radius:16px;background:var(--bg);margin:10px 0 4px}.amount>span:first-child{color:var(--ink2);font-weight:600;white-space:nowrap}.price{display:flex;align-items:baseline;gap:10px}.price s{font-size:17px;font-weight:600;color:var(--mute);text-decoration-thickness:2px}.promo{display:inline-block;margin:6px 0 2px!important;padding:4px 12px;border-radius:999px;background:var(--orange);color:#fff!important;font-weight:700;font-size:13.5px!important}.free{font-style:normal;margin-left:auto;font-size:12.5px;font-weight:700;color:var(--orange);background:var(--peach);border-radius:999px;padding:2px 9px}.amount strong{font-size:clamp(30px,4vw,40px);letter-spacing:-.04em;font-variant-numeric:tabular-nums}.amount.pending strong{font-size:18px;letter-spacing:0;color:var(--orange);background:var(--peach);padding:3px 12px;border-radius:999px}.note{font-size:14px!important;color:#9A4A12!important;margin:10px 0 0!important}
 .bank{margin:10px 0 0;border-radius:16px;background:var(--bg);padding:4px 18px}.bank div{display:grid;grid-template-columns:5.2em 1fr;gap:12px;padding:11px 0;border-top:1px solid var(--line)}.bank div:first-child{border-top:0}.bank dt{color:var(--mute);font-size:14px}.bank dd{margin:0;font-weight:600;overflow-wrap:anywhere}.acct{display:flex;align-items:center;justify-content:space-between;gap:8px}.acct span{font-size:20px;letter-spacing:.03em;font-variant-numeric:tabular-nums;white-space:nowrap}button.copy{font:inherit;font-size:14px;font-weight:600;min-height:34px;padding:3px 14px;border:0;border-radius:9px;background:#fff;color:var(--ink);box-shadow:inset 0 0 0 1px var(--field);cursor:pointer;white-space:nowrap;flex:none}
 .drop{display:grid;gap:2px;place-items:center;text-align:center;margin:10px 0 0;padding:24px 14px;border:1.5px dashed rgba(232,89,12,.4);border-radius:16px;background:#FFF8F1;cursor:pointer;font-weight:600}.drop small{font-weight:400;color:var(--mute)}#proof{position:absolute;width:1px;height:1px;opacity:0}.drop:has(+#proof:focus-visible){outline:3px solid var(--orange);outline-offset:3px}#proof:disabled{pointer-events:none}.drop:has(+#proof:disabled){opacity:.5;cursor:default;border-color:var(--field);background:var(--bg)}.drop:has(+#proof[aria-invalid=true]){border-color:#B3341A;background:#FFF0EA}#preview{display:block;max-width:100%;max-height:220px;margin:12px auto 0;border-radius:12px;box-shadow:0 0 0 1px var(--line)}
 .privacy{margin:0 0 14px!important;font-size:14px!important;color:var(--mute)!important}.honeypot{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
@@ -223,7 +226,7 @@ fieldset{border:0;padding:0;margin:16px 0 0;min-width:0}.choices{display:grid;gr
 .site-foot{background:#140A05;color:rgba(255,246,239,.5);font-size:14px;padding:28px 0}.site-foot a{color:rgba(255,246,239,.82)}
 [hidden]{display:none!important}[data-enter]{animation:opening .5s ease-out both}@keyframes opening{from{transform:translateY(8px);opacity:.6}to{transform:none;opacity:1}}@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
 @media(max-width:860px){.sign-in{grid-template-columns:minmax(0,1fr);gap:28px}.sign-l{position:static}.flow{display:none}.facts{grid-template-columns:1fr 1fr}}
-@media(max-width:560px){.wrap{width:calc(100% - 32px)}.hero{padding:104px 0 64px}.menu a:not(.btn){display:none}.deadline{padding:14px 16px;margin-top:26px}#countdown b{font-size:28px}.facts{gap:8px}.facts div{padding:12px}.hero .jump{width:100%}.sign{padding:48px 0 64px}.form-card{padding:20px 18px;border-radius:22px}.sign-l .lead{font-size:15.5px}.bank{padding:2px 14px}.bank div{grid-template-columns:1fr;gap:2px;padding:10px 0}.bank dt{font-size:13px}.acct span{font-size:19px}}
+@media(max-width:560px){.wrap{width:calc(100% - 32px)}.amount{padding:14px}.price{gap:6px}.price s{font-size:15px}.amount strong{font-size:28px}.hero{padding:104px 0 64px}.menu a:not(.btn){display:none}.deadline{padding:14px 16px;margin-top:26px}#countdown b{font-size:28px}.facts{gap:8px}.facts div{padding:12px}.hero .jump{width:100%}.sign{padding:48px 0 64px}.form-card{padding:20px 18px;border-radius:22px}.sign-l .lead{font-size:15.5px}.bank{padding:2px 14px}.bank div{grid-template-columns:1fr;gap:2px;padding:10px 0}.bank dt{font-size:13px}.acct span{font-size:19px}}
 </style></head><body><a class="skip" href="#registration">跳到报名表单</a><header class="nav"><div class="nav-in"><a class="brand" href="/2daysclass/">两天 AI 实战合作课</a><nav class="menu"><a href="/2daysclass/">课程介绍</a>${live?'<a class="btn btn-w jump" href="#registration">马上报名</a>':''}</nav></div></header>
 <main><section class="hero" aria-labelledby="title"><div class="wrap" data-enter><div class="badge"><i></i><span class="tag">${closed?'报名已截止':'报名 · 银行转账'}</span></div><h1 id="title">两天 AI <span class="hl">实战合作课</span></h1><p class="lead">可以为自己报名，也可以一起报两位。第二位还没确定？名字之后再补。</p>
 <div class="deadline${closed?' ended':''}"><p>报名截止：2026 年 11 月 27 日（星期五）5PM（马来西亚时间）</p><span id="countdown">${closed?'报名已截止':'计算剩余时间…'}</span></div>

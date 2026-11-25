@@ -84,6 +84,18 @@ test('missing dedicated binding fails closed even when main CRM is present; old 
   const old=await worker.fetch(new Request(url+'/api/2days-botsclass/reservations',{method:'POST',headers:{origin:url,'content-type':'application/json'},body:'{}'}),setup().env);
   assert.equal(old.status,410);assert.equal(inserts.length,0);
 });
+test('RM3,000 for one or two seats: two-seat option shows buy-one-free-one and the server charges 3000',async()=>{
+  const {env,inserts}=setup({PARTNER_TWO_DAY_FEE_1:'3000',PARTNER_TWO_DAY_FEE_2:'3000'});
+  const html=renderPartnerTwoDay(partnerTwoDayState(env,BEFORE));
+  for(const t of ['RM3,000','RM6,000','送一位','买一送一：第二位学员免费'])assert.ok(html.includes(t),t);
+  assert.equal((await post(env,form({expectedAmount:'3000'}))).status,200);assert.equal(inserts[0][8],3000);assert.equal(inserts[0][3],2);
+});
+test('fees set but payment not opened: amounts shown, upload and submit still closed',async()=>{
+  const {env,inserts}=setup({PARTNER_TWO_DAY_FEE_1:'3000',PARTNER_TWO_DAY_FEE_2:'3000',PARTNER_TWO_DAY_PAYMENT_OPEN:undefined});
+  const html=renderPartnerTwoDay(partnerTwoDayState(env,BEFORE));
+  assert.match(html,/RM3,000/);assert.match(html,/<button type="submit" id="submit" disabled>付款通道开通后开放提交/);assert.match(html,/id="proof"[^>]* disabled/);
+  assert.equal((await post(env,form({expectedAmount:'3000'}))).status,503);assert.equal(inserts.length,0);
+});
 test('page shows course facts and bank details',()=>{
   const html=renderPartnerTwoDay(partnerTwoDayState(setup().env,BEFORE));
   for(const s of ['2026 年 12 月 7–8 日','星期一、二 · 暂定','每天 9AM - 5PM','新山','详细地址待公布','一顿午餐和一次茶点','J & J BUSINESS MANAGEMENT SERVICES','JM0632306-M','Hong Leong Bank','37900006808','RM1,111','2026 年 11 月 27 日（星期五）5PM'])assert.ok(html.includes(s),s);
