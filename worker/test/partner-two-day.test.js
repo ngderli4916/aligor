@@ -5,8 +5,8 @@ import { renderPartnerTwoDay, partnerTwoDayState, registerPartnerTwoDay } from '
 
 const url='https://aligorvibe.com';
 const api='/api/2days-botsclass/registrations';
-const BEFORE=Date.parse('2026-11-27T16:59:59+08:00');
-const AFTER=Date.parse('2026-11-27T17:00:00+08:00');
+const BEFORE=Date.parse('2026-11-27T23:59:59+08:00');
+const AFTER=Date.parse('2026-11-28T00:00:00+08:00');
 const PNG=new Uint8Array([0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a,0,0,0,0,0,0,0,0]);
 
 function setup(extra={}){
@@ -57,7 +57,7 @@ test('payment switch, proof bucket and both fees are all required to accept paym
     const {env,inserts}=setup(extra);assert.equal((await post(env,form())).status,503);assert.equal(inserts.length,0);
   }
 });
-test('deadline 2026-11-27 5PM +08: server rejects and page shows 报名已截止',async()=>{
+test('deadline 2026-11-27 11:59PM +08: server rejects and page shows 报名已截止',async()=>{
   const {env,inserts,puts}=setup();const r=await post(env,form(),AFTER);assert.equal(r.status,410);assert.equal((await r.json()).closed,true);assert.equal(inserts.length+puts.length,0);
   const page=await worker.fetch(new Request(url+'/2days-botsclass/'),setup({PARTNER_TWO_DAY_DEADLINE:'2020-01-01T00:00:00+08:00'}).env);const html=await page.text();
   assert.match(html,/报名已截止/);assert.doesNotMatch(html,/<form/);
@@ -98,5 +98,5 @@ test('fees set but payment not opened: amounts shown, upload and submit still cl
 });
 test('page shows course facts and bank details',()=>{
   const html=renderPartnerTwoDay(partnerTwoDayState(setup().env,BEFORE));
-  for(const s of ['2026 年 12 月 7–8 日','星期一、二 · 暂定','每天 9AM - 5PM','新山','详细地址待公布','一顿午餐和一次茶点','J & J BUSINESS MANAGEMENT SERVICES','JM0632306-M','Hong Leong Bank','37900006808','RM1,111','2026 年 11 月 27 日（星期五）5PM'])assert.ok(html.includes(s),s);
+  for(const s of ['2026 年 12 月 7–8 日','星期一、二 · 暂定','每天 9AM - 5PM','新山','详细地址待公布','一顿午餐和一次茶点','J & J BUSINESS MANAGEMENT SERVICES','JM0632306-M','Hong Leong Bank','37900006808','RM1,111','2026 年 11 月 27 日（星期五）11:59PM'])assert.ok(html.includes(s),s);
 });

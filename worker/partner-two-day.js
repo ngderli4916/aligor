@@ -1,8 +1,8 @@
 // Two-day course sign-up + bank-transfer proof. Isolated from the personal-course CRM:
 // only PARTNER_TWO_DAY_DB (D1) and PARTNER_TWO_DAY_PROOFS (private R2) are touched.
 const registrationPath = '/api/2days-botsclass/registrations';
-// 2026-11-27 (Fri) 5PM Malaysia time (UTC+8).
-export const PARTNER_TWO_DAY_DEADLINE = '2026-11-27T17:00:00+08:00';
+// 2026-11-27 (Fri) 11:59PM Malaysia time (UTC+8); accepted through 23:59:59.
+export const PARTNER_TWO_DAY_DEADLINE = '2026-11-27T23:59:59.999+08:00';
 export const PARTNER_TWO_DAY_BANK = {
   holder: 'J & J BUSINESS MANAGEMENT SERVICES',
   regNo: 'JM0632306-M',
@@ -135,7 +135,7 @@ export function renderPartnerTwoDay(state) {
   const bogo = feesSet && fees[2] < fees[1]*2; // two seats cost less than two singles, e.g. buy one, get one free
   const closedText = feesSet ? '付款通道开通后开放' : '费用确认后开放';
   const bank = PARTNER_TWO_DAY_BANK;
-  const closedCard = `<div class="closed-card"><strong>报名已截止</strong><p>报名在 2026 年 11 月 27 日（星期五）5PM 截止。如有疑问，请直接联系我们。</p></div>`;
+  const closedCard = `<div class="closed-card"><strong>报名已截止</strong><p>报名在 2026 年 11 月 27 日（星期五）11:59PM 截止。如有疑问，请直接联系我们。</p></div>`;
   const form = `<noscript><p>请启用 JavaScript 后提交。</p></noscript><form id="signup" autocomplete="on" method="post" action="${registrationPath}" enctype="multipart/form-data" novalidate>
 <ol class="steps">
 <li class="step"><h3><span class="n">1</span>填写报名资料</h3>
@@ -195,7 +195,7 @@ if(!f.elements.name.value.trim())return fail('请填写第一位学员姓名。'
 button.disabled=true;button.textContent='正在上传…';try{const r=await fetch(f.action,{method:'POST',body:new FormData(f)});const answer=await r.json();if(answer.closed){closeNow();return;}if(!r.ok||!answer.ok)return fail(answer.message||'暂时提交不了，请稍后再试。',answer.field);f.hidden=true;result.innerHTML='<strong>待核实</strong><br>'+answer.message.replace(/[<>&]/g,'')+'<br>报名编号：<b>'+answer.reference+'</b>';result.focus();}catch{fail('暂时提交不了，请检查网络后再试。');}finally{button.disabled=false;button.textContent=label;}});}
 tick();
 </script>`;
-  return `<!doctype html><html lang="zh-Hans" data-type="software"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="page-type" content="software"><meta name="site-kind" content="software"><meta name="description" content="两天 AI 企业助理课程报名：12 月 7–8 日，新山。"><meta name="robots" content="noindex,nofollow"><meta property="og:title" content="两天 AI 企业助理课程 · 报名"><meta property="og:description" content="12 月 7–8 日 · 新山 · 报名截止 11 月 27 日 5PM。"><meta name="theme-color" content="#160A05"><title>两天 AI 企业助理课程 · 报名</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,400..700&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet"><style>
+  return `<!doctype html><html lang="zh-Hans" data-type="software"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="page-type" content="software"><meta name="site-kind" content="software"><meta name="description" content="两天 AI 企业助理课程报名：12 月 7–8 日，新山。"><meta name="robots" content="noindex,nofollow"><meta property="og:title" content="两天 AI 企业助理课程 · 报名"><meta property="og:description" content="12 月 7–8 日 · 新山 · 报名截止 11 月 27 日 11:59PM。"><meta name="theme-color" content="#160A05"><title>两天 AI 企业助理课程 · 报名</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,400..700&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet"><style>
 :root{color-scheme:light;--bg:#F8F4EE;--card:#fff;--ink:#1A0E08;--ink2:rgba(26,14,8,.72);--mute:rgba(26,14,8,.55);--line:rgba(26,14,8,.09);--field:rgba(26,14,8,.16);--orange:#E8590C;--orange2:#FF7A1A;--peach:#FDE3CC;--dark:#1A0D07;--cream:#FFF6EF;--sans:"Google Sans Flex","Noto Sans SC",ui-sans-serif,system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 .wrap{width:min(1120px,100% - 40px);margin-inline:auto}h1,h2,h3{font-weight:700;letter-spacing:-.035em;line-height:1.12;text-wrap:balance}
@@ -229,7 +229,7 @@ fieldset{border:0;padding:0;margin:16px 0 0;min-width:0}.choices{display:grid;gr
 @media(max-width:560px){.wrap{width:calc(100% - 32px)}.amount{padding:14px}.price{gap:6px}.price s{font-size:15px}.amount strong{font-size:28px}.hero{padding:104px 0 64px}.menu a:not(.btn){display:none}.deadline{padding:14px 16px;margin-top:26px}#countdown b{font-size:28px}.facts{gap:8px}.facts div{padding:12px}.hero .jump{width:100%}.sign{padding:48px 0 64px}.form-card{padding:20px 18px;border-radius:22px}.sign-l .lead{font-size:15.5px}.bank{padding:2px 14px}.bank div{grid-template-columns:1fr;gap:2px;padding:10px 0}.bank dt{font-size:13px}.acct span{font-size:19px}}
 </style></head><body><a class="skip" href="#registration">跳到报名表单</a><header class="nav"><div class="nav-in"><a class="brand" href="/2daysclass/">两天 AI 企业助理课程</a><nav class="menu"><a href="/2daysclass/">课程介绍</a>${live?'<a class="btn btn-w jump" href="#registration">马上报名</a>':''}</nav></div></header>
 <main><section class="hero" aria-labelledby="title"><div class="wrap" data-enter><div class="badge"><i></i><span class="tag">${closed?'报名已截止':'报名 · 银行转账'}</span></div><h1 id="title">两天 AI <span class="hl">企业助理课程</span></h1><p class="lead">可以为自己报名，也可以一起报两位。第二位还没确定？名字之后再补。</p>
-<div class="deadline${closed?' ended':''}"><p>报名截止：2026 年 11 月 27 日（星期五）5PM（马来西亚时间）</p><span id="countdown">${closed?'报名已截止':'计算剩余时间…'}</span></div>
+<div class="deadline${closed?' ended':''}"><p>报名截止：2026 年 11 月 27 日（星期五）11:59PM（马来西亚时间）</p><span id="countdown">${closed?'报名已截止':'计算剩余时间…'}</span></div>
 <dl class="facts"><div><dt>日期</dt><dd>2026 年 12 月 7–8 日<small>星期一、二 · 暂定</small></dd></div><div><dt>时间</dt><dd>每天 9AM - 5PM</dd></div><div><dt>地点</dt><dd>新山<small>详细地址待公布</small></dd></div><div><dt>餐饮</dt><dd>包含一顿午餐和一次茶点</dd></div></dl>
 ${live?'<a class="btn btn-w jump" href="#registration">开始报名 ↓</a>':''}</div></section>
 <section class="sign"><div class="wrap sign-in"><div class="sign-l"><p class="eyebrow">报名流程</p><h2>五步完成报名</h2><p class="lead">填好资料、确认金额、银行转账、上传付款凭证。提交后状态是「待核实」，我们核对款项后再联系你确认名额。</p><ol class="flow"><li><i>01</i>填写报名资料</li><li><i>02</i>确认应付金额</li><li><i>03</i>银行转账</li><li><i>04</i>上传付款凭证</li><li><i>05</i>提交，等待核实</li></ol></div>

@@ -18,7 +18,7 @@ Create a real, empty Cloudflare D1 dedicated to this intake, confirm its ID diff
 
 ## Paid sign-up (registrations + transfer proof) — 2026-11-26, not yet released
 
-- Page now shows course facts, the 2026-11-27 17:00 +08 deadline with a live countdown, and a 5-step flow: details → confirm amount → bank transfer → upload proof → submit.
+- Page now shows course facts, the 2026-11-27 23:59 +08 deadline (Adrian 2026-11-26; was 5PM) with a live countdown, and a 5-step flow: details → confirm amount → bank transfer → upload proof → submit.
 - Submit: `POST /api/2days-botsclass/registrations` (multipart). Server rejects after the deadline (410), and refuses unless `PARTNER_TWO_DAY_FEE_1`, `PARTNER_TWO_DAY_FEE_2` (whole RM, > 0), the `PARTNER_TWO_DAY_PROOFS` R2 binding and `PARTNER_TWO_DAY_PAYMENT_OPEN=1` are all present (503). The amount is computed server-side; a stale page amount gets 409.
 - Stored status is `pending_verification` (待核实). Proof files go to the private R2 bucket only (no public URL, no read route); D1 keeps the key.
 - The old `/api/2days-botsclass/reservations` endpoint now returns 410; rows in `reservations` are untouched.
