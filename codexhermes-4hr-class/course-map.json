@@ -1,36 +1,36 @@
 {
-  "total": 66,
+  "total": 63,
   "hidden": [],
   "chapters": [
     {
       "file": "01-opening.html",
       "first": 1,
-      "last": 11
+      "last": 14
     },
     {
       "file": "02-phase-1-codex.html",
-      "first": 12,
-      "last": 17
+      "first": 15,
+      "last": 19
     },
     {
       "file": "03-phase-2-hermes.html",
-      "first": 18,
-      "last": 24
+      "first": 20,
+      "last": 27
     },
     {
       "file": "04-phase-3-company-role.html",
-      "first": 25,
-      "last": 57
+      "first": 28,
+      "last": 35
     },
     {
       "file": "05-phase-4-telegram.html",
-      "first": 58,
-      "last": 65
+      "first": 36,
+      "last": 62
     },
     {
       "file": "12-closing.html",
-      "first": 66,
-      "last": 66
+      "first": 63,
+      "last": 63
     }
   ]
 }
