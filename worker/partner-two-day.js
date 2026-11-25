@@ -1,5 +1,6 @@
-// Two-day course sign-up + bank-transfer proof. Isolated from the personal-course CRM:
-// only PARTNER_TWO_DAY_DB (D1) and PARTNER_TWO_DAY_PROOFS (private R2) are touched.
+// Two-day course sign-up. Isolated from the personal-course CRM: only PARTNER_TWO_DAY_DB (D1) is touched.
+// Flow (Adrian 2026-11-26): fill details → see amount → submit → payment info pops up (bank + WhatsApp receipt).
+// Sign-ups are stored as pending_payment (待付款); the receipt goes to WhatsApp, not this site.
 const registrationPath = '/api/2days-botsclass/registrations';
 // 2026-11-27 (Fri) 11:59PM Malaysia time (UTC+8); accepted through 23:59:59.
 export const PARTNER_TWO_DAY_DEADLINE = '2026-11-27T23:59:59.999+08:00';
@@ -9,8 +10,7 @@ export const PARTNER_TWO_DAY_BANK = {
   bank: 'Hong Leong Bank（HLB）',
   account: '37900006808',
 };
-const MAX_PROOF = 5 * 1024 * 1024;
-const MAX_BODY = MAX_PROOF + 64 * 1024;
+const DEFAULT_WHATSAPP = '60167871902';
 const boundary = { 'cache-control':'no-store', 'x-robots-tag':'noindex, nofollow', 'referrer-policy':'no-referrer', 'x-content-type-options':'nosniff' };
 const reply = (status, data) => Response.json(data, {status, headers:boundary});
 const available = env => Boolean(env.PARTNER_TWO_DAY_DB && env.PARTNER_TWO_DAY_OPEN === '1');
@@ -26,11 +26,12 @@ export function partnerTwoDayState(env = {}, now = Date.now()) {
   const fees = { 1: parseFee(env.PARTNER_TWO_DAY_FEE_1), 2: parseFee(env.PARTNER_TWO_DAY_FEE_2) };
   const feesSet = Boolean(fees[1] && fees[2]);
   const open = available(env);
+  const wa = /^60\d{8,10}$/.test(env.PARTNER_TWO_DAY_WHATSAPP || '') ? env.PARTNER_TWO_DAY_WHATSAPP : DEFAULT_WHATSAPP;
   return {
-    open, deadline, fees, feesSet,
+    open, deadline, fees, feesSet, wa,
     closed: now >= deadline,
-    // Real payment intake needs: fees for both options, private proof bucket, and an explicit switch.
-    payable: open && feesSet && Boolean(env.PARTNER_TWO_DAY_PROOFS) && env.PARTNER_TWO_DAY_PAYMENT_OPEN === '1',
+    // Sign-ups need fees for both options and an explicit switch.
+    payable: open && feesSet && env.PARTNER_TWO_DAY_PAYMENT_OPEN === '1',
     test: env.PARTNER_TWO_DAY_TEST_MODE === '1',
   };
 }
@@ -39,14 +40,6 @@ export function partnerTwoDayState(env = {}, now = Date.now()) {
 export async function reservePartnerTwoDay() {
   return reply(410,{ok:false,message:'预留登记已结束，请重新打开报名页面。'});
 }
-
-const PROOF_TYPES = [
-  { type:'image/jpeg', ext:'jpg', test:b => b[0]===0xff && b[1]===0xd8 && b[2]===0xff },
-  { type:'image/png', ext:'png', test:b => b[0]===0x89 && b[1]===0x50 && b[2]===0x4e && b[3]===0x47 },
-  { type:'image/webp', ext:'webp', test:b => String.fromCharCode(...b.slice(0,4))==='RIFF' && String.fromCharCode(...b.slice(8,12))==='WEBP' },
-  { type:'image/heic', ext:'heic', test:b => String.fromCharCode(...b.slice(4,8))==='ftyp' && /^(heic|heix|mif1|msf1|hevc)$/.test(String.fromCharCode(...b.slice(8,12))) },
-  { type:'application/pdf', ext:'pdf', test:b => String.fromCharCode(...b.slice(0,5))==='%PDF-' },
-];
 
 function referenceCode() {
   const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -58,26 +51,30 @@ export async function registerPartnerTwoDay(request, env, now = Date.now()) {
   const state = partnerTwoDayState(env, now);
   if (state.closed) return reply(410,{ok:false,closed:true,message:'报名已截止。'});
   if (!state.open) return reply(503,{ok:false,message:'报名暂未开放。'});
-  if (!state.payable) return reply(503,{ok:false,message:'费用待确认，暂未开放付款和提交。'});
+  if (!state.payable) return reply(503,{ok:false,message:'费用待确认，暂未开放报名。'});
   if (request.headers.get('origin') !== new URL(request.url).origin) return reply(403,{ok:false,message:'请从报名页面提交。'});
-  if (!/^multipart\/form-data\s*;/i.test(request.headers.get('content-type') || '')) return reply(415,{ok:false,message:'提交格式不正确。'});
-  const length = Number(request.headers.get('content-length'));
-  if (!Number.isFinite(length) || length <= 0) return reply(411,{ok:false,message:'请从报名页面提交。'});
-  if (length > MAX_BODY) return reply(413,{ok:false,field:'proof',message:'付款凭证不能超过 5MB。'});
-  let form;
-  try { form = await request.formData(); } catch { return reply(400,{ok:false,message:'无法读取表单资料。'}); }
-  if (form.get('website')) return reply(400,{ok:false,message:'请重新打开页面提交。'});
+  if (!/^application\/json(?:\s*;|$)/i.test(request.headers.get('content-type') || '')) return reply(415,{ok:false,message:'提交格式不正确。'});
+  if (!request.body) return reply(400,{ok:false,message:'没有收到表单资料。'});
+  const reader = request.body.getReader();
+  let size=0, text='', data;
+  const dec = new TextDecoder('utf-8',{fatal:true});
+  try {
+    while(true){const {value,done}=await reader.read(); if(done)break; size+=value.byteLength; if(size>4096){await reader.cancel().catch(()=>{});return reply(413,{ok:false,message:'资料过长。'});} text+=dec.decode(value,{stream:true});}
+    data=JSON.parse(text+dec.decode());
+  } catch { return reply(400,{ok:false,message:'无法读取表单资料。'}); }
+  if (!data || typeof data!=='object' || Array.isArray(data)) return reply(400,{ok:false,message:'表单资料不正确。'});
+  if (data.website) return reply(400,{ok:false,message:'请重新打开页面提交。'});
   const bad = (field,message) => reply(422,{ok:false,field,message});
   const get = (key,max) => {
-    const v = form.get(key);
+    const v = data[key];
     if (v == null) return '';
     if (typeof v !== 'string' || v.length > max || /[\u0000-\u001f\u007f]/.test(v)) throw new Error(key);
     return v.trim();
   };
   const labels={name:'请填写姓名（最多 100 字）。',phone:'请填写有效的马来西亚手机号码。',secondName:'第二位姓名最多 100 字。',companyName:'请填写公司开单名称（最多 160 字）。',companyAddress:'公司地址最多 300 字。'};
-  const seats = Number(form.get('seats'));
+  const {seats,companyInvoice} = data;
   if (![1,2].includes(seats)) return bad('seats','请选择报名人数。');
-  const companyInvoice = form.get('companyInvoice') === 'on';
+  if (typeof companyInvoice!=='boolean') return bad('companyInvoice','请确认公司开单选项。');
   let name, phone, secondName, companyName, companyAddress;
   try {
     name=get('name',100); if(!name) throw new Error('name');
@@ -90,109 +87,94 @@ export async function registerPartnerTwoDay(request, env, now = Date.now()) {
     if(companyInvoice&&!companyName) throw new Error('companyName');
     companyAddress=companyInvoice ? get('companyAddress',300)||null : null;
   } catch(e) { return bad(e.message,labels[e.message]||'请检查填写的资料。'); }
-  if (form.get('amountConfirmed') !== 'on') return bad('amountConfirmed','请确认应付金额。');
   const amount = state.fees[seats];
   // The page shows the amount it rendered; refuse if the fee changed since the page was opened.
-  if (String(form.get('expectedAmount') || '') !== String(amount)) return reply(409,{ok:false,message:'费用已更新，请重新打开页面确认金额。'});
-  const proof = form.get('proof');
-  if (!proof || typeof proof === 'string' || !proof.size) return bad('proof','请上传付款凭证。');
-  if (proof.size > MAX_PROOF) return bad('proof','付款凭证不能超过 5MB。');
-  const bytes = new Uint8Array(await proof.arrayBuffer());
-  const kind = PROOF_TYPES.find(t => t.test(bytes.subarray(0,16)));
-  if (!kind) return bad('proof','付款凭证只接受 JPG、PNG、WEBP、HEIC 或 PDF。');
-  const reference = referenceCode();
-  const key = `proofs/${new Date(now).toISOString().slice(0,10)}/${crypto.randomUUID()}.${kind.ext}`;
+  if (data.expectedAmount !== amount) return reply(409,{ok:false,message:'费用已更新，请重新打开页面确认金额。'});
+  const pay = (reference,row) => reply(200,{ok:true,reference,status:'pending_payment',name:row.name,seats:row.seats,amount:row.amount,whatsapp:state.wa,
+    message:row.again?'这个号码已经报过名，以下是你的付款资料。':'报名资料已收到，请按以下资料转账。'});
   const db = env.PARTNER_TWO_DAY_DB;
   try {
-    const existing = await db.prepare('SELECT 1 FROM registrations WHERE contact_phone = ? LIMIT 1').bind(phone).first();
-    if (existing) return reply(409,{ok:false,field:'phone',message:'这个号码已提交过报名和付款凭证。如需补交或修改，请直接联系我们。'});
-    await env.PARTNER_TWO_DAY_PROOFS.put(key, bytes, { httpMetadata:{contentType:kind.type}, customMetadata:{reference} });
-  } catch { return reply(503,{ok:false,message:'暂时无法保存，请稍后再试。'}); }
-  try {
+    // Same number again: show the payment info of the first sign-up; do not create or change anything.
+    const existing = await db.prepare('SELECT reference,contact_name,seats,amount_rm FROM signups WHERE contact_phone = ? LIMIT 1').bind(phone).first();
+    if (existing) return pay(existing.reference,{name:existing.contact_name,seats:existing.seats,amount:existing.amount_rm,again:true});
+    const reference = referenceCode();
     const result = await db.prepare(
-      `INSERT INTO registrations (reference,contact_name,contact_phone,seats,second_name,company_invoice,company_name,company_address,amount_rm,proof_key,proof_type,proof_size,status,created_at)
-       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,'pending_verification',?)`
-    ).bind(reference,name,phone,seats,secondName,Number(companyInvoice),companyName,companyAddress,amount,key,kind.type,bytes.byteLength,new Date(now).toISOString()).run();
+      `INSERT INTO signups (reference,contact_name,contact_phone,seats,second_name,company_invoice,company_name,company_address,amount_rm,status,created_at)
+       VALUES (?,?,?,?,?,?,?,?,?,'pending_payment',?)`
+    ).bind(reference,name,phone,seats,secondName,Number(companyInvoice),companyName,companyAddress,amount,new Date(now).toISOString()).run();
     if (!result?.success) throw new Error('insert rejected');
-  } catch {
-    await env.PARTNER_TWO_DAY_PROOFS.delete(key).catch(()=>{});
-    return reply(503,{ok:false,message:'暂时无法保存，请稍后再试。'});
-  }
-  return reply(200,{ok:true,reference,status:'pending_verification',message:'已收到报名资料和付款凭证，状态：待核实。我们核对款项后，会通过你填写的电话联系你确认名额。'});
+    return pay(reference,{name,seats,amount});
+  } catch { return reply(503,{ok:false,message:'暂时无法保存，请稍后再试。'}); }
 }
 
 export function partnerTwoDayPage(env,method='GET',now=Date.now()) {
-  return new Response(method==='HEAD'?null:renderPartnerTwoDay(partnerTwoDayState(env,now)),{headers:{...boundary,'content-type':'text/html; charset=utf-8','x-frame-options':'DENY','content-security-policy':"default-src 'none';style-src 'unsafe-inline' https://fonts.googleapis.com;script-src 'unsafe-inline';img-src blob:;font-src https://fonts.gstatic.com;connect-src 'self';form-action 'self';frame-ancestors 'none';base-uri 'none'"}});
+  return new Response(method==='HEAD'?null:renderPartnerTwoDay(partnerTwoDayState(env,now)),{headers:{...boundary,'content-type':'text/html; charset=utf-8','x-frame-options':'DENY','content-security-policy':"default-src 'none';style-src 'unsafe-inline' https://fonts.googleapis.com;script-src 'unsafe-inline';font-src https://fonts.gstatic.com;connect-src 'self';form-action 'self';frame-ancestors 'none';base-uri 'none'"}});
 }
 
 const rm = n => 'RM' + Number(n).toLocaleString('en-US');
 
 export function renderPartnerTwoDay(state) {
   if (typeof state === 'boolean') state = partnerTwoDayState({PARTNER_TWO_DAY_DB:state?{}:null,PARTNER_TWO_DAY_OPEN:'1'});
-  const {open,closed,payable,fees,feesSet,deadline,test} = state;
+  const {open,closed,payable,fees,feesSet,deadline,test,wa} = state;
   const live = open && !closed;
   const feeText = n => feesSet ? rm(fees[n]) : '费用待确认';
   const bogo = feesSet && fees[2] < fees[1]*2; // two seats cost less than two singles, e.g. buy one, get one free
-  const closedText = feesSet ? '付款通道开通后开放' : '费用确认后开放';
   const bank = PARTNER_TWO_DAY_BANK;
   const closedCard = `<div class="closed-card"><strong>报名已截止</strong><p>报名在 2026 年 11 月 27 日（星期五）11:59PM 截止。如有疑问，请直接联系我们。</p></div>`;
-  const form = `<noscript><p>请启用 JavaScript 后提交。</p></noscript><form id="signup" autocomplete="on" method="post" action="${registrationPath}" enctype="multipart/form-data" novalidate>
+  const form = `<noscript><p>请启用 JavaScript 后提交。</p></noscript><form id="signup" autocomplete="on" method="post" action="${registrationPath}" novalidate>
 <ol class="steps">
 <li class="step"><h3><span class="n">1</span>填写报名资料</h3>
 <label for="name">第一位学员姓名</label><input id="name" name="name" required maxlength="100" autocomplete="name">
-<label for="phone">联络手机号码</label><input id="phone" name="phone" required type="tel" maxlength="30" autocomplete="tel" inputmode="tel" placeholder="012-345 6789">
+<label for="phone">联络手机号码（WhatsApp）</label><input id="phone" name="phone" required type="tel" maxlength="30" autocomplete="tel" inputmode="tel" placeholder="012-345 6789">
 <fieldset><legend>报名人数</legend><div class="choices"><label><input name="seats" type="radio" value="1" checked>一位</label><label><input name="seats" type="radio" value="2">两位${bogo&&fees[2]===fees[1]?'<em class="free">送一位</em>':''}</label></div></fieldset>
 <div id="second" class="conditional" hidden><label for="secondName">第二位学员姓名 <span class="optional">可稍后补</span></label><input id="secondName" name="secondName" maxlength="100" disabled></div>
 <label class="check" for="companyInvoice"><input id="companyInvoice" name="companyInvoice" type="checkbox">需要开单给公司</label>
 <div id="company" class="conditional" hidden><label for="companyName">公司开单名称</label><input id="companyName" name="companyName" maxlength="160" autocomplete="organization" disabled><label for="companyAddress">公司地址 <span class="optional">选填</span></label><input id="companyAddress" name="companyAddress" maxlength="300" autocomplete="street-address" disabled><p>其他公司资料，之后需要时再向你确认。</p></div>
 </li>
-<li class="step"><h3><span class="n">2</span>确认应付金额</h3>
+<li class="step"><h3><span class="n">2</span>应付金额</h3>
 <div class="amount${feesSet?'':' pending'}"><span id="amountLabel">一位学员</span><span class="price"><s id="was" hidden>${bogo?rm(fees[1]*2):''}</s><strong id="amount">${feeText(1)}</strong></span></div>
 <p id="promo" class="promo" hidden>${bogo&&fees[2]===fees[1]?'买一送一：第二位学员免费':bogo?'两位同报优惠':''}</p>
-${feesSet?'':'<p class="note">一人和两人的收费确认后才开放付款，请先不要转账。</p>'}
-<label class="check"><input id="amountConfirmed" name="amountConfirmed" type="checkbox"${payable?'':' disabled'}>我已确认应付金额</label>
-<input type="hidden" id="expectedAmount" name="expectedAmount" value="${feesSet?fees[1]:''}">
-</li>
-<li class="step"><h3><span class="n">3</span>银行转账</h3>
-<dl class="bank">
-<div><dt>收款户名</dt><dd>${bank.holder}</dd></div>
-<div><dt>注册编号</dt><dd>${bank.regNo}</dd></div>
-<div><dt>银行</dt><dd>${bank.bank}</dd></div>
-<div><dt>户口号码</dt><dd class="acct"><span id="acct">${bank.account}</span><button type="button" class="copy" data-copy="${bank.account}">复制</button></dd></div>
-</dl>
-<p class="note">${payable?'转账备注请写第一位学员姓名。':feesSet?'付款通道开通后才可转账，请先不要转账。':'费用确认前请勿转账。'}</p>
-</li>
-<li class="step"><h3><span class="n">4</span>上传付款凭证</h3>
-<label class="drop" for="proof"><span id="proofText">${payable?'选择截图或 PDF':closedText+'上传'}</span><small>JPG、PNG、WEBP、HEIC 或 PDF，5MB 以内</small></label>
-<input id="proof" name="proof" type="file" accept="image/jpeg,image/png,image/webp,image/heic,application/pdf"${payable?' required':' disabled'}>
-<img id="preview" alt="付款凭证预览" hidden>
-</li>
-<li class="step"><h3><span class="n">5</span>提交</h3>
+${feesSet?'':'<p class="note">一人和两人的收费确认后才开放报名。</p>'}
 <div class="honeypot" aria-hidden="true"><label for="website">请留空</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>
-<p class="privacy">你填写的资料和付款凭证只用于本次课程报名、核对款项和开单跟进，不会公开。提交后状态为「待核实」，我们核对款项后才确认名额。</p>
-<button type="submit" id="submit"${payable?'':' disabled'}>${payable?'提交报名和付款凭证':closedText+'提交'}</button>
+<p class="privacy">按「报名」后会显示付款资料。你填写的资料只用于本次课程报名、联络和开单，不会公开。</p>
+<button type="submit" id="submit"${payable?'':' disabled'}>${payable?'报名':'费用确认后开放报名'}</button>
 </li>
 </ol>
 </form><div id="result" role="status" aria-live="polite" tabindex="-1"></div>`;
+  const bankRows = `<dl class="bank"><div><dt>收款户名</dt><dd>${bank.holder}</dd></div><div><dt>注册编号</dt><dd>${bank.regNo}</dd></div><div><dt>银行</dt><dd>${bank.bank}</dd></div><div><dt>户口号码</dt><dd class="acct"><span>${bank.account}</span><button type="button" class="copy" data-copy="${bank.account}">复制</button></dd></div></dl>`;
+  const payTpl = `<template id="payTpl"><div class="pay"><p class="pay-tag">报名成功 · 待付款</p><h3 class="pay-h">请转账完成报名</h3><p class="pay-msg"></p>
+<div class="pay-sum"><div><span>报名编号</span><b class="ref"></b></div><div><span>学员</span><b class="who"></b></div><div><span>应付金额</span><b class="amt"></b></div></div>
+<p class="pay-step"><i>1</i>转账到以下户口</p>${bankRows}<p class="note">转账备注请写报名编号 <b class="ref"></b>。</p>
+<p class="pay-step"><i>2</i>付款后，把付款凭证 WhatsApp 给我们</p><a class="wa" target="_blank" rel="noopener">我已付款，WhatsApp 发付款凭证</a>
+<p class="pay-fine">我们核对款项后，会通过 WhatsApp 确认你的名额。</p></div></template>`;
   const script = `<script>
 const DEADLINE=${deadline}, FEES=${JSON.stringify(feesSet?fees:null)}, PAYABLE=${payable};
 const pad=n=>String(n).padStart(2,'0');
 const cd=document.querySelector('#countdown');
-function closeNow(){const box=document.querySelector('#registration');box.querySelector('.form-body').innerHTML=${JSON.stringify(closedCard)};cd.closest('.deadline').classList.add('ended');cd.textContent='报名已截止';document.querySelectorAll('.jump').forEach(j=>j.remove());document.querySelector('.tag').textContent='报名已截止';}
-function tick(){const left=DEADLINE-Date.now();if(left<=0){closeNow();return;}const s=Math.floor(left/1000),d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);cd.innerHTML=(d?'<b>'+d+'</b> 天 ':'')+'<b>'+pad(h)+'</b> 时 <b>'+pad(m)+'</b> 分 <b>'+pad(s%60)+'</b> 秒';setTimeout(tick,1000-Date.now()%1000);}
+let paid=false;
+function closeNow(){if(paid)return;const box=document.querySelector('#registration');box.querySelector('.form-body').innerHTML=${JSON.stringify(closedCard)};cd.closest('.deadline').classList.add('ended');cd.textContent='报名已截止';document.querySelectorAll('.jump').forEach(j=>j.remove());document.querySelector('.tag').textContent='报名已截止';}
+function tick(){const left=DEADLINE-Date.now();if(left<=0){closeNow();cd.closest('.deadline').classList.add('ended');cd.textContent='报名已截止';return;}const s=Math.floor(left/1000),d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);cd.innerHTML=(d?'<b>'+d+'</b> 天 ':'')+'<b>'+pad(h)+'</b> 时 <b>'+pad(m)+'</b> 分 <b>'+pad(s%60)+'</b> 秒';setTimeout(tick,1000-Date.now()%1000);}
 const f=document.querySelector('#signup');
+function copyBtns(root){root.querySelectorAll('.copy').forEach(b=>b.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(b.dataset.copy);b.textContent='已复制';setTimeout(()=>b.textContent='复制',1500);}catch{}}));}
+function payPanel(a){const n=document.querySelector('#payTpl').content.cloneNode(true);const rmT='RM'+Number(a.amount).toLocaleString('en-US');const who=a.seats===2?'两位'+(FEES&&FEES[2]<FEES[1]*2?'（买一送一）':''):'一位';
+n.querySelectorAll('.ref').forEach(e=>e.textContent=a.reference);n.querySelector('.who').textContent=who;n.querySelector('.amt').textContent=rmT;n.querySelector('.pay-msg').textContent=a.message;
+const text='你好，我已完成「两天 AI 企业助理课程」的付款。\\n报名编号：'+a.reference+'\\n姓名：'+a.name+'\\n人数：'+who+'\\n金额：'+rmT+'\\n（附上付款凭证）';
+n.querySelector('.wa').href='https://wa.me/'+a.whatsapp+'?text='+encodeURIComponent(text);copyBtns(n);return n;}
 if(f){const result=document.querySelector('#result'), button=f.querySelector('#submit'), label=button.textContent;
 function fields(){const two=f.elements.seats.value==='2', bill=f.elements.companyInvoice.checked;document.querySelector('#second').hidden=!two;document.querySelector('#company').hidden=!bill;f.elements.secondName.disabled=!two;f.elements.companyName.disabled=!bill;f.elements.companyName.required=bill;f.elements.companyAddress.disabled=!bill;
-document.querySelector('#amountLabel').textContent=two?'两位学员合计':'一位学员';document.querySelector('#amount').textContent=FEES?'RM'+FEES[two?2:1].toLocaleString('en-US'):'费用待确认';const deal=!!FEES&&two&&FEES[2]<FEES[1]*2;document.querySelector('#was').hidden=!deal;document.querySelector('#promo').hidden=!deal;f.elements.expectedAmount.value=FEES?FEES[two?2:1]:'';}
-f.addEventListener('change',e=>{if(e.target.name==='seats'&&f.elements.amountConfirmed.checked)f.elements.amountConfirmed.checked=false;fields();});fields();
-document.querySelector('.copy').addEventListener('click',async e=>{try{await navigator.clipboard.writeText(e.target.dataset.copy);e.target.textContent='已复制';setTimeout(()=>e.target.textContent='复制',1500);}catch{}});
-const proof=f.elements.proof, pv=document.querySelector('#preview');
-proof.addEventListener('change',()=>{const file=proof.files[0];proof.removeAttribute('aria-invalid');pv.hidden=true;if(!file){document.querySelector('#proofText').textContent='选择截图或 PDF';return;}document.querySelector('#proofText').textContent=file.name+' · '+(file.size<1048576?Math.max(1,Math.round(file.size/1024))+'KB':(file.size/1048576).toFixed(1)+'MB');if(file.size>5242880){proof.setAttribute('aria-invalid','true');document.querySelector('#proofText').textContent='文件超过 5MB，请换一张';}else if(/^image\\/(jpeg|png|webp)$/.test(file.type)){pv.src=URL.createObjectURL(file);pv.hidden=false;}});
-function fail(msg,field){result.dataset.error='';result.textContent=msg;const el=field&&f.elements[field];if(el?.setAttribute){el.setAttribute('aria-invalid','true');(el.type==='file'?document.querySelector('.drop'):el).scrollIntoView({block:'center'});el.focus({preventScroll:true});}else result.focus();}
+document.querySelector('#amountLabel').textContent=two?'两位学员合计':'一位学员';document.querySelector('#amount').textContent=FEES?'RM'+FEES[two?2:1].toLocaleString('en-US'):'费用待确认';const deal=!!FEES&&two&&FEES[2]<FEES[1]*2;document.querySelector('#was').hidden=!deal;document.querySelector('#promo').hidden=!deal;}
+f.addEventListener('change',fields);fields();
+function fail(msg,field){result.dataset.error='';result.textContent=msg;const el=field&&f.elements[field];if(el?.setAttribute){el.setAttribute('aria-invalid','true');el.scrollIntoView({block:'center'});el.focus({preventScroll:true});}else result.focus();}
 f.addEventListener('submit',async e=>{e.preventDefault();if(button.disabled||!PAYABLE)return;for(const el of f.querySelectorAll('[aria-invalid]'))el.removeAttribute('aria-invalid');result.textContent='';result.removeAttribute('data-error');
 if(Date.now()>=DEADLINE){closeNow();return;}
-if(!f.elements.name.value.trim())return fail('请填写第一位学员姓名。','name');if(!f.elements.phone.value.trim())return fail('请填写联络手机号码。','phone');if(f.elements.companyInvoice.checked&&!f.elements.companyName.value.trim())return fail('请填写公司开单名称。','companyName');if(!f.elements.amountConfirmed.checked)return fail('请确认应付金额。','amountConfirmed');if(!proof.files[0])return fail('请上传付款凭证。','proof');if(proof.files[0].size>5242880)return fail('付款凭证不能超过 5MB。','proof');
-button.disabled=true;button.textContent='正在上传…';try{const r=await fetch(f.action,{method:'POST',body:new FormData(f)});const answer=await r.json();if(answer.closed){closeNow();return;}if(!r.ok||!answer.ok)return fail(answer.message||'暂时提交不了，请稍后再试。',answer.field);f.hidden=true;result.innerHTML='<strong>待核实</strong><br>'+answer.message.replace(/[<>&]/g,'')+'<br>报名编号：<b>'+answer.reference+'</b>';result.focus();}catch{fail('暂时提交不了，请检查网络后再试。');}finally{button.disabled=false;button.textContent=label;}});}
+if(!f.elements.name.value.trim())return fail('请填写第一位学员姓名。','name');if(!f.elements.phone.value.trim())return fail('请填写联络手机号码。','phone');if(f.elements.companyInvoice.checked&&!f.elements.companyName.value.trim())return fail('请填写公司开单名称。','companyName');
+const two=f.elements.seats.value==='2',bill=f.elements.companyInvoice.checked;
+const body={name:f.elements.name.value,phone:f.elements.phone.value,seats:two?2:1,secondName:two?f.elements.secondName.value:undefined,companyInvoice:bill,companyName:bill?f.elements.companyName.value:undefined,companyAddress:bill?f.elements.companyAddress.value:undefined,expectedAmount:FEES?FEES[two?2:1]:null,website:f.elements.website.value};
+button.disabled=true;button.textContent='正在提交…';try{const r=await fetch(f.action,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});const answer=await r.json();if(answer.closed){closeNow();return;}if(!r.ok||!answer.ok)return fail(answer.message||'暂时提交不了，请稍后再试。',answer.field);
+paid=true;const card=document.querySelector('#registration');card.querySelector('h2').textContent='付款资料';card.querySelector('.form-body').replaceChildren(payPanel(answer));
+const dlg=document.querySelector('#payDlg');dlg.querySelector('.dlg-body').replaceChildren(payPanel(answer));if(dlg.showModal)dlg.showModal();else card.scrollIntoView();}
+catch{fail('暂时提交不了，请检查网络后再试。');}finally{button.disabled=false;button.textContent=label;}});}
+document.querySelector('#payDlg .dlg-x')?.addEventListener('click',()=>{document.querySelector('#payDlg').close();document.querySelector('#registration').scrollIntoView({block:'start'});});
 tick();
 </script>`;
   return `<!doctype html><html lang="zh-Hans" data-type="software"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="page-type" content="software"><meta name="site-kind" content="software"><meta name="description" content="两天 AI 企业助理课程报名：12 月 7–8 日，新山。"><meta name="robots" content="noindex,nofollow"><meta property="og:title" content="两天 AI 企业助理课程 · 报名"><meta property="og:description" content="12 月 7–8 日 · 新山 · 报名截止 11 月 27 日 11:59PM。"><meta name="theme-color" content="#160A05"><title>两天 AI 企业助理课程 · 报名</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,400..700&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet"><style>
@@ -218,7 +200,7 @@ label,legend{font-weight:600;font-size:15px}label{display:block;margin:14px 0 6p
 fieldset{border:0;padding:0;margin:16px 0 0;min-width:0}.choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}.choices label,.check{display:flex;align-items:center;gap:10px;min-height:48px;margin:0;padding:8px 14px;border-radius:12px;box-shadow:inset 0 0 0 1px var(--field);cursor:pointer;transition:background .15s,box-shadow .15s}.check{margin-top:14px}.choices label:has(:checked),.check:has(:checked){background:#FFF3E8;box-shadow:inset 0 0 0 2px var(--orange)}.check:has(:disabled){opacity:.5;cursor:default}input[type=radio],input[type=checkbox]{accent-color:var(--orange);width:18px;height:18px;margin:0;flex:none}.optional{font-weight:400;font-size:.87em;color:var(--mute)}.conditional{padding:2px 0 4px}
 .amount{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:16px 18px;border-radius:16px;background:var(--bg);margin:10px 0 4px}.amount>span:first-child{color:var(--ink2);font-weight:600;white-space:nowrap}.price{display:flex;align-items:baseline;gap:10px}.price s{font-size:17px;font-weight:600;color:var(--mute);text-decoration-thickness:2px}.promo{display:inline-block;margin:6px 0 2px!important;padding:4px 12px;border-radius:999px;background:var(--orange);color:#fff!important;font-weight:700;font-size:13.5px!important}.free{font-style:normal;margin-left:auto;font-size:12.5px;font-weight:700;color:var(--orange);background:var(--peach);border-radius:999px;padding:2px 9px}.amount strong{font-size:clamp(30px,4vw,40px);letter-spacing:-.04em;font-variant-numeric:tabular-nums}.amount.pending strong{font-size:18px;letter-spacing:0;color:var(--orange);background:var(--peach);padding:3px 12px;border-radius:999px}.note{font-size:14px!important;color:#9A4A12!important;margin:10px 0 0!important}
 .bank{margin:10px 0 0;border-radius:16px;background:var(--bg);padding:4px 18px}.bank div{display:grid;grid-template-columns:5.2em 1fr;gap:12px;padding:11px 0;border-top:1px solid var(--line)}.bank div:first-child{border-top:0}.bank dt{color:var(--mute);font-size:14px}.bank dd{margin:0;font-weight:600;overflow-wrap:anywhere}.acct{display:flex;align-items:center;justify-content:space-between;gap:8px}.acct span{font-size:20px;letter-spacing:.03em;font-variant-numeric:tabular-nums;white-space:nowrap}button.copy{font:inherit;font-size:14px;font-weight:600;min-height:34px;padding:3px 14px;border:0;border-radius:9px;background:#fff;color:var(--ink);box-shadow:inset 0 0 0 1px var(--field);cursor:pointer;white-space:nowrap;flex:none}
-.drop{display:grid;gap:2px;place-items:center;text-align:center;margin:10px 0 0;padding:24px 14px;border:1.5px dashed rgba(232,89,12,.4);border-radius:16px;background:#FFF8F1;cursor:pointer;font-weight:600}.drop small{font-weight:400;color:var(--mute)}#proof{position:absolute;width:1px;height:1px;opacity:0}.drop:has(+#proof:focus-visible){outline:3px solid var(--orange);outline-offset:3px}#proof:disabled{pointer-events:none}.drop:has(+#proof:disabled){opacity:.5;cursor:default;border-color:var(--field);background:var(--bg)}.drop:has(+#proof[aria-invalid=true]){border-color:#B3341A;background:#FFF0EA}#preview{display:block;max-width:100%;max-height:220px;margin:12px auto 0;border-radius:12px;box-shadow:0 0 0 1px var(--line)}
+.pay-tag{display:inline-block;margin:0 0 8px!important;padding:3px 12px;border-radius:999px;background:var(--orange);color:#fff!important;font-weight:700;font-size:13px!important}.pay-h{margin:0;font-size:24px}.pay-msg{margin:6px 0 14px!important}.pay-sum{display:grid;gap:0;border-radius:16px;background:var(--bg);padding:4px 18px}.pay-sum div{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line)}.pay-sum div:first-child{border-top:0}.pay-sum span{color:var(--mute);font-size:14px}.pay-sum b{font-variant-numeric:tabular-nums}.pay-sum .amt{font-size:22px;letter-spacing:-.02em}.pay-step{display:flex;align-items:center;gap:10px;margin:20px 0 0!important;font-weight:700;color:var(--ink)!important;font-size:16.5px!important}.pay-step i{font-style:normal;display:inline-grid;place-items:center;width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--orange2),var(--orange));color:#fff;font-size:13px}.wa{display:flex;align-items:center;justify-content:center;min-height:54px;margin-top:10px;border-radius:12px;background:#1FA855;color:#fff;font-weight:700;font-size:17px;text-decoration:none;box-shadow:0 8px 20px rgba(31,168,85,.28);transition:transform .15s}.wa:hover{transform:translateY(-2px)}.pay-fine{margin:10px 0 0!important;font-size:13.5px!important;color:var(--mute)!important}#payDlg{width:min(520px,100% - 24px);max-height:calc(100dvh - 24px);padding:0;border:0;border-radius:24px;background:#fff;color:var(--ink);box-shadow:0 30px 80px rgba(26,14,8,.3)}#payDlg::backdrop{background:rgba(20,10,5,.55);backdrop-filter:blur(3px)}.dlg-in{padding:24px 24px 22px;position:relative}.dlg-x{position:absolute;top:12px;right:12px;width:38px;height:38px;border:0;border-radius:10px;background:var(--bg);color:var(--ink);font-size:20px;cursor:pointer}
 .privacy{margin:0 0 14px!important;font-size:14px!important;color:var(--mute)!important}.honeypot{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
 #submit{font:inherit;width:100%;min-height:54px;border:0;border-radius:12px;background:var(--dark);color:var(--cream);font-weight:600;font-size:17px;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),0 8px 20px rgba(26,13,7,.25);transition:transform .15s}#submit:not(:disabled):hover{transform:translateY(-2px)}#submit:not(:disabled):active{transform:scale(.98)}#submit:disabled{cursor:default;background:rgba(26,14,8,.18);color:rgba(26,14,8,.5);box-shadow:none}
 :focus-visible{outline:3px solid var(--orange);outline-offset:3px}#result:not(:empty){margin-top:14px;padding:14px 16px;border-radius:14px;background:#FFF3E8;color:var(--ink)}#result strong{display:inline-block;font-size:13px;color:#fff;background:var(--orange);border-radius:999px;padding:2px 10px;margin-bottom:4px}#result[data-error]:not(:empty){background:#FFF0EA;color:#8A2A14}[aria-invalid=true]{box-shadow:inset 0 0 0 2px #B3341A!important}
@@ -232,8 +214,8 @@ fieldset{border:0;padding:0;margin:16px 0 0;min-width:0}.choices{display:grid;gr
 <div class="deadline${closed?' ended':''}"><p>报名截止：2026 年 11 月 27 日（星期五）11:59PM（马来西亚时间）</p><span id="countdown">${closed?'报名已截止':'计算剩余时间…'}</span></div>
 <dl class="facts"><div><dt>日期</dt><dd>2026 年 12 月 7–8 日<small>星期一、二 · 暂定</small></dd></div><div><dt>时间</dt><dd>每天 9AM - 5PM</dd></div><div><dt>地点</dt><dd>新山<small>详细地址待公布</small></dd></div><div><dt>餐饮</dt><dd>包含一顿午餐和一次茶点</dd></div></dl>
 ${live?'<a class="btn btn-w jump" href="#registration">开始报名 ↓</a>':''}</div></section>
-<section class="sign"><div class="wrap sign-in"><div class="sign-l"><p class="eyebrow">报名流程</p><h2>五步完成报名</h2><p class="lead">填好资料、确认金额、银行转账、上传付款凭证。提交后状态是「待核实」，我们核对款项后再联系你确认名额。</p><ol class="flow"><li><i>01</i>填写报名资料</li><li><i>02</i>确认应付金额</li><li><i>03</i>银行转账</li><li><i>04</i>上传付款凭证</li><li><i>05</i>提交，等待核实</li></ol></div>
+<section class="sign"><div class="wrap sign-in"><div class="sign-l"><p class="eyebrow">报名流程</p><h2>四步完成报名</h2><p class="lead">填好资料按「报名」，就会看到付款资料。银行转账后，把付款凭证 WhatsApp 给我们，我们核对后确认名额。</p><ol class="flow"><li><i>01</i>填写报名资料</li><li><i>02</i>按「报名」，查看付款资料</li><li><i>03</i>银行转账</li><li><i>04</i>WhatsApp 发付款凭证</li></ol></div>
 <div id="registration" class="form-card" tabindex="-1">${test?'<p class="test">本地测试预览 · 金额和资料都是测试值，不会收款</p>':''}<h2>报名和付款</h2>
 <div class="form-body">${closed?closedCard:open?form:'<p>报名暂未开放。</p>'}</div>
-</div></div></section></main><footer class="site-foot"><div class="wrap">两天 AI 企业助理课程 · <a href="/2daysclass/">课程介绍</a></div></footer>${closed?'':script}</body></html>`;
+</div></div></section></main><footer class="site-foot"><div class="wrap">两天 AI 企业助理课程 · <a href="/2daysclass/">课程介绍</a></div></footer>${live?payTpl+'<dialog id="payDlg" aria-label="付款资料"><div class="dlg-in"><button type="button" class="dlg-x" aria-label="关闭">×</button><div class="dlg-body"></div></div></dialog>':''}${closed?'':script}</body></html>`;
 }

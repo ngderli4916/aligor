@@ -15,11 +15,5 @@
       "database_id": "00000000-0000-4000-8000-000000000001",
       "migrations_dir": "worker/partner-two-day-migrations"
     }
-  ],
-  "r2_buckets": [
-    {
-      "binding": "PARTNER_TWO_DAY_PROOFS",
-      "bucket_name": "aligor-2days-proofs-local"
-    }
   ]
 }

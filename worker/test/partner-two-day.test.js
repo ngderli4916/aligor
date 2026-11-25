@@ -7,96 +7,63 @@ const url='https://aligorvibe.com';
 const api='/api/2days-botsclass/registrations';
 const BEFORE=Date.parse('2026-11-27T23:59:59+08:00');
 const AFTER=Date.parse('2026-11-28T00:00:00+08:00');
-const PNG=new Uint8Array([0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a,0,0,0,0,0,0,0,0]);
 
 function setup(extra={}){
-  const inserts=[], puts=[], deletes=[];
-  const env={PARTNER_TWO_DAY_OPEN:'1',PARTNER_TWO_DAY_PAYMENT_OPEN:'1',PARTNER_TWO_DAY_FEE_1:'1111',PARTNER_TWO_DAY_FEE_2:'2222',
+  const inserts=[];
+  const env={PARTNER_TWO_DAY_OPEN:'1',PARTNER_TWO_DAY_PAYMENT_OPEN:'1',PARTNER_TWO_DAY_FEE_1:'3000',PARTNER_TWO_DAY_FEE_2:'3000',
     get DB(){throw new Error('existing CRM must not be accessed');},
     PARTNER_TWO_DAY_DB:{prepare(sql){return {bind(...params){return {
-      async first(){assert.match(sql,/^SELECT 1 FROM registrations/);return inserts.some(p=>p[2]===params[0])?{1:1}:null;},
-      async run(){assert.match(sql,/^INSERT INTO registrations/);inserts.push(params);return {success:true};}};}};}},
-    PARTNER_TWO_DAY_PROOFS:{async put(k,v,o){puts.push({k,v,o});},async delete(k){deletes.push(k);}},
+      async first(){assert.match(sql,/^SELECT reference,contact_name,seats,amount_rm FROM signups/);const r=inserts.find(p=>p[2]===params[0]);return r?{reference:r[0],contact_name:r[1],seats:r[3],amount_rm:r[8]}:null;},
+      async run(){assert.match(sql,/^INSERT INTO signups/);inserts.push(params);return {success:true};}};}};}},
     ...extra};
-  return {env,inserts,puts,deletes};
+  return {env,inserts};
 }
-function form(over={}){
-  const f=new FormData();
-  const base={name:'Test Only',phone:'0100000148',seats:'2',companyInvoice:'on',companyName:'Test Company',amountConfirmed:'on',expectedAmount:'2222',...over};
-  for(const [k,v] of Object.entries(base)) if(v!=null) f.set(k,v);
-  if(over.proof!==null) f.set('proof',over.proof||new File([PNG],'proof.png',{type:'image/png'}));
-  return f;
-}
-async function post(env,fd,now=BEFORE,origin=url){
-  const body=new Request(url+api,{method:'POST',body:fd});
-  const buf=await body.arrayBuffer();
-  const req=new Request(url+api,{method:'POST',headers:{origin,'content-type':body.headers.get('content-type'),'content-length':String(buf.byteLength)},body:buf});
-  return registerPartnerTwoDay(req,env,now);
-}
+const payload={name:'Test Only',phone:'0100000148',seats:2,companyInvoice:true,companyName:'Test Company',expectedAmount:3000};
+const post=(env,body,now=BEFORE,origin=url)=>registerPartnerTwoDay(new Request(url+api,{method:'POST',headers:{origin,'content-type':'application/json'},body:JSON.stringify(body)}),env,now);
 
-test('two-seat sign-up stores pending_verification with server-computed amount and private proof key',async()=>{
-  const {env,inserts,puts}=setup();const r=await post(env,form());const a=await r.json();
-  assert.equal(r.status,200);assert.equal(a.status,'pending_verification');assert.match(a.message,/待核实/);assert.doesNotMatch(a.message,/已付款|名额已确认/);
-  assert.equal(inserts[0][3],2);assert.equal(inserts[0][8],2222);assert.match(inserts[0][9],/^proofs\/\d{4}-\d{2}-\d{2}\/[0-9a-f-]+\.png$/);
-  assert.equal(puts.length,1);assert.equal(puts[0].k,inserts[0][9]);
+test('two seats (buy one get one) stores pending_payment at RM3,000 and returns payment info with WhatsApp number',async()=>{
+  const {env,inserts}=setup();const r=await post(env,payload);const a=await r.json();
+  assert.equal(r.status,200);assert.equal(a.status,'pending_payment');assert.equal(a.amount,3000);assert.equal(a.seats,2);assert.equal(a.whatsapp,'60167871902');assert.match(a.reference,/^2D-[A-Z2-9]{6}$/);
+  assert.deepEqual(inserts[0].slice(1,10),['Test Only','60100000148',2,null,1,'Test Company',null,3000,BEFORE&&inserts[0][9]]);
 });
-test('one seat uses the one-person fee and drops second name / unselected billing data',async()=>{
-  const {env,inserts}=setup();const r=await post(env,form({seats:'1',expectedAmount:'1111',secondName:'Ignored',companyInvoice:null,companyName:null,companyAddress:'x'}));
-  assert.equal(r.status,200);assert.deepEqual(inserts[0].slice(3,9),[1,null,0,null,null,1111]);
+test('one seat drops second name and unselected billing data',async()=>{
+  const {env,inserts}=setup();const r=await post(env,{...payload,seats:1,secondName:'Ignored',companyInvoice:false,companyAddress:'x'});
+  assert.equal(r.status,200);assert.deepEqual(inserts[0].slice(3,9),[1,null,0,null,null,3000]);
 });
-test('no fees configured: page says 费用待确认 and submit is disabled; server refuses',async()=>{
-  for(const extra of [{PARTNER_TWO_DAY_FEE_1:undefined,PARTNER_TWO_DAY_FEE_2:undefined},{PARTNER_TWO_DAY_FEE_2:'0'},{PARTNER_TWO_DAY_FEE_1:'3,000'}]){
-    const {env,inserts,puts}=setup(extra);
+test('same phone again shows the first sign-up payment info without a new row',async()=>{
+  const {env,inserts}=setup();const first=await (await post(env,payload)).json();const again=await (await post(env,{...payload,seats:1,expectedAmount:3000})).json();
+  assert.equal(again.reference,first.reference);assert.equal(again.seats,2);assert.match(again.message,/已经报过名/);assert.equal(inserts.length,1);
+});
+test('no fees or payment switch: page disables 报名 and server refuses',async()=>{
+  for(const extra of [{PARTNER_TWO_DAY_FEE_1:undefined},{PARTNER_TWO_DAY_FEE_2:'0'},{PARTNER_TWO_DAY_PAYMENT_OPEN:undefined}]){
+    const {env,inserts}=setup(extra);
     const html=renderPartnerTwoDay(partnerTwoDayState(env,BEFORE));
-    assert.match(html,/费用待确认/);assert.doesNotMatch(html,/RM3,000|RM0\b/);assert.match(html,/<button type="submit" id="submit" disabled>/);assert.match(html,/id="proof"[^>]* disabled/);
-    const r=await post(env,form());assert.equal(r.status,503);assert.equal(inserts.length+puts.length,0);
-  }
-});
-test('payment switch, proof bucket and both fees are all required to accept payment',async()=>{
-  for(const extra of [{PARTNER_TWO_DAY_PAYMENT_OPEN:undefined},{PARTNER_TWO_DAY_PROOFS:undefined}]){
-    const {env,inserts}=setup(extra);assert.equal((await post(env,form())).status,503);assert.equal(inserts.length,0);
+    assert.match(html,/<button type="submit" id="submit" disabled>/);
+    assert.equal((await post(env,payload)).status,503);assert.equal(inserts.length,0);
   }
 });
 test('deadline 2026-11-27 11:59PM +08: server rejects and page shows 报名已截止',async()=>{
-  const {env,inserts,puts}=setup();const r=await post(env,form(),AFTER);assert.equal(r.status,410);assert.equal((await r.json()).closed,true);assert.equal(inserts.length+puts.length,0);
+  const {env,inserts}=setup();const r=await post(env,payload,AFTER);assert.equal(r.status,410);assert.equal((await r.json()).closed,true);assert.equal(inserts.length,0);
   const page=await worker.fetch(new Request(url+'/2days-botsclass/'),setup({PARTNER_TWO_DAY_DEADLINE:'2020-01-01T00:00:00+08:00'}).env);const html=await page.text();
-  assert.match(html,/报名已截止/);assert.doesNotMatch(html,/<form/);
-  assert.equal((await post(env,form(),BEFORE)).status,200);
+  assert.match(html,/报名已截止/);assert.doesNotMatch(html,/<form/);assert.doesNotMatch(html,/<dialog/);
 });
-test('rejects bad proof, unconfirmed amount, stale amount, invalid fields, cross-origin, duplicates',async()=>{
-  const {env,inserts,puts,deletes}=setup();
-  assert.equal((await post(env,form({proof:new File(['<html>'],'x.png',{type:'image/png'})}))).status,422);
-  assert.equal((await post(env,form({proof:null}))).status,422);
-  assert.equal((await post(env,form({amountConfirmed:null}))).status,422);
-  assert.equal((await post(env,form({expectedAmount:'3000'}))).status,409);
-  for(const bad of [{companyName:''},{phone:'not a phone'},{name:''},{seats:'3'}])assert.equal((await post(env,form(bad))).status,422);
-  assert.equal((await post(env,form(),BEFORE,'https://example.invalid')).status,403);
-  assert.equal(inserts.length+puts.length,0);
-  assert.equal((await post(env,form())).status,200);assert.equal((await post(env,form())).status,409);assert.equal(puts.length,1);assert.equal(deletes.length,0);
+test('rejects stale amount, invalid fields, cross-origin, oversized body',async()=>{
+  const {env,inserts}=setup();
+  assert.equal((await post(env,{...payload,expectedAmount:6000})).status,409);
+  for(const bad of [{companyName:''},{phone:'not a phone'},{name:''},{seats:3},{companyInvoice:'yes'}])assert.equal((await post(env,{...payload,...bad})).status,422);
+  assert.equal((await post(env,payload,BEFORE,'https://example.invalid')).status,403);
+  assert.equal((await post(env,{...payload,garbage:'a'.repeat(5000)})).status,413);
+  assert.equal(inserts.length,0);
 });
-test('oversized proof is refused before upload',async()=>{
-  const {env,puts}=setup();const big=new Uint8Array(5*1024*1024+1);big.set(PNG);
-  assert.equal((await post(env,form({proof:new File([big],'big.png',{type:'image/png'})}))).status,422);const huge=new Uint8Array(6*1024*1024);huge.set(PNG);assert.equal((await post(env,form({proof:new File([huge],'h.png',{type:'image/png'})}))).status,413);assert.equal(puts.length,0);
-});
-test('missing dedicated binding fails closed even when main CRM is present; old reservation endpoint retired',async()=>{
-  const {env,inserts}=setup({PARTNER_TWO_DAY_DB:undefined,PARTNER_TWO_DAY_DEADLINE:'2099-01-01T00:00:00Z'});
-  const page=await worker.fetch(new Request(url+'/2days-botsclass/'),env);const html=await page.text();assert.match(html,/暂未开放/);assert.doesNotMatch(html,/<form/);
+test('missing dedicated binding fails closed; old reservation endpoint retired',async()=>{
+  const {env}=setup({PARTNER_TWO_DAY_DB:undefined,PARTNER_TWO_DAY_DEADLINE:'2099-01-01T00:00:00Z'});
+  const html=await (await worker.fetch(new Request(url+'/2days-botsclass/'),env)).text();assert.match(html,/暂未开放/);assert.doesNotMatch(html,/<form/);
   const old=await worker.fetch(new Request(url+'/api/2days-botsclass/reservations',{method:'POST',headers:{origin:url,'content-type':'application/json'},body:'{}'}),setup().env);
-  assert.equal(old.status,410);assert.equal(inserts.length,0);
+  assert.equal(old.status,410);
 });
-test('RM3,000 for one or two seats: two-seat option shows buy-one-free-one and the server charges 3000',async()=>{
-  const {env,inserts}=setup({PARTNER_TWO_DAY_FEE_1:'3000',PARTNER_TWO_DAY_FEE_2:'3000'});
-  const html=renderPartnerTwoDay(partnerTwoDayState(env,BEFORE));
-  for(const t of ['RM3,000','RM6,000','送一位','买一送一：第二位学员免费'])assert.ok(html.includes(t),t);
-  assert.equal((await post(env,form({expectedAmount:'3000'}))).status,200);assert.equal(inserts[0][8],3000);assert.equal(inserts[0][3],2);
-});
-test('fees set but payment not opened: amounts shown, upload and submit still closed',async()=>{
-  const {env,inserts}=setup({PARTNER_TWO_DAY_FEE_1:'3000',PARTNER_TWO_DAY_FEE_2:'3000',PARTNER_TWO_DAY_PAYMENT_OPEN:undefined});
-  const html=renderPartnerTwoDay(partnerTwoDayState(env,BEFORE));
-  assert.match(html,/RM3,000/);assert.match(html,/<button type="submit" id="submit" disabled>付款通道开通后开放提交/);assert.match(html,/id="proof"[^>]* disabled/);
-  assert.equal((await post(env,form({expectedAmount:'3000'}))).status,503);assert.equal(inserts.length,0);
-});
-test('page shows course facts and bank details',()=>{
+test('form has no amount tick and no upload; payment panel has bank details and WhatsApp button',()=>{
   const html=renderPartnerTwoDay(partnerTwoDayState(setup().env,BEFORE));
-  for(const s of ['2026 年 12 月 7–8 日','星期一、二 · 暂定','每天 9AM - 5PM','新山','详细地址待公布','一顿午餐和一次茶点','J & J BUSINESS MANAGEMENT SERVICES','JM0632306-M','Hong Leong Bank','37900006808','RM1,111','2026 年 11 月 27 日（星期五）11:59PM'])assert.ok(html.includes(s),s);
+  assert.doesNotMatch(html,/amountConfirmed|type="file"|上传付款凭证/);
+  for(const s of ['2026 年 12 月 7–8 日','星期一、二 · 暂定','每天 9AM - 5PM','新山','详细地址待公布','一顿午餐和一次茶点','J & J BUSINESS MANAGEMENT SERVICES','JM0632306-M','Hong Leong Bank','37900006808','RM3,000','RM6,000','买一送一：第二位学员免费','送一位','2026 年 11 月 27 日（星期五）11:59PM','我已付款，WhatsApp 发付款凭证','两天 AI 企业助理课程'])assert.ok(html.includes(s),s);
+  assert.doesNotMatch(html,/合作/);
 });
