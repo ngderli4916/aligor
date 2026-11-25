@@ -23,7 +23,55 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,400..700&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
-  <style>html{-webkit-text-size-adjust:100%}body{margin:0;background:#F8F4EE}</style>
+  <style>html{-webkit-text-size-adjust:100%}body{margin:0;background:#F8F4EE}
+/* PRICE (white, scroll reveal) */
+.pr{position:relative;height:560vh;background:#fff;color:var(--ink)}
+.pr-stage{position:sticky;top:0;height:100vh;height:100dvh;display:flex;align-items:center;overflow:hidden}
+.pr-in{width:100%;max-width:1120px;margin:0 auto;padding:84px 28px 28px;display:grid;grid-template-columns:1fr 1.05fr;gap:56px;align-items:center}
+.pr-l h2{margin:14px 0 0;font-size:clamp(40px,5vw,68px);line-height:1.06;letter-spacing:-.045em}
+.pr-lead{margin:18px 0 0;font-size:clamp(16px,1.4vw,19px);line-height:1.6;color:var(--ink2);max-width:500px;text-wrap:pretty}
+.pr-meta{list-style:none;margin:26px 0 0;padding:0;display:grid;gap:14px}
+.pr-meta li{display:flex;gap:14px;align-items:baseline;font-size:16.5px;line-height:1.5;color:var(--ink2);padding-top:14px;border-top:1px solid var(--line)}
+.pr-meta i{font-style:normal;font-weight:700;font-size:13px;color:var(--orange);font-family:var(--mono,ui-monospace,monospace)}
+.pr-card{border-radius:28px;background:#fff;box-shadow:0 0 0 1px var(--line),0 30px 80px rgba(26,14,8,.10);padding:30px 32px}
+.pr-row{padding:20px 0;border-top:1px solid var(--line)}
+.pr-row:first-child{border-top:0;padding-top:4px}
+.pr-price small{font-size:14px;letter-spacing:.08em;color:var(--mute)}
+.pr-amt{display:flex;align-items:baseline;gap:8px;margin-top:6px;line-height:1}
+.pr-amt span{font-size:clamp(20px,2vw,26px);font-weight:600;color:var(--mute)}
+.pr-amt b{font-size:clamp(64px,8vw,104px);letter-spacing:-.05em;font-weight:700;font-variant-numeric:tabular-nums}
+.pr-tag{display:inline-block;background:var(--orange);color:#fff;font-weight:700;font-size:13px;border-radius:999px;padding:5px 12px;letter-spacing:.02em}
+.pr-row h3{margin:10px 0 0;font-size:clamp(21px,2vw,26px);letter-spacing:-.03em;line-height:1.3}
+.pr-val{display:inline-block;vertical-align:middle;margin-left:10px;font-size:14px;font-weight:700;color:var(--orange);background:var(--peach);border-radius:999px;padding:3px 10px;letter-spacing:0}
+.pr-row p{margin:8px 0 0;font-size:15.5px;color:var(--ink2);line-height:1.6}
+.pr-ppl{display:flex;align-items:center;gap:14px;margin-top:14px}
+.pp{display:flex;align-items:center;gap:8px;background:#F6F1EB;border-radius:999px;padding:6px 14px 6px 6px;font-size:14px;font-weight:600}
+.pp svg{width:30px;height:30px;padding:6px;border-radius:50%;background:var(--ink);fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round}
+.pp em{font-style:normal}
+.pp2{background:var(--peach)}.pp2 svg{background:var(--orange)}
+.pp-plus{font-size:22px;font-weight:700;color:var(--orange)}
+.pr-cta{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-top:20px;border-top:1px solid var(--line)}
+.pr-cta .btn{padding:15px 26px;font-size:17px}
+.pr-cta span{font-size:14px;color:var(--mute)}
+.pr .pr-r{opacity:0;transform:translateY(22px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.8,.2,1)}
+.pr .pr-r.on{opacity:1;transform:none}
+.pr .pp2.pr-r{transform:scale(.6)}.pr .pp2.pr-r.on{transform:none;transition:opacity .4s ease,transform .5s cubic-bezier(.3,1.6,.5,1)}
+.pr.static{height:auto}.pr.static .pr-stage{position:static;height:auto}.pr.static .pr-r{opacity:1;transform:none}
+@media(max-width:900px){
+  .pr-in{grid-template-columns:1fr;gap:16px;padding:76px 18px 84px;align-content:center}
+  .pr-l h2{font-size:clamp(30px,8.4vw,40px);margin-top:8px}
+  .pr-meta{display:none}
+  .pr-l .eyebrow{display:none}.pr-dbr{display:none}
+  .pr-lead{font-size:14.5px;margin-top:8px}
+  .pr-card{padding:18px 20px;border-radius:22px}
+  .pr-row{padding:13px 0}
+  .pr-amt b{font-size:clamp(52px,15vw,72px)}
+  .pr-row h3{font-size:19px;margin-top:8px}
+  .pr-row p{font-size:14.5px;margin-top:4px}
+  .pr-ppl{margin-top:10px;gap:10px}.pp{font-size:13px}.pp svg{width:26px;height:26px}
+  .pr-cta{padding-top:14px;gap:10px}.pr-cta .btn{width:100%;padding:14px}
+}
+</style>
 <style>
 :root{
   --bg:#F8F4EE; --card:#FFFFFF; --ink:#1A0E08; --ink2:rgba(26,14,8,.72); --mute:rgba(26,14,8,.55);
@@ -523,6 +571,8 @@ section{padding:120px 0}
 .lg-base{height:12px;margin:0 -9%;border-radius:0 0 14px 14px;background:linear-gradient(180deg,#3A2418,#1C0F09);box-shadow:0 1px 0 rgba(255,255,255,.08) inset}
 .lg-count{position:absolute;left:0;right:0;bottom:7%;text-align:center;font-size:15px;color:rgba(255,255,255,.6);z-index:4;opacity:0}
 .lg-count b{color:#FF9A4D;font-size:20px}
+.lg-head p b{color:#fff;font-weight:600}
+.lg-head p{text-wrap:balance;max-width:720px}
 .lg-end{position:absolute;left:0;right:0;bottom:10%;text-align:center;z-index:5;opacity:0;padding:0 20px;pointer-events:none}
 .lg-end h3{font-size:clamp(28px,3.8vw,54px);letter-spacing:-.04em;line-height:1.12}
 .lg-end p{margin-top:12px;font-size:clamp(15px,1.4vw,18px);color:rgba(255,255,255,.66)}
@@ -1666,13 +1716,13 @@ main h1,main h2,main h3,footer h2{text-wrap:balance;line-break:strict}
 </section>
 
 <!-- TOOLS WE USE: scroll-driven (LLM, Skill and Tools logos fly in from the deep, then all go into the AI assistant) -->
-<section class="lg" id="tools" aria-label="AI 背后的功夫：LLM 大模型、Skill、Tools，全部装进你的 AI 助理">
+<section class="lg" id="tools" aria-label="AI 助理装好后，要装上大脑（LLM）、技能（Skill）和工具（Tools）">
   <div class="lg-stage">
     <div class="lg-items" aria-hidden="true"></div>
     <div class="lg-head">
-      <div class="eyebrow">AI 背后的功夫</div>
-      <h2>你看到的 AI，<br>只是<em>冰山一角</em>。</h2>
-      <p>要把 AI 做好，背后要懂这些原理、工具和技巧。<br>全部弄懂一遍，你的 AI 才会更强。</p>
+      <div class="eyebrow">装好之后，下一步</div>
+      <h2>AI 助理装好了，<br>但它还<em>什么都不会</em>。</h2>
+      <p>现在它只是一个能控制你电脑的助理。要让它<span class="nw">变强</span>，你要懂它的<b class="nw">大脑、技能和工具</b>，学会<span class="nw">怎样用到最好</span>，帮你<span class="nw">省时间、省钱</span>，把工作做到最多。</p>
     </div>
     <div class="lg-cat" aria-hidden="true"><small></small><b></b></div>
     <div class="lg-pc" aria-hidden="true">
@@ -1688,28 +1738,44 @@ main h1,main h2,main h3,footer h2{text-wrap:balance;line-break:strict}
   </div>
 </section>
 
-<!-- PRICE & OFFER -->
-<section class="preview" id="preview" style="padding-top:0">
+<!-- PRICE & OFFER: white, scroll reveals the offer step by step -->
+<section class="pr" id="preview" aria-label="两天 AI 助理线下课：价格与优惠">
   <span id="signup"></span>
-  <div class="wrap">
-    <div class="dark split">
-      <div>
-        <div class="eyebrow">两天 AI 课程</div>
-        <h2>两天，<br>把 AI 助理带回公司。</h2>
-        <div class="pv-meta">
-          <div><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span>两整天实作，每一步都有<span class="nw">检查点</span></span></div>
-          <div><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19.5c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.6c2.6-.4 4.6 1.2 5 4.4"/></svg><span>Adrian（阿理哥）讲 AI 助理与自动化，Jason 讲<span class="nw">公司内部行政流程自动化</span></span></div>
-          <div><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6"/></svg><span>学员可无限次免费复习，忘了随时回来再学</span></div>
-          <div><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 11.5a8.5 8.5 0 0 1-12.4 7.6L3.5 20.5l1.4-4.4A8.5 8.5 0 1 1 20.5 11.5z"/></svg><span>报名后，我们会通过 WhatsApp 联络你，确认日期和名额</span></div>
-        </div>
-        <a class="btn btn-w" href="/2days-botsclass/">报名两天 AI 助理课程 <span class="ar">→</span></a>
+  <div class="pr-stage">
+    <div class="pr-in">
+      <div class="pr-l">
+        <div class="eyebrow pr-r" data-at=".02">两天 AI 助理线下课</div>
+        <h2 class="pr-r" data-at=".05">两天，<br class="pr-dbr">让员工学会<br><span class="nw">使用 AI 助理</span>。</h2>
+        <p class="pr-lead pr-r" data-at=".09">两天，改变你公司整个 AI 用法和工作方法，<span class="nw">加快提升整个公司的运作</span>。</p>
+        <ul class="pr-meta">
+          <li class="pr-r" data-at=".14"><i>01</i><span>两整天线下实作，每一步都有<span class="nw">检查点</span></span></li>
+          <li class="pr-r" data-at=".18"><i>02</i><span>Adrian 讲 AI 助理与自动化，Jason 讲<span class="nw">公司内部行政流程自动化</span></span></li>
+          <li class="pr-r" data-at=".22"><i>03</i><span>报名后，我们用 WhatsApp 联络你，<span class="nw">确认日期和名额</span></span></li>
+        </ul>
       </div>
-      <div class="price-box">
-        <small>两天课程学费</small>
-        <div class="amt"><span>RM</span>3,000</div>
-        <div class="bogo">当天报名 · 买一送一</div>
-        <div class="perk">学员可无限次免费复习</div>
-        <p>带上你的主管，一起把 AI 用进公司。<br>一个名额，可以多带一位一起来上课。</p>
+      <div class="pr-card pr-r" data-at=".28">
+        <div class="pr-row pr-price">
+          <small>两天课程学费</small>
+          <div class="pr-amt"><span>RM</span><b class="pr-num">3,000</b></div>
+        </div>
+        <div class="pr-row pr-r" data-at=".5">
+          <div class="pr-tag">今天报名 · 送 1</div>
+          <h3>买一送一：<span class="nw">一份学费，两个人来</span></h3>
+          <div class="pr-ppl" aria-hidden="true">
+            <span class="pp pp1"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c.8-4.4 4-7 8-7s7.2 2.6 8 7"/></svg><em>你</em></span>
+            <span class="pp-plus">+</span>
+            <span class="pp pp2 pr-r" data-at=".58"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c.8-4.4 4-7 8-7s7.2 2.6 8 7"/></svg><em>同事 · 免费</em></span>
+          </div>
+        </div>
+        <div class="pr-row pr-r" data-at=".68">
+          <div class="pr-tag">再送</div>
+          <h3><span class="nw">一年内无限次</span><span class="nw">免费复习</span><small class="pr-val">价值 RM5,000</small></h3>
+          <p>一年内，想再来几次都可以，<span class="nw">随时回来上课</span>，<span class="nw">只需付场地费</span>。</p>
+        </div>
+        <div class="pr-cta pr-r" data-at=".8">
+          <a class="btn btn-d" href="/2days-botsclass/">报名两天 AI 助理课程 <span class="ar">→</span></a>
+          <span>优惠只限今天报名</span>
+        </div>
       </div>
     </div>
   </div>
@@ -1850,7 +1916,7 @@ main h1,main h2,main h3,footer h2{text-wrap:balance;line-break:strict}
         pc=sec.querySelector('.lg-pc'), scr=sec.querySelector('.lg-scr'), orb=sec.querySelector('.lg-orb'), st=sec.querySelector('.lg-st'), cnt=sec.querySelector('.lg-count'), cntB=cnt.querySelector('b'), end=sec.querySelector('.lg-end');
     var LG='/assets/ai-logos/';
     var groups=[
-      {k:'第 1 样',t:'LLM 大模型',a:.12,b:.32,items:'openai claude gemini meta mistral deepseek qwen grok kimi minimax zhipu doubao perplexity ollama huggingface'.split(' ')},
+      {k:'第 1 样',t:'大脑 · LLM 大模型',a:.12,b:.32,items:'openai claude gemini meta mistral deepseek qwen grok kimi minimax zhipu doubao perplexity ollama huggingface'.split(' ')},
       {k:'第 2 样',t:'Skill 技能',a:.34,b:.54,sk:['superpowers','frontend-design','agent-browser','pptx','xlsx','docx','pdf','remotion','hyperframes','marketing-skills','skill-creator','deep-research','video-use','browser-use','context7']},
       {k:'第 3 样',t:'Tools 工具',a:.56,b:.76,items:'elevenlabs suno kling midjourney runway comfyui fal replicate n8n make zapier notion github figma firecrawl telegram whatsapp gmail googledrive googlesheets shopify stripe'.split(' '),sk:['voicebox']}
     ];
@@ -2073,6 +2139,27 @@ main h1,main h2,main h3,footer h2{text-wrap:balance;line-break:strict}
   targets=targets.filter(function(el){return !el.closest('#preview')});
   targets.forEach(function(el){el.classList.add('rv');io.observe(el)});
   setTimeout(function(){targets.forEach(function(el){if(!el.classList.contains('in')){var r=el.getBoundingClientRect();if(r.top<innerHeight)el.classList.add('in')}})},2500);
+})();
+</script>
+<script>
+(function(){
+  var sec=document.querySelector('.pr'); if(!sec) return;
+  var els=[].slice.call(sec.querySelectorAll('.pr-r')), num=sec.querySelector('.pr-num');
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduce){sec.classList.add('static');return}
+  function fmt(n){return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,',')}
+  var ticking=false;
+  function upd(){
+    ticking=false;
+    var r=sec.getBoundingClientRect(), tot=sec.offsetHeight-innerHeight;
+    var p=Math.max(0,Math.min(1,-r.top/tot));
+    if(r.top>innerHeight*.35) p=-1;
+    els.forEach(function(e){e.classList.toggle('on',p>=parseFloat(e.dataset.at))});
+    var k=Math.max(0,Math.min(1,(p-.3)/.16)); k=1-Math.pow(1-k,3);
+    num.textContent=fmt(Math.round(3000*k/10)*10);
+  }
+  function req(){if(!ticking){ticking=true;requestAnimationFrame(upd)}}
+  addEventListener('scroll',req,{passive:true});addEventListener('resize',req);upd();
 })();
 </script>
 </body>
