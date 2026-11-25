@@ -3,18 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>两天 AI 实战课 · 打造你全公司的 AI 助理｜阿理哥 × Jason</title>
-  <meta name="description" content="两天实战课：打造你全公司的 AI 助理。老板、主管、员工都能用手机指挥 AI 回顾客、管 Email、做报告、看懂公司的账。RM 3,000，今天报名买一送一，学员可无限次免费复习。">
+  <title>两天 AI 实战课 · 打造你公司的 AI 助理｜Adrian × Jason</title>
+  <meta name="description" content="两天实战课：打造你公司的 AI 助理。老板、主管、员工都能用手机指挥 AI 回顾客、管 Email、做报告，把公司内部的行政流程自动化。学员可无限次免费复习。">
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="阿理哥 Aligor">
+  <meta property="og:site_name" content="两天 AI 助理课程">
   <meta name="robots" content="noindex">
   <meta property="og:url" content="https://www.aligorvibe.com/2daysclass/">
-  <meta property="og:title" content="两天，打造你全公司的 AI 助理｜阿理哥 × Jason">
-  <meta property="og:description" content="回顾客、管 Email、做报告、看懂公司的账。两天实战课 RM 3,000，今天报名买一送一。">
+  <meta property="og:title" content="两天，打造你公司的 AI 助理｜Adrian × Jason">
+  <meta property="og:description" content="回顾客、管 Email、做报告，把公司内部的行政流程自动化。两天实战课，零基础也能做出来。">
   <meta property="og:image" content="https://www.aligorvibe.com/assets/og-card.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="两天，打造你全公司的 AI 助理 · 阿理哥 Aligor">
+  <meta property="og:image:alt" content="两天，打造你公司的 AI 助理">
   <meta property="og:locale" content="zh_CN">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#1A0D07">
@@ -441,6 +441,123 @@ section{padding:120px 0}
   .st em{opacity:1}
 }
 
+
+/* hero chat: plays with the scroll (voice → sort Email → check bills → you confirm → done) */
+.hs{position:relative}
+.hs.pin .stage{position:sticky;top:var(--st,84px)}
+.chat{position:relative;height:var(--ch,440px);padding:0;overflow:hidden;display:block}
+.chat-in{position:absolute;left:0;right:0;bottom:0;padding:22px 26px;display:flex;flex-direction:column;gap:11px}
+.chat::before{content:"";position:absolute;left:0;right:0;top:0;height:46px;z-index:2;background:linear-gradient(#fff,rgba(255,255,255,0));pointer-events:none}
+.hs .msg{animation:none;display:none;opacity:1;transform:none}
+.hs .msg.in{display:block;animation:pop .45s cubic-bezier(.2,.8,.2,1) both}
+@keyframes pop{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.tr{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,246,239,.16);font-size:14.5px;min-height:1.6em}
+.tr:empty{display:none}
+.tr.typing-on::after{content:"";display:inline-block;width:2px;height:1em;background:#FFB36B;margin-left:2px;vertical-align:-2px;animation:blink .8s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.ck{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--mute);margin-top:6px}
+.ck::before{content:"";width:15px;height:15px;border-radius:50%;border:2px solid #E4D6C8;flex:none;box-sizing:border-box}
+.ck.ok{color:var(--ink)}
+.ck.ok::before{border:0;background:#28C941 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/100% no-repeat}
+.em{display:grid;grid-template-columns:64px 1fr 26px;align-items:center;gap:10px;font-size:13.5px;margin:7px 0}
+.em span{color:var(--ink2)}
+.em i{height:8px;border-radius:9px;background:#F3ECE4;overflow:hidden}
+.em s{display:block;height:100%;width:calc(var(--w) * var(--g,0));background:linear-gradient(90deg,var(--orange2),var(--orange));border-radius:9px}
+.em.gr s{background:#CDBFB1}
+.em b{text-align:right}
+.iss{margin:7px 0;padding:8px 11px;border-radius:10px;background:#FFF3EA;box-shadow:inset 3px 0 0 var(--orange);font-size:14px}
+.iss b{display:block;font-size:12.5px;color:#B8470A}
+.acts{display:flex;gap:8px;margin-top:9px}
+.act{font-size:13px;font-weight:600;padding:5px 14px;border-radius:99px;box-shadow:0 0 0 1px var(--line);color:var(--ink2)}
+.act.pri{background:var(--dark);color:#FFF6EF;box-shadow:none;transition:transform .2s,background .2s}
+.act.pri.press{transform:scale(.92);background:var(--orange)}
+.okc{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:#28C941;color:#fff;font-size:11px;font-weight:700;margin-right:4px}
+.hspin::before{content:"";display:inline-block;width:9px;height:9px;margin-right:6px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;vertical-align:-1px;animation:rot .8s linear infinite}
+.hspin.done::before{display:none}
+@keyframes rot{to{transform:rotate(360deg)}}
+.msg.typing{padding:13px 16px}
+.msg.typing i{display:inline-block;width:6px;height:6px;margin:0 2px;border-radius:50%;background:#C9B8A8;animation:dot 1s ease-in-out infinite}
+.msg.typing i:nth-child(2){animation-delay:.15s}.msg.typing i:nth-child(3){animation-delay:.3s}
+@keyframes dot{40%{transform:translateY(-4px);background:var(--orange)}}
+.src-h{margin:18px 4px 8px;font-size:12px;font-weight:600;color:var(--mute);letter-spacing:.04em}
+.src{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:12px;margin-bottom:6px;opacity:.45;transition:opacity .3s,background .3s,box-shadow .3s}
+.src.on{opacity:1;background:#fff;box-shadow:0 0 0 1px rgba(232,89,12,.35),0 6px 16px rgba(232,89,12,.1)}
+.src-ic{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--peach);color:var(--orange);font-size:12px;font-weight:700;flex:none}
+.src b{display:block;font-size:13.5px;line-height:1.3}.src small{font-size:12px;color:var(--mute)}
+@media(max-width:960px){
+  .src-h{display:none}
+  .side{display:flex;gap:8px;overflow:hidden;padding:12px}
+  .side .who{display:none}
+  .src{margin:0;flex:1;min-width:0;padding:7px 8px;gap:7px}
+  .src small{display:none}
+  .src-ic{width:24px;height:24px;font-size:10px}
+}
+@media(max-width:760px){.chat-in{padding:16px 14px}.hs .msg{font-size:14px}}
+
+
+/* AI behind the scenes: logos fly in from depth, then all go into the assistant */
+.lg{position:relative;height:640vh;background:#0B0604;color:#fff}
+.lg-stage{position:sticky;top:0;height:100vh;height:100dvh;overflow:hidden;background:radial-gradient(90% 80% at 50% 55%,#33170A 0%,#170B05 52%,#0B0604 100%)}
+.lg-items{position:absolute;inset:0}
+.lg-it{position:absolute;left:0;top:0;will-change:transform,opacity;opacity:0}
+.lg-lo{width:var(--t,66px);height:var(--t,66px);border-radius:22%;background:#fff;display:grid;place-items:center;box-shadow:0 18px 40px -10px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.4) inset}
+.lg-lo img{width:58%;height:58%;object-fit:contain;display:block}
+.lg-sk{display:inline-flex;align-items:center;gap:8px;white-space:nowrap;padding:10px 16px 10px 12px;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.1),rgba(255,255,255,.03));box-shadow:0 0 0 1px rgba(255,180,120,.35) inset,0 18px 40px -12px rgba(0,0,0,.6);font:600 17px/1 ui-monospace,"SF Mono",Menlo,Consolas,monospace;letter-spacing:-.02em;color:#FFE7D3}
+.lg-sk::before{content:"/";display:grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,var(--orange2),var(--orange));color:#fff;font-size:14px}
+.lg-head{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;z-index:5;padding:0 20px;pointer-events:none}
+.lg-head .eyebrow{justify-content:center;color:#FF9A4D}
+.lg-head h2{margin:14px 0 0;font-size:clamp(38px,6.4vw,92px);line-height:1.06;letter-spacing:-.045em;color:#fff}
+.lg-head h2 em,.lg-end em{font-style:normal;background:linear-gradient(90deg,#FFD9B8,#FFB37A 40%,#FF7A1A 75%,#E8590C);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lg-head p{margin:18px auto 0;max-width:640px;font-size:clamp(15px,1.5vw,19px);color:rgba(255,255,255,.72)}
+.lg-cat{position:absolute;left:0;right:0;top:9%;text-align:center;z-index:4;opacity:0;pointer-events:none}
+.lg-cat small{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:#FF9A4D}
+.lg-cat small::before{content:"";width:14px;height:14px;border-radius:4px;background:linear-gradient(135deg,var(--orange2),var(--orange));box-shadow:inset 0 0 0 3px rgba(255,255,255,.35)}
+.lg-cat b{display:block;margin-top:8px;font-size:clamp(30px,4.4vw,60px);letter-spacing:-.04em;line-height:1.05}
+.lg-pc{position:absolute;left:50%;top:54%;width:var(--pw,300px);transform:translate(-50%,-50%);z-index:3;opacity:0}
+.lg-scr{position:relative;aspect-ratio:16/10.5;border-radius:16px;background:linear-gradient(180deg,#24120A,#120804);box-shadow:0 0 0 6px #2B1A12,0 0 0 7px rgba(255,255,255,.12),0 40px 80px -20px rgba(0,0,0,.8),0 0 calc(var(--glow,0) * 140px) calc(var(--glow,0) * 30px) rgba(255,122,26,calc(var(--glow,0) * .55));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center}
+.lg-scr b{font-size:17px;letter-spacing:-.02em}
+.lg-st{font-size:13px;color:rgba(255,255,255,.6)}
+.lg-st.ok{color:#FFB37A;font-weight:600}
+.lg-orb{position:relative;width:62px;height:62px;border-radius:50%;background:conic-gradient(#FF7A1A calc(var(--fill,0) * 360deg),rgba(255,255,255,.1) 0)}
+.lg-orb i{position:absolute;inset:5px;border-radius:50%;background:radial-gradient(circle at 40% 35%,rgba(255,215,180,calc(.25 + var(--fill,0) * .75)),rgba(232,89,12,calc(.2 + var(--fill,0) * .8)) 55%,#1A0D07 100%)}
+.lg-base{height:12px;margin:0 -9%;border-radius:0 0 14px 14px;background:linear-gradient(180deg,#3A2418,#1C0F09);box-shadow:0 1px 0 rgba(255,255,255,.08) inset}
+.lg-count{position:absolute;left:0;right:0;bottom:7%;text-align:center;font-size:15px;color:rgba(255,255,255,.6);z-index:4;opacity:0}
+.lg-count b{color:#FF9A4D;font-size:20px}
+.lg-end{position:absolute;left:0;right:0;bottom:10%;text-align:center;z-index:5;opacity:0;padding:0 20px;pointer-events:none}
+.lg-end h3{font-size:clamp(28px,3.8vw,54px);letter-spacing:-.04em;line-height:1.12}
+.lg-end p{margin-top:12px;font-size:clamp(15px,1.4vw,18px);color:rgba(255,255,255,.66)}
+@media(max-width:760px){
+  .lg-sk{font-size:13px;padding:7px 11px 7px 8px;gap:6px;border-radius:11px}
+  .lg-sk::before{width:17px;height:17px;font-size:11px;border-radius:5px}
+  .lg-cat{top:11%}
+  .lg-scr b{font-size:15px}.lg-st{font-size:12px}
+  .lg-orb{width:50px;height:50px}
+}
+.lg.static{height:auto;padding:100px 0}
+.lg.static .lg-stage{position:static;height:auto;overflow:visible;background:none}
+.lg.static .lg-head{position:static;transform:none}
+.lg.static .lg-items{position:static;display:flex;flex-wrap:wrap;justify-content:center;gap:12px;max-width:1000px;margin:40px auto 0;padding:0 20px}
+.lg.static .lg-it{position:static;opacity:1!important;transform:none!important}
+.lg.static .lg-cat,.lg.static .lg-pc,.lg.static .lg-count{display:none}
+.lg.static .lg-end{position:static;opacity:1;margin-top:40px}
+
+/* Chinese line breaks: no one- or two-character last lines */
+main p,main li,main summary,main span,main b,footer p,.drum-static span{text-wrap:pretty;line-break:strict}
+main h1,main h2,main h3,footer h2{text-wrap:balance;line-break:strict}
+.nw{white-space:nowrap}
+@media(max-width:760px){
+  .lead br{display:none}
+  .drum.static .drum-static{grid-template-columns:1fr!important}
+}
+
+/* two selling points above the teachers */
+.why2{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;width:min(1120px,100%);margin:36px auto 40px;text-align:left}
+.why2 div{background:#fff;border-radius:var(--r);padding:26px 28px;box-shadow:0 0 0 1px var(--line)}
+.why2 small{display:block;color:var(--orange);font-weight:600;font-size:13px;letter-spacing:.04em}
+.why2 b{display:block;font-size:22px;letter-spacing:-.03em;margin:6px 0 6px}
+.why2 span{color:var(--ink2);font-size:15.5px}
+@media(max-width:960px){.why2{grid-template-columns:1fr;max-width:560px}}
+
 /* sticky phone bar */
 .sticky{display:none}
 
@@ -559,12 +676,11 @@ section{padding:120px 0}
 <body>
 <nav class="nav" id="nav">
   <div class="nav-in">
-    <a class="brand" href="#top"><img src="/assets/logos/aligor-logo-transparent.png" alt="阿理哥 Aligor 标志"><span>阿理哥 · Aligor</span></a>
+    <a class="brand" href="#top"><span>两天 AI 助理课程</span></a>
     <div class="menu">
       <a href="#course">两天学什么</a>
       <a href="#preview">价格优惠</a>
       <a href="#about">讲师</a>
-      <a href="#faq">常见问题</a>
       <a class="btn btn-w" href="/2days-botsclass/">报名两天课</a>
     </div>
   </div>
@@ -574,31 +690,44 @@ section{padding:120px 0}
 <!-- HERO -->
 <header class="hero">
   <div class="wrap">
-    <div class="badge"><i></i>零基础 · 两天实战 · 七个成果</div>
-    <h1>两天，打造<br>你全公司的 <span class="hl">AI 助理</span></h1>
-    <p class="lead">老板、主管、员工，都能用手机指挥公司的 AI 助理：<br>回顾客、管 Email、做报告、看懂公司的账，不用写代码。</p>
-    <div class="cta-row">
-      <a class="btn btn-w" href="/2days-botsclass/">报名两天 AI 助理课程 <span class="ar">→</span></a>
-      <a class="btn btn-g" href="#course">看你会学到什么</a>
-    </div>
-    <p class="hero-note">讲师：Adrian（阿理哥）× Jason。今天报名买一送一，带上你的主管一起来。</p>
+    <div class="badge"><i></i>零基础 · 两天实战 · 六个成果</div>
+    <h1>两天，打造<br>你公司的 <span class="hl">AI 助理</span></h1>
+    <p class="lead">老板、主管、员工，都能用手机指挥公司的 <span class="nw">AI 助理</span>：<br>回顾客、管 Email、做报告、跑内部<span class="nw">行政流程</span>，不用写代码。</p>
+    <p class="hero-note">讲师：Adrian（阿理哥）× Jason。软件工程背景，<span class="nw">AI 助理</span>已经在我们自己的公司里每天使用。</p>
   </div>
+  <div class="hs">
   <div class="stage">
-    <div class="win" aria-label="手机对话示意图">
+    <div class="win" aria-label="示意动画：语音交代后，AI 助理整理 Email、对照订单和进款，找出问题，你确认后它在后台处理好，再问你要不要发给顾客">
       <div class="win-bar"><i></i><i></i><i></i></div>
       <div class="win-body">
         <div class="side">
           <div class="who"><div class="avatar">AI</div><div><b>公司的 AI 助理</b><small>AI Agent · 在线</small></div></div>
+          <div class="src-h">它正在看</div>
+          <div class="src" data-s="0"><span class="src-ic">✉</span><div><b>Gmail</b><small>今天 32 封新邮件</small></div></div>
+          <div class="src" data-s="1"><span class="src-ic">▦</span><div><b>订单系统</b><small>今天 18 张订单</small></div></div>
+          <div class="src" data-s="2"><span class="src-ic">RM</span><div><b>银行进款</b><small>已同步到 10:42</small></div></div>
         </div>
-        <div class="chat">
-          <div class="msg me m1"><div class="voice"><span>▶</span><span class="bars"><i style="height:8px"></i><i style="height:16px"></i><i style="height:11px"></i><i style="height:20px"></i><i style="height:9px"></i><i style="height:15px"></i><i style="height:7px"></i></span><span>0:12</span></div></div>
-          <div class="msg ai m2">听到了：帮你把顾客的询问整理成回复草稿，并提醒你下午三点跟进。<br><span class="n-tag">已整理</span></div>
-          <div class="msg ai m3">回复草稿已准备好，需要你确认后才会发送。提醒已设定在 15:00。<br><span class="n-tag warn">等你批准</span></div>
-          <div class="msg me m4">确认，记录进跟进表。</div>
-        </div>
+        <div class="chat"><div class="chat-in">
+          <div class="msg me" data-at="0"><div class="voice"><span>▶</span><span class="bars"><i style="height:8px"></i><i style="height:16px"></i><i style="height:11px"></i><i style="height:20px"></i><i style="height:9px"></i><i style="height:15px"></i><i style="height:7px"></i></span><span>0:09</span></div><div class="tr" data-text="帮我整理今天的 Email，再对一下订单和进款。"></div></div>
+          <div class="msg ai" data-at=".17">收到，开始处理：<div class="ck" data-at=".2">读取今天的 Email</div><div class="ck" data-at=".25">打开订单系统</div><div class="ck" data-at=".3">对照银行进款</div></div>
+          <div class="msg ai" data-at=".36">今天一共 <b class="num" data-n="32">0</b> 封 Email：
+            <div class="em"><span>要你处理</span><i><s style="--w:19%"></s></i><b class="num" data-n="6">0</b></div>
+            <div class="em gr"><span>不用处理</span><i><s style="--w:81%"></s></i><b class="num" data-n="26">0</b></div>
+            需要我帮你处理这 6 封吗？</div>
+          <div class="msg me" data-at=".47">要，帮我处理。账单也顺便看一下。</div>
+          <div class="msg ai" data-at=".56">有 2 个地方对不上：
+            <div class="iss"><b>INV-1042</b>开单 RM 1,280，进款只有 RM 1,180，差 RM 100。</div>
+            <div class="iss"><b>订单 #A-2207</b>已经出货，还没开单。</div>
+            要我改好金额、补开单吗？你确认了我才动。<div class="acts"><span class="act pri" data-press=".65">确认</span><span class="act">先不要</span></div></div>
+          <div class="msg me" data-at=".68">确认。</div>
+          <div class="msg ai" data-at=".73">好的，我马上在后台处理，好了再告诉你。<br><span class="n-tag warn hspin">处理中</span></div>
+          <div class="msg ai" data-at=".86"><span class="okc">✓</span> 处理好了：<span class="nw">INV-1042</span> 已更新，<span class="nw">#A-2207</span> 已开单。<br>要直接发给顾客吗？<div class="acts"><span class="act pri">发给顾客</span><span class="act">我先看看</span></div></div>
+          <div class="msg ai typing" aria-hidden="true"><i></i><i></i><i></i></div>
+        </div></div>
       </div>
     </div>
-    <p class="win-cap">示意画面：语音交代 → 整理 → 人工确认。</p>
+    <p class="win-cap">示意画面：语音交代 → 整理 Email、对账 → 你确认 → <span class="nw">后台处理好</span></p>
+  </div>
   </div>
 </header>
 
@@ -915,10 +1044,9 @@ section{padding:120px 0}
       <div class="drum-word">帮你发 Email</div>
       <div class="drum-word">全自动营销</div>
       <div class="drum-word">给你报告</div>
-      <div class="drum-word">看懂公司的账</div>
       </div>
     </div>
-    <div class="drum-foot" aria-hidden="true"><span class="count"><b id="drum-n">1</b> / 9</span><span class="drum-desc" id="drum-desc">半夜、周末、假期，顾客来问，它都在。</span></div>
+    <div class="drum-foot" aria-hidden="true"><span class="count"><b id="drum-n">1</b> / 8</span><span class="drum-desc" id="drum-desc">半夜、周末、假期，顾客来问，它都在。</span></div>
     <div class="drum-static">
       <div><b>24 小时在线</b><span>半夜、周末、假期，顾客来问，它都在。</span></div>
       <div><b>自动回复</b><span>WhatsApp 顾客来问，按你的规则回复；不懂的，转给你。</span></div>
@@ -928,7 +1056,6 @@ section{padding:120px 0}
       <div><b>帮你发 Email</b><span>回复草稿写好，你点头，它就发出去。</span></div>
       <div><b>全自动营销</b><span>写文案、按时发布，每天不断更。</span></div>
       <div><b>给你报告</b><span>帮你做报告，还帮你分析：哪里卖得好、哪里要注意。</span></div>
-      <div><b>看懂公司的账</b><span>单据、开销、收入，整理成一眼看懂的报表。</span></div>
     </div>
   </div>
 </section>
@@ -948,7 +1075,7 @@ section{padding:120px 0}
 <section class="vs-sec" id="vs">
   <div class="wrap center">
     <div class="eyebrow">个人 AI 助理 VS 公司 AI 助理</div>
-    <h2>一个人用，和全公司一起用，<br>差别在这里。</h2>
+    <h2>一个人用，和整个团队一起用，<br>差别在这里。</h2>
     <div class="vs">
       <div class="vs-col">
         <h3>个人 AI 助理</h3>
@@ -1443,133 +1570,27 @@ section{padding:120px 0}
 <section class="course" id="course">
   <div class="wrap center">
     <div class="eyebrow">两天课程</div>
-    <h2>两天，做出这七样东西。</h2>
+    <h2>两天，做出这六样东西。</h2>
     <div class="outs3">
       <div class="out"><div class="out-vis"><span>1</span></div><div class="out-tx"><small>第 1 样</small><p class="big">你自己的 AI 助理。<br>手机一句话，它就开工；<br>公司资料，它都记得住。</p></div></div>
       <div class="out"><div class="out-vis"><span>2</span></div><div class="out-tx"><small>第 2 样</small><p class="big">会自动回复的 WhatsApp。<br>按你的规则回顾客；<br>不懂的，转给你。</p></div></div>
       <div class="out"><div class="out-vis"><span>3</span></div><div class="out-tx"><small>第 3 样</small><p class="big">你的 Email 助理。<br>连上 Gmail：查信、整理、<br>写好回复等你批准。</p></div></div>
       <div class="out"><div class="out-vis"><span>4</span></div><div class="out-tx"><small>第 4 样</small><p class="big">你公司的「第二大脑」。<br>账单、Email、联络人、点子，<br>全部收进去，AI 看懂、连起来。</p></div></div>
-      <div class="out"><div class="out-vis"><span>5</span></div><div class="out-tx"><small>第 5 样</small><p class="big">公司付款 Dashboard。<br>全公司要付款的单据，<br>整理成一个画面看完。</p></div></div>
-      <div class="out"><div class="out-vis"><span>6</span></div><div class="out-tx"><small>第 6 样</small><p class="big">一眼看懂的 Dashboard。<br>Excel、Lark、Monday 接进来，<br>公司数据一个画面看完。</p></div></div>
-      <div class="out"><div class="out-vis"><span>7</span></div><div class="out-tx"><small>第 7 样</small><p class="big">AI 记账与报告。<br>单据、薪资整理成草稿，<br>公司的账一眼看懂。</p></div></div>
+      <div class="out"><div class="out-vis"><span>5</span></div><div class="out-tx"><small>第 5 样</small><p class="big">公司付款 Dashboard。<br>公司要付款的单据，<br>整理成一个画面看完。</p></div></div>
+      <div class="out"><div class="out-vis"><span>6</span></div><div class="out-tx"><small>第 6 样</small><p class="big">一眼看懂的 Dashboard。<br><span class="nw">Excel、Lark、Monday</span> 接进来，<br>公司数据一个画面看完。</p></div></div>
     </div>
   </div>
 </section>
 
-<!-- ONE SENTENCE: the AI agent builds a page (a desktop-app window at work) -->
-<section class="tcs" id="build">
-  <div class="wrap">
-    <div class="tc">
-      <div class="tc-top">
-        <div>
-          <p class="tc-brand"><img src="/assets/logos/aligor-logo-transparent.png" alt=""><span><b>AI Agent 课程</b> · 阿理哥 Aligor</span></p>
-          <h2>做网站，一句话就做出来。</h2>
-          <p class="tc-sub">把你要的告诉 AI Agent，它自己定颜色、规划页面、找素材、写网页，再检查电脑版和手机版。课程里，一步一步教你。</p>
-        </div>
-        <div class="tc-actions">
-          <a class="btn btn-tc" href="/2days-botsclass/">报名两天 AI 助理课程 <span class="ar">↗</span></a>
-          <a class="btn btn-tc2" href="#course">看课程内容</a>
-        </div>
-      </div>
-      <div class="tc-glow" aria-hidden="true"></div>
-      <div class="app" role="img" aria-label="示意动画：AI Agent 收到一句话，自己定品牌方向、规划页面、收集素材、制作网页、启动预览、检查设计，最后把阿理哥的网页打开在预览里。">
-        <aside class="app-side">
-          <div class="app-dots"><i></i><i></i><i></i></div>
-          <div class="app-nav">
-            <div><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M14 6l4 4"/></svg>新对话<svg class="r" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/></svg></div>
-            <div><svg viewBox="0 0 24 24"><path d="M3 7h7l2 2h9v10H3z"/><path d="M12 13h6M15 10v6"/></svg>新项目</div>
-            <div><svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/><path d="M6 8v8M18 16V9a3 3 0 0 0-3-3h-4"/></svg>发布记录</div>
-          </div>
-          <div class="app-proj"><span>项目</span><b>+</b></div>
-          <div class="app-tree">
-            <div class="f"><svg viewBox="0 0 24 24"><path d="M3 6h7l2 2h9v11H3z"/></svg>aligor-home</div>
-            <div class="c on">阿理哥主页 …<i class="spin"></i></div>
-            <div class="c">两天课程文案</div>
-            <div class="f"><svg viewBox="0 0 24 24"><path d="M3 6h7l2 2h9v11H3z"/></svg>jombuy</div>
-            <div class="f"><svg viewBox="0 0 24 24"><path d="M3 6h7l2 2h9v11H3z"/></svg>ukunili</div>
-          </div>
-        </aside>
-        <div class="app-chat">
-          <div class="app-head"><b>阿理哥主页</b><span class="more">···</span><span class="ic"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 15h16"/></svg><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M15 4v16"/></svg></span></div>
-          <div class="app-feed">
-            <div class="bub s0">帮我做一个一页的网站给阿理哥：教老板建立公司 AI 助理的两天实战课，要有课程内容、报名和常见问题。</div>
-            <p class="say s1">需求已确认，开始设计。</p>
-            <ul class="steps">
-              <li class="st"><i></i><span>建立品牌方向</span><em class="sw"><b style="background:#1A0D07"></b><b style="background:#E8590C"></b><b style="background:#FFC79A"></b><b style="background:#F8F4EE"></b></em></li>
-              <li class="st"><i></i><span>规划页面</span><em>9 个部分</em></li>
-              <li class="st"><i></i><span>收集素材</span><em class="th"><b style="background-image:url(/assets/adrian-profile.jpg)"></b><b style="background-image:url(/assets/og-card.jpg)"></b><b style="background-image:url(/assets/og-edit.jpg)"></b></em></li>
-              <li class="st"><i></i><span>制作网页</span><em>index.html, styles.css</em></li>
-              <li class="st"><i></i><span>启动预览</span><em>127.0.0.1:4173</em></li>
-              <li class="st"><i></i><span>检查设计</span><em>1440 和 390</em></li>
-            </ul>
-            <p class="say s2">页面通过检查，已在预览中打开。</p>
-          </div>
-        </div>
-        <div class="app-pane">
-          <div class="pane-tabs"><span class="tb tb-b"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.5 2.6 2.5 14.4 0 17M12 3.5c-2.5 2.6-2.5 14.4 0 17"/></svg>浏览器</span><span class="tb tb-d"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M10 11h4M12 9v4M10 17h4"/></svg>改动</span><svg class="r" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6"/></svg></div>
-          <div class="pane-diff">
-            <p class="pd-h">改动</p>
-            <p class="pd-none">还没有改动</p>
-            <ul class="files">
-              <li><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/></svg>.taste/brief.json<b>+24</b></li>
-              <li><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/></svg>.taste/brand.json<b>+31</b></li>
-              <li><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/></svg>.taste/page.json<b>+44</b></li>
-              <li><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/></svg>.taste/assets.json<b>+12</b></li>
-              <li><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/></svg>index.html<b>+186</b></li>
-              <li><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/></svg>styles.css<b>+164</b></li>
-            </ul>
-            <pre class="code"><span class="add">+ &lt;header class="hero"&gt;</span>
-<span>    &lt;h1&gt;两天，打造你全公司的 AI 助理&lt;/h1&gt;</span>
-<span>    &lt;a href="/register"&gt;报名两天 AI 助理课程&lt;/a&gt;</span></pre>
-          </div>
-          <div class="pane-browser">
-            <div class="urlbar"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6"/></svg><span class="url">127.0.0.1:4173</span><span class="vw v1"><i>✓</i>1440</span><span class="vw v2"><i>✓</i>390</span></div>
-            <div class="shot"><img src="/assets/home/build-preview.jpg" alt="" loading="lazy" width="720" height="1113"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- REEL -->
 <section id="reel" style="padding-top:0">
   <div class="wrap split">
     <div>
       <div class="eyebrow">先看一段短片</div>
       <h2>AI 助理，是什么样的？</h2>
-      <a class="btn btn-d" href="/2days-botsclass/">报名两天 AI 助理课程 <span class="ar">→</span></a>
     </div>
     <div class="reel-pad">
       <div class="reel-frame">
         <iframe src="https://www.facebook.com/plugins/video.php?href=https%3A%2F%2Fwww.facebook.com%2Freel%2F1120851630537546&amp;show_text=false&amp;width=360" title="阿理哥 Facebook 短片：我一刀都没剪，交给 AI 全自动" loading="lazy" scrolling="no" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PRICE & OFFER -->
-<section class="preview" id="preview" style="padding-top:0">
-  <span id="signup"></span>
-  <div class="wrap">
-    <div class="dark split">
-      <div>
-        <div class="eyebrow">两天 AI 课程</div>
-        <h2>两天，<br>把 AI 助理带回公司。</h2>
-        <div class="pv-meta">
-          <div><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span>两整天实作，每一步都有检查点</span></div>
-          <div><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19.5c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.6c2.6-.4 4.6 1.2 5 4.4"/></svg><span>Adrian（阿理哥）讲 AI 助理与自动化，Jason（特许会计师）讲财务与会计自动化</span></div>
-          <div><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6"/></svg><span>学员可无限次免费复习，忘了随时回来再学</span></div>
-          <div><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 11.5a8.5 8.5 0 0 1-12.4 7.6L3.5 20.5l1.4-4.4A8.5 8.5 0 1 1 20.5 11.5z"/></svg><span>报名后，我们会通过 WhatsApp 联络你，确认日期和名额</span></div>
-        </div>
-        <a class="btn btn-w" href="/2days-botsclass/">报名两天 AI 助理课程 <span class="ar">→</span></a>
-      </div>
-      <div class="price-box">
-        <small>两天课程学费</small>
-        <div class="amt"><span>RM</span>3,000</div>
-        <div class="bogo">今天报名 · 买一送一</div>
-        <div class="perk">学员可无限次免费复习</div>
-        <p>带上你的主管，一起把 AI 用进公司。<br>一个名额，可以多带一位一起来上课。</p>
       </div>
     </div>
   </div>
@@ -1608,32 +1629,23 @@ section{padding:120px 0}
   </div>
 </section>
 
-<!-- TOOLS WE USE -->
-<section class="vs-sec" id="tools">
-  <div class="wrap center">
-    <div class="eyebrow">我们会用到的工具</div>
-    <h2>AI Agent 背后，<br>是这几样东西。</h2>
-    <div class="tk">
-      <div><small>大脑</small><h3>LLM 大语言模型</h3><p>AI 的大脑，负责看懂、思考、写出来。</p><ul><li>ChatGPT</li><li>Claude</li><li>Gemini</li></ul></div>
-      <div><small>助理本身</small><h3>AI Agent</h3><p>会动手做事的 AI，用手机就能指挥。</p><ul><li>ChatGPT Codex</li><li>Hermes Agent</li></ul></div>
-      <div><small>技能</small><h3>Skill</h3><p>教 AI 一种新工作，装上就会做。</p><ul><li>做网站</li><li>剪辑视频</li><li>做报告</li><li>整理账单</li></ul></div>
-      <div><small>工具</small><h3>Tools</h3><p>让 AI 接上你每天在用的软件和资料。</p><ul><li>Telegram</li><li>WhatsApp</li><li>Gmail</li><li>Excel</li><li>Lark</li><li>Monday</li></ul></div>
-    </div>
-  </div>
-</section>
-
 <!-- TEACHERS -->
 <section class="about" id="about" style="padding-top:0">
   <div class="wrap center">
     <div class="eyebrow">两位讲师</div>
     <h2>这堂课，由我们两个一起教。</h2>
+    <div class="why2">
+      <div><small>Adrian · 电脑工程师背景</small><b>懂系统背后怎么运作</b><span>权限怎么开、安全要注意什么，他都清楚。教你把 AI 用得稳、用得安心，不只是会按几个按钮。</span></div>
+      <div><small>Adrian · 12 年实战</small><b>实体店 + 电商，做了 12 年</b><span>自己经营实体店和网店，知道公司每天卡在哪里，需要的是哪一种自动化。</span></div>
+      <div><small>Jason · 走进公司现场</small><b>把每天的繁琐，交给助理</b><span>他常进公司，看得到每天让人烦的重复工作：能交出去的变成自动化，每天的杂事由助理管理、帮你检查。</span></div>
+    </div>
     <div class="teachers">
       <div class="teacher">
         <div class="t-photo"><img src="/assets/adrian-profile.jpg" alt="阿理哥 Adrian Ng" loading="lazy"></div>
         <div class="t-tx">
           <h3>Adrian（阿理哥）</h3>
           <p class="role">主讲 · AI 助理与自动化</p>
-          <p>Ukunili Music Sdn Bhd 的老板，Computer Engineering 和 Software Engineering 出身。</p>
+          <p>Ukunili Music Sdn Bhd 的老板，<b>Computer Engineering 和 Software Engineering 出身</b>。</p>
           <p>自己每天经营 SME，AI Agent 已经在公司的日常营运里使用。</p>
           <p><b>我卖的不是系统，我教的是如何做系统。</b></p>
         </div>
@@ -1642,30 +1654,63 @@ section{padding:120px 0}
         <div class="t-photo"><img src="/assets/team/jason-thow-partner.webp" alt="Jason Thow Seng Yeap" loading="lazy" style="object-position:50% 25%"></div>
         <div class="t-tx">
           <h3>Jason Thow</h3>
-          <p class="role">讲师 · 公司财务与会计自动化</p>
+          <p class="role">讲师 · 公司内部行政流程自动化</p>
           <p>马来西亚特许会计师 CA(M)，会计学士 B.Acc (Hons)。J &amp; J Group 合伙人，在新山提供会计、审计、税务及公司秘书服务。</p>
           <p>J &amp; J Corporate Services 获 Golden Bull Award 2023（Emerging SMEs）。</p>
-          <p><b>这两天，他教你用 AI 把公司财务和会计自动化：单据、记账、薪资整理成草稿，账目一眼看懂。</b></p>
+          <p>他把 AI 助理用在自己会计公司的日常营运里，处理每天的内部行政工作。</p>
+          <p><b>这两天，他主讲公司内部<span class="nw">行政流程自动化</span>。课程不处理、也<span class="nw">不教授会计工作</span>。</b></p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- FAQ -->
-<section id="faq" style="padding-top:0">
-  <div class="wrap center">
-    <div class="eyebrow">常见问题</div>
-    <h2>你可能想问的。</h2>
-    <div class="faq">
-      <details><summary>我完全不会写代码，可以吗？</summary><p>可以。你只需要把需求和流程讲清楚，每一步都有检查点，两位讲师现场协助。</p></details>
-      <details><summary>学费多少？买一送一怎么算？</summary><p>两天课程学费 RM 3,000。今天报名买一送一：一个名额可以多带一位一起来上课，最适合带上你的主管，一起把 AI 用进公司。</p></details>
-      <details><summary>上完课还能回来复习吗？</summary><p>可以。学员可无限次免费复习，之后的两天课都能回来再上。想回来复习时，先通过 WhatsApp 跟我们确认场次和座位。</p></details>
-      <details><summary>两天要学这么多，跟得上吗？</summary><p>课前会先做 Setup Check，把要装的软件和账号准备好。上课每一步都有检查点，没跟上的同学由讲师协助。</p></details>
-      <details><summary>要准备什么？</summary><p>一台 Mac 或 Windows 电脑、一部手机、稳定网络、一个测试用的 Gmail 和 WhatsApp 号码，以及公司简介和产品资料。</p></details>
-      <details><summary>AI 会不会乱回复客户、乱发 Email？</summary><p>不会。课程里加入转人工与审批机制，对外发送前由你确认，WhatsApp 全程使用测试号码。</p></details>
-      <details><summary>AI 会帮我报税或发薪水吗？</summary><p>不会自动做。AI 帮你把单据和薪资整理成草稿，交给你或会计师核对，付款、报税和发薪都由人确认。</p></details>
-      <details><summary>要每个月付费订阅你的系统吗？</summary><p>不需要。我们卖的不是系统，教的是如何做系统。课前会列清楚需要准备的账号。</p></details>
+<!-- TOOLS WE USE: scroll-driven (LLM, Skill and Tools logos fly in from the deep, then all go into the AI assistant) -->
+<section class="lg" id="tools" aria-label="AI 背后的功夫：LLM 大模型、Skill、Tools，全部装进你的 AI 助理">
+  <div class="lg-stage">
+    <div class="lg-items" aria-hidden="true"></div>
+    <div class="lg-head">
+      <div class="eyebrow">AI 背后的功夫</div>
+      <h2>你看到的 AI，<br>只是<em>冰山一角</em>。</h2>
+      <p>要把 AI 做好，背后要懂这些原理、工具和技巧。<br>全部弄懂一遍，你的 AI 才会更强。</p>
+    </div>
+    <div class="lg-cat" aria-hidden="true"><small></small><b></b></div>
+    <div class="lg-pc" aria-hidden="true">
+      <div class="lg-scr">
+        <div class="lg-orb"><i></i></div>
+        <b>你的 AI 助理</b>
+        <span class="lg-st">现在：什么都还不会</span>
+      </div>
+      <div class="lg-base"></div>
+    </div>
+    <div class="lg-count" aria-hidden="true">已装上 <b>0</b> 样</div>
+    <div class="lg-end"><h3>装上这些，<br>你的 AI 助理才<em>完整</em>。</h3><p>不然，它只是一个什么都不会的聊天框。</p></div>
+  </div>
+</section>
+
+<!-- PRICE & OFFER -->
+<section class="preview" id="preview" style="padding-top:0">
+  <span id="signup"></span>
+  <div class="wrap">
+    <div class="dark split">
+      <div>
+        <div class="eyebrow">两天 AI 课程</div>
+        <h2>两天，<br>把 AI 助理带回公司。</h2>
+        <div class="pv-meta">
+          <div><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span>两整天实作，每一步都有<span class="nw">检查点</span></span></div>
+          <div><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19.5c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.6c2.6-.4 4.6 1.2 5 4.4"/></svg><span>Adrian（阿理哥）讲 AI 助理与自动化，Jason 讲<span class="nw">公司内部行政流程自动化</span></span></div>
+          <div><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6"/></svg><span>学员可无限次免费复习，忘了随时回来再学</span></div>
+          <div><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 11.5a8.5 8.5 0 0 1-12.4 7.6L3.5 20.5l1.4-4.4A8.5 8.5 0 1 1 20.5 11.5z"/></svg><span>报名后，我们会通过 WhatsApp 联络你，确认日期和名额</span></div>
+        </div>
+        <a class="btn btn-w" href="/2days-botsclass/">报名两天 AI 助理课程 <span class="ar">→</span></a>
+      </div>
+      <div class="price-box">
+        <small>两天课程学费</small>
+        <div class="amt"><span>RM</span>3,000</div>
+        <div class="bogo">当天报名 · 买一送一</div>
+        <div class="perk">学员可无限次免费复习</div>
+        <p>带上你的主管，一起把 AI 用进公司。<br>一个名额，可以多带一位一起来上课。</p>
+      </div>
     </div>
   </div>
 </section>
@@ -1694,16 +1739,16 @@ section{padding:120px 0}
     <p class="foot-note">提升公司盈利。带上你的主管，一起把 AI 用进公司。</p>
   </div>
   <div class="wrap foot-cols">
-    <div class="foot-brand"><img src="/assets/logos/aligor-logo-transparent.png" alt="阿理哥 Aligor 标志"><div><b>阿理哥 · Aligor</b><span>Malaysia · AI Agent · SME Automation</span></div></div>
-    <div class="foot-col"><b>课程</b><a href="#course">两天学什么</a><a href="#preview">价格优惠</a><a href="#about">讲师</a><a href="#faq">常见问题</a></div>
+    <div class="foot-brand"><div><b>两天 AI 助理课程</b><span>Malaysia · AI Agent · SME Automation</span></div></div>
+    <div class="foot-col"><b>课程</b><a href="#course">两天学什么</a><a href="#preview">价格优惠</a><a href="#about">讲师</a></div>
     <div class="foot-col"><b>社交</b><a href="https://www.instagram.com/aligor4916/">Instagram</a><a href="https://www.facebook.com/aligor4916/">Facebook</a><a href="https://www.threads.com/@aligor4916">Threads</a><a href="https://wa.me/60167871902">WhatsApp</a></div>
     <div class="foot-col"><b>其他</b><a href="https://jombuy.com.my/" target="_blank" rel="noopener">Jombuy</a></div>
   </div>
-  <div class="wrap foot-copy">© 2026 阿理哥 Aligor</div>
-  <div class="foot-mark" aria-hidden="true"><div class="foot-glow"></div><span>Aligor</span></div>
+  <div class="wrap foot-copy">© 2026</div>
+  <div class="foot-mark" aria-hidden="true"><div class="foot-glow"></div><span>AI Agent</span></div>
 </footer>
 <div class="sticky">
-  <a class="btn" href="/2days-botsclass/">报名两天课 · 买一送一 →</a>
+  <a class="btn" href="/2days-botsclass/">报名两天 AI 助理课程 →</a>
 </div>
 <script>
 (function(){
@@ -1751,9 +1796,135 @@ section{padding:120px 0}
   function navTone(){nav.classList.toggle('light',scrollY>hero.offsetHeight-80)}
   addEventListener('scroll',navTone,{passive:true});navTone();
 
+
+  // hero chat: each bit of scroll plays the next step
+  (function(){
+    var hs=document.querySelector('.hs'); if(!hs)return;
+    var stage=hs.querySelector('.stage'), chat=hs.querySelector('.chat'), msgs=[].slice.call(hs.querySelectorAll('.msg[data-at]')),
+        typ=hs.querySelector('.msg.typing'), tr=hs.querySelector('.tr'), full=tr.getAttribute('data-text'),
+        cks=hs.querySelectorAll('.ck'), nums=hs.querySelectorAll('.num'), bars=hs.querySelectorAll('.em'), press=hs.querySelector('[data-press]'),
+        spin=hs.querySelector('.hspin'), srcs=hs.querySelectorAll('.src');
+    var at=function(el){return +el.getAttribute('data-at')};
+    var cl=function(x){return Math.max(0,Math.min(1,x))};
+    function render(p){
+      msgs.forEach(function(m){m.classList.toggle('in',p>=at(m))});
+      var t=cl((p-.02)/.11), n=Math.round(full.length*t);
+      if(tr.textContent.length!==n)tr.textContent=full.slice(0,n);
+      tr.classList.toggle('typing-on',t>0&&t<1);
+      var ai=msgs.filter(function(m){return m.classList.contains('ai')}), wait=false;
+      ai.forEach(function(m){var a=at(m); if(p<a&&p>=a-.04)wait=true});
+      if(p>=.73&&p<.86)wait=false;
+      typ.classList.toggle('in',wait);
+      cks.forEach(function(c){c.classList.toggle('ok',p>=at(c))});
+      var g=cl((p-.37)/.07);
+      nums.forEach(function(e){e.textContent=Math.round(+e.getAttribute('data-n')*g)});
+      bars.forEach(function(b){b.style.setProperty('--g',g.toFixed(3))});
+      press.classList.toggle('press',p>=+press.getAttribute('data-press')&&p<.69);
+      spin.classList.toggle('done',p>=.86); spin.textContent=p>=.86?'已完成':'处理中';
+      srcs[0].classList.toggle('on',p>=.2&&p<.47); srcs[1].classList.toggle('on',(p>=.25&&p<.36)||(p>=.73&&p<.86)); srcs[2].classList.toggle('on',(p>=.3&&p<.36)||(p>=.5&&p<.56)||(p>=.73&&p<.86));
+    }
+    if(reduce){chat.style.setProperty('--ch','auto');chat.style.height='auto';hs.querySelector('.chat-in').style.position='static';render(1);typ.classList.remove('in');return}
+    var top=84;
+    function size(){
+      var mob=innerWidth<=760; top=mob?76:84;
+      var other=stage.offsetHeight-chat.offsetHeight;
+      var ch=Math.max(300,Math.min(mob?560:470,innerHeight-top-other-(mob?90:24)));
+      chat.style.setProperty('--ch',ch+'px');
+      hs.style.setProperty('--st',top+'px');
+      hs.style.height=(stage.offsetHeight+innerHeight*2.6)+'px';
+    }
+    function upd(){
+      var r=hs.getBoundingClientRect(), span=hs.offsetHeight-stage.offsetHeight;
+      render(span>0?cl((top-r.top)/span):1);
+    }
+    hs.classList.add('pin'); size(); upd();
+    addEventListener('scroll',function(){requestAnimationFrame(upd)},{passive:true});
+    addEventListener('resize',function(){size();upd()});
+  })();
+
+
+  // AI behind the scenes: LLM, Skill, Tools fly in from the deep, then everything goes into the assistant
+  (function(){
+    var sec=document.querySelector('.lg'); if(!sec)return;
+    var box=sec.querySelector('.lg-items'), head=sec.querySelector('.lg-head'), cat=sec.querySelector('.lg-cat'), catS=cat.querySelector('small'), catB=cat.querySelector('b'),
+        pc=sec.querySelector('.lg-pc'), scr=sec.querySelector('.lg-scr'), orb=sec.querySelector('.lg-orb'), st=sec.querySelector('.lg-st'), cnt=sec.querySelector('.lg-count'), cntB=cnt.querySelector('b'), end=sec.querySelector('.lg-end');
+    var LG='/assets/ai-logos/';
+    var groups=[
+      {k:'第 1 样',t:'LLM 大模型',a:.12,b:.32,items:'openai claude gemini meta mistral deepseek qwen grok kimi minimax zhipu doubao perplexity ollama huggingface'.split(' ')},
+      {k:'第 2 样',t:'Skill 技能',a:.34,b:.54,sk:['superpowers','frontend-design','agent-browser','pptx','xlsx','docx','pdf','remotion','hyperframes','marketing-skills','skill-creator','deep-research','video-use','browser-use','context7']},
+      {k:'第 3 样',t:'Tools 工具',a:.56,b:.76,items:'elevenlabs suno kling midjourney runway comfyui fal replicate n8n make zapier notion github figma firecrawl telegram whatsapp gmail googledrive googlesheets shopify stripe'.split(' '),sk:['voicebox']}
+    ];
+    var rnd=(function(x){return function(){x=(x*16807)%2147483647;return (x-1)/2147483646}})(20261125);
+    var its=[];
+    groups.forEach(function(g,gi){
+      var list=(g.items||[]).map(function(n){return {logo:n}}).concat((g.sk||[]).map(function(n){return {sk:n}}));
+      list.sort(function(){return rnd()-.5});
+      list.forEach(function(o,k){
+        var el=document.createElement('div'); el.className='lg-it';
+        if(o.logo){el.innerHTML='<div class="lg-lo"><img src="'+LG+o.logo+'.svg" alt="" loading="lazy" decoding="async"></div>'}
+        else{el.innerHTML='<span class="lg-sk">'+o.sk+'</span>'}
+        box.appendChild(el);
+        var ang=(k/list.length)*Math.PI*2+gi*.7+(rnd()-.5)*.5, sn=Math.sin(ang);
+        if(sn<-.82)ang+=(Math.cos(ang)>0?.75:-.75); else if(sn>.9)ang+=(Math.cos(ang)>0?-.6:.6);
+        its.push({el:el,g:gi,t0:g.a+(g.b-g.a)*.7*(k/list.length)+(rnd()*.03),ang:ang,e:.5+rnd()*.5,z:.75+rnd()*1.35,ph:rnd()*6.28,d:rnd()*.05,u:rnd(),v:rnd(),w:0,h:0});
+      });
+    });
+    var clamp=function(x){return Math.max(0,Math.min(1,x))}, seg=function(p,a,b){return clamp((p-a)/(b-a))};
+    var eo=function(t){return 1-Math.pow(1-t,3)}, ei=function(t){return t*t*t};
+    var W=0,H=0,mob=false,P=0,on=false,raf=0;
+    function size(){W=sec.clientWidth;H=innerHeight;mob=W<=760;
+      sec.style.setProperty('--t',(mob?40:66)+'px'); pc.style.setProperty('--pw',(mob?Math.min(220,W*.56):Math.min(320,W*.24))+'px');
+      its.forEach(function(o){o.w=o.el.offsetWidth||60;o.h=o.el.offsetHeight||60});
+    }
+    if(reduce){sec.classList.add('static');return}
+    function frame(now){
+      var t=now/1000, p=P;
+      var hp=seg(p,.06,.11); head.style.opacity=1-hp; head.style.transform='translateY(-50%) scale('+(1-hp*.08)+')';
+      var pcIn=seg(p,.07,.12); pc.style.opacity=pcIn; 
+      var gi=-1; groups.forEach(function(g,i){if(p>=g.a-.02&&p<g.b+.02)gi=i});
+      if(gi>=0){catS.textContent=groups[gi].k;catB.textContent=groups[gi].t}
+      var cIn=gi>=0?Math.min(seg(p,groups[gi].a-.02,groups[gi].a+.01),1-seg(p,groups[gi].b-.01,groups[gi].b+.02)):0;
+      cat.style.opacity=cIn;
+      var suckA=.78, sucked=0, arrived=0, cx=W/2, cy=H*.54;
+      var rx=W/2*(mob?.86:.9), ry=H/2*(mob?.78:.82);
+      its.forEach(function(o){
+        var f=seg(p,o.t0,o.t0+.07), fe=eo(f);
+        var sx=Math.cos(o.ang)*o.e*rx+Math.sin(t*.5+o.ph)*10, sy=Math.sin(o.ang)*o.e*ry+Math.cos(t*.42+o.ph)*8;
+        if(mob){var bd=Math.min(265,H*.32); sy=(Math.sin(o.ang)<0?-1:1)*(135+o.u*(bd-135))+Math.cos(t*.42+o.ph)*6; sx=(o.v*2-1)*(W/2-24)+Math.sin(t*.5+o.ph)*6}
+        else if(Math.abs(sx)<250&&Math.abs(sy)<170){sx*=1.7;sy*=1.3}
+        var hw=o.w*(1.25/o.z)/2+6; sx=Math.max(-W/2+hw,Math.min(W/2-hw,sx));
+        var z=1.7+(o.z-1.7)*1+(9-o.z)*(1-fe);              // flies in from far (z 9) to its own depth
+        var k=o.z/z, x=cx+sx*k, y=cy+sy*k, sc=(mob?Math.min(1.1,1.25/o.z):1.25/o.z)*k, op=fe;
+        if(o.g<groups.length-1&&p>groups[o.g].b+.02&&p<suckA)op*=.55;
+        var s=seg(p,suckA+o.d*1.2,suckA+o.d*1.2+.07), se=s*s*(3-2*s);
+        if(s>0){var a2=se*2.4, dx=x-cx, dy=y-cy; x=cx+(dx*Math.cos(a2)-dy*Math.sin(a2))*(1-se); y=cy+(dx*Math.sin(a2)+dy*Math.cos(a2))*(1-se); sc*=1-se*.9; op=Math.max(0,1-Math.pow(s,2))}
+        if(f>=1)arrived++; if(s>=1)sucked++;
+        var blur=o.z<.95&&s<.5?' blur('+((.95-o.z)*6).toFixed(1)+'px)':'';
+        o.el.style.opacity=op.toFixed(3);
+        o.el.style.transform='translate('+(x-o.w/2).toFixed(1)+'px,'+(y-o.h/2).toFixed(1)+'px) scale('+sc.toFixed(3)+')';
+        o.el.style.zIndex=Math.round(100/o.z);
+        if(o.el._b!==blur){o.el.style.filter=blur;o.el._b=blur}
+      });
+      var N=its.length, fill=sucked/N;
+      orb.style.setProperty('--fill',fill.toFixed(3)); scr.style.setProperty('--glow',(fill*(.6+.4*Math.sin(t*2.2)*.5+.2)).toFixed(3));
+      pc.style.transform='translate(-50%,-50%) scale('+(1+fill*.12)+')';
+      st.textContent=fill>=1?'准备好了：什么都会做':fill>0?'正在装进去… '+Math.round(fill*100)+'%':(arrived?'还没装上：什么都不会':'现在：什么都还不会');
+      st.classList.toggle('ok',fill>=1);
+      cnt.style.opacity=Math.min(seg(p,.12,.15),1-seg(p,.76,.8)); cntB.textContent=arrived;
+      end.style.opacity=seg(p,.9,.95); end.style.transform='translateY('+(1-seg(p,.9,.95))*20+'px)';
+      raf=on?requestAnimationFrame(frame):0;
+    }
+    function upd(){var r=sec.getBoundingClientRect(), span=sec.offsetHeight-innerHeight; P=span>0?clamp(-r.top/span):0}
+    size(); upd();
+    new IntersectionObserver(function(es){on=es[0].isIntersecting; if(on&&!raf)raf=requestAnimationFrame(frame)}).observe(sec);
+    addEventListener('scroll',upd,{passive:true});
+    addEventListener('resize',function(){size();upd()});
+    addEventListener('load',size);
+  })();
+
   var drum=document.querySelector('.drum');
   if(drum){
-    if(reduce){drum.classList.add('static')}
+    if(reduce||matchMedia('(max-width:760px)').matches){drum.classList.add('static')}
     else{
       var words=drum.querySelectorAll('.drum-word'), n=document.getElementById('drum-n'), desc=document.getElementById('drum-desc');
       var texts=Array.prototype.map.call(drum.querySelectorAll('.drum-static span'),function(s){return s.textContent});
