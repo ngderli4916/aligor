@@ -63,5 +63,13 @@ class TwoDayTest(unittest.TestCase):
         self.assertEqual(self.handle(),409)
         self.assertEqual(self.events,[(notice.JASON_JID,self.row['partner'])])
 
+    def test_same_number_as_aligor_sender_skips_only_customer_and_records_why(self):
+        self.row['phone']=notice.ALIGOR_SENDER_JID.split('@')[0]
+        self.assertEqual(self.handle(),200)
+        self.assertEqual(self.handle(),200)
+        self.assertEqual(self.events,[(notice.JASON_JID,self.row['partner'])])
+        with notice.ledger(self.state/'delivery.sqlite3') as db:
+            self.assertEqual(db.execute('SELECT channel,status FROM sends ORDER BY channel').fetchall(),[('customer','skipped_self'),('partner','verified')])
+
 
 if __name__=='__main__': unittest.main()

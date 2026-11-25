@@ -66,6 +66,7 @@ test('form has no amount tick and no upload; payment panel has bank details and 
   assert.doesNotMatch(html,/amountConfirmed|type="file"|上传付款凭证/);
   for(const s of ['2026 年 12 月 7–8 日','星期一、二 · 暂定','每天 9AM - 5PM','新山','详细地址待公布','一顿午餐和一次茶点','J & J BUSINESS MANAGEMENT SERVICES','JM0632306-M','Hong Leong Bank','37900006808','RM3,000','RM6,000','买一送一：第二位学员免费','送一位','2026 年 11 月 27 日（星期五）11:59PM','我已付款，WhatsApp 发付款凭证','两天 AI 企业助理课程'])assert.ok(html.includes(s),s);
   assert.doesNotMatch(html,/合作/);
+  assert.ok(html.includes("const ref='#'+a.reference"));assert.ok(html.includes("报名编号：'+ref+"));
 });
 
 
@@ -78,7 +79,7 @@ test('real insert triggers Telegram and one reference-only event; duplicates and
   const run=body=>worker.fetch(new Request(url+api,{method:'POST',headers:{origin:url,'content-type':'application/json'},body:JSON.stringify(body)}),env,ctx);
   assert.equal((await run(payload)).status,422);assert.equal(inserts.length,0);
   const r=await run({...payload,whatsappConsent:true,name:'Test <b>Not HTML</b>'});assert.equal(r.status,200);const a=await r.json();await Promise.all(jobs);
-  assert.equal(caught.length,2);const tg=caught.find(v=>v.target.startsWith('https://api.telegram.org/'));assert.equal(tg.body.chat_id,'test-adrian');assert.match(tg.body.text,/Test &lt;b&gt;Not HTML&lt;\/b&gt;/);assert.match(tg.body.text,/待付款/);
+  assert.equal(caught.length,2);const tg=caught.find(v=>v.target.startsWith('https://api.telegram.org/'));assert.equal(tg.body.chat_id,'test-adrian');assert.match(tg.body.text,/Test &lt;b&gt;Not HTML&lt;\/b&gt;/);assert.match(tg.body.text,/待付款/);assert.ok(tg.body.text.includes(`报名编号：#${a.reference}`));
   assert.deepEqual(caught.find(v=>v.target.startsWith('https://receiver.invalid/')).body,{event:'aligor.two-day-registration.created',reference:a.reference});
   assert.equal((await run({...payload,phone:'+60 10-000 0148',whatsappConsent:true})).status,409);assert.equal(caught.length,2);
   const form=renderPartnerTwoDay(partnerTwoDayState(env,BEFORE));assert.match(form,/同意通过 WhatsApp/);assert.doesNotMatch(form,/0175659153|60175659153/);
@@ -93,6 +94,8 @@ test('notification lookup is bearer-gated, isolated and uses the exact course pa
   const r=await lookup(first.reference,secret); assert.equal(r.status,200);assert.equal(r.headers.get('cache-control'),'no-store'); const data=await r.json();
   assert.equal(data.phone,'60100000148');assert.match(data.customer,/Hong Leong Bank.*\n户名：J & J BUSINESS MANAGEMENT SERVICES\n户口号码：37900006808/);
   assert.match(data.customer,/12 月 7–8 日（暂定）/);assert.match(data.customer,/应付金额：RM3,000/);assert.match(data.customer,/核对款项后会确认名额/);
+  for(const channel of [data.customer,data.partner])assert.ok(channel.includes(`报名编号：#${first.reference}`));
+  assert.ok(data.customer.includes(`转账备注请写 #${first.reference}`));
   assert.match(data.partner,/2 位/);assert.doesNotMatch(data.partner,/60100000148|37900006808|Test Company/);
   env.PARTNER_TWO_DAY_TEST_MODE='1';assert.equal((await lookup(first.reference,secret)).status,404);
 });

@@ -163,9 +163,9 @@ function closeNow(){endBar();if(paid)return;const box=document.querySelector('#r
 function tick(){const left=DEADLINE-Date.now();if(left<=0){closeNow();cd.closest('.deadline').classList.add('ended');cd.textContent='报名已截止';return;}const s=Math.floor(left/1000),d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);cd.innerHTML=cd2.innerHTML=(d?'<b>'+d+'</b> 天 ':'')+'<b>'+pad(h)+'</b> 时 <b>'+pad(m)+'</b> 分 <b>'+pad(s%60)+'</b> 秒';setTimeout(tick,1000-Date.now()%1000);}
 const f=document.querySelector('#signup');
 function copyBtns(root){root.querySelectorAll('.copy').forEach(b=>b.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(b.dataset.copy);b.textContent='已复制';setTimeout(()=>b.textContent='复制',1500);}catch{}}));}
-function payPanel(a){const n=document.querySelector('#payTpl').content.cloneNode(true);const rmT='RM'+Number(a.amount).toLocaleString('en-US');const who=a.seats===2?'两位'+(FEES&&FEES[2]<FEES[1]*2?'（买一送一）':''):'一位';
-n.querySelectorAll('.ref').forEach(e=>e.textContent=a.reference);n.querySelector('.who').textContent=who;n.querySelector('.amt').textContent=rmT;n.querySelector('.pay-msg').textContent=a.message;
-const text='你好，我已完成「两天 AI 企业助理课程」的付款。\\n报名编号：'+a.reference+'\\n姓名：'+a.name+'\\n人数：'+who+'\\n金额：'+rmT+'\\n（附上付款凭证）';
+function payPanel(a){const n=document.querySelector('#payTpl').content.cloneNode(true);const rmT='RM'+Number(a.amount).toLocaleString('en-US');const ref='#'+a.reference;const who=a.seats===2?'两位'+(FEES&&FEES[2]<FEES[1]*2?'（买一送一）':''):'一位';
+n.querySelectorAll('.ref').forEach(e=>e.textContent=ref);n.querySelector('.who').textContent=who;n.querySelector('.amt').textContent=rmT;n.querySelector('.pay-msg').textContent=a.message;
+const text='你好，我已完成「两天 AI 企业助理课程」的付款。\\n报名编号：'+ref+'\\n姓名：'+a.name+'\\n人数：'+who+'\\n金额：'+rmT+'\\n（附上付款凭证）';
 n.querySelector('.wa').href='https://wa.me/'+a.whatsapp+'?text='+encodeURIComponent(text);copyBtns(n);return n;}
 if(f){const result=document.querySelector('#result'), button=f.querySelector('#submit'), label=button.textContent;
 function fields(){const two=f.elements.seats.value==='2', bill=f.elements.companyInvoice.checked;document.querySelector('#second').hidden=!two;document.querySelector('#company').hidden=!bill;f.elements.secondName.disabled=!two;f.elements.companyName.disabled=!bill;f.elements.companyName.required=bill;f.elements.companyAddress.disabled=!bill;

@@ -15,6 +15,7 @@ EVENT = 'aligor.two-day-registration.created'
 REFERENCE = re.compile(r'2D-[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}')
 PHONE = re.compile(r'601[0-9]{8,9}')
 JASON_JID = '60175659153@s.whatsapp.net'
+ALIGOR_SENDER_JID = '60167871902@s.whatsapp.net'  # Linked to SpiderMan; do not send to the sending account.
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -114,8 +115,17 @@ def deliver(reference, secret, state=STATE, load=lookup, send=send_wa, verify=ve
         db=ledger(state/'delivery.sqlite3')
         try:
             customer=row['phone']+'@s.whatsapp.net'
-            # If the reserved partner number was entered as the applicant, do not send that phone a second message.
-            customer_status=deliver_one(db,reference,'customer',customer,row['customer'],send,verify) if customer!=JASON_JID else 409
+            if customer==ALIGOR_SENDER_JID:
+                # Do not resend old ambiguous attempts; the customer still gets the payment panel on the page.
+                digest=hashlib.sha256((customer+'\0'+row['customer']).encode()).hexdigest()
+                with db:
+                    db.execute("INSERT OR IGNORE INTO sends VALUES (?,'customer','skipped_self',NULL,?)",(reference,digest))
+                customer_status=200
+            elif customer==JASON_JID:
+                # Do not deliver two messages to a reserved partner number.
+                customer_status=409
+            else:
+                customer_status=deliver_one(db,reference,'customer',customer,row['customer'],send,verify)
             partner_status=deliver_one(db,reference,'partner',JASON_JID,row['partner'],send,verify)
         finally:
             db.close()

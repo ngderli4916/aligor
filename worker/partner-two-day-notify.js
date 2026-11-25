@@ -14,7 +14,7 @@ export async function notifyPartnerTwoDay(env,row,sendTelegram) {
     if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_CHAT_ID) throw new Error('not configured');
     const e = htmlEscape;
     const r = await sendTelegram([
-      `🔔 新报名｜${PARTNER_TWO_DAY_CLASS.title}`, `报名编号：${e(row.reference)}`, `姓名：${e(row.name)}`,
+      `🔔 新报名｜${PARTNER_TWO_DAY_CLASS.title}`, `报名编号：#${e(row.reference)}`, `姓名：${e(row.name)}`,
       `WhatsApp：+${e(row.phone)}`, `人数：${row.seats} 位`, `应付：${rm(row.amount)}（待付款）`,
       `报名时间：${e(formatMalaysiaTime(row.createdAt))}`,
     ].join('\n'));
@@ -55,13 +55,13 @@ export async function partnerTwoDayNoticeLookup(request,env) {
   const c=PARTNER_TWO_DAY_CLASS, b=PARTNER_TWO_DAY_BANK;
   const customer = [
     `你好 ${row.contact_name}，我们已收到你「${c.title}」的报名，目前待付款。`, '',
-    `报名编号：${row.reference}`, `报名人数：${row.seats} 位`, `上课日期：${c.date}（暂定）`,
+    `报名编号：#${row.reference}`, `报名人数：${row.seats} 位`, `上课日期：${c.date}（暂定）`,
     `时间：${c.hours}`, `地点：${c.city}（${c.venueNote}）`, '', `应付金额：${rm(row.amount_rm)}`,
     `银行：${b.bank}`, `户名：${b.holder}`, `户口号码：${b.account}`,
-    `转账备注请写 ${row.reference}。付款后请把凭证 WhatsApp 给 +${state.wa}（https://wa.me/${state.wa}）。我们核对款项后会确认名额。`,
+    `转账备注请写 #${row.reference}。付款后请把凭证 WhatsApp 给 +${state.wa}（https://wa.me/${state.wa}）。我们核对款项后会确认名额。`,
   ].join('\n');
   const partner = [
-    `🔔 新报名｜${c.title}`, `报名编号：${row.reference}`, `第一位学员：${row.contact_name}`,
+    `🔔 新报名｜${c.title}`, `报名编号：#${row.reference}`, `第一位学员：${row.contact_name}`,
     `人数：${row.seats} 位`, `应付：${rm(row.amount_rm)}（待付款）`,
     `报名时间：${formatMalaysiaTime(row.created_at)}`,
   ].join('\n');
