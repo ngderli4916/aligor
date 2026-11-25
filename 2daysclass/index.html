@@ -70,6 +70,12 @@
 .pr-cta{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-top:20px;border-top:1px solid var(--line)}
 .pr-cta .btn{padding:15px 26px;font-size:17px}
 .pr-cta span{font-size:14px;color:var(--mute)}
+.pr-cta{flex-wrap:nowrap;justify-content:space-between}
+.pr-cta-l{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.pr-qr{margin:0;flex:none;display:flex;flex-direction:row-reverse;align-items:center;gap:10px}
+.pr-qr img{display:block;width:78px;height:78px;padding:6px;background:#fff;border-radius:12px;box-shadow:0 0 0 1px var(--line)}
+.pr-qr figcaption{font-size:12.5px;font-weight:600;color:var(--ink2);line-height:1.45;text-align:right}
+@media (max-width:760px),(pointer:coarse){.pr-qr{display:none}.pr-cta-l{width:100%}}
 .pr .pr-r{opacity:0;transform:translateY(22px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.8,.2,1)}
 .pr .pr-r.on{opacity:1;transform:none}
 .pr .pp2.pr-r{transform:scale(.6)}.pr .pp2.pr-r.on{transform:none;transition:opacity .4s ease,transform .5s cubic-bezier(.3,1.6,.5,1)}
@@ -1821,8 +1827,11 @@ main h1,main h2,main h3,footer h2{text-wrap:balance;line-break:strict}
           <p>学完之后，想再来几次都可以，<span class="nw">随时回来上课</span>，<span class="nw">只需付场地费</span>。</p>
         </div>
         <div class="pr-cta pr-r" data-at=".8">
-          <a class="btn btn-d" href="/2days-botsclass/">报名两天 AI 助理课程 <span class="ar">→</span></a>
-          <span>优惠只限今天报名</span>
+          <div class="pr-cta-l">
+            <a class="btn btn-d" href="/2days-botsclass/">报名两天 AI 助理课程 <span class="ar">→</span></a>
+            <span>优惠只限今天报名</span>
+          </div>
+          <figure class="pr-qr"><img src="/assets/qr/2days-botsclass.svg" alt="扫码报名：aligorvibe.com/2days-botsclass" width="78" height="78"><figcaption>手机扫码<br>报名</figcaption></figure>
         </div>
       </div>
     </div>
