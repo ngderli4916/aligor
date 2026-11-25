@@ -3,6 +3,23 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+/* Phones: landscape only. Portrait shows a rotate screen; landscape lays the page out as a small desktop. */
+(function(){
+  var d=document.documentElement, mq=matchMedia('(orientation: landscape)');
+  var phone=matchMedia('(pointer: coarse)').matches && Math.min(screen.width,screen.height)<=600;
+  if(!phone) return;
+  d.classList.add('ph');
+  function set(){
+    var v=document.querySelector('meta[name=viewport]'), land=mq.matches;
+    d.classList.toggle('ph-land',land); d.classList.toggle('ph-port',!land);
+    v.setAttribute('content', land ? 'width=1180' : 'width=device-width, initial-scale=1');
+  }
+  set();
+  if(mq.addEventListener) mq.addEventListener('change',set); else mq.addListener(set);
+  addEventListener('orientationchange',function(){setTimeout(set,60)});
+})();
+</script>
   <title>两天 AI 实战课 · 打造你公司的 AI 助理｜Adrian × Jason</title>
   <meta name="description" content="两天实战课：打造你公司的 AI 助理。老板、主管、员工都能用手机指挥 AI 回顾客、管 Email、做报告，把公司内部的行政流程自动化。学员可无限次免费复习。">
   <meta property="og:type" content="website">
@@ -71,6 +88,20 @@
   .pr-ppl{margin-top:10px;gap:10px}.pp{font-size:13px}.pp svg{width:26px;height:26px}
   .pr-cta{padding-top:14px;gap:10px}.pr-cta .btn{width:100%;padding:14px}
 }
+
+/* PHONE: landscape only */
+.rot{display:none}
+html.ph-port .rot{display:flex;position:fixed;inset:0;z-index:999;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:32px;text-align:center;background:radial-gradient(80% 60% at 50% 45%,#33170A,#0B0604);color:#fff}
+html.ph-port,html.ph-port body{overflow:hidden;height:100%}
+.rot-ph{width:64px;height:110px;border:4px solid #fff;border-radius:14px;position:relative;animation:rotPh 2.4s cubic-bezier(.6,0,.3,1) infinite}
+.rot-ph::after{content:"";position:absolute;left:50%;bottom:7px;width:16px;height:4px;margin-left:-8px;border-radius:4px;background:#fff}
+@keyframes rotPh{0%,20%{transform:rotate(0)}50%,80%{transform:rotate(-90deg)}100%{transform:rotate(0)}}
+.rot b{font-size:26px;letter-spacing:-.03em}
+.rot p{margin:0;font-size:15px;line-height:1.6;color:rgba(255,255,255,.72)}
+.rot button{margin-top:4px;border:0;border-radius:12px;padding:13px 22px;font:inherit;font-weight:700;font-size:16px;background:var(--orange);color:#fff}
+html.ph-land .nav{display:none}
+html.ph-land{scroll-snap-type:y proximity}
+html.ph-land main>section,html.ph-land main>header,html.ph-land .hero{scroll-snap-align:start}
 </style>
 <style>
 :root{
@@ -724,6 +755,13 @@ main h1,main h2,main h3,footer h2{text-wrap:balance;line-break:strict}
 <noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=1697028392130040&ev=PageView&noscript=1"></noscript>
 </head>
 <body>
+<div class="rot" role="dialog" aria-label="请把手机打横观看">
+  <div class="rot-ph" aria-hidden="true"></div>
+  <b>请把手机打横观看</b>
+  <p>这个页面是为横屏设计的，<br>打横之后，画面会完整显示。</p>
+  <button type="button" id="rotBtn" hidden>打横观看</button>
+</div>
+
 <nav class="nav" id="nav">
   <div class="nav-in">
     <a class="brand" href="#top"><span>两天 AI 助理课程</span></a>
@@ -1452,6 +1490,16 @@ main h1,main h2,main h3,footer h2{text-wrap:balance;line-break:strict}
   .acc-chips span,.acc-list li,.acc-alerts span{opacity:1!important}
   .acc-bar i{--g:1!important}
 }
+
+/* SHORT SCREENS (phone landscape, small laptops) */
+@media (max-height:620px) and (min-width:761px){
+  .acc-db{zoom:.7}
+  .lg-pc{top:42%}
+  .lg-end{bottom:5%}.lg-end h3{font-size:30px}.lg-end p{margin-top:6px;font-size:14px}
+  .pr-in{padding-top:20px;padding-bottom:16px;gap:40px}
+  .pr-card{zoom:.74}
+  .pr-l{zoom:.82}
+}
 </style>
 <section class="acc" id="accounting" aria-label="整理账单最大的烦恼">
   <div class="acc-stage">
@@ -1813,9 +1861,6 @@ main h1,main h2,main h3,footer h2{text-wrap:balance;line-break:strict}
   <div class="wrap foot-copy">© 2026</div>
   <div class="foot-mark" aria-hidden="true"><div class="foot-glow"></div><span>AI Agent</span></div>
 </footer>
-<div class="sticky">
-  <a class="btn" href="/2days-botsclass/">报名两天 AI 助理课程 →</a>
-</div>
 <script>
 (function(){
   function send(path){
@@ -2156,10 +2201,21 @@ main h1,main h2,main h3,footer h2{text-wrap:balance;line-break:strict}
     if(r.top>innerHeight*.35) p=-1;
     els.forEach(function(e){e.classList.toggle('on',p>=parseFloat(e.dataset.at))});
     var k=Math.max(0,Math.min(1,(p-.3)/.16)); k=1-Math.pow(1-k,3);
-    num.textContent=fmt(Math.round(3000*k/10)*10);
+    num.textContent=fmt(Math.round((7000-4000*k)/10)*10);
   }
   function req(){if(!ticking){ticking=true;requestAnimationFrame(upd)}}
   addEventListener('scroll',req,{passive:true});addEventListener('resize',req);upd();
+})();
+</script>
+<script>
+(function(){
+  var b=document.getElementById('rotBtn'); if(!b) return;
+  var can=document.documentElement.requestFullscreen && screen.orientation && screen.orientation.lock;
+  if(!can) return;
+  b.hidden=false;
+  b.addEventListener('click',function(){
+    document.documentElement.requestFullscreen().then(function(){return screen.orientation.lock('landscape')}).catch(function(){});
+  });
 })();
 </script>
 </body>
