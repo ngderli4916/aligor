@@ -1,0 +1,22 @@
+--- a/partner_signup_webhook.py
++++ b/partner_signup_webhook.py
+@@ -6 +6,3 @@
+-from http.server import BaseHTTPRequestHandler, HTTPServer
++from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
++
++import two_day_signup_notice as two_day
+@@ -18 +20 @@
+-def handle(auth, secret, body, deliver):
++def handle(auth, secret, body, deliver, deliver_two_day=two_day.deliver):
+@@ -23 +25,7 @@
+-        if not isinstance(data, dict) or set(data) != {'event','leadId'} or data['event'] != EVENT:
++        if not isinstance(data, dict):
++            return 400
++        if data.get('event') == two_day.EVENT:
++            if set(data) != {'event','reference'} or not isinstance(data['reference'],str) or not two_day.REFERENCE.fullmatch(data['reference']):
++                return 400
++            return deliver_two_day(data['reference'],secret)
++        if set(data) != {'event','leadId'} or data['event'] != EVENT:
+@@ -92 +100 @@
+-    return HTTPServer((host,port),Handler)
++    return ThreadingHTTPServer((host,port),Handler)

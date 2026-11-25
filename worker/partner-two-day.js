@@ -1,6 +1,7 @@
 // Two-day course sign-up. Isolated from the personal-course CRM: only PARTNER_TWO_DAY_DB (D1) is touched.
 // Flow (Adrian 2026-11-26): fill details → see amount → submit → payment info pops up (bank + WhatsApp receipt).
 // Sign-ups are stored as pending_payment (待付款); the receipt goes to WhatsApp, not this site.
+export const PARTNER_TWO_DAY_CLASS = Object.freeze({title:'两天 AI 企业助理课程',date:'2026 年 12 月 7–8 日',dayNote:'星期一、二 · 暂定',hours:'每天 9AM - 5PM',city:'新山',venueNote:'详细地址待公布'});
 const registrationPath = '/api/2days-botsclass/registrations';
 // 2026-11-27 (Fri) 11:59PM Malaysia time (UTC+8); accepted through 23:59:59.
 export const PARTNER_TWO_DAY_DEADLINE = '2026-11-27T23:59:59.999+08:00';
@@ -33,6 +34,7 @@ export function partnerTwoDayState(env = {}, now = Date.now()) {
     // Sign-ups need fees for both options and an explicit switch.
     payable: open && feesSet && env.PARTNER_TWO_DAY_PAYMENT_OPEN === '1',
     test: env.PARTNER_TWO_DAY_TEST_MODE === '1',
+    whatsappNotices: env.PARTNER_TWO_DAY_NOTIFICATIONS === '1' && env.PARTNER_TWO_DAY_TEST_MODE !== '1',
   };
 }
 
@@ -47,7 +49,7 @@ function referenceCode() {
   return '2D-' + [...bytes].map(b => alphabet[b % alphabet.length]).join('');
 }
 
-export async function registerPartnerTwoDay(request, env, now = Date.now()) {
+export async function registerPartnerTwoDay(request, env, now = Date.now(), onSaved = () => {}) {
   const state = partnerTwoDayState(env, now);
   if (state.closed) return reply(410,{ok:false,closed:true,message:'报名已截止。'});
   if (!state.open) return reply(503,{ok:false,message:'报名暂未开放。'});
@@ -74,6 +76,7 @@ export async function registerPartnerTwoDay(request, env, now = Date.now()) {
   const labels={name:'请填写姓名（最多 100 字）。',phone:'请填写有效的马来西亚手机号码。',secondName:'第二位姓名最多 100 字。',companyName:'请填写公司开单名称（最多 160 字）。',companyAddress:'公司地址最多 300 字。'};
   const {seats,companyInvoice} = data;
   if (![1,2].includes(seats)) return bad('seats','请选择报名人数。');
+  if (state.whatsappNotices && data.whatsappConsent !== true) return bad('whatsappConsent','请确认同意接收本次课程的 WhatsApp 报名通知。');
   if (typeof companyInvoice!=='boolean') return bad('companyInvoice','请确认公司开单选项。');
   let name, phone, secondName, companyName, companyAddress;
   try {
@@ -91,18 +94,20 @@ export async function registerPartnerTwoDay(request, env, now = Date.now()) {
   // The page shows the amount it rendered; refuse if the fee changed since the page was opened.
   if (data.expectedAmount !== amount) return reply(409,{ok:false,message:'费用已更新，请重新打开页面确认金额。'});
   const pay = (reference,row) => reply(200,{ok:true,reference,status:'pending_payment',name:row.name,seats:row.seats,amount:row.amount,whatsapp:state.wa,
-    message:row.again?'这个号码已经报过名，以下是你的付款资料。':'报名资料已收到，请按以下资料转账。'});
+    message:'报名资料已收到，请按以下资料转账。'});
   const db = env.PARTNER_TWO_DAY_DB;
   try {
-    // Same number again: show the payment info of the first sign-up; do not create or change anything.
-    const existing = await db.prepare('SELECT reference,contact_name,seats,amount_rm FROM signups WHERE contact_phone = ? LIMIT 1').bind(phone).first();
-    if (existing) return pay(existing.reference,{name:existing.contact_name,seats:existing.seats,amount:existing.amount_rm,again:true});
+    // The dedicated unique phone index makes a concurrent repeat a no-op, without disclosing the original booking.
     const reference = referenceCode();
+    const createdAt = new Date(now).toISOString();
     const result = await db.prepare(
       `INSERT INTO signups (reference,contact_name,contact_phone,seats,second_name,company_invoice,company_name,company_address,amount_rm,status,created_at)
-       VALUES (?,?,?,?,?,?,?,?,?,'pending_payment',?)`
-    ).bind(reference,name,phone,seats,secondName,Number(companyInvoice),companyName,companyAddress,amount,new Date(now).toISOString()).run();
+       VALUES (?,?,?,?,?,?,?,?,?,'pending_payment',?) ON CONFLICT(contact_phone) DO NOTHING`
+    ).bind(reference,name,phone,seats,secondName,Number(companyInvoice),companyName,companyAddress,amount,createdAt).run();
     if (!result?.success) throw new Error('insert rejected');
+    if (result.meta?.changes === 0) return reply(409,{ok:false,message:'这个号码已经报过名。如需查询报名或付款资料，请联系主办方。'});
+    if (result.meta?.changes !== 1) throw new Error('insert not confirmed');
+    if (state.whatsappNotices) onSaved({reference,name,phone,seats,amount,createdAt});
     return pay(reference,{name,seats,amount});
   } catch { return reply(503,{ok:false,message:'暂时无法保存，请稍后再试。'}); }
 }
@@ -115,7 +120,7 @@ const rm = n => 'RM' + Number(n).toLocaleString('en-US');
 
 export function renderPartnerTwoDay(state) {
   if (typeof state === 'boolean') state = partnerTwoDayState({PARTNER_TWO_DAY_DB:state?{}:null,PARTNER_TWO_DAY_OPEN:'1'});
-  const {open,closed,payable,fees,feesSet,deadline,test,wa} = state;
+  const {open,closed,payable,fees,feesSet,deadline,test,wa,whatsappNotices} = state;
   const live = open && !closed;
   const feeText = n => feesSet ? rm(fees[n]) : '费用待确认';
   const bogo = feesSet && fees[2] < fees[1]*2; // two seats cost less than two singles, e.g. buy one, get one free
@@ -137,6 +142,7 @@ export function renderPartnerTwoDay(state) {
 ${feesSet?'':'<p class="note">一人和两人的收费确认后才开放报名。</p>'}
 <div class="honeypot" aria-hidden="true"><label for="website">请留空</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>
 <p class="privacy">按「报名」后会显示付款资料。你填写的资料只用于本次课程报名、联络和开单，不会公开。</p>
+${whatsappNotices?'<label class="check" for="whatsappConsent"><input id="whatsappConsent" name="whatsappConsent" type="checkbox" required>我同意通过 WhatsApp 接收本次课程的报名资料和付款指示。</label>':''}
 <button type="submit" id="submit"${payable?'':' disabled'}>${payable?'报名':'费用确认后开放报名'}</button>
 </li>
 </ol>
@@ -168,9 +174,10 @@ f.addEventListener('change',fields);fields();
 function fail(msg,field){result.dataset.error='';result.textContent=msg;const el=field&&f.elements[field];if(el?.setAttribute){el.setAttribute('aria-invalid','true');el.scrollIntoView({block:'center'});el.focus({preventScroll:true});}else result.focus();}
 f.addEventListener('submit',async e=>{e.preventDefault();if(button.disabled||!PAYABLE)return;for(const el of f.querySelectorAll('[aria-invalid]'))el.removeAttribute('aria-invalid');result.textContent='';result.removeAttribute('data-error');
 if(Date.now()>=DEADLINE){closeNow();return;}
+if(f.elements.whatsappConsent && !f.elements.whatsappConsent.checked)return fail('请确认同意接收本次课程的 WhatsApp 报名通知。','whatsappConsent');
 if(!f.elements.name.value.trim())return fail('请填写第一位学员姓名。','name');if(!f.elements.phone.value.trim())return fail('请填写联络手机号码。','phone');if(f.elements.companyInvoice.checked&&!f.elements.companyName.value.trim())return fail('请填写公司开单名称。','companyName');
 const two=f.elements.seats.value==='2',bill=f.elements.companyInvoice.checked;
-const body={name:f.elements.name.value,phone:f.elements.phone.value,seats:two?2:1,secondName:two?f.elements.secondName.value:undefined,companyInvoice:bill,companyName:bill?f.elements.companyName.value:undefined,companyAddress:bill?f.elements.companyAddress.value:undefined,expectedAmount:FEES?FEES[two?2:1]:null,website:f.elements.website.value};
+const body={name:f.elements.name.value,phone:f.elements.phone.value,seats:two?2:1,secondName:two?f.elements.secondName.value:undefined,companyInvoice:bill,companyName:bill?f.elements.companyName.value:undefined,companyAddress:bill?f.elements.companyAddress.value:undefined,expectedAmount:FEES?FEES[two?2:1]:null,website:f.elements.website.value,whatsappConsent:f.elements.whatsappConsent?.checked};
 button.disabled=true;button.textContent='正在提交…';try{const r=await fetch(f.action,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});const answer=await r.json();if(answer.closed){closeNow();return;}if(!r.ok||!answer.ok)return fail(answer.message||'暂时提交不了，请稍后再试。',answer.field);
 paid=true;const card=document.querySelector('#registration');card.querySelector('h2').textContent='付款资料';card.querySelector('.form-body').replaceChildren(payPanel(answer));
 const dlg=document.querySelector('#payDlg');dlg.querySelector('.dlg-body').replaceChildren(payPanel(answer));if(dlg.showModal)dlg.showModal();else card.scrollIntoView();}
@@ -213,7 +220,7 @@ fieldset{border:0;padding:0;margin:16px 0 0;min-width:0}.choices{display:grid;gr
 </style></head><body><a class="skip" href="#registration">跳到报名表单</a><header class="nav"><div class="nav-in bar${closed?' ended':''}" role="timer" aria-live="off"><span class="bar-l">${closed?'两天 AI 企业助理课程':'报名截止倒数'}</span><span id="cd2" class="bar-cd">${closed?'报名已截止':''}</span></div></header>
 <main><section class="hero" aria-labelledby="title"><div class="wrap" data-enter><div class="badge"><i></i><span class="tag">${closed?'报名已截止':'报名 · 银行转账'}</span></div><h1 id="title">两天 AI <span class="hl">企业助理课程</span></h1><p class="lead">可以为自己报名，也可以一起报两位。第二位还没确定？名字之后再补。</p>
 <div class="deadline${closed?' ended':''}"><p>报名截止：2026 年 11 月 27 日（星期五）11:59PM（马来西亚时间）</p><span id="countdown">${closed?'报名已截止':'计算剩余时间…'}</span></div>
-<dl class="facts"><div><dt>日期</dt><dd>2026 年 12 月 7–8 日<small>星期一、二 · 暂定</small></dd></div><div><dt>时间</dt><dd>每天 9AM - 5PM</dd></div><div><dt>地点</dt><dd>新山<small>详细地址待公布</small></dd></div><div><dt>餐饮</dt><dd>包含一顿午餐和一次茶点</dd></div></dl>
+<dl class="facts"><div><dt>日期</dt><dd>${PARTNER_TWO_DAY_CLASS.date}<small>${PARTNER_TWO_DAY_CLASS.dayNote}</small></dd></div><div><dt>时间</dt><dd>${PARTNER_TWO_DAY_CLASS.hours}</dd></div><div><dt>地点</dt><dd>${PARTNER_TWO_DAY_CLASS.city}<small>${PARTNER_TWO_DAY_CLASS.venueNote}</small></dd></div><div><dt>餐饮</dt><dd>包含一顿午餐和一次茶点</dd></div></dl>
 ${live?'<a class="btn btn-w jump" href="#registration">开始报名 ↓</a>':''}</div></section>
 <section class="sign"><div class="wrap sign-in"><div class="sign-l"><p class="eyebrow">报名流程</p><h2>四步完成报名</h2><p class="lead">填好资料按「报名」，就会看到付款资料。银行转账后，把付款凭证 WhatsApp 给我们，我们核对后确认名额。</p><ol class="flow"><li><i>01</i>填写报名资料</li><li><i>02</i>按「报名」，查看付款资料</li><li><i>03</i>银行转账</li><li><i>04</i>WhatsApp 发付款凭证</li></ol></div>
 <div id="registration" class="form-card" tabindex="-1">${test?'<p class="test">本地测试预览 · 金额和资料都是测试值，不会收款</p>':''}<h2>报名和付款</h2>
