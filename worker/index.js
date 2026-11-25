@@ -1,4 +1,4 @@
-import { partnerTwoDayPage, reservePartnerTwoDay } from './partner-two-day.js';
+import { partnerTwoDayPage, reservePartnerTwoDay, registerPartnerTwoDay } from './partner-two-day.js';
 import { STATUSES, normalizePhone, cleanText, waUrl, csvEscape, htmlEscape, parseBotCommand, MALAYSIA_STATES, HEARD_FROM_OPTIONS, REFERRAL_OPTION } from './lib.js';
 import { recordView, getStats } from './analytics.js';
 import { AI_AGENT_BATCH, buildCustomerMessage, buildLeadNotification, leadCode, parseLeadCode, redactSecrets } from './notify.js';
@@ -30,6 +30,7 @@ async function route(request, env, ctx) {
   const url = new URL(request.url), path=url.pathname;
   if (['/2days-botsclass','/2days-botsclass/'].includes(path) && ['GET','HEAD'].includes(request.method)) return partnerTwoDayPage(env,request.method);
   if (path==='/api/2days-botsclass/reservations' && request.method==='POST') return reservePartnerTwoDay(request,env);
+  if (path==='/api/2days-botsclass/registrations' && request.method==='POST') return registerPartnerTwoDay(request,env);
   if (isTeamDashboardPath(path)) return teamDashboardRoute(request,env);
   if (isPartnerCoursePath(path)) return partnerCourseRoute(request,env);
   if (request.method==='GET' && path==='/') return Response.redirect(`${url.origin}/register`,302);
