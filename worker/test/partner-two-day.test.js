@@ -5,8 +5,8 @@ import { renderPartnerTwoDay, partnerTwoDayState, registerPartnerTwoDay } from '
 
 const url='https://aligorvibe.com';
 const api='/api/2days-botsclass/registrations';
-const BEFORE=Date.parse('2026-11-27T23:59:59+08:00');
-const AFTER=Date.parse('2026-11-28T00:00:00+08:00');
+const BEFORE=Date.parse('2026-12-03T23:59:59.999+08:00');
+const AFTER=Date.parse('2026-12-04T00:00:00+08:00');
 
 function setup(extra={}){
   const inserts=[];
@@ -42,7 +42,9 @@ test('no fees or payment switch: page disables 报名 and server refuses',async(
     assert.equal((await post(env,payload)).status,503);assert.equal(inserts.length,0);
   }
 });
-test('deadline 2026-11-27 11:59PM +08: server rejects and page shows 报名已截止',async()=>{
+test('deadline 2026-12-03 11:59PM +08: server rejects and page shows 报名已截止',async()=>{
+  const boundary=setup();assert.equal((await post(boundary.env,payload,BEFORE)).status,200);assert.equal(boundary.inserts.length,1);
+  assert.match(renderPartnerTwoDay(partnerTwoDayState(boundary.env,BEFORE)),new RegExp('const DEADLINE='+AFTER+','));
   const {env,inserts}=setup();const r=await post(env,payload,AFTER);assert.equal(r.status,410);assert.equal((await r.json()).closed,true);assert.equal(inserts.length,0);
   const page=await worker.fetch(new Request(url+'/2days-botsclass/'),setup({PARTNER_TWO_DAY_DEADLINE:'2020-01-01T00:00:00+08:00'}).env);const html=await page.text();
   assert.match(html,/报名已截止/);assert.doesNotMatch(html,/<form/);assert.doesNotMatch(html,/<dialog/);
@@ -64,7 +66,7 @@ test('missing dedicated binding fails closed; old reservation endpoint retired',
 test('form has no amount tick and no upload; payment panel has bank details and WhatsApp button',()=>{
   const html=renderPartnerTwoDay(partnerTwoDayState(setup().env,BEFORE));
   assert.doesNotMatch(html,/amountConfirmed|type="file"|上传付款凭证|otherNames|secondName/);
-  for(const s of ['2026 年 12 月 7–8 日','星期一、二 · 暂定','每天 9AM - 5PM','新山','详细地址待公布','一顿午餐和一次茶点','J & J BUSINESS MANAGEMENT SERVICES','JM0632306-M','Hong Leong Bank','37900006808','RM3,000','买一送一：每 2 位只收 1 位的价钱','超过 20 位请直接 WhatsApp 我们','2026 年 11 月 27 日（星期五）11:59PM','我已付款，WhatsApp 发付款凭证','两天 AI 企业助理课程'])assert.ok(html.includes(s),s);
+  for(const s of ['2026 年 12 月 7–8 日','星期一、二 · 暂定','每天 9AM - 5PM','新山','详细地址待公布','一顿午餐和一次茶点','J & J BUSINESS MANAGEMENT SERVICES','JM0632306-M','Hong Leong Bank','37900006808','RM3,000','买一送一：每 2 位只收 1 位的价钱','超过 20 位请直接 WhatsApp 我们','2026 年 12 月 3 日（星期四）11:59PM','我已付款，WhatsApp 发付款凭证','两天 AI 企业助理课程'])assert.ok(html.includes(s),s);
   assert.doesNotMatch(html,/合作/);
   assert.ok(html.includes("const ref='#'+a.reference"));assert.ok(html.includes("报名编号：'+ref+"));
 });
