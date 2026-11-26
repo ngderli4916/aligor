@@ -7,9 +7,11 @@
 //  2. Cloudflare Access application JWT (signature, issuer, audience, expiry) + email allowlist.
 // With neither configured, or a missing/wrong key/token, no lead data is returned.
 import { AI_AGENT_BATCH, leadCode } from './notify.js';
+import { CHECKIN_EVENT } from './workshop-checkin.js';
 
 export const TEAM_DASHBOARD_PATH = '/team/ai-personal-assistant';
 export const TEAM_DASHBOARD_API = `${TEAM_DASHBOARD_PATH}/api/registrations`;
+const ATTENDANCE_API = `${TEAM_DASHBOARD_PATH}/api/attendance`;
 // Fixed on the server. No request parameter can widen or switch this filter.
 const SOURCE = 'ai-agent-registration';
 const MAX_ROWS = 2000;
@@ -37,7 +39,7 @@ export function isTeamDashboardPath(path) {
 
 export async function teamDashboardRoute(request, env) {
   const path = new URL(request.url).pathname;
-  const isApi = path === TEAM_DASHBOARD_API;
+  const isApi = path === TEAM_DASHBOARD_API || path === ATTENDANCE_API;
   const isPage = path === TEAM_DASHBOARD_PATH || path === `${TEAM_DASHBOARD_PATH}/`;
   if (!isApi && !isPage) return jsonResponse({ ok: false, error: 'Not found' }, 404);
   if (request.method !== 'GET') return jsonResponse({ ok: false, error: 'Method not allowed' }, 405);
@@ -52,7 +54,7 @@ export async function teamDashboardRoute(request, env) {
   const access = await verifyTeamAccess(request, env);
   if (!access.ok) return jsonResponse({ ok: false, error: access.message }, access.status);
   try {
-    return jsonResponse({ ok: true, ...(await listCourseRegistrations(env)) });
+    return jsonResponse({ ok: true, ...(await listCourseRegistrations(env,path===ATTENDANCE_API)) });
   } catch (error) {
     // Never log lead rows or tokens; the error class/message is enough to debug.
     console.error('team_dashboard_read_failed', String(error?.name || 'Error'));
@@ -62,11 +64,13 @@ export async function teamDashboardRoute(request, env) {
 
 // ---------- data ----------
 
-export async function listCourseRegistrations(env) {
+export async function listCourseRegistrations(env, attendance=false) {
   const where = "WHERE batch=? AND source=? AND status!='cancelled'";
   const binds = [AI_AGENT_BATCH, SOURCE];
   const total = (await env.DB.prepare(`SELECT COUNT(*) AS n FROM leads ${where}`).bind(...binds).first())?.n || 0;
-  const rows = (await env.DB.prepare(`SELECT id,name,company,industry,phone_e164,created_at FROM leads ${where} ORDER BY created_at DESC, id DESC LIMIT ${MAX_ROWS}`).bind(...binds).all()).results || [];
+  const extra=attendance?`,(SELECT e.created_at FROM lead_events e WHERE e.lead_id=leads.id AND e.event_type=? ORDER BY e.id LIMIT 1) AS checked_at,
+  (SELECT e.details FROM lead_events e WHERE e.lead_id=leads.id AND e.event_type=? ORDER BY e.id LIMIT 1) AS checkin_type`:'';
+  const rows = (await env.DB.prepare(`SELECT id,name,company,industry,phone_e164,created_at${extra} FROM leads ${where} ORDER BY created_at DESC, id DESC LIMIT ${MAX_ROWS}`).bind(...(attendance?[CHECKIN_EVENT,CHECKIN_EVENT,...binds]:binds)).all()).results || [];
   return {
     total,
     registrations: rows.map(row => ({
@@ -78,6 +82,7 @@ export async function listCourseRegistrations(env) {
       whatsapp_url: whatsappUrl(row.phone_e164),
       registered_at: String(row.created_at || ''),
       registered_at_myt: malaysiaTime(row.created_at),
+      ...(attendance?{checked_at_myt:malaysiaTime(row.checked_at),walkin:row.checkin_type==='walkin'}:{}),
     })),
     fetched_at_myt: malaysiaTime(new Date().toISOString()),
   };
@@ -233,31 +238,33 @@ footer{max-width:1100px;margin:0 auto;padding:16px;color:var(--muted);font-size:
 </style></head><body>
 <header><p class="eyebrow">团队看板 · 只读</p><h1>AI 助理｜报名名单</h1>
 <section class="summary" aria-live="polite"><p class="total"><span>有效报名</span><b id="total">—</b></p><p class="meta" id="meta">读取中…</p></section></header>
-<main><div class="tools"><input id="q" type="search" placeholder="搜索姓名或公司" aria-label="搜索姓名或公司" autocomplete="off"><button id="refresh" type="button">刷新</button></div>
+<main><nav class="tools" aria-label="看板列表"><button id="registration-tab" type="button" aria-pressed="true">报名名单</button><button id="attendance-tab" type="button" aria-pressed="false">签到列表</button></nav><div class="tools"><input id="q" type="search" placeholder="搜索姓名或公司" aria-label="搜索姓名或公司" autocomplete="off"><button id="refresh" type="button">刷新</button></div>
 <p id="notice" class="notice" role="alert"></p><p id="count" class="count"></p>
 <div id="empty" class="empty" hidden></div>
-<table id="table" hidden><thead><tr><th>报名 ID</th><th>姓名</th><th>公司</th><th>行业</th><th>联系电话</th><th>报名时间（UTC+8）</th></tr></thead><tbody id="rows"></tbody></table></main>
+<table id="table" hidden><thead><tr><th>报名 ID</th><th>姓名</th><th>公司</th><th>行业</th><th>联系电话</th><th id="time-head">报名时间（UTC+8）</th></tr></thead><tbody id="rows"></tbody></table></main>
 <footer>只显示「AI 助理」课程的有效报名（已排除取消）。名单含完整电话，请勿把本页链接转发到团队以外。</footer>
 <script>
 const $=s=>document.querySelector(s),q=$('#q'),btn=$('#refresh'),rows=$('#rows'),table=$('#table'),empty=$('#empty'),notice=$('#notice'),count=$('#count');
-let list=[],loaded=false;
+let list=[],loaded=false,attendance=false,generation=0;
 let linkKey=new URLSearchParams(location.hash.slice(1)).get('k');
 const cell=(cls,text,label)=>{const td=document.createElement('td');td.className=cls;td.textContent=text;if(label)td.dataset.label=label;return td};
 const phoneCell=r=>{const td=cell('phone',r.phone||'—','电话');if(typeof r.whatsapp_url==='string'&&r.whatsapp_url.startsWith('https://wa.me/')){const a=document.createElement('a');a.className='wa';a.href=r.whatsapp_url;a.target='_blank';a.rel='noopener noreferrer';a.textContent='WhatsApp';a.setAttribute('aria-label','WhatsApp '+r.name);td.append(a)}return td};
 function render(){
   const term=q.value.trim().toLowerCase();
   const shown=term?list.filter(r=>r.name.toLowerCase().includes(term)||r.company.toLowerCase().includes(term)):list;
-  rows.replaceChildren(...shown.map(r=>{const tr=document.createElement('tr');tr.append(cell('code',r.code),cell('name',r.name),cell('company',r.company||'—','公司'),cell('industry',r.industry||'—','行业'),phoneCell(r),cell('time',r.registered_at_myt,'报名时间'));return tr}));
+  rows.replaceChildren(...shown.map(r=>{const tr=document.createElement('tr');const info=attendance?(r.checked_at_myt?(r.walkin?'现场新报名 · ':'已签到 · ')+r.checked_at_myt:'未签到'):r.registered_at_myt;tr.append(cell('code',r.code),cell('name',r.name),cell('company',r.company||'—','公司'),cell('industry',r.industry||'—','行业'),phoneCell(r),cell('time',info,attendance?'签到状态':'报名时间'));return tr}));
   const none=loaded&&!shown.length;
   table.hidden=!shown.length;empty.hidden=!none;
   empty.textContent=list.length?'没有符合「'+q.value.trim()+'」的报名。':'目前还没有人报名。';
-  count.textContent=loaded&&list.length?(term?'找到 '+shown.length+' / '+list.length+' 笔':'共 '+list.length+' 笔，按报名时间由新到旧'):'';
+  count.textContent=loaded&&list.length?(attendance?'已签到 '+list.filter(r=>r.checked_at_myt).length+' 人 · 现场新报名 '+list.filter(r=>r.walkin).length+' 人 · 显示 '+shown.length+' / '+list.length+' 人':term?'找到 '+shown.length+' / '+list.length+' 笔':'共 '+list.length+' 笔，按报名时间由新到旧'):'';
 }
 async function load(){
+  const run=++generation;
   btn.disabled=true;btn.textContent='读取中…';notice.textContent='';notice.className='notice';
   try{
-    const res=await fetch('${TEAM_DASHBOARD_API}',{cache:'no-store',credentials:'same-origin',headers:linkKey?{accept:'application/json','${LINK_KEY_HEADER}':linkKey}:{accept:'application/json'}});
+    const res=await fetch(attendance?'${ATTENDANCE_API}':'${TEAM_DASHBOARD_API}',{cache:'no-store',credentials:'same-origin',headers:linkKey?{accept:'application/json','${LINK_KEY_HEADER}':linkKey}:{accept:'application/json'}});
     let data=null;try{data=await res.json()}catch{}
+    if(run!==generation)return;
     if(!res.ok||!data||!data.ok){
       notice.className='notice '+(res.status===401||res.status===403?'warn':'err');
       notice.textContent=(data&&data.error)||(res.status===401?'链接无效或已失效，请向 Adrian 拿最新的看板链接。':'读取失败，请稍后再按刷新。');
@@ -268,10 +275,13 @@ async function load(){
     list=data.registrations;loaded=true;
     $('#total').textContent=data.total;$('#meta').textContent='更新于 '+data.fetched_at_myt+'（马来西亚时间）';
   }catch{
+    if(run!==generation)return;
     notice.className='notice err';notice.textContent='网络连接失败，请检查网络后再按刷新。';
     $('#meta').textContent=loaded?'以下仍是上次读取的名单':'';
-  }finally{btn.disabled=false;btn.textContent='刷新';render()}
+  }finally{if(run===generation){btn.disabled=false;btn.textContent='刷新';render()}}
 }
+function selectTab(value){attendance=value;list=[];loaded=false;$('#meta').textContent='读取中…';$('#total').textContent='—';$('#attendance-tab').setAttribute('aria-pressed',String(value));$('#registration-tab').setAttribute('aria-pressed',String(!value));$('#time-head').textContent=value?'签到状态／时间（UTC+8）':'报名时间（UTC+8）';render();load();}
+$('#registration-tab').addEventListener('click',()=>selectTab(false));$('#attendance-tab').addEventListener('click',()=>selectTab(true));
 q.addEventListener('input',render);btn.addEventListener('click',load);
 addEventListener('hashchange',()=>{linkKey=new URLSearchParams(location.hash.slice(1)).get('k');list=[];loaded=false;$('#total').textContent='—';load()});load();
 </script></body></html>`;

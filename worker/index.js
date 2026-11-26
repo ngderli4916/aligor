@@ -3,6 +3,7 @@ import { partnerTwoDayPage, reservePartnerTwoDay, registerPartnerTwoDay } from '
 import { STATUSES, normalizePhone, cleanText, waUrl, csvEscape, htmlEscape, parseBotCommand, MALAYSIA_STATES, HEARD_FROM_OPTIONS, REFERRAL_OPTION } from './lib.js';
 import { recordView, getStats } from './analytics.js';
 import { AI_AGENT_BATCH, buildCustomerMessage, buildLeadNotification, leadCode, parseLeadCode, redactSecrets } from './notify.js';
+import { CHECKIN_PATH, CHECKIN_API, workshopCheckin, workshopCheckinPage } from './workshop-checkin.js';
 import { PREVIEW_SESSIONS, registerPage, loginPage, adminPage } from './ui.js';
 import { PACKAGES, promoState, currentPackages, ClassError, createRegistration, notifyClassRegistration, paymentUrl, findByToken, publicPaymentView, recordPaymentPageOpened, submitPayment, listClassRegistrations, classEvents, classCsv, adminAction, setClassNotes } from './classreg.js';
 import { classRegisterPage, paymentPage, invalidPaymentPage } from './classui.js';
@@ -29,6 +30,8 @@ export default { async fetch(request, env, ctx) {
 
 async function route(request, env, ctx) {
   const url = new URL(request.url), path=url.pathname;
+  if ([CHECKIN_PATH, CHECKIN_PATH+'/'].includes(path) && request.method==='GET') return workshopCheckinPage();
+  if (path===CHECKIN_API) return workshopCheckin(request,env);
   if (['/2days-botsclass','/2days-botsclass/'].includes(path) && ['GET','HEAD'].includes(request.method)) return partnerTwoDayPage(env,request.method);
   if (path==='/api/2days-botsclass/reservations' && request.method==='POST') return reservePartnerTwoDay(request,env);
   if (path==='/api/2days-botsclass/registrations' && request.method==='POST') {
