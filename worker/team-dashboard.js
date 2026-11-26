@@ -251,11 +251,12 @@ const cell=(cls,text,label)=>{const td=document.createElement('td');td.className
 const phoneCell=r=>{const td=cell('phone',r.phone||'—','电话');if(typeof r.whatsapp_url==='string'&&r.whatsapp_url.startsWith('https://wa.me/')){const a=document.createElement('a');a.className='wa';a.href=r.whatsapp_url;a.target='_blank';a.rel='noopener noreferrer';a.textContent='WhatsApp';a.setAttribute('aria-label','WhatsApp '+r.name);td.append(a)}return td};
 function render(){
   const term=q.value.trim().toLowerCase();
-  const shown=term?list.filter(r=>r.name.toLowerCase().includes(term)||r.company.toLowerCase().includes(term)):list;
-  rows.replaceChildren(...shown.map(r=>{const tr=document.createElement('tr');const info=attendance?(r.checked_at_myt?(r.walkin?'现场新报名 · ':'已签到 · ')+r.checked_at_myt:'未签到'):r.registered_at_myt;tr.append(cell('code',r.code),cell('name',r.name),cell('company',r.company||'—','公司'),cell('industry',r.industry||'—','行业'),phoneCell(r),cell('time',info,attendance?'签到状态':'报名时间'));return tr}));
+  const pool=attendance?list.filter(r=>r.checked_at_myt):list;
+  const shown=term?pool.filter(r=>r.name.toLowerCase().includes(term)||r.company.toLowerCase().includes(term)):pool;
+  rows.replaceChildren(...shown.map(r=>{const tr=document.createElement('tr');const info=attendance?'已签到 · '+(r.walkin?'现场新报名 · ':'')+r.checked_at_myt:r.registered_at_myt;tr.append(cell('code',r.code),cell('name',r.name),cell('company',r.company||'—','公司'),cell('industry',r.industry||'—','行业'),phoneCell(r),cell('time',info,attendance?'签到状态':'报名时间'));return tr}));
   const none=loaded&&!shown.length;
   table.hidden=!shown.length;empty.hidden=!none;
-  empty.textContent=list.length?'没有符合「'+q.value.trim()+'」的报名。':'目前还没有人报名。';
+  empty.textContent=attendance?(pool.length?'没有符合搜索条件的已签到学员。':'目前还没有学员签到。'):(list.length?'没有符合「'+q.value.trim()+'」的报名。':'目前还没有人报名。');
   count.textContent=loaded&&list.length?(attendance?'已签到 '+list.filter(r=>r.checked_at_myt).length+' 人 · 现场新报名 '+list.filter(r=>r.walkin).length+' 人 · 显示 '+shown.length+' / '+list.length+' 人':term?'找到 '+shown.length+' / '+list.length+' 笔':'共 '+list.length+' 笔，按报名时间由新到旧'):'';
 }
 async function load(){
