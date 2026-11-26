@@ -15,6 +15,9 @@ const DEFAULT_WHATSAPP = '60167871902';
 const boundary = { 'cache-control':'no-store', 'x-robots-tag':'noindex, nofollow', 'referrer-policy':'no-referrer', 'x-content-type-options':'nosniff' };
 const reply = (status, data) => Response.json(data, {status, headers:boundary});
 const available = env => Boolean(env.PARTNER_TWO_DAY_DB && env.PARTNER_TWO_DAY_OPEN === '1');
+export const PARTNER_TWO_DAY_MAX_SEATS = 20;
+// Pairs are charged at the two-seat fee, a leftover single at the one-seat fee (3000/3000 = buy one, get one free).
+export const partnerTwoDayPrice = (fees, n) => Math.floor(n/2)*fees[2] + (n%2)*fees[1];
 const parseFee = v => (typeof v === 'string' && /^[1-9]\d{0,5}$/.test(v.trim())) ? Number(v.trim()) : null;
 
 export function partnerTwoDayDeadline(env = {}) {
@@ -73,24 +76,25 @@ export async function registerPartnerTwoDay(request, env, now = Date.now(), onSa
     if (typeof v !== 'string' || v.length > max || /[\u0000-\u001f\u007f]/.test(v)) throw new Error(key);
     return v.trim();
   };
-  const labels={name:'请填写姓名（最多 100 字）。',phone:'请填写有效的马来西亚手机号码。',secondName:'第二位姓名最多 100 字。',companyName:'请填写公司开单名称（最多 160 字）。',companyAddress:'公司地址最多 300 字。'};
+  const labels={name:'请填写姓名（最多 100 字）。',phone:'请填写有效的马来西亚手机号码。',otherNames:'其他学员姓名最多 1000 字。',companyName:'请填写公司开单名称（最多 160 字）。',companyAddress:'公司地址最多 300 字。'};
   const {seats,companyInvoice} = data;
-  if (![1,2].includes(seats)) return bad('seats','请选择报名人数。');
+  if (!Number.isInteger(seats) || seats < 1 || seats > PARTNER_TWO_DAY_MAX_SEATS) return bad('seats',`报名人数请选 1 至 ${PARTNER_TWO_DAY_MAX_SEATS} 位。`);
   if (state.whatsappNotices && data.whatsappConsent !== true) return bad('whatsappConsent','请确认同意接收本次课程的 WhatsApp 报名通知。');
   if (typeof companyInvoice!=='boolean') return bad('companyInvoice','请确认公司开单选项。');
-  let name, phone, secondName, companyName, companyAddress;
+  let name, phone, otherNames, companyName, companyAddress;
   try {
     name=get('name',100); if(!name) throw new Error('name');
     const raw=get('phone',30);
     if(!/^\+?[\d ()-]+$/.test(raw)) throw new Error('phone');
     phone=raw.replace(/[^\d]/g,'').replace(/^00(?=60)/,'').replace(/^0(?=1)/,'60');
     if(!/^601[0-9]{8,9}$/.test(phone)) throw new Error('phone');
-    secondName=seats===2 ? get('secondName',100)||null : null;
+    if(seats>1&&typeof data.otherNames==='string')data.otherNames=data.otherNames.replace(/[\r\n\t]+/g,' ');
+    otherNames=seats>1 ? (get('otherNames',1000).replace(/ {2,}/g,' ')||null) : null;
     companyName=companyInvoice ? get('companyName',160) : null;
     if(companyInvoice&&!companyName) throw new Error('companyName');
     companyAddress=companyInvoice ? get('companyAddress',300)||null : null;
   } catch(e) { return bad(e.message,labels[e.message]||'请检查填写的资料。'); }
-  const amount = state.fees[seats];
+  const amount = partnerTwoDayPrice(state.fees, seats);
   // The page shows the amount it rendered; refuse if the fee changed since the page was opened.
   if (data.expectedAmount !== amount) return reply(409,{ok:false,message:'费用已更新，请重新打开页面确认金额。'});
   const pay = (reference,row) => reply(200,{ok:true,reference,status:'pending_payment',name:row.name,seats:row.seats,amount:row.amount,whatsapp:state.wa,
@@ -101,9 +105,9 @@ export async function registerPartnerTwoDay(request, env, now = Date.now(), onSa
     const reference = referenceCode();
     const createdAt = new Date(now).toISOString();
     const result = await db.prepare(
-      `INSERT INTO signups (reference,contact_name,contact_phone,seats,second_name,company_invoice,company_name,company_address,amount_rm,status,created_at)
+      `INSERT INTO signups (reference,contact_name,contact_phone,seats,other_names,company_invoice,company_name,company_address,amount_rm,status,created_at)
        VALUES (?,?,?,?,?,?,?,?,?,'pending_payment',?) ON CONFLICT(contact_phone) DO NOTHING`
-    ).bind(reference,name,phone,seats,secondName,Number(companyInvoice),companyName,companyAddress,amount,createdAt).run();
+    ).bind(reference,name,phone,seats,otherNames,Number(companyInvoice),companyName,companyAddress,amount,createdAt).run();
     if (!result?.success) throw new Error('insert rejected');
     if (result.meta?.changes === 0) return reply(409,{ok:false,message:'这个号码已经报过名。如需查询报名或付款资料，请联系主办方。'});
     if (result.meta?.changes !== 1) throw new Error('insert not confirmed');
@@ -131,14 +135,15 @@ export function renderPartnerTwoDay(state) {
 <li class="step"><h3><span class="n">1</span>填写报名资料</h3>
 <label for="name">第一位学员姓名</label><input id="name" name="name" required maxlength="100" autocomplete="name">
 <label for="phone">联络手机号码（WhatsApp）</label><input id="phone" name="phone" required type="tel" maxlength="30" autocomplete="tel" inputmode="tel" placeholder="012-345 6789">
-<fieldset><legend>报名人数</legend><div class="choices"><label><input name="seats" type="radio" value="1" checked>一位</label><label><input name="seats" type="radio" value="2">两位${bogo&&fees[2]===fees[1]?'<em class="free">送一位</em>':''}</label></div></fieldset>
-<div id="second" class="conditional" hidden><label for="secondName">第二位学员姓名 <span class="optional">可稍后补</span></label><input id="secondName" name="secondName" maxlength="100" disabled></div>
+<fieldset><legend>报名人数</legend><div class="stepper"><button type="button" class="step-btn" data-d="-1" aria-label="减少一位">−</button><label class="seat-box"><input id="seats" name="seats" type="number" inputmode="numeric" min="1" max="${PARTNER_TWO_DAY_MAX_SEATS}" value="1" aria-label="报名人数"><span>位</span></label><button type="button" class="step-btn" data-d="1" aria-label="增加一位">+</button></div>
+${bogo&&fees[2]===fees[1]?'<p class="seat-hint">买一送一：每 2 位只收 1 位的价钱。</p>':''}<p class="seat-hint">超过 ${PARTNER_TWO_DAY_MAX_SEATS} 位请直接 WhatsApp 我们。</p></fieldset>
+<div id="second" class="conditional" hidden><label for="otherNames">其他学员姓名 <span class="optional">可稍后补，一行一位</span></label><textarea id="otherNames" name="otherNames" maxlength="1000" rows="2" disabled></textarea></div>
 <label class="check" for="companyInvoice"><input id="companyInvoice" name="companyInvoice" type="checkbox">需要开单给公司</label>
 <div id="company" class="conditional" hidden><label for="companyName">公司开单名称</label><input id="companyName" name="companyName" maxlength="160" autocomplete="organization" disabled><label for="companyAddress">公司地址 <span class="optional">选填</span></label><input id="companyAddress" name="companyAddress" maxlength="300" autocomplete="street-address" disabled><p>其他公司资料，之后需要时再向你确认。</p></div>
 </li>
 <li class="step"><h3><span class="n">2</span>应付金额</h3>
-<div class="amount${feesSet?'':' pending'}"><span id="amountLabel">一位学员</span><span class="price"><s id="was" hidden>${bogo?rm(fees[1]*2):''}</s><strong id="amount">${feeText(1)}</strong></span></div>
-<p id="promo" class="promo" hidden>${bogo&&fees[2]===fees[1]?'买一送一：第二位学员免费':bogo?'两位同报优惠':''}</p>
+<div class="amount${feesSet?'':' pending'}"><span id="amountLabel">1 位学员</span><span class="price"><s id="was" hidden></s><strong id="amount">${feeText(1)}</strong></span></div>
+<p id="promo" class="promo" hidden></p>
 ${feesSet?'':'<p class="note">一人和两人的收费确认后才开放报名。</p>'}
 <div class="honeypot" aria-hidden="true"><label for="website">请留空</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>
 <p class="privacy">按「报名」后会显示付款资料。你填写的资料只用于本次课程报名、联络和开单，不会公开。</p>
@@ -154,7 +159,9 @@ ${whatsappNotices?'<label class="check" for="whatsappConsent"><input id="whatsap
 <p class="pay-step"><i>2</i>付款后，把付款凭证 WhatsApp 给我们</p><a class="wa" target="_blank" rel="noopener">我已付款，WhatsApp 发付款凭证</a>
 <p class="pay-fine">我们核对款项后，会通过 WhatsApp 确认你的名额。</p></div></template>`;
   const script = `<script>
-const DEADLINE=${deadline}, FEES=${JSON.stringify(feesSet?fees:null)}, PAYABLE=${payable};
+const DEADLINE=${deadline}, FEES=${JSON.stringify(feesSet?fees:null)}, PAYABLE=${payable}, MAX=${PARTNER_TWO_DAY_MAX_SEATS};
+const price=n=>Math.floor(n/2)*FEES[2]+(n%2)*FEES[1], money=v=>'RM'+Number(v).toLocaleString('en-US');
+const freeOf=n=>FEES&&FEES[2]<FEES[1]*2?n*FEES[1]-price(n):0;
 const pad=n=>String(n).padStart(2,'0');
 const cd=document.querySelector('#countdown'), cd2=document.querySelector('#cd2');
 let paid=false;
@@ -163,21 +170,28 @@ function closeNow(){endBar();if(paid)return;const box=document.querySelector('#r
 function tick(){const left=DEADLINE-Date.now();if(left<=0){closeNow();cd.closest('.deadline').classList.add('ended');cd.textContent='报名已截止';return;}const s=Math.floor(left/1000),d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);cd.innerHTML=cd2.innerHTML=(d?'<b>'+d+'</b> 天 ':'')+'<b>'+pad(h)+'</b> 时 <b>'+pad(m)+'</b> 分 <b>'+pad(s%60)+'</b> 秒';setTimeout(tick,1000-Date.now()%1000);}
 const f=document.querySelector('#signup');
 function copyBtns(root){root.querySelectorAll('.copy').forEach(b=>b.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(b.dataset.copy);b.textContent='已复制';setTimeout(()=>b.textContent='复制',1500);}catch{}}));}
-function payPanel(a){const n=document.querySelector('#payTpl').content.cloneNode(true);const rmT='RM'+Number(a.amount).toLocaleString('en-US');const ref='#'+a.reference;const who=a.seats===2?'两位'+(FEES&&FEES[2]<FEES[1]*2?'（买一送一）':''):'一位';
+function payPanel(a){const n=document.querySelector('#payTpl').content.cloneNode(true);const rmT='RM'+Number(a.amount).toLocaleString('en-US');const ref='#'+a.reference;const fr=FEES&&FEES[2]===FEES[1]?Math.floor(a.seats/2):0;const who=a.seats+' 位'+(fr?'（买一送一，免费 '+fr+' 位）':'');
 n.querySelectorAll('.ref').forEach(e=>e.textContent=ref);n.querySelector('.who').textContent=who;n.querySelector('.amt').textContent=rmT;n.querySelector('.pay-msg').textContent=a.message;
 const text='你好，我已完成「两天 AI 企业助理课程」的付款。\\n报名编号：'+ref+'\\n姓名：'+a.name+'\\n人数：'+who+'\\n金额：'+rmT+'\\n（附上付款凭证）';
 n.querySelector('.wa').href='https://wa.me/'+a.whatsapp+'?text='+encodeURIComponent(text);copyBtns(n);return n;}
 if(f){const result=document.querySelector('#result'), button=f.querySelector('#submit'), label=button.textContent;
-function fields(){const two=f.elements.seats.value==='2', bill=f.elements.companyInvoice.checked;document.querySelector('#second').hidden=!two;document.querySelector('#company').hidden=!bill;f.elements.secondName.disabled=!two;f.elements.companyName.disabled=!bill;f.elements.companyName.required=bill;f.elements.companyAddress.disabled=!bill;
-document.querySelector('#amountLabel').textContent=two?'两位学员合计':'一位学员';document.querySelector('#amount').textContent=FEES?'RM'+FEES[two?2:1].toLocaleString('en-US'):'费用待确认';const deal=!!FEES&&two&&FEES[2]<FEES[1]*2;document.querySelector('#was').hidden=!deal;document.querySelector('#promo').hidden=!deal;}
-f.addEventListener('change',fields);fields();
+const seatsEl=f.elements.seats;
+function seatCount(){const n=parseInt(seatsEl.value,10);return Number.isFinite(n)?Math.min(MAX,Math.max(1,n)):1;}
+function fields(){const n=seatCount(), many=n>1, bill=f.elements.companyInvoice.checked;document.querySelector('#second').hidden=!many;document.querySelector('#company').hidden=!bill;f.elements.otherNames.disabled=!many;f.elements.companyName.disabled=!bill;f.elements.companyName.required=bill;f.elements.companyAddress.disabled=!bill;
+f.querySelector('[data-d="-1"]').disabled=n<=1;f.querySelector('[data-d="1"]').disabled=n>=MAX;
+document.querySelector('#amountLabel').textContent=n+' 位学员'+(many?'合计':'');document.querySelector('#amount').textContent=FEES?money(price(n)):'费用待确认';
+const save=FEES?freeOf(n):0, fr=FEES&&FEES[2]===FEES[1]?Math.floor(n/2):0;document.querySelector('#was').hidden=!save;document.querySelector('#was').textContent=save?money(n*FEES[1]):'';
+const pr=document.querySelector('#promo');pr.hidden=!save;pr.textContent=fr?'买一送一：免费 '+fr+' 位，省 '+money(save):save?'多人同报优惠，省 '+money(save):'';}
+f.querySelectorAll('.step-btn').forEach(b=>b.addEventListener('click',()=>{seatsEl.value=Math.min(MAX,Math.max(1,seatCount()+Number(b.dataset.d)));fields();}));
+seatsEl.addEventListener('input',fields);seatsEl.addEventListener('blur',()=>{seatsEl.value=seatCount();fields();});
+f.addEventListener('input',fields);f.addEventListener('change',fields);fields();
 function fail(msg,field){result.dataset.error='';result.textContent=msg;const el=field&&f.elements[field];if(el?.setAttribute){el.setAttribute('aria-invalid','true');el.scrollIntoView({block:'center'});el.focus({preventScroll:true});}else result.focus();}
 f.addEventListener('submit',async e=>{e.preventDefault();if(button.disabled||!PAYABLE)return;for(const el of f.querySelectorAll('[aria-invalid]'))el.removeAttribute('aria-invalid');result.textContent='';result.removeAttribute('data-error');
 if(Date.now()>=DEADLINE){closeNow();return;}
 if(f.elements.whatsappConsent && !f.elements.whatsappConsent.checked)return fail('请确认同意接收本次课程的 WhatsApp 报名通知。','whatsappConsent');
 if(!f.elements.name.value.trim())return fail('请填写第一位学员姓名。','name');if(!f.elements.phone.value.trim())return fail('请填写联络手机号码。','phone');if(f.elements.companyInvoice.checked&&!f.elements.companyName.value.trim())return fail('请填写公司开单名称。','companyName');
-const two=f.elements.seats.value==='2',bill=f.elements.companyInvoice.checked;
-const body={name:f.elements.name.value,phone:f.elements.phone.value,seats:two?2:1,secondName:two?f.elements.secondName.value:undefined,companyInvoice:bill,companyName:bill?f.elements.companyName.value:undefined,companyAddress:bill?f.elements.companyAddress.value:undefined,expectedAmount:FEES?FEES[two?2:1]:null,website:f.elements.website.value,whatsappConsent:f.elements.whatsappConsent?.checked};
+const n=seatCount(),bill=f.elements.companyInvoice.checked;seatsEl.value=n;
+const body={name:f.elements.name.value,phone:f.elements.phone.value,seats:n,otherNames:n>1?f.elements.otherNames.value:undefined,companyInvoice:bill,companyName:bill?f.elements.companyName.value:undefined,companyAddress:bill?f.elements.companyAddress.value:undefined,expectedAmount:FEES?price(n):null,website:f.elements.website.value,whatsappConsent:f.elements.whatsappConsent?.checked};
 button.disabled=true;button.textContent='正在提交…';try{const r=await fetch(f.action,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});const answer=await r.json();if(answer.closed){closeNow();return;}if(!r.ok||!answer.ok)return fail(answer.message||'暂时提交不了，请稍后再试。',answer.field);
 paid=true;const card=document.querySelector('#registration');card.querySelector('h2').textContent='付款资料';card.querySelector('.form-body').replaceChildren(payPanel(answer));
 const dlg=document.querySelector('#payDlg');dlg.querySelector('.dlg-body').replaceChildren(payPanel(answer));if(dlg.showModal)dlg.showModal();else card.scrollIntoView();}
@@ -217,10 +231,10 @@ fieldset{border:0;padding:0;margin:16px 0 0;min-width:0}.choices{display:grid;gr
 [hidden]{display:none!important}[data-enter]{animation:opening .5s ease-out both}@keyframes opening{from{transform:translateY(8px);opacity:.6}to{transform:none;opacity:1}}@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
 @media(max-width:860px){.sign-in{grid-template-columns:minmax(0,1fr);gap:28px}.sign-l{position:static}.flow{display:none}.facts{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){.wrap{width:calc(100% - 32px)}.bar{padding:8px 12px;gap:8px}.bar-l{font-size:12.5px}.bar-cd{font-size:12.5px}.bar-cd b{font-size:17px;margin-left:2px}.amount{padding:14px}.price{gap:6px}.price s{font-size:15px}.amount strong{font-size:28px}.hero{padding:104px 0 64px}.menu a:not(.btn){display:none}.deadline{padding:14px 16px;margin-top:26px}#countdown b{font-size:28px}.facts{gap:8px}.facts div{padding:12px}.hero .jump{width:100%}.sign{padding:48px 0 64px}.form-card{padding:20px 18px;border-radius:22px}.sign-l .lead{font-size:15.5px}.bank{padding:2px 14px}.bank div{grid-template-columns:1fr;gap:2px;padding:10px 0}.bank dt{font-size:13px}.acct span{font-size:19px}}
-.page{padding:112px 0 80px;color:var(--cream);background:radial-gradient(70% 40% at 30% 62%,rgba(255,170,90,.55),rgba(255,122,26,0) 70%),linear-gradient(180deg,#160A05 0,#2B1308 160px,#6A260A 380px,#C2480B 560px,#E8590C 680px,#F3B98F 820px,var(--bg) 960px)}.page-in{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,480px);gap:56px;align-items:start}.info{position:sticky;top:92px;padding-top:8px}.info h1{font-size:clamp(40px,5vw,72px);letter-spacing:-.045em;line-height:1.08;margin:22px 0 0;text-shadow:0 2px 30px rgba(0,0,0,.18)}.info .lead{font-size:18px;line-height:1.7;color:rgba(255,246,239,.86);margin:16px 0 0;max-width:30em}.info .deadline{margin:26px 0 0;max-width:none;text-align:left}.info .facts{margin:12px 0 0;max-width:none;grid-template-columns:1fr 1fr}.howpay{margin:14px 0 0;padding:12px 16px;border-radius:14px;background:rgba(20,10,5,.32);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);font-size:14.5px;color:rgba(255,246,239,.86)}.page .form-card{margin-top:4px;color:var(--ink)}.info .facts div{background:rgba(26,12,5,.55);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}.info .facts dt{color:#FFC48A;font-size:13.5px}.info .facts dd{color:#FFF6EF;font-size:17px}.info .facts small{color:rgba(255,246,239,.78);font-size:13.5px}.howpay{background:rgba(26,12,5,.55)!important;color:#FFF6EF!important}.info .deadline{background:rgba(26,12,5,.55)}@media(max-width:560px){.info .facts dd{font-size:15.5px}.info .facts small{font-size:12.5px}}@media(min-width:901px){.info h1 .hl{display:block}}.info .lead{text-wrap:pretty}@media(max-width:900px){.page-in{grid-template-columns:minmax(0,1fr);gap:28px}.info{position:static}.page{background:radial-gradient(80% 30% at 50% 55%,rgba(255,170,90,.5),rgba(255,122,26,0) 70%),linear-gradient(180deg,#160A05 0,#2B1308 18%,#6A260A 38%,#C2480B 55%,#E8590C 64%,#F3B98F 74%,var(--bg) 82%)}}@media(max-width:560px){.page{padding:104px 0 56px}.info h1{font-size:clamp(34px,10vw,44px)}.info .lead{font-size:15.5px}.info .deadline{display:none}.info .facts{margin-top:20px}.howpay{font-size:13.5px}.nav{top:8px}.bar{flex-direction:column;align-items:center;justify-content:center;gap:0;padding:8px 12px 10px}.bar-l{font-size:12.5px}.bar-cd{font-size:14px}.bar-cd b{font-size:28px;margin-left:4px}}
+.page{padding:112px 0 80px;color:var(--cream);background:radial-gradient(70% 40% at 30% 62%,rgba(255,170,90,.55),rgba(255,122,26,0) 70%),linear-gradient(180deg,#160A05 0,#2B1308 160px,#6A260A 380px,#C2480B 560px,#E8590C 680px,#F3B98F 820px,var(--bg) 960px)}.page-in{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,480px);gap:56px;align-items:start}.info{position:sticky;top:92px;padding-top:8px}.info h1{font-size:clamp(40px,5vw,72px);letter-spacing:-.045em;line-height:1.08;margin:22px 0 0;text-shadow:0 2px 30px rgba(0,0,0,.18)}.info .lead{font-size:18px;line-height:1.7;color:rgba(255,246,239,.86);margin:16px 0 0;max-width:30em}.info .deadline{margin:26px 0 0;max-width:none;text-align:left}.info .facts{margin:12px 0 0;max-width:none;grid-template-columns:1fr 1fr}.howpay{margin:14px 0 0;padding:12px 16px;border-radius:14px;background:rgba(20,10,5,.32);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);font-size:14.5px;color:rgba(255,246,239,.86)}.page .form-card{margin-top:4px;color:var(--ink)}.amount{flex-wrap:wrap;row-gap:2px}.amount .price{margin-left:auto;flex-wrap:wrap;justify-content:flex-end}.stepper{display:grid;grid-template-columns:52px 1fr 52px;gap:10px;margin-top:6px}.step-btn{font:inherit;font-size:24px;font-weight:600;min-height:52px;border:0;border-radius:12px;background:#fff;color:var(--ink);box-shadow:inset 0 0 0 1px var(--field);cursor:pointer}.step-btn:not(:disabled):hover{background:#FFF3E8;box-shadow:inset 0 0 0 2px var(--orange)}.step-btn:disabled{opacity:.35;cursor:default}.seat-box{display:flex;align-items:center;justify-content:center;gap:6px;margin:0;min-height:52px;border-radius:12px;background:#FFF3E8;box-shadow:inset 0 0 0 2px var(--orange)}.seat-box input{width:3.2ch!important;min-height:0!important;padding:0!important;border:0;background:transparent!important;box-shadow:none!important;text-align:center;font:inherit;font-size:24px!important;font-weight:700;color:var(--ink);-moz-appearance:textfield}.seat-box input::-webkit-inner-spin-button,.seat-box input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}.seat-box span{font-weight:600}.seat-hint{margin:8px 0 0!important;font-size:13.5px!important;color:var(--mute)!important}.seat-hint+.seat-hint{margin-top:2px!important}textarea{font:inherit;width:100%;border:0;box-shadow:inset 0 0 0 1px var(--field);border-radius:12px;padding:10px 14px;background:#fff;color:var(--ink);resize:vertical}textarea:focus{outline:none;box-shadow:inset 0 0 0 2px var(--orange)}.info .facts div{background:rgba(26,12,5,.55);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}.info .facts dt{color:#FFC48A;font-size:13.5px}.info .facts dd{color:#FFF6EF;font-size:17px}.info .facts small{color:rgba(255,246,239,.78);font-size:13.5px}.howpay{background:rgba(26,12,5,.55)!important;color:#FFF6EF!important}.info .deadline{background:rgba(26,12,5,.55)}@media(max-width:560px){.info .facts dd{font-size:15.5px}.info .facts small{font-size:12.5px}}@media(min-width:901px){.info h1 .hl{display:block}}.info .lead{text-wrap:pretty}@media(max-width:900px){.page-in{grid-template-columns:minmax(0,1fr);gap:28px}.info{position:static}.page{background:radial-gradient(80% 30% at 50% 55%,rgba(255,170,90,.5),rgba(255,122,26,0) 70%),linear-gradient(180deg,#160A05 0,#2B1308 18%,#6A260A 38%,#C2480B 55%,#E8590C 64%,#F3B98F 74%,var(--bg) 82%)}}@media(max-width:560px){.page{padding:104px 0 56px}.info h1{font-size:clamp(34px,10vw,44px)}.info .lead{font-size:15.5px}.info .deadline{display:none}.info .facts{margin-top:20px}.howpay{font-size:13.5px}.nav{top:8px}.bar{flex-direction:column;align-items:center;justify-content:center;gap:0;padding:8px 12px 10px}.bar-l{font-size:12.5px}.bar-cd{font-size:14px}.bar-cd b{font-size:28px;margin-left:4px}}
 </style></head><body><a class="skip" href="#registration">跳到报名表单</a><header class="nav"><div class="nav-in bar${closed?' ended':''}" role="timer" aria-live="off"><span class="bar-l">${closed?'两天 AI 企业助理课程':'报名截止 · 11 月 27 日（五）11:59PM'}</span><span id="cd2" class="bar-cd">${closed?'报名已截止':''}</span></div></header>
 <main><section class="page" aria-labelledby="title"><div class="wrap page-in">
-<div class="info" data-enter><div class="badge"><i></i><span class="tag">${closed?'报名已截止':'报名 · 银行转账'}</span></div><h1 id="title">两天 AI <span class="hl">企业助理课程</span></h1><p class="lead">可以为自己报名，也可以一起报两位。第二位还没确定？名字之后再补。</p>
+<div class="info" data-enter><div class="badge"><i></i><span class="tag">${closed?'报名已截止':'报名 · 银行转账'}</span></div><h1 id="title">两天 AI <span class="hl">企业助理课程</span></h1><p class="lead">一个人或多人一起报名都可以，每 2 位只收 1 位的价钱。其他学员的名字可以之后再补。</p>
 <div class="deadline${closed?' ended':''}"><p>报名截止：2026 年 11 月 27 日（星期五）11:59PM（马来西亚时间）</p><span id="countdown">${closed?'报名已截止':'计算剩余时间…'}</span></div>
 <dl class="facts"><div><dt>日期</dt><dd>${PARTNER_TWO_DAY_CLASS.date}<small>${PARTNER_TWO_DAY_CLASS.dayNote}</small></dd></div><div><dt>时间</dt><dd>${PARTNER_TWO_DAY_CLASS.hours}</dd></div><div><dt>地点</dt><dd>${PARTNER_TWO_DAY_CLASS.city}<small>${PARTNER_TWO_DAY_CLASS.venueNote}</small></dd></div><div><dt>餐饮</dt><dd>包含一顿午餐和一次茶点</dd></div></dl>
 <p class="howpay">报名后会显示银行转账资料。付款后，把付款凭证 WhatsApp 给我们，核对后确认名额。</p></div>

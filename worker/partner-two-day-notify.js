@@ -1,7 +1,7 @@
 import { htmlEscape } from './lib.js';
 import { formatMalaysiaTime } from './notify.js';
 import { dispatchPartnerEvent } from './partner-webhook.js';
-import { PARTNER_TWO_DAY_BANK, PARTNER_TWO_DAY_CLASS, partnerTwoDayState } from './partner-two-day.js';
+import { PARTNER_TWO_DAY_BANK, PARTNER_TWO_DAY_CLASS, PARTNER_TWO_DAY_MAX_SEATS, partnerTwoDayState } from './partner-two-day.js';
 
 const EVENT = 'aligor.two-day-registration.created';
 const referencePattern = /^2D-[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$/;
@@ -51,7 +51,7 @@ export async function partnerTwoDayNoticeLookup(request,env) {
   const row = await env.PARTNER_TWO_DAY_DB.prepare(`SELECT reference,contact_name,contact_phone,seats,amount_rm,created_at
     FROM signups WHERE reference=? AND status='pending_payment'`).bind(body.reference).first();
   if (!row) return response(404,{ok:false});
-  if (!phonePattern.test(row.contact_phone) || !Number.isSafeInteger(row.amount_rm) || row.amount_rm<1 || ![1,2].includes(row.seats) || !Number.isFinite(Date.parse(row.created_at))) return response(503,{ok:false});
+  if (!phonePattern.test(row.contact_phone) || !Number.isSafeInteger(row.amount_rm) || row.amount_rm<1 || !(Number.isInteger(row.seats)&&row.seats>=1&&row.seats<=PARTNER_TWO_DAY_MAX_SEATS) || !Number.isFinite(Date.parse(row.created_at))) return response(503,{ok:false});
   const c=PARTNER_TWO_DAY_CLASS, b=PARTNER_TWO_DAY_BANK;
   const customer = [
     `你好 ${row.contact_name}，我们已收到你「${c.title}」的报名，目前待付款。`, '',

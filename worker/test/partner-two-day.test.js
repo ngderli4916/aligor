@@ -50,7 +50,7 @@ test('deadline 2026-11-27 11:59PM +08: server rejects and page shows 报名已�
 test('rejects stale amount, invalid fields, cross-origin, oversized body',async()=>{
   const {env,inserts}=setup();
   assert.equal((await post(env,{...payload,expectedAmount:6000})).status,409);
-  for(const bad of [{companyName:''},{phone:'not a phone'},{name:''},{seats:3},{companyInvoice:'yes'}])assert.equal((await post(env,{...payload,...bad})).status,422);
+  for(const bad of [{companyName:''},{phone:'not a phone'},{name:''},{seats:21},{companyInvoice:'yes'}])assert.equal((await post(env,{...payload,...bad})).status,422);
   assert.equal((await post(env,payload,BEFORE,'https://example.invalid')).status,403);
   assert.equal((await post(env,{...payload,garbage:'a'.repeat(5000)})).status,413);
   assert.equal(inserts.length,0);
@@ -64,7 +64,7 @@ test('missing dedicated binding fails closed; old reservation endpoint retired',
 test('form has no amount tick and no upload; payment panel has bank details and WhatsApp button',()=>{
   const html=renderPartnerTwoDay(partnerTwoDayState(setup().env,BEFORE));
   assert.doesNotMatch(html,/amountConfirmed|type="file"|上传付款凭证/);
-  for(const s of ['2026 年 12 月 7–8 日','星期一、二 · 暂定','每天 9AM - 5PM','新山','详细地址待公布','一顿午餐和一次茶点','J & J BUSINESS MANAGEMENT SERVICES','JM0632306-M','Hong Leong Bank','37900006808','RM3,000','RM6,000','买一送一：第二位学员免费','送一位','2026 年 11 月 27 日（星期五）11:59PM','我已付款，WhatsApp 发付款凭证','两天 AI 企业助理课程'])assert.ok(html.includes(s),s);
+  for(const s of ['2026 年 12 月 7–8 日','星期一、二 · 暂定','每天 9AM - 5PM','新山','详细地址待公布','一顿午餐和一次茶点','J & J BUSINESS MANAGEMENT SERVICES','JM0632306-M','Hong Leong Bank','37900006808','RM3,000','买一送一：每 2 位只收 1 位的价钱','超过 20 位请直接 WhatsApp 我们','2026 年 11 月 27 日（星期五）11:59PM','我已付款，WhatsApp 发付款凭证','两天 AI 企业助理课程'])assert.ok(html.includes(s),s);
   assert.doesNotMatch(html,/合作/);
   assert.ok(html.includes("const ref='#'+a.reference"));assert.ok(html.includes("报名编号：'+ref+"));
 });
@@ -98,4 +98,13 @@ test('notification lookup is bearer-gated, isolated and uses the exact course pa
   assert.ok(data.customer.includes(`转账备注请写 #${first.reference}`));
   assert.match(data.partner,/2 位/);assert.doesNotMatch(data.partner,/60100000148|37900006808|Test Company/);
   env.PARTNER_TWO_DAY_TEST_MODE='1';assert.equal((await lookup(first.reference,secret)).status,404);
+});
+
+test('more seats: price = pairs at two-seat fee + leftover single (4→RM6,000, 5→RM9,000, 20→RM30,000)',async()=>{
+  for(const [n,amt] of [[3,6000],[4,6000],[5,9000],[6,9000],[20,30000]]){
+    const {env,inserts}=setup();const r=await post(env,{...payload,phone:'01000001'+String(n).padStart(2,'0'),seats:n,otherNames:'A\nB',expectedAmount:amt});const a=await r.json();
+    assert.equal(r.status,200,String(n));assert.equal(a.amount,amt);assert.equal(a.seats,n);assert.equal(inserts[0][3],n);assert.equal(inserts[0][4],'A B');assert.equal(inserts[0][8],amt);
+  }
+  const {env}=setup();assert.equal((await post(env,{...payload,seats:4,expectedAmount:12000})).status,409);
+  for(const bad of [0,21,2.5,'4'])assert.equal((await post(env,{...payload,seats:bad})).status,422,String(bad));
 });
