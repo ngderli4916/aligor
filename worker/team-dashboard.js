@@ -6,12 +6,13 @@
 //     TEAM_DASHBOARD_LINK_KEY secret. Rotating that secret revokes the old link.
 //  2. Cloudflare Access application JWT (signature, issuer, audience, expiry) + email allowlist.
 // With neither configured, or a missing/wrong key/token, no lead data is returned.
-import { AI_AGENT_BATCH, leadCode } from './notify.js';
-import { CHECKIN_EVENT } from './workshop-checkin.js';
+import { AI_AGENT_BATCH, leadCode, parseLeadCode } from './notify.js';
+import { CHECKIN_EVENT, issueWorkshopReceipt } from './workshop-checkin.js';
 
 export const TEAM_DASHBOARD_PATH = '/team/ai-personal-assistant';
 export const TEAM_DASHBOARD_API = `${TEAM_DASHBOARD_PATH}/api/registrations`;
 const ATTENDANCE_API = `${TEAM_DASHBOARD_PATH}/api/attendance`;
+const RECEIPT_API = `${TEAM_DASHBOARD_PATH}/api/receipt-code`;
 // Fixed on the server. No request parameter can widen or switch this filter.
 const SOURCE = 'ai-agent-registration';
 const MAX_ROWS = 2000;
@@ -37,8 +38,18 @@ export function isTeamDashboardPath(path) {
   return path === TEAM_DASHBOARD_PATH || path.startsWith(`${TEAM_DASHBOARD_PATH}/`);
 }
 
-export async function teamDashboardRoute(request, env) {
-  const path = new URL(request.url).pathname;
+export async function teamDashboardRoute(request, env, now=Date.now()) {
+  const url = new URL(request.url), path = url.pathname;
+  if (path === RECEIPT_API) {
+    if (request.method !== 'POST') return jsonResponse({ok:false,error:'Method not allowed'},405);
+    if (request.headers.get('origin') !== url.origin) return jsonResponse({ok:false,error:'请从团队看板操作。'},403);
+    const access = await verifyTeamAccess(request, env);
+    if (!access.ok) return jsonResponse({ok:false,error:access.message},access.status);
+    try {
+      const code=await issueWorkshopReceipt(env,parseLeadCode(url.searchParams.get('registration')),now);
+      return code?jsonResponse({ok:true,code}):jsonResponse({ok:false,error:'无法签发确认码，请检查签到记录及开放时间。'},409);
+    } catch { return jsonResponse({ok:false,error:'暂时无法签发确认码，请重试。'},500); }
+  }
   const isApi = path === TEAM_DASHBOARD_API || path === ATTENDANCE_API;
   const isPage = path === TEAM_DASHBOARD_PATH || path === `${TEAM_DASHBOARD_PATH}/`;
   if (!isApi && !isPage) return jsonResponse({ ok: false, error: 'Not found' }, 404);
@@ -249,11 +260,19 @@ let list=[],loaded=false,attendance=false,generation=0;
 let linkKey=new URLSearchParams(location.hash.slice(1)).get('k');
 const cell=(cls,text,label)=>{const td=document.createElement('td');td.className=cls;td.textContent=text;if(label)td.dataset.label=label;return td};
 const phoneCell=r=>{const td=cell('phone',r.phone||'—','电话');if(typeof r.whatsapp_url==='string'&&r.whatsapp_url.startsWith('https://wa.me/')){const a=document.createElement('a');a.className='wa';a.href=r.whatsapp_url;a.target='_blank';a.rel='noopener noreferrer';a.textContent='WhatsApp';a.setAttribute('aria-label','WhatsApp '+r.name);td.append(a)}return td};
+function receiptButton(row, td){
+  const b=document.createElement('button'), result=document.createElement('div'); b.type='button'; b.textContent='核对后生成确认码'; result.setAttribute('aria-live','polite');td.append(document.createElement('br'),b,result);
+  b.addEventListener('click',async()=>{if(!window.confirm('确认已在现场核对 '+row.name+' 本人的资料？'))return; b.disabled=true;result.textContent='';try{
+    const res=await fetch('${RECEIPT_API}?registration='+encodeURIComponent(row.code),{method:'POST',cache:'no-store',credentials:'same-origin',headers:linkKey?{'${LINK_KEY_HEADER}':linkKey}:{}});
+    const data=await res.json();if(!res.ok||!data.ok){result.textContent=data.error||'无法签发确认码。';return;}
+    result.textContent=data.code+'（请只给本人，有效期约 5 分钟）';
+  }catch{result.textContent='网络连接失败，请重试。';}finally{b.disabled=false;}});
+}
 function render(){
   const term=q.value.trim().toLowerCase();
   const pool=attendance?list.filter(r=>r.checked_at_myt):list;
   const shown=term?pool.filter(r=>r.name.toLowerCase().includes(term)||r.company.toLowerCase().includes(term)):pool;
-  rows.replaceChildren(...shown.map(r=>{const tr=document.createElement('tr');const info=attendance?'已签到 · '+(r.walkin?'现场新报名 · ':'')+r.checked_at_myt:r.registered_at_myt;tr.append(cell('code',r.code),cell('name',r.name),cell('company',r.company||'—','公司'),cell('industry',r.industry||'—','行业'),phoneCell(r),cell('time',info,attendance?'签到状态':'报名时间'));return tr}));
+  rows.replaceChildren(...shown.map(r=>{const tr=document.createElement('tr');const info=attendance?'已签到 · '+(r.walkin?'现场新报名 · ':'')+r.checked_at_myt:r.registered_at_myt;const status=cell('time',info,attendance?'签到状态':'报名时间');if(attendance)receiptButton(r,status);tr.append(cell('code',r.code),cell('name',r.name),cell('company',r.company||'—','公司'),cell('industry',r.industry||'—','行业'),phoneCell(r),status);return tr}));
   const none=loaded&&!shown.length;
   table.hidden=!shown.length;empty.hidden=!none;
   empty.textContent=attendance?(pool.length?'没有符合搜索条件的已签到学员。':'目前还没有学员签到。'):(list.length?'没有符合「'+q.value.trim()+'」的报名。':'目前还没有人报名。');

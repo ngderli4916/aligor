@@ -26,11 +26,24 @@ test('workshop checkout: auth, attendance, duplicate, cancelled, walk-in over ca
   assert.equal((await send({action:'checkin',phone:'0123457777'})).status,409);
   assert.equal((await (await send({action:'checkin',phone:'0123456666'})).json()).state,'walkin_required');
   const walker={action:'walkin',phone:'0123459999',name:'Walk-in',company:'Walk-in Co'};
-  assert.equal((await send(walker)).status,201);assert.equal((await send(walker)).status,200);
+  const walk=await send(walker);assert.equal(walk.status,201);assert.deepEqual((await walk.json()).receipt,{name:'Walk-in',company:'Walk-in Co',industry:'',checked_at:new Date(now).toISOString()});
+  assert.equal((await send(walker)).status,200);
   assert.equal((await send(existing,qkey,Date.parse('2026-11-26T17:00:00+08:00'))).status,410);
   const path=origin+TEAM_DASHBOARD_PATH+'/api/attendance';
   assert.equal((await teamDashboardRoute(new Request(path),env)).status,401);
   const detail=await(await teamDashboardRoute(new Request(path,{headers:{'x-team-link-key':tkey}}),env)).json();
   assert.equal(detail.total,21);assert.equal(detail.registrations.filter(r=>r.checked_at_myt).length,2);assert.equal(detail.registrations.find(r=>r.walkin).company,'Walk-in Co');
+  const issue=(id,key=tkey,issuerOrigin=origin)=>teamDashboardRoute(new Request(origin+TEAM_DASHBOARD_PATH+'/api/receipt-code?registration='+id,{method:'POST',headers:{origin:issuerOrigin,'x-team-link-key':key}}),env,now);
+  assert.equal((await issue(1,qkey)).status,401);
+  assert.equal((await issue(1,tkey,'https://other.test')).status,403);
+  assert.equal((await issue(2)).status,409);
+  const issued=await issue(1);assert.equal(issued.status,200);assert.match(issued.headers.get('cache-control'),/no-store/);
+  const {code}=await issued.json();
+  const proof={action:'receipt',phone:'0123450000',code};
+  const confirmed=await send(proof);assert.equal(confirmed.status,200);assert.match(confirmed.headers.get('cache-control'),/no-store/);
+  assert.deepEqual((await confirmed.json()).receipt,{name:'Test Learner',company:'Private Co',industry:'',checked_at:new Date(now).toISOString()});
+  for(const denied of [await send({...proof,phone:walker.phone}),await send({...proof,code:''}),await send(proof,qkey,now+300000),await send(proof,tkey)]){
+    assert.equal(denied.status,403);assert.equal((await denied.json()).receipt,undefined);
+  }
   assert.equal(sqlite.prepare('SELECT count(*) AS n FROM lead_events WHERE event_type=?').get(CHECKIN_EVENT).n,2); sqlite.close();
 });
