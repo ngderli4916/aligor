@@ -33,17 +33,9 @@ test('workshop checkout: auth, attendance, duplicate, cancelled, walk-in over ca
   assert.equal((await teamDashboardRoute(new Request(path),env)).status,401);
   const detail=await(await teamDashboardRoute(new Request(path,{headers:{'x-team-link-key':tkey}}),env)).json();
   assert.equal(detail.total,21);assert.equal(detail.registrations.filter(r=>r.checked_at_myt).length,2);assert.equal(detail.registrations.find(r=>r.walkin).company,'Walk-in Co');
-  const issue=(id,key=tkey,issuerOrigin=origin)=>teamDashboardRoute(new Request(origin+TEAM_DASHBOARD_PATH+'/api/receipt-code?registration='+id,{method:'POST',headers:{origin:issuerOrigin,'x-team-link-key':key}}),env,now);
-  assert.equal((await issue(1,qkey)).status,401);
-  assert.equal((await issue(1,tkey,'https://other.test')).status,403);
-  assert.equal((await issue(2)).status,409);
-  const issued=await issue(1);assert.equal(issued.status,200);assert.match(issued.headers.get('cache-control'),/no-store/);
-  const {code}=await issued.json();
-  const proof={action:'receipt',phone:'0123450000',code};
-  const confirmed=await send(proof);assert.equal(confirmed.status,200);assert.match(confirmed.headers.get('cache-control'),/no-store/);
-  assert.deepEqual((await confirmed.json()).receipt,{name:'Test Learner',company:'Private Co',industry:'',checked_at:new Date(now).toISOString()});
-  for(const denied of [await send({...proof,phone:walker.phone}),await send({...proof,code:''}),await send(proof,qkey,now+300000),await send(proof,tkey)]){
-    assert.equal(denied.status,403);assert.equal((await denied.json()).receipt,undefined);
-  }
+  const oldStaffRoute=await teamDashboardRoute(new Request(origin+TEAM_DASHBOARD_PATH+'/api/receipt-code',{method:'POST',headers:{origin,'x-team-link-key':tkey}}),env);
+  assert.equal(oldStaffRoute.status,404);
+  const oldLearnerAction=await send({action:'receipt',phone:existing.phone,code:'obsolete'});
+  assert.equal(oldLearnerAction.status,422);assert.equal((await oldLearnerAction.json()).receipt,undefined);
   assert.equal(sqlite.prepare('SELECT count(*) AS n FROM lead_events WHERE event_type=?').get(CHECKIN_EVENT).n,2); sqlite.close();
 });
