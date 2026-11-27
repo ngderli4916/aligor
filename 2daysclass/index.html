@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>
-/* Phones: landscape only. Portrait shows a rotate screen; landscape lays the page out as a small desktop. */
+/* Phones: portrait gets the normal phone layout; landscape lays the page out as a small desktop. */
 (function(){
   var d=document.documentElement, mq=matchMedia('(orientation: landscape)');
   var phone=matchMedia('(pointer: coarse)').matches && Math.min(screen.width,screen.height)<=600;
@@ -95,16 +95,7 @@
   .pr-cta{padding-top:14px;gap:10px}.pr-cta .btn{width:100%;padding:14px}
 }
 
-/* PHONE: landscape only */
-.rot{display:none}
-html.ph-port .rot{display:flex;position:fixed;inset:0;z-index:999;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:32px;text-align:center;background:radial-gradient(80% 60% at 50% 45%,#33170A,#0B0604);color:#fff}
-html.ph-port,html.ph-port body{overflow:hidden;height:100%}
-.rot-ph{width:64px;height:110px;border:4px solid #fff;border-radius:14px;position:relative;animation:rotPh 2.4s cubic-bezier(.6,0,.3,1) infinite}
-.rot-ph::after{content:"";position:absolute;left:50%;bottom:7px;width:16px;height:4px;margin-left:-8px;border-radius:4px;background:#fff}
-@keyframes rotPh{0%,20%{transform:rotate(0)}50%,80%{transform:rotate(-90deg)}100%{transform:rotate(0)}}
-.rot b{font-size:26px;letter-spacing:-.03em}
-.rot p{margin:0;font-size:15px;line-height:1.6;color:rgba(255,255,255,.72)}
-.rot button{margin-top:4px;border:0;border-radius:12px;padding:13px 22px;font:inherit;font-weight:700;font-size:16px;background:var(--orange);color:#fff}
+/* PHONE: portrait uses the normal phone layout; landscape lays the page out as a small desktop */
 html.ph-land .nav{display:none}
 html.ph-land{scroll-snap-type:y proximity}
 html.ph-land main>section,html.ph-land main>header,html.ph-land .hero{scroll-snap-align:start}
@@ -419,6 +410,7 @@ section{padding:120px 0}
 .foot-col a:hover{color:#FFB36B}
 .foot-copy{font-size:13px;color:rgba(255,246,239,.4);padding-bottom:20px}
 .foot-mark{position:relative;height:clamp(120px,17vw,260px);overflow:hidden}
+@media(max-width:760px){.foot-mark{height:30vw}.foot-mark span{font-size:22vw!important}}
 .foot-glow{position:absolute;left:50%;bottom:-40%;width:120%;height:140%;transform:translateX(-50%);background:radial-gradient(50% 50% at 50% 100%,#FF7A1A,rgba(232,80,14,.55) 45%,rgba(20,10,5,0) 75%)}
 .foot-mark span{position:absolute;left:50%;top:6%;transform:translateX(-50%);font-size:clamp(130px,26vw,400px);font-weight:700;letter-spacing:-.06em;line-height:.9;color:#FFF6EF;white-space:nowrap}
 @media(max-width:760px){.foot-cols{grid-template-columns:1fr 1fr}.foot-brand{grid-column:1/-1}.site-foot{padding-bottom:84px}.foot-btn{font-size:16.5px}}
@@ -762,13 +754,6 @@ main h1,main h2,main h3,footer h2{text-wrap:balance;line-break:strict}
 <noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=1697028392130040&ev=PageView&noscript=1"></noscript>
 </head>
 <body>
-<div class="rot" role="dialog" aria-label="请把手机打横观看">
-  <div class="rot-ph" aria-hidden="true"></div>
-  <b>请把手机打横观看</b>
-  <p>这个页面是为横屏设计的，<br>打横之后，画面会完整显示。</p>
-  <button type="button" id="rotBtn" hidden>打横观看</button>
-</div>
-
 <nav class="nav" id="nav">
   <div class="nav-in">
     <a class="brand" href="#top"><span>两天 AI 助理课程</span></a>
@@ -1006,8 +991,9 @@ main h1,main h2,main h3,footer h2{text-wrap:balance;line-break:strict}
   function put(el,a){el.style.left=a[0]+'px';el.style.top=a[1]+'px';if(a[2])el.style.width=a[2]+'px';if(a[3])el.style.height=a[3]+'px'}
   function layout(){
     var W=stage.clientWidth,H=stage.clientHeight; mob=W<761; L=mob?LM:LD;
-    S=Math.min(W/L.VW,H/L.VH); root.style.width=L.VW+'px'; root.style.height=L.VH+'px';
-    root.style.transform='translate('+((W-L.VW*S)/2)+'px,'+((H-L.VH*S)/2)+'px) scale('+S+')';
+    var top0=mob?64:0, H2=H-top0;                                        // phones: start the scene under the fixed nav
+    S=Math.min(W/L.VW,H2/L.VH); root.style.width=L.VW+'px'; root.style.height=L.VH+'px';
+    root.style.transform='translate('+((W-L.VW*S)/2)+'px,'+(top0+(H2-L.VH*S)/2)+'px) scale('+S+')';
     var T=Q('[data-l=title]'); T.style.top=L.title[1]+'px'; T.style.fontSize=L.tfs+'px';
     Q('[data-t=t1]').innerHTML=mob?'AI<br><span class="o">AUTO-<br>MATION</span>':'AI <span class="o">AUTOMATION</span>'; if(mob) T.style.top=(L.title[1]-120)+'px';
     var s=Q('[data-l=sub]'); s.style.top=L.sub[1]+'px'; s.style.fontSize=(mob?18:22)+'px'; s.style.padding='0 16px';
@@ -1183,6 +1169,9 @@ main h1,main h2,main h3,footer h2{text-wrap:balance;line-break:strict}
 .sb-hero small::before,.sb-step small::before{content:"";width:14px;height:14px;border-radius:4px;background:linear-gradient(135deg,var(--orange2),var(--orange));box-shadow:inset 0 0 0 3px rgba(255,255,255,.35)}
 .sb-hero small{justify-content:center}
 .sb-hero h2{margin:14px 0 0;font-size:clamp(40px,7vw,104px);line-height:1.04;letter-spacing:-.045em;color:#fff}
+.sb-hero h2 em{white-space:nowrap}
+.sb-mbr{display:none}
+@media(max-width:760px){.sb-mbr{display:inline}}
 .sb-hero h2 em,.sb-step h3 em{font-style:normal;background:linear-gradient(90deg,#FFD9B8,#FFB37A 40%,#FF7A1A 75%,#E8590C);-webkit-background-clip:text;background-clip:text;color:transparent}
 .sb-hero p{margin:18px auto 0;max-width:620px;font-size:clamp(15px,1.5vw,19px);color:rgba(255,255,255,.72)}
 .sb-copy{position:absolute;left:clamp(20px,5vw,80px);top:50%;width:min(470px,36vw);transform:translateY(-50%);z-index:3;pointer-events:none}
@@ -1206,7 +1195,7 @@ main h1,main h2,main h3,footer h2{text-wrap:balance;line-break:strict}
   .sb-copy{left:20px;right:20px;width:auto;top:104px;transform:none}
   .sb-step{transform:none}
   .sb-step h3{font-size:27px}.sb-step p{font-size:13.5px;margin-top:8px;line-height:1.6}
-  .sb-count{top:auto;bottom:18px;right:22px}
+  .sb-count{top:74px;bottom:auto;right:20px}
   .sb-ask{bottom:78px}
   .sb-end{bottom:22px}
 }
@@ -1226,7 +1215,7 @@ main h1,main h2,main h3,footer h2{text-wrap:balance;line-break:strict}
 
     <div class="sb-hero">
       <small>两天课会教你</small>
-      <h2>建立你的<em>第二大脑</em>，<br>公司资料库。</h2>
+      <h2>建立你的<br class="sb-mbr"><em>第二大脑</em>，<br>公司资料库。</h2>
       <p>公司里每一样东西，都记得住、找得到、连得起来。</p>
     </div>
 
@@ -1398,7 +1387,7 @@ main h1,main h2,main h3,footer h2{text-wrap:balance;line-break:strict}
 <style>
 .acc{position:relative;height:560vh;background:#0B0604;color:#fff}
 .acc-stage{position:sticky;top:0;height:100vh;height:100dvh;overflow:hidden;background:radial-gradient(120% 90% at 50% 55%,#2A140A 0%,#120905 55%,#0B0604 100%)}
-.acc-docs{position:absolute;inset:0;perspective:900px}
+.acc-docs{position:absolute;inset:0;perspective:900px;z-index:1}
 .acc-doc{position:absolute;left:50%;top:50%;width:var(--dw);aspect-ratio:3/4;margin:calc(var(--dw)*-.667) 0 0 calc(var(--dw)*-.5);border-radius:6px;background:#FBF7F1;box-shadow:0 10px 30px rgba(0,0,0,.45);padding:calc(var(--dw)*.1) calc(var(--dw)*.1) 0;overflow:hidden;will-change:transform,opacity}
 .acc-doc i{display:block;height:calc(var(--dw)*.045);border-radius:3px;background:rgba(26,14,8,.12);margin:0 0 calc(var(--dw)*.07)}
 .acc-doc i:nth-child(odd){width:78%}
@@ -1412,11 +1401,12 @@ main h1,main h2,main h3,footer h2{text-wrap:balance;line-break:strict}
 .acc-ring{position:absolute;left:50%;top:50%;border-radius:50%;border:1.5px dashed rgba(255,168,100,.45);opacity:0;will-change:transform,opacity}
 .acc-ring.r1{width:32vmin;height:32vmin;margin:-16vmin 0 0 -16vmin}
 .acc-ring.r2{width:46vmin;height:46vmin;margin:-23vmin 0 0 -23vmin;border-style:dotted;border-color:rgba(255,200,150,.3)}
-.acc-txt{position:absolute;z-index:3;left:0;right:0;text-align:center;padding:0 20px;pointer-events:none;will-change:opacity,transform}
+.acc-txt{position:absolute;z-index:6;left:0;right:0;text-align:center;padding:0 20px;pointer-events:none;will-change:opacity,transform}
 .acc-pain{top:0;padding:13vh 20px 60px;background:radial-gradient(ellipse 46% 48% at 50% 48%,rgba(11,6,4,.94) 45%,rgba(11,6,4,0) 100%)}
 .acc-pain .eyebrow{color:#FF9A4D}
 .acc-pain h2{color:#fff;margin:0}
 .acc-pain p{margin:12px auto 0;max-width:640px;color:rgba(255,255,255,.72);font-size:clamp(15px,1.5vw,18px)}
+.acc-pain h2,.acc-pain p{text-shadow:0 2px 14px rgba(11,6,4,.9),0 0 3px rgba(11,6,4,.8)}
 .acc-chips{position:absolute;z-index:3;left:0;right:0;bottom:7vh;display:flex;flex-wrap:wrap;justify-content:center;gap:10px;padding:0 16px}
 .acc-chips span{background:rgba(26,13,7,.72);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-radius:999px;padding:9px 18px;font-size:clamp(13px,1.3vw,16px);font-weight:600;opacity:0;will-change:opacity,transform}
 .acc-ai{top:auto;bottom:9vh}
@@ -2180,17 +2170,6 @@ main h1,main h2,main h3,footer h2{text-wrap:balance;line-break:strict}
   }
   function req(){if(!ticking){ticking=true;requestAnimationFrame(upd)}}
   addEventListener('scroll',req,{passive:true});addEventListener('resize',req);upd();
-})();
-</script>
-<script>
-(function(){
-  var b=document.getElementById('rotBtn'); if(!b) return;
-  var can=document.documentElement.requestFullscreen && screen.orientation && screen.orientation.lock;
-  if(!can) return;
-  b.hidden=false;
-  b.addEventListener('click',function(){
-    document.documentElement.requestFullscreen().then(function(){return screen.orientation.lock('landscape')}).catch(function(){});
-  });
 })();
 </script>
 </body>
