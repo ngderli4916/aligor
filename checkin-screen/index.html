@@ -24,6 +24,8 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.12;mi
 
 /* left: today's class */
 .info{align-self:stretch;display:flex;flex-direction:column;justify-content:center;gap:clamp(14px,2.4vh,26px);padding-right:clamp(16px,2.4vw,40px);border-right:1px solid rgba(255,246,239,.14)}
+.brandmark{display:flex;align-items:center;gap:12px;font-weight:700;font-size:clamp(18px,1.6vw,24px);letter-spacing:-.02em}
+.brandmark img{height:clamp(26px,2.4vw,36px);width:auto}
 .badge{display:inline-flex;align-self:flex-start;align-items:center;gap:9px;padding:5px 14px 5px 6px;border-radius:999px;background:rgba(255,255,255,.07);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);font-size:clamp(13px,1.1vw,16px);color:rgba(255,246,239,.88)}
 .badge i{width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#FFB36B,var(--orange));display:grid;place-items:center}
 .badge i::after{content:"";width:7px;height:7px;border-radius:50%;background:#fff;animation:dot 2s ease-out infinite}
@@ -64,6 +66,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.12;mi
 <body>
 <main class="screen">
   <section class="info" aria-label="今天的课">
+    <div class="brandmark"><img src="/assets/brand/mayan-mark-white.svg" alt="MAYAN Labs 标志"><span>MAYAN Labs</span></div>
     <div class="badge"><i></i>今天的课</div>
     <div class="topic">
       <small>Codex + Hermes 实作课</small>
