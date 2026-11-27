@@ -157,6 +157,10 @@ section{padding:120px 0}
   padding-bottom:0}
 .hero::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.12;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E");mix-blend-mode:overlay}
 .hero > *{position:relative;z-index:1}
+/* faint MAYAN M behind the headline, like the share card */
+.hero > .hero-wm{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.hero-wm svg{position:absolute;right:-3vw;top:70px;width:min(700px,50vw);height:auto;color:rgba(255,246,239,.065)}
+@media(max-width:760px){.hero-wm svg{right:-14vw;top:96px;width:92vw;color:rgba(255,246,239,.07)}}
 .badge{display:inline-flex;align-items:center;gap:9px;padding:5px 14px 5px 6px;border-radius:999px;background:rgba(255,255,255,.07);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);font-size:14px;color:rgba(255,246,239,.88)}
 .badge i{width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#FFB36B,var(--orange));display:grid;place-items:center}
 .badge i::after{content:"";width:7px;height:7px;border-radius:50%;background:#fff;animation:dot 2s ease-out infinite}
@@ -771,6 +775,7 @@ main h1,main h2,main h3,footer h2{text-wrap:balance;line-break:strict}
 <main id="top">
 <!-- HERO -->
 <header class="hero">
+  <div class="hero-wm" aria-hidden="true"><svg viewBox="0 0 552 420" fill="currentColor"><path d="M0 23L238 218L184 292L94 217L94 420L0 420ZM426 0L552 0L245 420L118 420ZM539 68L539 420L427 420L427 212Z"/></svg></div>
   <div class="wrap">
     <div class="badge"><i></i>零基础 · 两天实战 · 六个成果</div>
     <h1>两天，打造<br>你公司的 <span class="hl">AI 助理</span></h1>
