@@ -1,3 +1,4 @@
+import { ONLINE_PATH, ONLINE_API, onlineClassPage, verifyOnlineClass, onlineClassCsv } from './online-class.js';
 import { notifyPartnerTwoDay, partnerTwoDayNoticeLookup } from './partner-two-day-notify.js';
 import { partnerTwoDayPage, reservePartnerTwoDay, registerPartnerTwoDay } from './partner-two-day.js';
 import { STATUSES, normalizePhone, cleanText, waUrl, csvEscape, htmlEscape, parseBotCommand, MALAYSIA_STATES, HEARD_FROM_OPTIONS, REFERRAL_OPTION } from './lib.js';
@@ -32,6 +33,11 @@ async function route(request, env, ctx) {
   const url = new URL(request.url), path=url.pathname;
   if ([CHECKIN_PATH, CHECKIN_PATH+'/'].includes(path) && request.method==='GET') return workshopCheckinPage();
   if (path===CHECKIN_API) return workshopCheckin(request,env);
+  if (request.method==='GET' && [ONLINE_PATH,ONLINE_PATH+'/'].includes(path)) return html(onlineClassPage(),noindex,"default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'");
+  if (request.method==='POST' && path===ONLINE_API) {
+    const result=await verifyOnlineClass(request,env);
+    return json(result.body,result.status,noindex);
+  }
   if (['/2days-botsclass','/2days-botsclass/'].includes(path) && ['GET','HEAD'].includes(request.method)) return partnerTwoDayPage(env,request.method);
   if (path==='/api/2days-botsclass/reservations' && request.method==='POST') return reservePartnerTwoDay(request,env);
   if (path==='/api/2days-botsclass/registrations' && request.method==='POST') {
@@ -104,6 +110,7 @@ async function route(request, env, ctx) {
   if (request.method==='POST' && path==='/api/admin/logout') return new Response(null,{status:204,headers:{'set-cookie':sessionCookie('',request,0)}});
   if (path.startsWith('/api/admin/')) {
     if (!await isAdmin(request,env)) return json({error:'Unauthorized'},401);
+    if (request.method==='GET' && path==='/api/admin/online-class/attendance.csv') return new Response(await onlineClassCsv(env),{headers:{...noindex,'content-type':'text/csv; charset=utf-8','content-disposition':'attachment; filename="aligor-online-class-2026-11-29.csv"'}});
     if (request.method==='GET' && path==='/api/admin/leads') return listLeads(url,env);
     if (request.method==='GET' && path==='/api/admin/export.csv') return exportCsv(env);
     if (request.method==='GET' && path==='/api/admin/stats') return json(await getStats(env));

@@ -8,8 +8,10 @@
   "assets": {
     "directory": "public",
     "binding": "ASSETS",
-    "run_worker_first": ["/register", "/register/*", "/register-ai-agent", "/register-ai-agent/*", "/workshop-checkin", "/workshop-checkin/*", "/classregister", "/preview-live", "/survey", "/payment", "/invoice/*", "/4916", "/4916/*", "/list", "/list/*", "/team", "/team/*", "/codexhermes-4hr-class", "/codexhermes-4hr-class/*", "/my-links", "/my-links/*", "/2days-botsclass", "/2days-botsclass/*", "/api/*"]
+    "run_worker_first": ["/register", "/register/*", "/register-ai-agent", "/register-ai-agent/*", "/workshop-checkin", "/workshop-checkin/*", "/classregister", "/preview-live", "/online-class", "/online-class/*", "/survey", "/payment", "/invoice/*", "/4916", "/4916/*", "/list", "/list/*", "/team", "/team/*", "/codexhermes-4hr-class", "/codexhermes-4hr-class/*", "/my-links", "/my-links/*", "/2days-botsclass", "/2days-botsclass/*", "/api/*"]
   },
+  "secrets_store_secrets": [{ "binding": "ONLINE_CLASS_1129_ZOOM_URL", "store_id": "09a71f0c083b4dcd8e6f5fcb068ee002", "secret_name": "ONLINE_CLASS_1129_ZOOM_URL" }],
+  "ratelimits": [{ "name": "ONLINE_CLASS_LIMIT", "namespace_id": "20261129", "simple": { "limit": 8, "period": 60 } }],
   "d1_databases": [
     {
       "binding": "DB",
